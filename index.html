@@ -4859,52 +4859,54 @@ Choose your spread/rillette style:</p>
       (events || []).forEach(function(ev) {
         var isVip = !!ev.isVip;
         var cat = ev.category || 'dining';
-        var catClass = 'pill-' + cat;
+        var catLabel = ev.categoryLabel || cat.toUpperCase();
         var dayNum = parseInt(ev.day, 10);
-        var dayStr = (dayNum < 10 ? '0' + dayNum : '' + dayNum);
+        var dayStr = (dayNum < 10 ? '' + dayNum : '' + dayNum);
+        var monthStr = (ev.month || 'OCT').toUpperCase();
+        var dowStr = (ev.dow || 'THU').toUpperCase();
         var imgSrc = ev.imageData || '';
+        var venue = ev.venue || 'Main Dining Hall';
+        var time = ev.time || '7:00 PM – 10:00 PM';
+        var title = ev.title || 'Belle Event';
+        var desc = ev.desc || '';
         
         var card = document.createElement('article');
         card.className = 'event-card';
         card.setAttribute('data-category', cat);
         card.setAttribute('data-day', ev.day);
 
-        var thumbHtml = imgSrc ? '<div class="event-thumb"><img src="' + imgSrc + '" alt="' + (ev.title || '') + '" loading="lazy"></div>' : '';
-        var vipHtml = isVip ? '<span class="event-vip-badge">SPECIAL</span>' : '';
-        
+        var thumbHtml = imgSrc ? '<div class="event-thumb"><img src="' + imgSrc + '" alt="' + title + '" loading="lazy"></div>' : '';
+        var badgeHtml = isVip ? '<span class="event-badge" style="background:#bca685;color:#0b0b0e;">SPECIAL</span>' : '<span class="event-badge">' + catLabel + '</span>';
+
         card.innerHTML = thumbHtml + 
-          '<div class="event-body">' +
-            '<div class="event-body-top">' +
-              '<div class="event-date-col">' +
-                '<span class="event-date-num">' + dayStr + '</span>' +
-                '<span class="event-date-dow">' + (ev.dow || 'THU') + '</span>' +
-              '</div>' +
-              '<div class="event-date-divider" aria-hidden="true"></div>' +
-              '<div class="event-main-col">' +
-                '<div class="event-main-header">' +
-                  '<span class="event-cat-badge ' + catClass + '">' + (ev.categoryLabel || cat.toUpperCase()) + '</span>' +
-                  vipHtml +
-                '</div>' +
-                '<h3 class="event-title">' + (ev.title || '') + '</h3>' +
-                '<p class="event-desc">' + (ev.desc || '') + '</p>' +
-              '</div>' +
+          '<div class="event-date-block">' +
+            '<span class="event-date-month">' + monthStr + '</span>' +
+            '<span class="event-date-day">' + dayStr + '</span>' +
+            '<span class="event-date-dow">' + dowStr + '</span>' +
+          '</div>' +
+          '<div class="event-details">' +
+            '<div class="event-details-top">' +
+              '<h4 class="event-title">' + title + '</h4>' +
+              badgeHtml +
             '</div>' +
-            '<div class="event-meta-footer">' +
-              '<span class="event-meta-item">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>' +
-                (ev.time || '') +
-              '</span>' +
-              '<span class="event-meta-divider">•</span>' +
-              '<span class="event-meta-item">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
-                (ev.venue || '') +
-              '</span>' +
+            '<p class="event-desc">' + desc + '</p>' +
+            '<div class="event-details-bottom">' +
+              '<div class="event-loc">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>' +
+                '<span>' + venue + '</span>' +
+              '</div>' +
+              '<div class="event-time-row">' +
+                '<span class="event-time">' + time + '</span>' +
+                '<span class="event-arrow">' +
+                  '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' +
+                '</span>' +
+              '</div>' +
             '</div>' +
           '</div>';
 
         card.addEventListener('click', function() {
           var phone = (window.belleCurrentData && window.belleCurrentData.venue && window.belleCurrentData.venue.whatsappNumber) || '94770315589';
-          var text = encodeURIComponent('Hi Belle Colombo, I would like to RSVP for ' + ev.title + ' on ' + dayStr + ' ' + (ev.month || 'OCT') + '.');
+          var text = encodeURIComponent('Hi Belle Colombo, I would like to RSVP for ' + title + ' on ' + dayStr + ' ' + monthStr + '.');
           window.open('https://wa.me/' + phone + '?text=' + text, '_blank');
         });
 

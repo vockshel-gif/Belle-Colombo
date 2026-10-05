@@ -2337,7 +2337,8 @@
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
           e.preventDefault();
           sendLiveUpdate();
-          showToast('✨ Published and synchronized (Ctrl+S)!');
+          pushToFirebaseCloud();
+          showToast('✨ Published to Cloud & synchronized (Ctrl+S)!');
         }
       });
     }
