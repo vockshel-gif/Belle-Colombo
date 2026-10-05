@@ -18,7 +18,7 @@ A responsive, high-end web application crafted for **Belle Colombo**, showcasing
 ## 📍 Venue & Official Contacts
 
 - **Address**: 58A, Horton Place, Colombo 7, Sri Lanka
-- **WhatsApp / Reservations**: [+94 77 752 6930](https://wa.me/94777526930?text=Hi%20Belle%20Colombo%2C%20I%20would%20like%20to%20reserve%20a%20table.)
+- **WhatsApp / Reservations**: [+94 77 031 5589](https://wa.me/94770315589?text=Hi%20Belle%20Colombo%2C%20I%20would%20like%20to%20reserve%20a%20table.)
 - **Instagram**: [@belle.colombo](https://www.instagram.com/belle.colombo/)
 - **Facebook**: [Belle Colombo](https://www.facebook.com/belle.colombo/)
 - **Location**: [Google Maps](https://www.google.com/maps/search/?api=1&query=Belle+Colombo,+58A+Horton+Place,+Colombo+00700)
