@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#22372b" />
+  <title>The Menu · Belle Colombo</title>
+  <meta name="description" content="Explore the culinary creations of Belle Colombo — À La Carte, Tasting Menus, From The Grill, and Bar Bites." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #22372b;
+      --bg-dark: #19271e;
+      --bg-card: rgba(36, 56, 44, 0.55);
+      --bg-card-hover: rgba(43, 67, 53, 0.75);
+      --gold: #bca685;
+      --gold-light: #e4d4ba;
+      --gold-pale: #f2e9dc;
+      --gold-muted: rgba(188, 166, 133, 0.75);
+      --line: rgba(188, 166, 133, 0.28);
+      --line-subtle: rgba(188, 166, 133, 0.15);
+      --veg-green: #67b078;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(100% 70% at 50% 0%, #2f4536 0%, var(--bg) 60%, var(--bg-dark) 100%) fixed,
+        var(--bg);
+      color: var(--gold-pale);
+      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      padding-bottom: 5rem;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ---------- Sticky Header ---------- */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(25, 39, 30, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line-subtle);
+      padding: .75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .header-back {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .82rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: .45rem .85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: rgba(188, 166, 133, 0.06);
+      transition: all .25s var(--ease);
+    }
+    .header-back:hover {
+      background: rgba(188, 166, 133, 0.16);
+      color: var(--gold-light);
+      transform: translateX(-2px);
+    }
+    .header-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .brand-title {
+      font-size: .95rem;
+      font-weight: 500;
+      letter-spacing: .2em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .brand-sub {
+      font-size: .62rem;
+      letter-spacing: .28em;
+      color: var(--gold-muted);
+      text-transform: uppercase;
+    }
+    .header-action {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--gold);
+      color: var(--bg);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .5rem .95rem;
+      border-radius: var(--radius-sm);
+      transition: all .25s var(--ease);
+      box-shadow: 0 4px 12px -4px rgba(0,0,0,.4);
+    }
+    .header-action:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+    }
+    .header-action svg { width: 14px; height: 14px; }
+
+    /* ---------- Container ---------- */
+    .container {
+      width: min(100% - 2.5rem, 880px);
+      margin-inline: auto;
+    }
+
+    /* ---------- Menu Hero ---------- */
+    .menu-hero {
+      text-align: center;
+      padding: 3rem 1rem 1.5rem;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: .75rem;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      color: var(--gold-muted);
+      margin-bottom: .6rem;
+    }
+    .hero-title {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 500;
+      letter-spacing: .12em;
+      color: var(--gold);
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: .6rem;
+    }
+    .hero-hours {
+      font-size: .92rem;
+      letter-spacing: .08em;
+      color: var(--gold-light);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ---------- Dividers ---------- */
+    .menu-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .9rem;
+      margin: 2.2rem 0;
+    }
+    .d-line {
+      flex: 1;
+      max-width: 140px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--line), transparent);
+    }
+
+    /* ---------- Primary Tab Navigation ---------- */
+    .tabs-wrapper {
+      position: sticky;
+      top: 57px;
+      z-index: 90;
+      background: rgba(25, 39, 30, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: .85rem 0 .65rem;
+      border-bottom: 1px solid var(--line-subtle);
+      margin-bottom: 2rem;
+    }
+    .primary-tabs {
+      display: flex;
+      justify-content: center;
+      gap: .6rem;
+      padding: 0 1rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .primary-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(188, 166, 133, 0.05);
+      color: var(--gold);
+      font-family: inherit;
+      font-size: .84rem;
+      font-weight: 500;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      padding: .6rem 1.25rem;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .25s var(--ease);
+    }
+    .tab-btn:hover {
+      background: rgba(188, 166, 133, 0.14);
+      color: var(--gold-light);
+    }
+    .tab-btn.is-active {
+      background: var(--gold);
+      color: var(--bg);
+      border-color: var(--gold);
+      font-weight: 600;
+      box-shadow: 0 4px 14px -3px rgba(188, 166, 133, 0.35);
+    }
+
+    /* ---------- Controls: Search & Veg Filter ---------- */
+    .menu-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      margin-bottom: 2rem;
+      padding: .75rem 1rem;
+      background: rgba(30, 48, 38, 0.45);
+      border: 1px solid var(--line-subtle);
+      border-radius: var(--radius-md);
+    }
+    .search-box {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-box svg {
+      position: absolute;
+      left: .85rem;
+      width: 15px;
+      height: 15px;
+      fill: var(--gold-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: rgba(15, 25, 19, 0.5);
+      border: 1px solid var(--line-subtle);
+      border-radius: 999px;
+      padding: .5rem 1rem .5rem 2.4rem;
+      color: var(--gold-pale);
+      font-family: inherit;
+      font-size: .84rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-input:focus {
+      border-color: var(--gold);
+    }
+    .search-input::placeholder { color: rgba(188, 166, 133, 0.5); }
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: transparent;
+      border: 1px solid var(--line-subtle);
+      border-radius: 999px;
+      color: var(--gold-muted);
+      font-family: inherit;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      padding: .5rem .95rem;
+      cursor: pointer;
+      transition: all .2s var(--ease);
+    }
+    .filter-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+    .filter-btn.is-active {
+      background: rgba(103, 176, 120, 0.18);
+      border-color: var(--veg-green);
+      color: #9fe2ad;
+    }
+
+    /* ---------- Section Header ---------- */
+    .section-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-top: 1rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .25rem;
+    }
+    .section-subtitle {
+      font-size: .86rem;
+      letter-spacing: .08em;
+      color: var(--gold-muted);
+      font-style: italic;
+    }
+    .section-note {
+      font-size: .78rem;
+      color: rgba(220, 200, 164, 0.7);
+      margin-top: .4rem;
+      max-width: 600px;
+      margin-inline: auto;
+    }
+
+    /* ---------- Items Grid & Cards ---------- */
+    .items-grid {
+      display: grid;
+      gap: 1.1rem;
+    }
+    .menu-item {
+      background: var(--bg-card);
+      border: 1px solid var(--line-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.4rem;
+      transition: all .28s var(--ease);
+    }
+    .menu-item:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--line);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -8px rgba(0, 0, 0, .45);
+    }
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: .5rem;
+    }
+    .item-title-wrap {
+      flex: 1;
+    }
+    .item-name {
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--gold-light);
+      line-height: 1.3;
+    }
+    .item-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem;
+      margin-top: .35rem;
+    }
+    .tag {
+      font-size: .65rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .15rem .5rem;
+      border-radius: 4px;
+      background: rgba(188, 166, 133, 0.1);
+      color: var(--gold);
+      border: 1px solid rgba(188, 166, 133, 0.2);
+    }
+    .tag-veg {
+      background: rgba(103, 176, 120, 0.12);
+      color: #97d9a5;
+      border-color: rgba(103, 176, 120, 0.3);
+    }
+    .tag-sig {
+      background: rgba(220, 180, 100, 0.15);
+      color: #ffd88a;
+      border-color: rgba(220, 180, 100, 0.35);
+    }
+    .item-price-wrap {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .item-price {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .price-sub {
+      display: block;
+      font-size: .72rem;
+      color: var(--gold-muted);
+    }
+    .item-price-alt {
+      display: block;
+      font-size: .92rem;
+      color: var(--gold-light);
+      font-weight: 500;
+    }
+    .item-desc {
+      font-size: .88rem;
+      line-height: 1.55;
+      color: rgba(235, 225, 210, 0.78);
+      margin-bottom: .4rem;
+    }
+
+    /* Options & Addons */
+    .item-options {
+      margin-top: .75rem;
+      padding: .65rem .85rem;
+      background: rgba(20, 32, 25, 0.5);
+      border-left: 2px solid var(--gold);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: .82rem;
+    }
+    .options-note {
+      font-weight: 500;
+      color: var(--gold-light);
+      margin-bottom: .3rem;
+      letter-spacing: .03em;
+    }
+    .item-options ul {
+      list-style: none;
+      display: grid;
+      gap: .25rem;
+      color: rgba(235, 225, 210, 0.72);
+    }
+    .item-addons {
+      margin-top: .6rem;
+    }
+    .addon-badge {
+      display: inline-block;
+      font-size: .74rem;
+      color: var(--gold);
+      background: rgba(188, 166, 133, 0.08);
+      border: 1px dashed var(--line);
+      padding: .25rem .65rem;
+      border-radius: 6px;
+    }
+
+    /* Cuts Grid for From The Grill */
+    .cuts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: .5rem;
+      margin-top: .85rem;
+    }
+    .cut-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(20, 32, 25, 0.6);
+      border: 1px solid var(--line-subtle);
+      border-radius: var(--radius-sm);
+      padding: .5rem .75rem;
+      font-size: .8rem;
+      transition: border-color .2s;
+    }
+    .cut-origin {
+      color: var(--gold-pale);
+      font-weight: 500;
+      font-size: .76rem;
+      letter-spacing: .02em;
+    }
+    .cut-price {
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: .03em;
+      white-space: nowrap;
+      margin-left: .5rem;
+    }
+    .cut-item.premium-wagyu {
+      border-color: rgba(255, 215, 0, 0.4);
+      background: linear-gradient(135deg, rgba(40, 50, 35, 0.8), rgba(60, 48, 20, 0.4));
+    }
+    .cut-item.premium-wagyu .cut-origin {
+      color: #ffe599;
+      font-weight: 600;
+    }
+    .cut-item.premium-wagyu .cut-price {
+      color: #ffd88a;
+      font-weight: 700;
+    }
+
+    /* ---------- Tasting Menu Experience Cards ---------- */
+    .tasting-card {
+      background: linear-gradient(180deg, rgba(38, 58, 46, 0.7) 0%, rgba(26, 40, 32, 0.75) 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: clamp(1.5rem, 5vw, 2.5rem);
+      margin-bottom: 3rem;
+      box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.5);
+    }
+    .tasting-hero {
+      text-align: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--line-subtle);
+      margin-bottom: 2rem;
+    }
+    .tasting-kicker {
+      display: inline-block;
+      font-size: .75rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .5rem;
+    }
+    .tasting-title {
+      font-size: clamp(1.8rem, 5.5vw, 2.7rem);
+      font-weight: 500;
+      letter-spacing: .1em;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      line-height: 1.15;
+      margin-bottom: .6rem;
+    }
+    .tasting-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .5rem 1.2rem;
+      font-size: .82rem;
+      color: var(--gold-muted);
+      margin-bottom: 1.75rem;
+    }
+    .tasting-pricing {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: rgba(18, 28, 22, 0.6);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: .85rem 1.5rem;
+    }
+    @media (max-width: 560px) {
+      .tasting-pricing {
+        flex-direction: column;
+        gap: .5rem;
+        width: 100%;
+      }
+      .price-divider { display: none; }
+    }
+    .price-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .price-label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--gold-muted);
+    }
+    .price-val {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      letter-spacing: .04em;
+    }
+    .price-divider {
+      color: var(--gold);
+      font-size: 1.2rem;
+      opacity: .6;
+    }
+    .pairing-sub {
+      font-size: .68rem;
+      color: #9fe2ad;
+      letter-spacing: .02em;
+      margin-top: 2px;
+    }
+
+    /* Courses Timeline */
+    .courses-timeline {
+      display: grid;
+      gap: 1.5rem;
+    }
+    .course-node {
+      position: relative;
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--line);
+    }
+    .course-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--gold);
+      color: var(--bg);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: .2rem .65rem;
+      border-radius: 4px;
+      margin-bottom: .75rem;
+    }
+    .course-options {
+      display: grid;
+      gap: .9rem;
+    }
+    .course-opt {
+      background: rgba(20, 32, 25, 0.45);
+      border: 1px solid var(--line-subtle);
+      border-radius: var(--radius-sm);
+      padding: .9rem 1.1rem;
+    }
+    .opt-label {
+      display: inline-block;
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: .25rem;
+    }
+    .opt-name {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--gold-light);
+      margin-bottom: .3rem;
+    }
+    .opt-desc {
+      font-size: .84rem;
+      color: rgba(235, 225, 210, 0.75);
+      line-height: 1.5;
+    }
+    .opt-wine {
+      display: flex;
+      align-items: flex-start;
+      gap: .45rem;
+      margin-top: .55rem;
+      padding-top: .45rem;
+      border-top: 1px dashed var(--line-subtle);
+      font-size: .8rem;
+      color: #f7dca8;
+    }
+    .wine-icon { font-size: .9rem; }
+    .wine-text strong { color: var(--gold); font-weight: 500; }
+
+    /* ---------- Footer Note ---------- */
+    .menu-footer {
+      text-align: center;
+      margin-top: 3.5rem;
+      padding: 2rem 1rem;
+      border-top: 1px solid var(--line-subtle);
+    }
+    .tax-notice {
+      font-size: .78rem;
+      letter-spacing: .06em;
+      color: var(--gold-muted);
+      max-width: 520px;
+      margin-inline: auto;
+      margin-bottom: 1.5rem;
+    }
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-foot {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .82rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: .6rem 1.25rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: rgba(188, 166, 133, 0.08);
+      color: var(--gold);
+      transition: all .25s var(--ease);
+    }
+    .btn-foot:hover {
+      background: var(--gold);
+      color: var(--bg);
+      transform: translateY(-2px);
+    }
+
+    /* ---------- Floating Back to Top / Mobile Navigation ---------- */
+    .float-top {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 80;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--bg);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: all .3s var(--ease);
+      border: none;
+      cursor: pointer;
+    }
+    .float-top.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .float-top:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+    .float-top svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* Hidden utility for live search */
+    .is-hidden { display: none !important; }
+
+    @media (max-width: 640px) {
+      .site-header { padding: .65rem .85rem; }
+      .header-back span { display: none; }
+      .header-action span { display: none; }
+      .header-action { padding: .5rem .65rem; }
+      .brand-title { font-size: .85rem; }
+      .menu-item { padding: 1rem 1.1rem; }
+      .item-name { font-size: .98rem; }
+      .item-price { font-size: .98rem; }
+      .course-node { padding-left: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header class="site-header">
+    <a href="index.html" class="header-back" aria-label="Back to home">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>Home</span>
+    </a>
+
+    <div class="header-brand">
+      <svg class="flower-emblem" style="width:22px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+      <span class="brand-title">Belle</span>
+      <span class="brand-sub">Colombo</span>
+    </div>
+
+    <a href="https://wa.me/94XXXXXXXXX?text=Hi%20Belle%20Colombo,%20I%20would%20like%20to%20reserve%20a%20table" target="_blank" rel="noopener" class="header-action" aria-label="Reserve Table via WhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg>
+      <span>Reserve</span>
+    </a>
+  </header>
+
+  <main class="container">
+
+    <!-- Hero Introduction -->
+    <header class="menu-hero">
+      <span class="hero-eyebrow">Culinary Collection</span>
+      <h1 class="hero-title">The Menu</h1>
+      <p class="hero-hours">Daily | 11:00 AM – 10:30 PM</p>
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:36px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </header>
+
+    <!-- Sticky Category Tabs -->
+    <div class="tabs-wrapper">
+      <nav class="primary-tabs" aria-label="Menu categories">
+        <button type="button" class="tab-btn is-active" data-target="all">All</button>
+        <button type="button" class="tab-btn" data-target="alacarte">À La Carte</button>
+        <button type="button" class="tab-btn" data-target="tasting">Tasting Menus</button>
+        <button type="button" class="tab-btn" data-target="garden-bar">Garden & Bar</button>
+      </nav>
+    </div>
+
+    <!-- Live Search & Dietary Filters -->
+    <div class="menu-controls">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="search" id="searchInput" class="search-input" placeholder="Search dishes, ingredients (e.g. Wagyu, Lobster, Truffle)..." aria-label="Search menu" />
+      </div>
+
+      <button type="button" id="vegFilter" class="filter-btn" aria-pressed="false">
+        <span>🌱</span>
+        <span>Vegetarian Only</span>
+      </button>
+    </div>
+
+    <!-- ===== SECTION: À LA CARTE ===== -->
+    <div class="menu-tab-content" id="tab-alacarte">
+      
+    <section class="menu-section" id="appetisers" data-cat="Appetisers">
+      <header class="section-header">
+        <h2 class="section-title">Appetisers</h2>
+        <p class="section-subtitle">Daily | 11:00 AM – 10:30 PM</p>
+        
+      </header>
+
+      <div class="items-grid">
+        
+          <article class="menu-item is-veg" data-name="forest mushroom & truffle soup" data-desc="forest mushrooms, fresh thyme, black truffle oil, crispy sourdough shard.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Forest Mushroom & Truffle Soup</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,200</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Forest mushrooms, fresh thyme, black truffle oil, crispy sourdough shard.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="ceylonese seafood bouillabaisse" data-desc="rich seafood broth, local prawns, cuttlefish, line-caught catch of the day, mussels, sourdough.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Ceylonese Seafood Bouillabaisse</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Seafood
+                    </span>
+                  
+                    <span class="tag tag-sig">
+                      Signature
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 3,800</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Rich seafood broth, local prawns, cuttlefish, line-caught catch of the day, mussels, sourdough.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="house pâté, rillette & smoked meat platter" data-desc="smoked meats, tangy house pickles, local sharp mustard, toasted sourdough.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">House Pâté, Rillette & Smoked Meat Platter</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Sharing
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,200</span>
+                  <span class="price-sub">(Single)</span>
+                  
+                    <span class="item-price-alt">/ LKR 3,800 <small>(Double)</small></span>
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Smoked meats, tangy house pickles, local sharp mustard, toasted sourdough.</p>
+
+            
+
+            
+              <div class="item-options">
+                <p class="options-note">Choose your spread/rillette style:</p>
+                <ul>
+                  <li>Option A: House-Made Chicken Liver Pâté</li><li>Option B: Slow-Cooked Duck Rillettes (shredded duck leg preserved in its own fat with True Cinnamon & cardamom)</li><li>Option C: Creamy Wild Mushroom & Miso Pâté (V)</li>
+                </ul>
+              </div>
+            
+
+            
+          </article>
+          
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:28px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </section>
+  
+    <section class="menu-section" id="entr-es" data-cat="Entrées">
+      <header class="section-header">
+        <h2 class="section-title">Entrées</h2>
+        <p class="section-subtitle">Starters & Light Plates</p>
+        
+      </header>
+
+      <div class="items-grid">
+        
+          <article class="menu-item " data-name="the signature caesar" data-desc="parmesan caesar dressing, blistered cherry tomatoes, sourdough croûtons, poached quail egg, crisp chicken skin and duck skin crackling mix.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Signature Caesar</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-sig">
+                      Signature
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,600</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Parmesan Caesar dressing, blistered cherry tomatoes, sourdough croûtons, poached quail egg, crisp chicken skin and duck skin crackling mix.</p>
+
+            
+
+            
+
+            
+              <div class="item-addons">
+                <span class="addon-badge">Add-ons: Crispy Spiced Chicken (+420) · Seared Prawns (+550) · Grilled Octopus (+600)</span>
+              </div>
+            
+          </article>
+          
+          <article class="menu-item is-veg" data-name="signature green salad" data-desc="mixed dressed greens, garden herbs, herb-emulsion, toasted pumpkin, sunflower, sesame seeds.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Signature Green Salad</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,500</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Mixed dressed greens, garden herbs, herb-emulsion, toasted pumpkin, sunflower, sesame seeds.</p>
+
+            
+
+            
+
+            
+              <div class="item-addons">
+                <span class="addon-badge">Add-ons: Crispy Spiced Chicken (+420) · Seared Prawns (+550) · Grilled Octopus (+600)</span>
+              </div>
+            
+          </article>
+          
+          <article class="menu-item " data-name="wood-charred duck, peach & pickled radish" data-desc="duck breast, peaches, radish, pickled mustard, warm duck dashi, shatteringly crisp duck skin.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Wood-Charred Duck, Peach & Pickled Radish</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Poultry
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,200</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Duck breast, peaches, radish, pickled mustard, warm duck dashi, shatteringly crisp duck skin.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="yellowfin tuna carpaccio" data-desc="yellowfin tuna, citrus-soy, extra virgin olive oil, crushed pink peppercorns, micro-greens.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Yellowfin Tuna Carpaccio</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Raw Bar
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Seafood
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,200</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Yellowfin tuna, citrus-soy, extra virgin olive oil, crushed pink peppercorns, micro-greens.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="savannah beef tartare" data-desc="beef tenderloin, sea salt, cornichons, grain mustard, cured egg yolk, sourdough shards.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Savannah Beef Tartare</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Raw Bar
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Beef
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,400</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Beef tenderloin, sea salt, cornichons, grain mustard, cured egg yolk, sourdough shards.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:28px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </section>
+  
+    <section class="menu-section" id="mains" data-cat="Mains">
+      <header class="section-header">
+        <h2 class="section-title">Mains</h2>
+        <p class="section-subtitle">Chef's Signature Land & Sea Plates</p>
+        
+      </header>
+
+      <div class="items-grid">
+        
+          <article class="menu-item " data-name="pan-seared catch of the day" data-desc="yellow kirihodi (tempered coconut milk broth), baby potatoes, charred wild okra, narang and curry-leaf chimichurri.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Pan-Seared Catch of the Day</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Seafood
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Local
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 3,400</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Yellow Kirihodi (tempered coconut milk broth), baby potatoes, charred wild okra, Narang and curry-leaf chimichurri.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="cajun-spiced & lemongrass chicken" data-desc="corn-fed chicken, lemongrass brew, cajun spices, roasted on coals, sweet corn succotash, vietnamese fresh herb salad.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Cajun-Spiced & Lemongrass Chicken</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Poultry
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,700</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Corn-fed chicken, lemongrass brew, Cajun spices, roasted on coals, sweet corn succotash, Vietnamese fresh herb salad.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="miso-kithul & sansho glazed lamb chops" data-desc="grain-fed australian lamb, white miso, local kithul treacle reduction, citrus japanese sansho pepper, garlic purée with charred spring onion.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Miso-Kithul & Sansho Glazed Lamb Chops</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Chef's Selection
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 16,000</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Grain-fed Australian lamb, white miso, local Kithul treacle reduction, citrus Japanese Sansho pepper, garlic purée with charred spring onion.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item is-veg" data-name="smoked kiri ala gnocchi" data-desc="green herb pesto base with blistered tomatoes, mushrooms, black olives, fragrant hazelnut dukkah.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Smoked Kiri Ala Gnocchi</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,500</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Green herb pesto base with blistered tomatoes, mushrooms, black olives, fragrant hazelnut dukkah.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="seafood confluence option" data-desc="prawns, cuttlefish, line-caught snapper, mussels-folded, house seafood-reduction sauce.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Seafood Confluence Option</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Seafood
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 3,900</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Prawns, cuttlefish, line-caught snapper, mussels-folded, house seafood-reduction sauce.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:28px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </section>
+  
+    <section class="menu-section" id="from-the-grill" data-cat="From The Grill">
+      <header class="section-header">
+        <h2 class="section-title">From The Grill</h2>
+        <p class="section-subtitle">Coal-Fired Cuts & Prime Steaks</p>
+        
+      </header>
+
+      <div class="items-grid">
+        
+          <article class="menu-item " data-name="filet mignon (250g)" data-desc="beef tenderloin, truffled potato purée, creamy wild mushrooms, tableside herb béarnaise.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Filet Mignon (250g)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Steak
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Tenderloin
+                    </span>
+                  
+                </div>
+              </div>
+              
+            </div>
+
+            <p class="item-desc">Beef tenderloin, truffled potato purée, creamy wild mushrooms, tableside herb béarnaise.</p>
+
+            
+    <div class="cuts-grid">
+      
+        <div class="cut-item ">
+          <span class="cut-origin">BRAZIL · Grass-Fed Heritage</span>
+          <span class="cut-price">LKR 13,500</span>
+        </div>
+      
+        <div class="cut-item ">
+          <span class="cut-origin">AUSTRALIA · Grain-Fed Angus</span>
+          <span class="cut-price">LKR 16,500</span>
+        </div>
+      
+        <div class="cut-item ">
+          <span class="cut-origin">USA · USDA Grain-Fed</span>
+          <span class="cut-price">LKR 19,500</span>
+        </div>
+      
+    </div>
+  
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="sirloin (300g – 350g)" data-desc="loin cut steak, binchotan coal grilled, parmesan fries, cracked peppercorn sauce.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Sirloin (300g – 350g)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Steak
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Sirloin
+                    </span>
+                  
+                </div>
+              </div>
+              
+            </div>
+
+            <p class="item-desc">Loin cut steak, Binchotan coal grilled, Parmesan fries, cracked peppercorn sauce.</p>
+
+            
+    <div class="cuts-grid">
+      
+        <div class="cut-item ">
+          <span class="cut-origin">BRAZIL · Grass-Fed Heritage</span>
+          <span class="cut-price">LKR 11,500</span>
+        </div>
+      
+        <div class="cut-item ">
+          <span class="cut-origin">AUSTRALIA · Grain-Fed Angus</span>
+          <span class="cut-price">LKR 14,500</span>
+        </div>
+      
+        <div class="cut-item ">
+          <span class="cut-origin">USA · USDA Grain-Fed</span>
+          <span class="cut-price">LKR 16,500</span>
+        </div>
+      
+        <div class="cut-item premium-wagyu">
+          <span class="cut-origin">JAPANESE WAGYU · A5 Premium</span>
+          <span class="cut-price">LKR 65,000</span>
+        </div>
+      
+    </div>
+  
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="ribeye (350g – 400g)" data-desc="marbled steak, charcoal fire finish, sweet corn succotash, bone-marrow chimichurri.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Ribeye (350g – 400g)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Steak
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Ribeye
+                    </span>
+                  
+                </div>
+              </div>
+              
+            </div>
+
+            <p class="item-desc">Marbled steak, charcoal fire finish, sweet corn succotash, bone-marrow chimichurri.</p>
+
+            
+    <div class="cuts-grid">
+      
+        <div class="cut-item ">
+          <span class="cut-origin">BRAZIL · Grass-Fed Heritage</span>
+          <span class="cut-price">LKR 17,500</span>
+        </div>
+      
+        <div class="cut-item ">
+          <span class="cut-origin">AUSTRALIA · Grain-Fed Angus</span>
+          <span class="cut-price">LKR 21,500</span>
+        </div>
+      
+        <div class="cut-item ">
+          <span class="cut-origin">USA · USDA Grain-Fed</span>
+          <span class="cut-price">LKR 24,000</span>
+        </div>
+      
+    </div>
+  
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="australian wagyu striploin (300g)" data-desc="high-marbled wagyu cut, intense velvety texture, classic reduction jus, silk sweet potato purée.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Australian Wagyu Striploin (300g)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-sig">
+                      Signature
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Wagyu
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 27,500</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">High-marbled Wagyu cut, intense velvety texture, classic reduction jus, silk sweet potato purée.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="the master wagyu burger (200g)" data-desc="premium wagyu beef patty grilled over binchotan coals, cave-aged cheddar, caramelized onions, wild rocket, truffle aioli on a toasted brioche bun, served with truffle parmesan fries.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Master Wagyu Burger (200g)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Burger
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Wagyu
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 4,500</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Premium Wagyu beef patty grilled over Binchotan coals, cave-aged cheddar, caramelized onions, wild rocket, truffle aioli on a toasted brioche bun, served with Truffle Parmesan Fries.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:28px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </section>
+  
+    <section class="menu-section" id="desserts" data-cat="Desserts">
+      <header class="section-header">
+        <h2 class="section-title">Desserts</h2>
+        <p class="section-subtitle">Sweet Finales</p>
+        
+      </header>
+
+      <div class="items-grid">
+        
+          <article class="menu-item " data-name="the rockland red rum & espresso chocolate biscuit pudding (cbp)" data-desc="milk-soaked biscuits, rich dark chocolate ganache infused with rockland red rum and cold-brew espresso, toasted cashew praline.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Rockland Red Rum & Espresso Chocolate Biscuit Pudding (CBP)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-sig">
+                      Signature
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,200</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Milk-soaked biscuits, rich dark chocolate ganache infused with Rockland Red Rum and cold-brew espresso, toasted cashew praline.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="biscoff, chocolate & narang mousse slice" data-desc="spiced biscoff biscuit base, dark chocolate fudge, toasted coconut crumble, vanilla mousse, narang citrus zest.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Biscoff, Chocolate & Narang Mousse Slice</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Dessert
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,400</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Spiced Biscoff biscuit base, dark chocolate fudge, toasted coconut crumble, vanilla mousse, Narang citrus zest.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="charred pineapple & pandan basque cheesecake" data-desc="low-sugar pandan basque cheesecake, binchotan-charred pineapple, ginger-kithul compote.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Charred Pineapple & Pandan Basque Cheesecake</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Dessert
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,500</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Low-sugar pandan Basque cheesecake, Binchotan-charred pineapple, ginger-kithul compote.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:28px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </section>
+  
+    </div>
+
+    <!-- ===== SECTION: TASTING MENUS ===== -->
+    <div class="menu-tab-content" id="tab-tasting">
+      <header class="section-header">
+        <h2 class="section-title">Curated Tasting Experiences</h2>
+        <p class="section-subtitle">Multi-course culinary journeys curated by our Executive Chef & Sommelier</p>
+      </header>
+
+      
+    <article class="tasting-card" id="tasting-5">
+      <div class="tasting-hero">
+        <span class="tasting-kicker">By The Glass Pairing</span>
+        <h2 class="tasting-title">5 Course Pairing Menu</h2>
+        <div class="tasting-meta">
+          <span class="tasting-hours">Daily | 11:00 AM – 10:30 PM</span>
+          <span class="tasting-note">Please select one option per course</span>
+        </div>
+
+        <div class="tasting-pricing">
+          <div class="price-box">
+            <span class="price-label">Menu Only</span>
+            <span class="price-val">LKR 9,500</span>
+          </div>
+          <div class="price-divider">+</div>
+          <div class="price-box featured-pairing">
+            <span class="price-label">With Wine Pairing</span>
+            <span class="price-val">LKR 17,000</span>
+            <span class="pairing-sub">Includes 4 premium sommelier wine pairings</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="courses-timeline">
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 01</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">The Prelude</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Heirloom Tomato & Chèvre (V)</h4>
+                  <p class="opt-desc">Local heirloom tomatoes, whipped goat's cheese mousse, wild passionfruit, kithul vinaigrette, fresh basil oil.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Ardechois, Sauvignon Blanc 2023 · France</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Yellowfin Tuna Carpaccio</h4>
+                  <p class="opt-desc">Yellowfin tuna, extra virgin olive oil, crushed pink peppercorns, micro-greens.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Indana Chardonnay, Cape G. Hope 2024 · South Africa</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Savannah Beef Tartare</h4>
+                  <p class="opt-desc">Beef tenderloin, cornichons, grain mustard, quail egg yolk, toasted sourdough shard.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Dark Horse, Pinot Noir · California</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 02</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">The Hero Main</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Binchotan Mushroom Steak (V)</h4>
+                  <p class="opt-desc">Oyster mushroom, sweet truffle-miso, roasted garlic, sweet potato purée.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Dark Horse, Pinot Noir · California</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Lemongrass Modha</h4>
+                  <p class="opt-desc">Sea bass fillet, lemongrass-infused yellow Kirihodi broth, Narang, curry-leaf chimichurri.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> d'Arenberg Dam, Riesling · Australia</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Heritage Filet Mignon</h4>
+                  <p class="opt-desc">Binchotan-grilled beef tenderloin, smoked garlic & bone-marrow butter, classic reduction jus, truffled potato purée.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Obikwa Cabernet Sauvignon · California</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 03</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Palate Cleanser</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">House Citrus & Wild Mint Sorbet</h4>
+                  <p class="opt-desc">A refreshing interlude of local mountain Narang citrus.</p>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 04</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Traditional Cheese Course</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Curated House Cheeses</h4>
+                  <p class="opt-desc">A selection of premium cave-aged house cheeses served with wild honey, roasted nuts, seasonal fruit preserves, warm toasted sourdough.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Piccini, Toscana · Italy</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 05</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">The Sweet Finale</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Rockland Red Rum CBP</h4>
+                  <p class="opt-desc">Milk-soaked biscuits, dark chocolate ganache infused with Rockland Red Rum and cold-brew espresso, toasted cashew praline.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Erben Auslese · Germany</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Charred Pineapple Basque</h4>
+                  <p class="opt-desc">Low-sugar pandan Basque cheesecake, Binchotan-charred pineapple, ginger-kithul compote.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Erben Auslese · Germany</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:32px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </article>
+  
+    <article class="tasting-card" id="tasting-7">
+      <div class="tasting-hero">
+        <span class="tasting-kicker">The Ultimate Culinary Journey</span>
+        <h2 class="tasting-title">7 Course Grand Tasting</h2>
+        <div class="tasting-meta">
+          <span class="tasting-hours">Daily | 11:00 AM – 10:30 PM</span>
+          <span class="tasting-note">Please select one option per course · Coffee or Tea included</span>
+        </div>
+
+        <div class="tasting-pricing">
+          <div class="price-box">
+            <span class="price-label">Menu Only</span>
+            <span class="price-val">LKR 10,000</span>
+          </div>
+          <div class="price-divider">+</div>
+          <div class="price-box featured-pairing">
+            <span class="price-label">With Wine Pairing</span>
+            <span class="price-val">LKR 19,500</span>
+            <span class="pairing-sub">Includes 6 sommelier wine pairings</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="courses-timeline">
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 01</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Cold Charcuterie & Prelude</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  <span class="opt-label">Meat Option</span>
+                  <h4 class="opt-name">Savannah Beef Tartare</h4>
+                  <p class="opt-desc">Beef tenderloin, sea salt, cornichons, grain mustard, raw quail egg yolk on a sourdough shard.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Indana Chardonnay 2024 · South Africa</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  <span class="opt-label">Poultry Option</span>
+                  <h4 class="opt-name">Foie Gras-Style Chicken Liver Parfait</h4>
+                  <p class="opt-desc">Ultra-silky red wine & shallot-infused chicken liver pâté, tangy house pickles, local sharp mustard, shattered poultry skin crackling.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Oude Kaap Moscato · South Africa</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 02</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Warm Game & Grill</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  <span class="opt-label">Meat Option</span>
+                  <h4 class="opt-name">Binchotan Beef Tenderloin Medallion</h4>
+                  <p class="opt-desc">Flame-charred beef tenderloin bite served with smoked garlic, bone-marrow chimichurri.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Piccini, Toscana · Italy</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  <span class="opt-label">Poultry Option</span>
+                  <h4 class="opt-name">Wood-Charred Duck Breast</h4>
+                  <p class="opt-desc">House-smoked duck breast medallions paired with caramelized peaches, pickled radish, crisp duck skin, savory duck dashi pour.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Dark Horse Pinot Noir · California</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 03</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Low & Slow Pit Smoke</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  <span class="opt-label">Meat Option</span>
+                  <h4 class="opt-name">Smoked Angus Brisket (Jaffna Spice Rub)</h4>
+                  <p class="opt-desc">12-hour cinnamon wood-smoked Black Angus brisket finished with a dark roasted curry powder and black pepper crust.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Obikwa Cabernet Sauvignon · California</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  <span class="opt-label">Poultry Option</span>
+                  <h4 class="opt-name">Smoked & Roasted Chicken</h4>
+                  <p class="opt-desc">Sweet-tea and lemongrass brined chicken cold-smoked over cinnamon wood, glazed with tangy Alabama White sauce, cider apple slaw.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> d'Arenberg Dam, Riesling · Australia</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 04</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Palate Cleanser</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  <span class="opt-label">Interlude</span>
+                  <h4 class="opt-name">Local Narang Citrus & Passionfruit Sorbet</h4>
+                  <p class="opt-desc">A bright, high-acid palate refresher infused with mountain citrus.</p>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 05</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Hero Main</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  <span class="opt-label">Meat Option</span>
+                  <h4 class="opt-name">Miso-Kithul & Sansho Glazed Lamb Chop</h4>
+                  <p class="opt-desc">French-trimmed lamb chop charred over Binchotan coals, finished with white miso, Kithul treacle reduction, roasted garlic purée.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Dark Horse Pinot Noir · California</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 06</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Artisanal House Cheese Course</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  <span class="opt-label">Selection</span>
+                  <h4 class="opt-name">Cave-Aged House Cheese Tasting</h4>
+                  <p class="opt-desc">Cave-aged cheeses, local wild honey, roasted nuts, house fruit preserves, toasted sourdough.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Valdouro Ruby Port · Portugal</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Course 07</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Sweet Finale</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  <span class="opt-label">Option A</span>
+                  <h4 class="opt-name">Rockland Red Rum & Espresso CBP</h4>
+                  <p class="opt-desc">Layers of milk-soaked biscuits, dark chocolate ganache, Rockland Red Rum, cold-brew espresso, toasted cashew praline.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Erben Auslese · Germany</span>
+                    </div>
+                  
+                </div>
+              
+                <div class="course-opt">
+                  <span class="opt-label">Option B</span>
+                  <h4 class="opt-name">Biscoff, Chocolate & Narang Mousse Slice</h4>
+                  <p class="opt-desc">Spiced Biscoff biscuit base, dark chocolate fudge, toasted coconut crumble, vanilla mousse.</p>
+                  
+                    <div class="opt-wine">
+                      <span class="wine-icon">🍷</span>
+                      <span class="wine-text"><strong>Sommelier Pairing:</strong> Moscato 2025 · South Africa</span>
+                    </div>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="course-node">
+            <div class="course-badge">
+              <span class="course-num">Digestif</span>
+              <span class="course-sep">·</span>
+              <span class="course-name">Finale</span>
+            </div>
+
+            <div class="course-options">
+              
+                <div class="course-opt">
+                  
+                  <h4 class="opt-name">Ceylon Specialty Coffee or Artisanal Tea</h4>
+                  <p class="opt-desc">Freshly brewed selection of single-estate Ceylon teas or single-origin espresso.</p>
+                  
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:32px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </article>
+  
+    </div>
+
+    <!-- ===== SECTION: THE GARDEN & BAR ===== -->
+    <div class="menu-tab-content" id="tab-garden-bar">
+      
+    <section class="menu-section" id="the-garden" data-cat="The Garden">
+      <header class="section-header">
+        <h2 class="section-title">The Garden</h2>
+        <p class="section-subtitle">Daytime Gourmet Burgers & Sandwiches</p>
+        <p class="section-note">Served with choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt, or Fresh Side Salad.</p>
+      </header>
+
+      <div class="items-grid">
+        
+          <article class="menu-item " data-name="the smoked club" data-desc="house-smoked chicken breast, crispy beef bacon, avocado, lettuce, tomato, nai miris aioli, toasted multi-grain bread.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Smoked Club</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Sandwich
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,800</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">House-smoked chicken breast, crispy beef bacon, avocado, lettuce, tomato, Nai Miris aioli, toasted multi-grain bread.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="the classic rye" data-desc="slow-simmered corned beef or house-cured pastrami, melted swiss cheese, dills, sharp local mustard on toasted rye.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Classic Rye</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Sandwich
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,800</span>
+                  <span class="price-sub">(Single)</span>
+                  
+                    <span class="item-price-alt">/ LKR 2,800 <small>(Double)</small></span>
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Slow-simmered corned beef or house-cured pastrami, melted Swiss cheese, dills, sharp local mustard on toasted rye.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="the classic burger" data-desc="120g premium beef patty, melted cheddar, crisp lettuce, tomato, red onion, dills, house secret sauce on a toasted sesame bun.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Classic Burger</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Burger
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 3,100</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">120g premium beef patty, melted cheddar, crisp lettuce, tomato, red onion, dills, house secret sauce on a toasted sesame bun.</p>
+
+            
+
+            
+
+            
+              <div class="item-addons">
+                <span class="addon-badge">Add-ons: Double Patty (+1,050) · Beef Bacon (+250) · Sunny-Side-Up Egg (+150)</span>
+              </div>
+            
+          </article>
+          
+          <article class="menu-item is-veg" data-name="the shogun burger" data-desc="crispy-fried king oyster mushroom 'steak' (120g), house-togarashi, tangy tonkatsu sauce, japanese mayo, tempura gotu kola, shredded cabbage on a toasted potato bun.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Shogun Burger</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Burger
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,800</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Crispy-fried king oyster mushroom 'steak' (120g), house-togarashi, tangy Tonkatsu sauce, Japanese mayo, tempura gotu kola, shredded cabbage on a toasted potato bun.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="the signature steak sandwich" data-desc="grilled beef tenderloin, melted provolone cheese, caramelized onions, mustard-horseradish cream on a crusty baguette.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Signature Steak Sandwich</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Steak
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Sandwich
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 3,900</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Grilled beef tenderloin, melted provolone cheese, caramelized onions, mustard-horseradish cream on a crusty baguette.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item is-veg" data-name="roasted tomato & chipotle soup" data-desc="fire-roasted tomatoes, smoky chipotle chillies, roasted garlic, toasted cumin, lime-avocado crema, fresh coriander oil, herb-pressed focaccia.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Roasted Tomato & Chipotle Soup</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Soup
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,900</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Fire-roasted tomatoes, smoky chipotle chillies, roasted garlic, toasted cumin, lime-avocado crema, fresh coriander oil, herb-pressed focaccia.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item is-veg" data-name="heirloom tomato, goat’s cheese & basil salad" data-desc="tomatoes, goat's cheese, basil, greens and assorted herb base, passionfruit dressing, toasted pumpkin & sunflower seeds.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Heirloom Tomato, Goat’s Cheese & Basil Salad</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Salad
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,200</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Tomatoes, goat's cheese, basil, greens and assorted herb base, passionfruit dressing, toasted pumpkin & sunflower seeds.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:28px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </section>
+  
+    <section class="menu-section" id="the-bar-bites" data-cat="The Bar Bites">
+      <header class="section-header">
+        <h2 class="section-title">The Bar Bites</h2>
+        <p class="section-subtitle">Daily | 06:00 PM – 10:30 PM</p>
+        <p class="section-note">Designed specifically for easy sharing over signature cocktails at the bar, or as a prelude to your dinner.</p>
+      </header>
+
+      <div class="items-grid">
+        
+          <article class="menu-item " data-name="the classic sliders (two)" data-desc="two mini sliders served on soft, toasted brioche buns. choice of classic beef (melted aged cheddar, lettuce, tomato, pickles) or chicken karaage (ginger-garlic fried chicken, pickled cucumber ribbons, sriracha aioli).">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">The Classic Sliders (Two)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Sharing
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Bar Bite
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 4,000</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Two mini sliders served on soft, toasted brioche buns. Choice of Classic Beef (melted aged cheddar, lettuce, tomato, pickles) or Chicken Karaage (ginger-garlic fried chicken, pickled cucumber ribbons, sriracha aioli).</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="smoked duck tacos" data-desc="tortillas, shredded duck leg, red cabbage, ginger-lime slaw, sweet hoisin-kithul glaze, fresh coriander.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Smoked Duck Tacos</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Bar Bite
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,200</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Tortillas, shredded duck leg, red cabbage, ginger-lime slaw, sweet hoisin-kithul glaze, fresh coriander.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="crispy chicken karaage bao" data-desc="steamed bao buns, crisp japanese fried chicken, pickled cucumber ribbons, curry-leaf aioli.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Crispy Chicken Karaage Bao</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Bar Bite
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,800</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Steamed bao buns, crisp Japanese fried chicken, pickled cucumber ribbons, curry-leaf aioli.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="thai-style crispy oyster omelet" data-desc="pan-fried oysters in lacy egg and tapioca starch batter, wok-tossed bean sprouts, coriander, spring scallions, sweet-chili-lime sriracha drizzle.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Thai-Style Crispy Oyster Omelet</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Seafood
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Bar Bite
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,200</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Pan-fried oysters in lacy egg and tapioca starch batter, wok-tossed bean sprouts, coriander, spring scallions, sweet-chili-lime sriracha drizzle.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="vietnamese-style rice paper summer rolls with scallops" data-desc="translucent rice paper, seared scallops, local fresh herbs (mint, coriander, gotu kola), crisp cucumber, peanut-tamarind dipping sauce.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Vietnamese-Style Rice Paper Summer Rolls with Scallops</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Seafood
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Fresh
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 2,800</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Translucent rice paper, seared scallops, local fresh herbs (mint, coriander, gotu kola), crisp cucumber, peanut-tamarind dipping sauce.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item is-veg" data-name="corn succotash fritters" data-desc="sweet corn succotash fritters, zesty citrus cream, pickled onion slivers, coriander oil, fresh picked leaves.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Corn Succotash Fritters</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Bar Bite
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,400</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Sweet corn succotash fritters, zesty citrus cream, pickled onion slivers, coriander oil, fresh picked leaves.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item is-veg" data-name="mushroom tempura nest" data-desc="crisp local oyster & button mushroom tempura nest, rich truffle-miso dipping sauce.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Mushroom Tempura Nest</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-veg">
+                      🌱 Vegetarian
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Bar Bite
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 1,600</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">Crisp local oyster & button mushroom tempura nest, rich truffle-miso dipping sauce.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+          <article class="menu-item " data-name="artisanal cheese platter (for two)" data-desc="a curated selection of three premium cave-aged cheeses served with wild honey, roasted nuts, seasonal fruit preserves, and toasted sourdough.">
+            <div class="item-head">
+              <div class="item-title-wrap">
+                <h3 class="item-name">Artisanal Cheese Platter (For Two)</h3>
+                <div class="item-tags">
+                  
+                    <span class="tag tag-std">
+                      Sharing
+                    </span>
+                  
+                    <span class="tag tag-std">
+                      Cheese
+                    </span>
+                  
+                </div>
+              </div>
+              
+                <div class="item-price-wrap">
+                  <span class="item-price">LKR 3,800</span>
+                  
+                  
+                </div>
+              
+            </div>
+
+            <p class="item-desc">A curated selection of three premium cave-aged cheeses served with wild honey, roasted nuts, seasonal fruit preserves, and toasted sourdough.</p>
+
+            
+
+            
+
+            
+          </article>
+          
+      </div>
+
+      <div class="menu-divider" aria-hidden="true">
+  <span class="d-line"></span>
+  <svg class="flower-emblem" style="width:28px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+  <span class="d-line"></span>
+</div>
+    </section>
+  
+    </div>
+
+    <!-- Footer Information -->
+    <footer class="menu-footer">
+      <svg class="flower-emblem" style="width:30px;height:auto;overflow:visible;" viewBox="-4 -4 275.63 150.17" aria-hidden="true" focusable="false">
+  <path fill="#bca685" d="M239.06,75.89a81.28,81.28,0,0,1-25,26.91c-15.63,10.59-32.92,15-52.4,14,1.06-2.69,1.89-5,2.84-7.2A121.78,121.78,0,0,1,197,64.76,115.62,115.62,0,0,1,239.14,41.1c7.16-2.18,14.61-3.39,21.92-5.11,2-.47,2.88.22,3.42,2.16A80.31,80.31,0,0,1,261.58,91c-5.87,14.61-14.83,26.82-27.63,36a79.9,79.9,0,0,1-36,14.26c-22.58,3.23-42.71-3.16-61.28-15.55-2.22-1.49-3.68-1.5-5.88,0-10.56,7.11-21.93,12.45-34.53,14.91a79.63,79.63,0,0,1-36.58-1.32c-14.52-3.94-27.28-11-37.41-22.27C6.91,100-1,80,.1,56.83.38,50.89,1.69,45,2.73,39.09c.57-3.24,1-3.42,4.19-3A120.07,120.07,0,0,1,63.21,59a121,121,0,0,1,41.65,55.38c.71,1.88.47,2.58-1.67,2.64-20.81.54-39.43-5.45-55.63-18.59A84.67,84.67,0,0,1,29.44,77.75a13.54,13.54,0,0,1-.86-1.7c0-.11.05-.3.15-.85,4.8,1.77,10.22,2,13.6,6.61C51.29,94,63.77,101,77.75,105.66c4.33,1.43,9,1.84,13.6,2.4,2.41.3,2.67-.44,1.41-2.59C87.4,96.28,82,87.05,74.77,79.21,61.23,64.53,45.68,52.74,25.94,47.63c-4.31-1.12-8.81-1.49-13.21-2.26-2-.35-2.83.61-3.35,2.44A47.31,47.31,0,0,0,9,70.64a210.39,210.39,0,0,0,5.87,22.21A44.43,44.43,0,0,0,26.63,111c8.82,8.53,18.58,15.64,30.38,19.57A71.17,71.17,0,0,0,91.11,133c9.73-1.53,19.14-3.88,27.36-9.58,2.49-1.72,4.75-3.77,7.12-5.68,1.52-1.23.5-2.17-.33-3.2a90.87,90.87,0,0,1-14.52-24.41c-7.42-19.22-7.54-38.6-.69-57.93C114.49,19.73,121.56,8.92,132.27.73c1.27-1,2-1,3.18.13a85.16,85.16,0,0,1,23,36.84A79.91,79.91,0,0,1,156.93,90a76.89,76.89,0,0,1-14.24,24.53c-1.58,1.81-1.44,2.85.38,4.43A56.89,56.89,0,0,0,170,131.85c10.2,2,20.37,3,30.72,1.19,13-2.31,24-8.32,34.12-16.53A59.78,59.78,0,0,0,256,82.14c1.8-7.9,3.75-15.73,3.4-23.89a71.08,71.08,0,0,0-1.28-10c-.56-2.94-1.13-3.17-4.15-2.89-15,1.37-28.29,7.09-40.7,15.59-16.89,11.57-29,27.06-38.66,44.73-1.08,2-.85,2.32,1.35,2.38A40.45,40.45,0,0,0,192.13,105c10.24-4.08,20.05-8.86,27.76-17a32.54,32.54,0,0,0,4.22-4.9c2.26-3.63,5.84-5.05,9.57-6.32,1.62-.55,3.3-.94,4.95-1.41ZM152.75,60.14c-.91-18.26-6.51-32.9-17.16-45.61-1.26-1.49-2-1.73-3.58-.26-10.55,10-15,22.82-17,36.69a71.48,71.48,0,0,0,5.07,38.29,73.42,73.42,0,0,0,11.86,19.36c1.23,1.45,2.14,1.75,3.59.08C148.06,94.24,153,77.25,152.75,60.14Z"/>
+</svg>
+      <p class="tax-notice">All prices are in LKR and subject to 10% service charge and applicable government taxes.</p>
+      <div class="footer-actions">
+        <a href="index.html" class="btn-foot">← Back to Main Page</a>
+        <a href="https://wa.me/94XXXXXXXXX" target="_blank" rel="noopener" class="btn-foot">Inquire / Reserve via WhatsApp</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Floating Scroll To Top -->
+  <button type="button" id="scrollTop" class="float-top" aria-label="Scroll to top">
+    <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+  </button>
+
+  <script>
+    // Tab switching logic
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabContents = {
+      'alacarte': document.getElementById('tab-alacarte'),
+      'tasting': document.getElementById('tab-tasting'),
+      'garden-bar': document.getElementById('tab-garden-bar'),
+    };
+
+    function switchTab(target, shouldScroll = true) {
+      tabs.forEach(t => t.classList.toggle('is-active', t.dataset.target === target));
+
+      if (target === 'all') {
+        Object.values(tabContents).forEach(c => c.classList.remove('is-hidden'));
+      } else {
+        Object.entries(tabContents).forEach(([key, content]) => {
+          if (key === target) {
+            content.classList.remove('is-hidden');
+          } else {
+            content.classList.add('is-hidden');
+          }
+        });
+      }
+      if (shouldScroll) {
+        window.scrollTo({ top: document.querySelector('.tabs-wrapper').offsetTop - 60, behavior: 'smooth' });
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.target, true));
+    });
+
+    // Check URL hash on load
+    const initialHash = window.location.hash.replace('#', '');
+    if (initialHash && ['alacarte', 'tasting', 'garden-bar'].includes(initialHash)) {
+      switchTab(initialHash, false);
+    }
+
+    // Search and Vegetarian filtering
+    const searchInput = document.getElementById('searchInput');
+    const vegFilter = document.getElementById('vegFilter');
+    let vegOnly = false;
+
+    vegFilter.addEventListener('click', () => {
+      vegOnly = !vegOnly;
+      vegFilter.classList.toggle('is-active', vegOnly);
+      vegFilter.setAttribute('aria-pressed', vegOnly);
+      applyFilters();
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+
+    function applyFilters() {
+      const q = searchInput.value.trim().toLowerCase();
+      const items = document.querySelectorAll('.menu-item');
+      
+      items.forEach(item => {
+        const isVeg = item.classList.contains('is-veg');
+        const name = item.dataset.name || '';
+        const desc = item.dataset.desc || '';
+        const matchesSearch = !q || name.includes(q) || desc.includes(q);
+        const matchesVeg = !vegOnly || isVeg;
+
+        if (matchesSearch && matchesVeg) {
+          item.classList.remove('is-hidden');
+        } else {
+          item.classList.add('is-hidden');
+        }
+      });
+
+      // Hide empty sections during search
+      document.querySelectorAll('.menu-section').forEach(sec => {
+        const visibleItems = sec.querySelectorAll('.menu-item:not(.is-hidden)');
+        if (visibleItems.length === 0 && (q || vegOnly)) {
+          sec.classList.add('is-hidden');
+        } else {
+          sec.classList.remove('is-hidden');
+        }
+      });
+    }
+
+    // Scroll to Top button visibility
+    const floatTop = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        floatTop.classList.add('is-visible');
+      } else {
+        floatTop.classList.remove('is-visible');
+      }
+    }, { passive: true });
+
+    floatTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
