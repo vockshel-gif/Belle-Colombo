@@ -2002,50 +2002,54 @@
       color: #000000;
     }
 
-    /* Events List */
+    /* Events List - Elegant Menu-Item Aligned Layout */
     .events-list {
       display: flex;
       flex-direction: column;
-      padding: 0 14px;
-      gap: 14px;
+      padding: 0 clamp(16px, 4.8vw, 24px);
+      gap: 12px;
       margin-bottom: 24px;
       width: 100%;
-      max-width: 100%;
-      min-width: 0;
       box-sizing: border-box;
     }
     .event-card {
       display: flex;
-      align-items: center;
-      gap: clamp(8px, 2.2vw, 12px);
-      padding-bottom: 14px;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 3px 0 13px 0;
       border-bottom: 1px solid #eee9e3;
       cursor: pointer;
-      transition: transform 0.2s, background-color 0.2s, opacity 0.3s;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
       box-sizing: border-box;
+      width: 100%;
+      transition: background-color 0.2s, transform 0.15s;
     }
     .event-card:last-child {
       border-bottom: none;
+      padding-bottom: 4px;
+    }
+    .event-card:hover {
+      background-color: rgba(220, 204, 190, 0.08);
+      border-radius: 8px;
+    }
+    .event-card:active {
+      transform: scale(0.99);
     }
     .event-card.is-hidden {
       display: none !important;
     }
     .event-card.is-highlighted {
       background: rgba(220, 204, 190, 0.18);
-      border-radius: 10px;
-      padding: 6px 8px 14px;
+      border-radius: 8px;
+      padding: 6px 8px 13px;
     }
     .event-thumb {
-      width: clamp(62px, 17vw, 84px);
-      height: clamp(58px, 16vw, 78px);
+      width: 64px;
+      height: 64px;
       border-radius: 8px;
       overflow: hidden;
       flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      background: #e8e4df;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+      background: #eae5df;
     }
     .event-thumb img {
       width: 100%;
@@ -2058,131 +2062,142 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      line-height: 1;
-      width: clamp(26px, 7vw, 34px);
+      width: 34px;
       flex-shrink: 0;
+      line-height: 1;
+      text-align: center;
+      padding-top: 1px;
+      border-right: 1px solid #f0ebe4;
+      padding-right: 6px;
     }
     .event-date-month {
-      font-size: 8.5px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
       color: #666666;
       text-transform: uppercase;
       margin-bottom: 2px;
     }
     .event-date-day {
-      font-size: clamp(20px, 5.2vw, 24px);
-      font-weight: 400;
-      color: #111111;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
+      font-size: 22px;
+      font-weight: 300;
+      color: #000000;
+      line-height: 1;
+      letter-spacing: -0.03em;
     }
     .event-date-dow {
-      font-size: 8px;
+      font-size: 7.5px;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       color: #888888;
       text-transform: uppercase;
-      margin-top: 2px;
+      margin-top: 3px;
     }
     .event-details {
-      flex: 1 1 0;
+      flex: 1 1 auto;
       min-width: 0;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      overflow: hidden;
+      justify-content: space-between;
+      height: 64px;
+      box-sizing: border-box;
+      padding: 0 0 1px 0;
+    }
+    .event-details-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px;
     }
     .event-title {
-      font-size: clamp(12px, 3.2vw, 13.5px);
-      font-weight: 700;
-      color: #111111;
-      line-height: 1.25;
-      margin-bottom: 3px;
+      font-size: clamp(12.5px, 3.4vw, 13.5px);
+      font-weight: 600;
+      color: #000000;
+      line-height: 1.20;
+      letter-spacing: -0.01em;
+      margin: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .event-badge {
+      background: #ece6de;
+      color: #222222;
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 2.5px 6.5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+      line-height: 1;
+    }
     .event-desc {
-      font-size: clamp(9px, 2.4vw, 10.5px);
-      color: #666666;
+      font-size: clamp(8.8px, 2.4vw, 9.5px);
+      color: #555555;
       line-height: 1.34;
-      margin-bottom: 4px;
+      margin: 0;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    .event-details-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: clamp(8px, 2.3vw, 9px);
+      color: #666666;
+      line-height: 1;
+    }
     .event-loc {
-      font-size: clamp(8.5px, 2.3vw, 9.5px);
-      color: #555555;
-      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 3px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: #666666;
     }
     .event-loc svg {
       width: 9.5px;
       height: 9.5px;
       flex-shrink: 0;
     }
-    .event-meta {
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: space-between;
-      height: clamp(58px, 16vw, 74px);
-      text-align: right;
-      margin-left: auto;
-    }
-    .event-badge {
-      background: #ece7e1;
-      color: #222222;
-      font-size: clamp(7.5px, 2vw, 8.5px);
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      padding: 3px 7px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
     .event-time-row {
       display: flex;
       align-items: center;
-      gap: 6px;
-      justify-content: flex-end;
-      margin-top: auto;
+      gap: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      color: #666666;
     }
     .event-time {
-      font-size: clamp(8px, 2.2vw, 9.5px);
-      color: #666666;
-      white-space: nowrap;
+      font-size: inherit;
+      color: inherit;
     }
     .event-arrow {
-      color: #444444;
+      color: #666666;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .event-arrow svg {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
     }
 
     @media (max-width: 400px) {
-      .events-list { padding: 0 10px; }
-      .events-calendar-wrap { padding: 0 10px 14px; }
-      .event-card { gap: 7px; }
-      .event-thumb { width: 60px; height: 56px; }
-      .event-date-block { width: 26px; }
+      .events-list { padding: 0 12px; }
+      .event-card { gap: 8px; }
+      .event-thumb { width: 58px; height: 58px; }
+      .event-details { height: 58px; }
+      .event-date-block { width: 30px; padding-right: 4px; }
       .event-date-day { font-size: 19px; }
-      .event-time { font-size: 8px; }
-      .event-desc { font-size: 9px; line-height: 1.25; }
+      .event-title { font-size: 12px; }
+      .event-desc { font-size: 8.8px; line-height: 1.25; }
     }
 
   </style>
@@ -3798,31 +3813,32 @@ Choose your spread/rillette style:</p>
 
       <!-- Event Cards List -->
       <div class="events-list" id="eventsList">
-        
       <article class="event-card" data-category="dining" data-day="8">
         <div class="event-thumb">
           <img src="data:image/jpeg;base64,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" alt="Wine & Dine Evening">
         </div>
         <div class="event-date-block">
           <span class="event-date-month">OCT</span>
-          <span class="event-date-day">08</span>
+          <span class="event-date-day">8</span>
           <span class="event-date-dow">WED</span>
         </div>
         <div class="event-details">
-          <h4 class="event-title">Wine & Dine Evening</h4>
-          <p class="event-desc">A curated 5-course menu paired with fine wines. An unforgettable night of flavour and atmosphere.</p>
-          <div class="event-loc">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-            <span>Main Dining Hall</span>
+          <div class="event-details-top">
+            <h4 class="event-title">Wine & Dine Evening</h4>
+            <span class="event-badge">DINING</span>
           </div>
-        </div>
-        <div class="event-meta">
-          <span class="event-badge">DINING</span>
-          <div class="event-time-row">
-            <span class="event-time">7:00 PM – 10:00 PM</span>
-            <span class="event-arrow">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </span>
+          <p class="event-desc">A curated 5-course menu paired with fine wines. An evening of exceptional flavour.</p>
+          <div class="event-details-bottom">
+            <div class="event-loc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <span>Main Dining Hall</span>
+            </div>
+            <div class="event-time-row">
+              <span class="event-time">7:00 PM – 10:00 PM</span>
+              <span class="event-arrow">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </span>
+            </div>
           </div>
         </div>
       </article>
@@ -3837,20 +3853,22 @@ Choose your spread/rillette style:</p>
           <span class="event-date-dow">SUN</span>
         </div>
         <div class="event-details">
-          <h4 class="event-title">Live Acoustic Night</h4>
-          <p class="event-desc">Local artists. Good vibes. Great food. Join us for an evening of live acoustic music by the lake.</p>
-          <div class="event-loc">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-            <span>Outdoor Terrace</span>
+          <div class="event-details-top">
+            <h4 class="event-title">Live Acoustic Night</h4>
+            <span class="event-badge">LIVE MUSIC</span>
           </div>
-        </div>
-        <div class="event-meta">
-          <span class="event-badge">LIVE MUSIC</span>
-          <div class="event-time-row">
-            <span class="event-time">6:30 PM – 9:30 PM</span>
-            <span class="event-arrow">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </span>
+          <p class="event-desc">Local artists. Good vibes. Great food. Join us for an evening of live acoustic music by the lake.</p>
+          <div class="event-details-bottom">
+            <div class="event-loc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <span>Outdoor Terrace</span>
+            </div>
+            <div class="event-time-row">
+              <span class="event-time">6:30 PM – 9:30 PM</span>
+              <span class="event-arrow">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </span>
+            </div>
           </div>
         </div>
       </article>
@@ -3865,20 +3883,22 @@ Choose your spread/rillette style:</p>
           <span class="event-date-dow">THU</span>
         </div>
         <div class="event-details">
-          <h4 class="event-title">Chef's Tasting Menu</h4>
-          <p class="event-desc">A special evening featuring our seasonal tasting menu, crafted for true food lovers.</p>
-          <div class="event-loc">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-            <span>Main Dining Hall</span>
+          <div class="event-details-top">
+            <h4 class="event-title">Chef's Tasting Menu</h4>
+            <span class="event-badge">SPECIALS</span>
           </div>
-        </div>
-        <div class="event-meta">
-          <span class="event-badge">SPECIALS</span>
-          <div class="event-time-row">
-            <span class="event-time">7:00 PM – 11:00 PM</span>
-            <span class="event-arrow">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </span>
+          <p class="event-desc">A special evening featuring our seasonal tasting menu, crafted for true food lovers.</p>
+          <div class="event-details-bottom">
+            <div class="event-loc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <span>Main Dining Hall</span>
+            </div>
+            <div class="event-time-row">
+              <span class="event-time">7:00 PM – 11:00 PM</span>
+              <span class="event-arrow">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </span>
+            </div>
           </div>
         </div>
       </article>
@@ -3893,20 +3913,22 @@ Choose your spread/rillette style:</p>
           <span class="event-date-dow">MON</span>
         </div>
         <div class="event-details">
-          <h4 class="event-title">Sunset Terrace</h4>
-          <p class="event-desc">Relax with signature cocktails, great music and a stunning view.</p>
-          <div class="event-loc">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-            <span>Rooftop Terrace</span>
+          <div class="event-details-top">
+            <h4 class="event-title">Sunset Terrace</h4>
+            <span class="event-badge">DINING</span>
           </div>
-        </div>
-        <div class="event-meta">
-          <span class="event-badge">DINING</span>
-          <div class="event-time-row">
-            <span class="event-time">5:00 PM – 10:00 PM</span>
-            <span class="event-arrow">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </span>
+          <p class="event-desc">Relax with signature cocktails, great music and a stunning view.</p>
+          <div class="event-details-bottom">
+            <div class="event-loc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <span>Rooftop Terrace</span>
+            </div>
+            <div class="event-time-row">
+              <span class="event-time">5:00 PM – 10:00 PM</span>
+              <span class="event-arrow">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </span>
+            </div>
           </div>
         </div>
       </article>
@@ -3921,24 +3943,25 @@ Choose your spread/rillette style:</p>
           <span class="event-date-dow">FRI</span>
         </div>
         <div class="event-details">
-          <h4 class="event-title">Private Event</h4>
-          <p class="event-desc">An exclusive evening for our valued guests.</p>
-          <div class="event-loc">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-            <span>Main Dining Hall</span>
+          <div class="event-details-top">
+            <h4 class="event-title">Private Event</h4>
+            <span class="event-badge">PRIVATE EVENTS</span>
           </div>
-        </div>
-        <div class="event-meta">
-          <span class="event-badge">PRIVATE EVENTS</span>
-          <div class="event-time-row">
-            <span class="event-time">7:00 PM – 11:00 PM</span>
-            <span class="event-arrow">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </span>
+          <p class="event-desc">An exclusive evening for our valued guests in our premier salon.</p>
+          <div class="event-details-bottom">
+            <div class="event-loc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <span>Main Dining Hall</span>
+            </div>
+            <div class="event-time-row">
+              <span class="event-time">7:00 PM – 11:00 PM</span>
+              <span class="event-arrow">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </span>
+            </div>
           </div>
         </div>
       </article>
-
       </div>
 
       <!-- Bottom Social Media Dock -->
