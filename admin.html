@@ -1929,6 +1929,7 @@
       eventEditModal.classList.remove('is-open');
       renderEventsTab();
       sendLiveUpdate();
+      pushToFirebaseCloud();
       navigatePreview('events');
     });
 
@@ -1939,6 +1940,7 @@
         appData.events = appData.events.filter(function(x) { return x.id !== id; });
         renderEventsTab();
         sendLiveUpdate();
+        pushToFirebaseCloud();
         showToast('Event deleted.');
       }
     }
@@ -2102,6 +2104,7 @@
 
       itemEditModal.classList.remove('is-open');
       sendLiveUpdate();
+      pushToFirebaseCloud();
       showToast('Saved: ' + name);
     });
 
@@ -2110,6 +2113,7 @@
         appData.lunchItems = appData.lunchItems.filter(function(x) { return x.id !== id; });
         renderLunchTab();
         sendLiveUpdate();
+        pushToFirebaseCloud();
         showToast('Lunch item deleted.');
       }
     }
@@ -2120,6 +2124,7 @@
           cat.items = cat.items.filter(function(x) { return x.id !== id; });
           renderAlacarteTab();
           sendLiveUpdate();
+          pushToFirebaseCloud();
           showToast('Dish deleted.');
         }
       }
@@ -2131,6 +2136,7 @@
           cat.items = cat.items.filter(function(x) { return x.id !== id; });
           renderBarTab();
           sendLiveUpdate();
+          pushToFirebaseCloud();
           showToast('Item deleted.');
         }
       }
