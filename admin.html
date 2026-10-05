@@ -2175,16 +2175,26 @@
       }
     }
 
-    function pushToFirebaseCloud() {
-      if (!firebaseDb || !appData) return;
-      firebaseDb.ref('belle_content').set(appData)
-        .then(function() {
-          showToast('☁️ Synced to Google Firebase Cloud (Live for all devices)!');
-        })
-        .catch(function(err) {
-          console.error('Firebase push error:', err);
-          showToast('Cloud notice: ' + err.message);
-        });
+        function pushToFirebaseCloud() {
+      if (!appData) return;
+      var url = "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content.json";
+      fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appData)
+      })
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        console.log('⚡ Successfully published to Firebase Realtime Database!');
+        showToast('☁️ Live published to Google Firebase Cloud!');
+      })
+      .catch(function(err) {
+        console.error('Firebase Cloud push error:', err);
+        showToast('Cloud notice: ' + err.message);
+      });
     }
 
     // Initialize Firebase on load

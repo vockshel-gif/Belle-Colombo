@@ -5127,39 +5127,33 @@ Choose your spread/rillette style:</p>
     } catch(e) {}
 
     
-    /* ========================================================
+        /* ========================================================
        GOOGLE FIREBASE REAL-TIME CLOUD SYNC (Customer Live Link)
        ======================================================== */
-    var firebaseConfig = {
-      apiKey: "AIzaSyCt_wxhRokhPreRCNju2R8-cDPP32DZcfE",
-      authDomain: "bellecolombo-fea8d.firebaseapp.com",
-      databaseURL: "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "bellecolombo-fea8d",
-      storageBucket: "bellecolombo-fea8d.firebasestorage.app",
-      messagingSenderId: "1071181599477",
-      appId: "1:1071181599477:web:e2f6c40b35e1fd81d12bbc",
-      measurementId: "G-Z3RFRYFDD9"
-    };
+    var fbCloudUrl = "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content.json";
 
-    try {
-      if (typeof firebase !== 'undefined') {
-        if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
-        }
-        var clientRtdb = firebase.database();
-        clientRtdb.ref('belle_content').on('value', function(snapshot) {
-          var cloudData = snapshot.val();
-          if (cloudData) {
+    function syncFromFirebaseCloud() {
+      fetch(fbCloudUrl)
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(cloudData) {
+          if (cloudData && typeof cloudData === 'object') {
             applyBelleData(cloudData);
             console.log('⚡ Synchronized live from Firebase Cloud');
           }
-        }, function(err) {
-          console.warn('Firebase RTDB subscription notice:', err.message);
+        })
+        .catch(function(err) {
+          console.warn('Firebase sync notice:', err.message);
         });
-      }
-    } catch(err) {
-      console.warn('Firebase connection notice:', err);
     }
+
+    // Immediate fetch on load
+    syncFromFirebaseCloud();
+
+    // Auto-poll cloud every 3 seconds to guarantee real-time updates everywhere
+    setInterval(syncFromFirebaseCloud, 3000);
 
     // Listen to iframe postMessage from Admin Studio
     window.addEventListener('message', function(ev) {
