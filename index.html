@@ -2204,6 +2204,7 @@
   <script src="belleData.js"></script>
   <!-- Google Firebase SDK (Free Tier) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
@@ -5126,25 +5127,39 @@ Choose your spread/rillette style:</p>
     } catch(e) {}
 
     
-    // Listen to Firebase Cloud Database if configured
+    /* ========================================================
+       GOOGLE FIREBASE REAL-TIME CLOUD SYNC (Customer Live Link)
+       ======================================================== */
+    var firebaseConfig = {
+      apiKey: "AIzaSyCt_wxhRokhPreRCNju2R8-cDPP32DZcfE",
+      authDomain: "bellecolombo-fea8d.firebaseapp.com",
+      databaseURL: "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bellecolombo-fea8d",
+      storageBucket: "bellecolombo-fea8d.firebasestorage.app",
+      messagingSenderId: "1071181599477",
+      appId: "1:1071181599477:web:e2f6c40b35e1fd81d12bbc",
+      measurementId: "G-Z3RFRYFDD9"
+    };
+
     try {
-      var fbCfgStr = localStorage.getItem('belle_firebase_config');
-      if (fbCfgStr && typeof firebase !== 'undefined') {
-        var fbCfg = JSON.parse(fbCfgStr);
+      if (typeof firebase !== 'undefined') {
         if (!firebase.apps.length) {
-          firebase.initializeApp(fbCfg);
+          firebase.initializeApp(firebaseConfig);
         }
-        var clientDb = firebase.firestore();
-        clientDb.collection('belle_content').doc('production').onSnapshot(function(doc) {
-          if (doc.exists && doc.data()) {
-            applyBelleData(doc.data());
-            console.log('⚡ Loaded live update from Firebase Cloud');
+        var clientRtdb = firebase.database();
+        clientRtdb.ref('belle_content').on('value', function(snapshot) {
+          var cloudData = snapshot.val();
+          if (cloudData) {
+            applyBelleData(cloudData);
+            console.log('⚡ Synchronized live from Firebase Cloud');
           }
         }, function(err) {
-          console.warn('Firestore subscription notice:', err.message);
+          console.warn('Firebase RTDB subscription notice:', err.message);
         });
       }
-    } catch(e) {}
+    } catch(err) {
+      console.warn('Firebase connection notice:', err);
+    }
 
     // Listen to iframe postMessage from Admin Studio
     window.addEventListener('message', function(ev) {
