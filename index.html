@@ -2201,6 +2201,7 @@
     }
 
   </style>
+  <script src="belleData.js"></script>
 </head>
 <body>
 
@@ -4838,6 +4839,322 @@ Choose your spread/rillette style:</p>
     if (window.location.hash) {
       handleHash();
     }
+  
+    /* ========================================================
+       BELLE COLOMBO REAL-TIME DATA & LIVE PREVIEW ENGINE
+       ======================================================== */
+    window.belleCurrentData = window.BELLE_DEFAULT_DATA || null;
+
+    function renderEventsList(events) {
+      var scrollContainer = document.getElementById('eventsViewScroll');
+      if (!scrollContainer) return;
+      var existingCards = scrollContainer.querySelectorAll('.event-card');
+      existingCards.forEach(function(c) { c.remove(); });
+
+      var viewAllWrap = scrollContainer.querySelector('.events-all-wrap');
+      (events || []).forEach(function(ev) {
+        var isVip = !!ev.isVip;
+        var cat = ev.category || 'dining';
+        var catClass = 'pill-' + cat;
+        var dayNum = parseInt(ev.day, 10);
+        var dayStr = (dayNum < 10 ? '0' + dayNum : '' + dayNum);
+        var imgSrc = ev.imageData || '';
+        
+        var card = document.createElement('article');
+        card.className = 'event-card';
+        card.setAttribute('data-category', cat);
+        card.setAttribute('data-day', ev.day);
+
+        var thumbHtml = imgSrc ? '<div class="event-thumb"><img src="' + imgSrc + '" alt="' + (ev.title || '') + '" loading="lazy"></div>' : '';
+        var vipHtml = isVip ? '<span class="event-vip-badge">SPECIAL</span>' : '';
+        
+        card.innerHTML = thumbHtml + 
+          '<div class="event-body">' +
+            '<div class="event-body-top">' +
+              '<div class="event-date-col">' +
+                '<span class="event-date-num">' + dayStr + '</span>' +
+                '<span class="event-date-dow">' + (ev.dow || 'THU') + '</span>' +
+              '</div>' +
+              '<div class="event-date-divider" aria-hidden="true"></div>' +
+              '<div class="event-main-col">' +
+                '<div class="event-main-header">' +
+                  '<span class="event-cat-badge ' + catClass + '">' + (ev.categoryLabel || cat.toUpperCase()) + '</span>' +
+                  vipHtml +
+                '</div>' +
+                '<h3 class="event-title">' + (ev.title || '') + '</h3>' +
+                '<p class="event-desc">' + (ev.desc || '') + '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="event-meta-footer">' +
+              '<span class="event-meta-item">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>' +
+                (ev.time || '') +
+              '</span>' +
+              '<span class="event-meta-divider">•</span>' +
+              '<span class="event-meta-item">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
+                (ev.venue || '') +
+              '</span>' +
+            '</div>' +
+          '</div>';
+
+        card.addEventListener('click', function() {
+          var phone = (window.belleCurrentData && window.belleCurrentData.venue && window.belleCurrentData.venue.whatsappNumber) || '94770315589';
+          var text = encodeURIComponent('Hi Belle Colombo, I would like to RSVP for ' + ev.title + ' on ' + dayStr + ' ' + (ev.month || 'OCT') + '.');
+          window.open('https://wa.me/' + phone + '?text=' + text, '_blank');
+        });
+
+        if (viewAllWrap) {
+          scrollContainer.insertBefore(card, viewAllWrap);
+        } else {
+          scrollContainer.appendChild(card);
+        }
+      });
+      eventCards = scrollContainer.querySelectorAll('.event-card');
+    }
+
+    function renderLunchList(items) {
+      if (!lunchVerticalScroll) return;
+      var total = (items || []).length;
+      var html = '';
+      (items || []).forEach(function(item, idx) {
+        var isVeg = !!item.isVeg;
+        var hasMeta = !!item.meta;
+        html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
+          '<div class="lunch-slot-content">' +
+            '<article class="lunch-card">' +
+              '<div class="lunch-card-head">' +
+                '<div class="lunch-card-title-wrap">' +
+                  '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
+                '</div>' +
+                '<div class="lunch-price-wrap">' +
+                  (isVeg ? '<span class="badge-v" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
+                  (item.price ? '<span class="lunch-card-price">' + item.price + '</span>' : '') +
+                '</div>' +
+              '</div>' +
+              (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
+              (hasMeta ? (
+                '<div class="lunch-meta-row">' +
+                  '<span class="meta-pill">' + (item.meta.badge || 'ADD-ONS') + '</span>' +
+                  '<span class="meta-content">' + (item.meta.text || '') + '</span>' +
+                '</div>'
+              ) : '') +
+            '</article>' +
+          '</div>' +
+          '<div class="lunch-mid-divider" aria-hidden="true">' +
+            '<span class="line"></span>' +
+            '<span class="circle"></span>' +
+            '<span class="line"></span>' +
+          '</div>' +
+        '</section>';
+      });
+      lunchVerticalScroll.innerHTML = html;
+      maxLunchIndex = Math.max(0, total - visibleLunchItems);
+      updateDividers(currentLunchItemIndex || 0);
+      if (sliderThumb) {
+        sliderThumb.setAttribute('aria-valuemax', total);
+      }
+    }
+
+    function renderAlacarteList(categories) {
+      if (!categories) return;
+      (categories || []).forEach(function(cat) {
+        var key = cat.key;
+        if (!aLaCarteMeta[key]) return;
+        aLaCarteMeta[key].totalItems = (cat.items || []).length;
+        
+        var total = (cat.items || []).length;
+        var nextKey = aLaCarteMeta[key].nextKey;
+        var nextLabel = nextKey ? (aLaCarteMeta[nextKey] ? aLaCarteMeta[nextKey].title : '') : '';
+        
+        var html = '';
+        (cat.items || []).forEach(function(item, idx) {
+          var isVeg = (item.tags || []).indexOf('Vegetarian') !== -1;
+          var cutsHtml = '';
+          if (item.cuts && item.cuts.length) {
+            cutsHtml = '<div class="card-cuts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">' +
+              item.cuts.map(function(c) {
+                return '<div style="font-size:11px;padding:4px 8px;border:1px solid rgba(188,166,133,0.3);border-radius:4px;color:#bca685;">' + c.origin + ' – LKR ' + c.price + '</div>';
+              }).join('') +
+            '</div>';
+          }
+
+          html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
+            '<div class="lunch-slot-content">' +
+              '<article class="lunch-card">' +
+                '<div class="lunch-card-head">' +
+                  '<div class="lunch-card-title-wrap">' +
+                    '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
+                  '</div>' +
+                  '<div class="lunch-price-wrap">' +
+                    (isVeg ? '<span class="badge-v" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
+                    (item.price ? '<span class="lunch-card-price">' + item.price + '</span>' : '') +
+                  '</div>' +
+                '</div>' +
+                (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
+                cutsHtml +
+              '</article>' +
+            '</div>' +
+            '<div class="lunch-mid-divider" aria-hidden="true">' +
+              '<span class="line"></span>' +
+              '<span class="circle"></span>' +
+              '<span class="line"></span>' +
+            '</div>' +
+          '</section>';
+        });
+
+        if (nextKey) {
+          html += '<section class="lunch-item-slot" data-index="' + total + '" aria-label="Next Course">' +
+            '<div class="lunch-slot-content" style="display:flex;align-items:center;justify-content:center;">' +
+              '<button type="button" class="btn-next-course" data-next-course="' + nextKey + '" style="background:none;border:1px solid #bca685;color:#bca685;padding:12px 24px;border-radius:24px;font-family:Montserrat,sans-serif;font-size:12px;letter-spacing:0.1em;cursor:pointer;">' +
+                'EXPLORE ' + nextLabel + ' →' +
+              '</button>' +
+            '</div>' +
+          '</section>';
+        }
+
+        aLaCarteCoursesHtml[key] = html;
+      });
+
+      if (currentAlacarteCourseKey && aLaCarteCoursesHtml[currentAlacarteCourseKey]) {
+        selectAlacarteCourse(currentAlacarteCourseKey);
+      }
+    }
+
+    function renderBarList(categories) {
+      if (!categories || !barVerticalScroll) return;
+      var total = 0;
+      var html = '';
+      (categories || []).forEach(function(cat) {
+        (cat.items || []).forEach(function(item, idx) {
+          var isVeg = (item.tags || []).indexOf('Vegetarian') !== -1;
+          html += '<section class="lunch-item-slot" data-index="' + total + '" aria-label="' + (item.name || '') + '">' +
+            '<div class="lunch-slot-content">' +
+              '<article class="lunch-card">' +
+                '<div class="lunch-card-head">' +
+                  '<div class="lunch-card-title-wrap">' +
+                    '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
+                  '</div>' +
+                  '<div class="lunch-price-wrap">' +
+                    (isVeg ? '<span class="badge-v" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
+                    (item.price ? '<span class="lunch-card-price">' + item.price + '</span>' : '') +
+                  '</div>' +
+                '</div>' +
+                (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
+              '</article>' +
+            '</div>' +
+            '<div class="lunch-mid-divider" aria-hidden="true">' +
+              '<span class="line"></span>' +
+              '<span class="circle"></span>' +
+              '<span class="line"></span>' +
+            '</div>' +
+          '</section>';
+          total++;
+        });
+      });
+      barVerticalScroll.innerHTML = html;
+      maxBarIndex = Math.max(0, total - visibleBarItems);
+      updateBarDividers(currentBarItemIndex || 0);
+    }
+
+    function renderTastingData(tasting) {
+      if (!tasting) return;
+      if (tasting.fiveCourse) {
+        var pCards = document.querySelectorAll('#pricingFiveCourse .tasting-price-amount');
+        if (pCards[0]) pCards[0].textContent = tasting.fiveCourse.priceMenuOnly || '9,500';
+        if (pCards[1]) pCards[1].textContent = tasting.fiveCourse.priceWinePairing || '17,000';
+      }
+      if (tasting.sevenCourse) {
+        var pCards7 = document.querySelectorAll('#pricingSevenCourse .tasting-price-amount');
+        if (pCards7[0]) pCards7[0].textContent = tasting.sevenCourse.priceMenuOnly || '13,500';
+        if (pCards7[1]) pCards7[1].textContent = tasting.sevenCourse.priceWinePairing || '24,000';
+      }
+    }
+
+    function renderVenueInfo(venue) {
+      if (!venue) return;
+      var phone = venue.phone || '+94 77 031 5589';
+      var waNum = venue.whatsappNumber || '94770315589';
+      var igUrl = venue.instagramUrl || 'https://www.instagram.com/belle.colombo/';
+      var hours = venue.hours || 'Daily | 11:00 AM – 10:30 PM';
+
+      // Update WhatsApp links
+      document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
+        var oldHref = a.getAttribute('href');
+        var textParam = '';
+        if (oldHref.indexOf('text=') !== -1) {
+          textParam = oldHref.slice(oldHref.indexOf('text='));
+        }
+        a.setAttribute('href', 'https://wa.me/' + waNum + (textParam ? '?' + textParam : ''));
+        if (a.getAttribute('title') && a.getAttribute('title').indexOf('WhatsApp') !== -1) {
+          a.setAttribute('title', 'WhatsApp (' + phone + ')');
+        }
+      });
+
+      // Update Instagram links
+      document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a) {
+        a.setAttribute('href', igUrl);
+      });
+
+      // Update Operating Hours in panels
+      document.querySelectorAll('.panel-top-time').forEach(function(el) {
+        el.textContent = hours;
+      });
+    }
+
+    function applyBelleData(data) {
+      if (!data) return;
+      window.belleCurrentData = data;
+      if (data.events) renderEventsList(data.events);
+      if (data.lunchItems) renderLunchList(data.lunchItems);
+      if (data.aLaCarte) renderAlacarteList(data.aLaCarte);
+      if (data.theGardenAndBar) renderBarList(data.theGardenAndBar);
+      if (data.tastingMenus) renderTastingData(data.tastingMenus);
+      if (data.venue) renderVenueInfo(data.venue);
+      console.log('⚡ Belle Colombo Live Data Applied Successfully (0ms)');
+    }
+
+    // Check localStorage on load
+    try {
+      var saved = localStorage.getItem('belle_data');
+      if (saved) {
+        applyBelleData(JSON.parse(saved));
+      }
+    } catch(e) {}
+
+    // Listen to iframe postMessage from Admin Studio
+    window.addEventListener('message', function(ev) {
+      if (!ev.data || typeof ev.data !== 'object') return;
+      if (ev.data.type === 'BELLE_DATA_UPDATE') {
+        applyBelleData(ev.data.payload);
+      } else if (ev.data.type === 'BELLE_NAVIGATE') {
+        document.body.classList.add('is-ready');
+        var target = ev.data.target;
+        if (target === 'home') {
+          returnToHome();
+        } else if (target === 'menu-hub') {
+          openMenuHub();
+        } else {
+          if (target !== 'events') {
+            document.body.classList.add('is-menu-active');
+          }
+          openPanel(target);
+        }
+      }
+    });
+
+    // Listen to BroadcastChannel for cross-tab multi-monitor sync
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        var liveChannel = new BroadcastChannel('belle_live_channel');
+        liveChannel.onmessage = function(ev) {
+          if (ev.data && ev.data.type === 'BELLE_DATA_UPDATE') {
+            applyBelleData(ev.data.payload);
+          }
+        };
+      } catch(e) {}
+    }
+
   </script>
 </body>
 </html>

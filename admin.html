@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belle Colombo — Executive Studio & Content Cockpit</title>
+  
+  <!-- Preconnect & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Production Data Store -->
+  <script src="belleData.js"></script>
+
+  <style>
+    /* ========================================================
+       BELLE COLOMBO EXECUTIVE STUDIO DESIGN SYSTEM
+       Obsidian Luxury Dark Theme matching Belle Colombo
+       ======================================================== */
+    :root {
+      --bg-base: #070709;
+      --bg-panel: #0f0f13;
+      --bg-card: #15151b;
+      --bg-card-hover: #1c1c24;
+      --bg-input: #0b0b0e;
+      --border-subtle: rgba(188, 166, 133, 0.14);
+      --border-gold: rgba(188, 166, 133, 0.35);
+      --border-gold-focus: rgba(220, 195, 158, 0.85);
+      --gold-primary: #bca685;
+      --gold-light: #dfcfb7;
+      --gold-dark: #8c785d;
+      --gold-glow: rgba(188, 166, 133, 0.25);
+      --text-white: #f5f5f5;
+      --text-muted: #9e9ea7;
+      --text-dim: #686873;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --font-serif: 'Cinzel', serif;
+      --font-display: 'Playfair Display', serif;
+      --font-sans: 'Montserrat', sans-serif;
+      --header-height: 64px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-white);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(188, 166, 133, 0.25);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold-primary);
+    }
+
+    /* App Shell */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* Top Executive Header */
+    .top-header {
+      height: var(--header-height);
+      background: rgba(15, 15, 19, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-crest {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border-gold);
+      background: radial-gradient(circle at center, rgba(188, 166, 133, 0.15), transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-primary);
+    }
+    .brand-crest svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .brand-info h1 {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      letter-spacing: 0.15em;
+      color: var(--gold-light);
+      line-height: 1.1;
+      font-weight: 600;
+    }
+    .brand-info p {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* Live Sync Indicator */
+    .sync-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #34d399;
+    }
+    .sync-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulseGreen 1.8s infinite;
+    }
+    @keyframes pulseGreen {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px var(--accent-green); }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* Header Actions */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      color: var(--gold-light);
+      border-color: var(--border-gold);
+    }
+
+    .btn-publish {
+      background: linear-gradient(135deg, #bca685 0%, #a38c6d 100%);
+      color: #0b0b0e;
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px var(--gold-glow);
+      transition: all 0.25s ease;
+    }
+    .btn-publish:hover {
+      background: linear-gradient(135deg, #ceb899 0%, #b39a78 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(188, 166, 133, 0.4);
+    }
+    .btn-publish:active {
+      transform: translateY(0);
+    }
+
+    /* Main Workspace Layout */
+    .workspace-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - var(--header-height));
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Left Studio Pane (Editor) */
+    .studio-pane {
+      width: 58%;
+      flex-shrink: 0;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Studio Navigation Bar (Tabs) */
+    .studio-tabs {
+      background: rgba(11, 11, 14, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 18px 0;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .studio-tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .studio-tab-btn:hover {
+      color: var(--gold-light);
+    }
+    .studio-tab-btn.is-active {
+      color: var(--gold-light);
+      border-bottom-color: var(--gold-primary);
+      background: linear-gradient(to top, rgba(188, 166, 133, 0.08), transparent);
+    }
+    .tab-badge {
+      background: rgba(188, 166, 133, 0.15);
+      color: var(--gold-primary);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* Tab Content View Area */
+    .studio-content-view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: none;
+    }
+    .studio-content-view.is-active {
+      display: block;
+    }
+
+    /* Content Subheader */
+    .content-subheader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+    }
+    .subheader-title-group h2 {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      color: var(--gold-light);
+    }
+    .subheader-title-group p {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .subheader-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-gold-outline {
+      background: transparent;
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-primary);
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-gold-outline:hover {
+      background: var(--gold-primary);
+      color: #0b0b0e;
+    }
+
+    .search-input-wrap {
+      position: relative;
+    }
+    .search-input-wrap input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-white);
+      padding: 7px 12px 7px 30px;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      width: 180px;
+      transition: all 0.2s;
+    }
+    .search-input-wrap input:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+      width: 220px;
+    }
+    .search-input-wrap svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Cards List */
+    .item-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .editor-item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .editor-item-card:hover {
+      border-color: var(--border-gold);
+      background: var(--bg-card-hover);
+    }
+
+    .card-top-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .card-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .card-thumb-preview {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 1px solid var(--border-subtle);
+      background: #000;
+      flex-shrink: 0;
+    }
+    .card-title-stack {
+      flex: 1;
+      min-width: 0;
+    }
+    .card-title-stack h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-subtitle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 3px;
+    }
+
+    .card-controls-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .card-price-pill {
+      background: rgba(188, 166, 133, 0.12);
+      border: 1px solid rgba(188, 166, 133, 0.28);
+      color: var(--gold-light);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover {
+      color: var(--text-white);
+      border-color: var(--border-gold);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .btn-icon.btn-delete:hover {
+      color: var(--accent-red);
+      border-color: rgba(239, 68, 68, 0.5);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Form Fields Grid */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .form-row-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-white);
+      padding: 8px 12px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 10px rgba(188, 166, 133, 0.15);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+      line-height: 1.4;
+    }
+
+    /* Toggle Switches */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .toggle-box {
+      width: 34px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .toggle-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #888;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toggle-wrap.is-checked .toggle-box {
+      background: var(--gold-primary);
+    }
+    .toggle-wrap.is-checked .toggle-thumb {
+      background: #0b0b0e;
+      transform: translateX(16px);
+    }
+
+    /* Sub-pills for categories (e.g. À La Carte courses) */
+    .sub-filter-pills {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .sub-pill-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sub-pill-btn:hover {
+      color: var(--gold-light);
+      border-color: var(--border-gold);
+    }
+    .sub-pill-btn.is-active {
+      background: var(--gold-primary);
+      color: #0b0b0e;
+      border-color: var(--gold-primary);
+      font-weight: 700;
+    }
+
+    /* Right Phone Preview Pane */
+    .preview-pane {
+      flex: 1;
+      background: #050506;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Preview Toolbar */
+    .preview-toolbar {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .device-pills {
+      display: flex;
+      background: var(--bg-panel);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+    .device-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .device-pill-btn.is-active {
+      background: var(--bg-card-hover);
+      color: var(--gold-light);
+    }
+
+    .preview-tool-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Phone Chassis Simulation */
+    .phone-simulator-frame {
+      width: 393px;
+      height: 844px;
+      max-height: calc(100vh - var(--header-height) - 70px);
+      background: #000;
+      border-radius: 48px;
+      border: 11px solid #202022;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 0 0 2px rgba(0, 0, 0, 0.9);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform-origin: top center;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Dynamic Island */
+    .phone-dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 96px;
+      height: 24px;
+      background: #000;
+      border-radius: 16px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      pointer-events: none;
+    }
+    .island-camera-lens {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0a0a14;
+      border: 1px solid #1a1a2e;
+    }
+
+    /* Iframe */
+    .phone-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #0a0a0a;
+      flex: 1;
+    }
+
+    /* Notification Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast {
+      background: rgba(18, 18, 24, 0.95);
+      border: 1px solid var(--border-gold);
+      color: var(--text-white);
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 500;
+      backdrop-filter: blur(12px);
+      animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Modal Sheet */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.is-open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 540px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-head h3 {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      letter-spacing: 0.1em;
+      color: var(--gold-light);
+    }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* Responsive Helpers */
+    @media (max-width: 1100px) {
+      .studio-pane {
+        width: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    
+    <!-- Top Executive Header -->
+    <header class="top-header">
+      <div class="header-brand">
+        <div class="brand-crest" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>BELLE COLOMBO</h1>
+          <p>Executive Studio &amp; Content Cockpit</p>
+        </div>
+      </div>
+
+      <!-- Live Sync Status Indicator -->
+      <div class="sync-status-badge">
+        <span class="sync-pulse"></span>
+        <span>LIVE STUDIO SYNC ACTIVE (0ms)</span>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <button type="button" class="btn-secondary" id="btnCloudSync" title="Connect Google Firebase (100% Free Forever)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+          <span>Cloud Sync</span>
+        </button>
+
+        <button type="button" class="btn-secondary" id="btnDownloadDataJs" title="Download production belleData.js file">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Download data.js</span>
+        </button>
+        <button type="button" class="btn-secondary" id="btnExportJson" title="Download backup JSON">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Export</span>
+        </button>
+
+        <button type="button" class="btn-secondary" id="btnImportJson" title="Restore from backup JSON">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span>Import</span>
+        </button>
+        <input type="file" id="importFileInput" accept=".json" style="display:none;">
+
+        <button type="button" class="btn-publish" id="btnSavePublish">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <span>Save &amp; Publish</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Body: Split View -->
+    <main class="workspace-body">
+      
+      <!-- Left Side: Content Editor Studio -->
+      <section class="studio-pane">
+        
+        <!-- Tabs Bar -->
+        <nav class="studio-tabs" aria-label="Editor Modules">
+          <button type="button" class="studio-tab-btn is-active" data-tab="tab-events">
+            <span>Upcoming Events</span>
+            <span class="tab-badge" id="badgeCountEvents">5</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="tab-lunch">
+            <span>Lunch Menu</span>
+            <span class="tab-badge" id="badgeCountLunch">10</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="tab-alacarte">
+            <span>À La Carte</span>
+            <span class="tab-badge">5 Courses</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="tab-thebar">
+            <span>The Bar</span>
+            <span class="tab-badge">Curated</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="tab-tasting">
+            <span>Tasting Menus</span>
+            <span class="tab-badge">Pairings</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="tab-venue">
+            <span>Venue &amp; Socials</span>
+          </button>
+        </nav>
+
+        <!-- ==========================================
+             TAB 1: UPCOMING EVENTS
+             ========================================== -->
+        <div class="studio-content-view is-active" id="tab-events">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>UPCOMING EVENTS CALENDAR</h2>
+              <p>Manage dining evenings, acoustic performances, specials, and private venue bookings.</p>
+            </div>
+            <div class="subheader-actions">
+              <button type="button" class="btn-gold-outline" id="btnAddEvent">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Event</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Category filter pills -->
+          <div class="sub-filter-pills" id="eventsFilterBar">
+            <button type="button" class="sub-pill-btn is-active" data-cat="all">All Events</button>
+            <button type="button" class="sub-pill-btn" data-cat="dining">Dining</button>
+            <button type="button" class="sub-pill-btn" data-cat="live-music">Live Music</button>
+            <button type="button" class="sub-pill-btn" data-cat="specials">Specials</button>
+            <button type="button" class="sub-pill-btn" data-cat="private-events">Private</button>
+          </div>
+
+          <!-- Events Card List -->
+          <div class="item-cards-grid" id="eventsCardsList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- ==========================================
+             TAB 2: LUNCH MENU
+             ========================================== -->
+        <div class="studio-content-view" id="tab-lunch">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>EXPRESS LUNCH SELECTION</h2>
+              <p>Curate midday soups, artisan burgers, sandwiches, and culinary add-ons.</p>
+            </div>
+            <div class="subheader-actions">
+              <button type="button" class="btn-gold-outline" id="btnAddLunch">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Lunch Item</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="item-cards-grid" id="lunchCardsList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- ==========================================
+             TAB 3: À LA CARTE
+             ========================================== -->
+        <div class="studio-content-view" id="tab-alacarte">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>À LA CARTE COURSES</h2>
+              <p>Manage all five courses: Appetisers, Entrées, Mains, From The Grill, and Desserts.</p>
+            </div>
+            <div class="subheader-actions">
+              <button type="button" class="btn-gold-outline" id="btnAddAlacarte">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Dish</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sub course tabs -->
+          <div class="sub-filter-pills" id="alacarteCoursePills">
+            <button type="button" class="sub-pill-btn is-active" data-course="appetisers">Appetisers</button>
+            <button type="button" class="sub-pill-btn" data-course="entrees">Entrées</button>
+            <button type="button" class="sub-pill-btn" data-course="mains">Mains</button>
+            <button type="button" class="sub-pill-btn" data-course="grill">From The Grill</button>
+            <button type="button" class="sub-pill-btn" data-course="desserts">Desserts</button>
+          </div>
+
+          <div class="item-cards-grid" id="alacarteCardsList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- ==========================================
+             TAB 4: THE BAR
+             ========================================== -->
+        <div class="studio-content-view" id="tab-thebar">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>THE BAR &amp; BITES</h2>
+              <p>Spirits, botanical garden cocktails, craft infusions, and small culinary plates.</p>
+            </div>
+            <div class="subheader-actions">
+              <button type="button" class="btn-gold-outline" id="btnAddBarItem">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Item</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="sub-filter-pills" id="barCategoryPills">
+            <button type="button" class="sub-pill-btn is-active" data-barcat="the-garden">The Garden</button>
+            <button type="button" class="sub-pill-btn" data-barcat="the-bar-bites">The Bar Bites</button>
+          </div>
+
+          <div class="item-cards-grid" id="barCardsList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- ==========================================
+             TAB 5: TASTING MENUS
+             ========================================== -->
+        <div class="studio-content-view" id="tab-tasting">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>CURATED TASTING MENUS</h2>
+              <p>Configure 5-Course Wine Pairing and 7-Course Grand Tasting prices and selections.</p>
+            </div>
+          </div>
+
+          <div class="sub-filter-pills" id="tastingPills">
+            <button type="button" class="sub-pill-btn is-active" data-tasting="fiveCourse">5 Course Pairing</button>
+            <button type="button" class="sub-pill-btn" data-tasting="sevenCourse">7 Course Grand</button>
+          </div>
+
+          <div id="tastingEditorArea">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- ==========================================
+             TAB 6: VENUE & SOCIALS
+             ========================================== -->
+        <div class="studio-content-view" id="tab-venue">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>VENUE, CONTACT &amp; SOCIALS</h2>
+              <p>Update reservation WhatsApp number, official social links, operating hours, and location.</p>
+            </div>
+          </div>
+
+          <div class="editor-item-card" style="padding: 24px;">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>WhatsApp Reservation Number (Display)</label>
+                <input type="text" id="venuePhone" placeholder="+94 77 031 5589">
+              </div>
+              <div class="form-group">
+                <label>WhatsApp Digits Only (For wa.me link)</label>
+                <input type="text" id="venueWaRaw" placeholder="94770315589">
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Instagram Handle</label>
+                <input type="text" id="venueIgHandle" placeholder="@belle.colombo">
+              </div>
+              <div class="form-group">
+                <label>Instagram URL</label>
+                <input type="url" id="venueIgUrl" placeholder="https://www.instagram.com/belle.colombo/">
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Facebook URL</label>
+                <input type="url" id="venueFbUrl" placeholder="https://www.facebook.com/bellecolombo">
+              </div>
+              <div class="form-group">
+                <label>Operating Hours</label>
+                <input type="text" id="venueHours" placeholder="Daily | 11:00 AM – 10:30 PM">
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Address</label>
+                <input type="text" id="venueAddress" placeholder="Colombo, Sri Lanka">
+              </div>
+              <div class="form-group">
+                <label>Google Maps Link</label>
+                <input type="url" id="venueMaps" placeholder="https://maps.google.com/?q=Belle+Colombo+Sri+Lanka">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Tax &amp; Service Charge Note</label>
+              <textarea id="venueTax" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Side: Phone Preview Stage -->
+      <section class="preview-pane">
+        
+        <!-- Toolbar above phone -->
+        <div class="preview-toolbar">
+          <div class="device-pills">
+            <button type="button" class="device-pill-btn is-active" data-width="393" data-height="844">iPhone 15 Pro</button>
+            <button type="button" class="device-pill-btn" data-width="375" data-height="667">iPhone SE</button>
+            <button type="button" class="device-pill-btn" data-width="412" data-height="860">Galaxy S24</button>
+          </div>
+
+          <div class="preview-tool-btns">
+            <button type="button" class="btn-icon" id="btnReloadPreview" title="Reload Phone Preview">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </button>
+            <button type="button" class="btn-icon" id="btnOpenNewTab" title="Open Live Site in New Tab">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Phone Chassis Simulator -->
+        <div class="phone-simulator-frame" id="phoneChassis">
+          <div class="phone-dynamic-island" aria-hidden="true">
+            <div class="island-camera-lens"></div>
+          </div>
+          <iframe id="livePreviewFrame" class="phone-iframe" src="index.html" title="Belle Colombo Live Application Preview"></iframe>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Cloud Sync / Firebase Free Setup Modal -->
+  <div class="modal-overlay" id="cloudSyncModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>GOOGLE FIREBASE CLOUD SYNC (100% FREE)</h3>
+        <button type="button" class="btn-icon" id="btnCloseCloudModal">✕</button>
+      </div>
+
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+        <p>Enable live cross-device sync completely free with Google Firebase (Spark Plan: 50,000 reads/day free forever, no credit card required).</p>
+        <ol style="margin-left:18px;margin-top:8px;">
+          <li>Visit <a href="https://console.firebase.google.com" target="_blank" style="color:var(--gold-primary);">console.firebase.google.com</a></li>
+          <li>Create a project (e.g. <code>Belle-Colombo</code>) and enable <strong>Firestore Database</strong>.</li>
+          <li>Paste your web app configuration JSON below:</li>
+        </ol>
+      </div>
+
+      <div class="form-group">
+        <label>Firebase Config (JSON or keys)</label>
+        <textarea id="firebaseConfigInput" placeholder='{\n  "apiKey": "AIzaSy...",\n  "projectId": "belle-colombo",\n  "appId": "1:..."\n}' rows="6"></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnCancelCloud">Cancel</button>
+        <button type="button" class="btn-publish" id="btnSaveCloud">Save &amp; Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit / Add Event Modal -->
+  <div class="modal-overlay" id="eventEditModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="eventModalTitle">ADD EVENT</h3>
+        <button type="button" class="btn-icon" id="btnCloseEventModal">✕</button>
+      </div>
+
+      <form id="eventForm" style="display:flex;flex-direction:column;gap:14px;">
+        <input type="hidden" id="editEventId">
+
+        <div class="form-group">
+          <label>Event Title</label>
+          <input type="text" id="eventTitleInput" required placeholder="e.g. Wine &amp; Dine Evening">
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="eventCatInput">
+              <option value="dining">Dining</option>
+              <option value="live-music">Live Music</option>
+              <option value="specials">Specials</option>
+              <option value="private-events">Private Events</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Category Badge Text</label>
+            <input type="text" id="eventCatLabelInput" placeholder="DINING">
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Day (1–31)</label>
+            <input type="number" id="eventDayInput" min="1" max="31" required placeholder="08">
+          </div>
+          <div class="form-group">
+            <label>Day of Week</label>
+            <input type="text" id="eventDowInput" placeholder="THU" maxlength="3">
+          </div>
+          <div class="form-group">
+            <label>Month</label>
+            <input type="text" id="eventMonthInput" placeholder="OCT" maxlength="3">
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Time</label>
+            <input type="text" id="eventTimeInput" placeholder="7:00 PM – 11:00 PM">
+          </div>
+          <div class="form-group">
+            <label>Venue / Location</label>
+            <input type="text" id="eventVenueInput" placeholder="The Courtyard">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="eventDescInput" rows="3" placeholder="Description of the evening..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="toggle-wrap" id="eventVipToggleWrap">
+            <div class="toggle-box"><span class="toggle-thumb"></span></div>
+            <span style="font-size:11px;font-weight:600;color:var(--gold-light);">Mark as Special / VIP Highlight</span>
+          </label>
+        </div>
+
+        <!-- Poster Image Selector -->
+        <div class="form-group">
+          <label>Poster Image (Select preset or upload)</label>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <select id="eventPresetImgSelect" style="flex:1;">
+              <option value="">-- Choose Image Preset --</option>
+              <option value="event_acoustic_night">Preset: Acoustic Night (Jazz)</option>
+              <option value="event_wine_dine">Preset: Wine &amp; Dine</option>
+              <option value="event_chefs_tasting">Preset: Chef's Tasting</option>
+              <option value="event_sunset_terrace">Preset: Sunset Terrace</option>
+              <option value="event_private_event">Preset: Private Event</option>
+            </select>
+            <label class="btn-secondary" style="margin:0;cursor:pointer;">
+              <span>Upload Custom</span>
+              <input type="file" id="eventCustomImgFile" accept="image/*" style="display:none;">
+            </label>
+          </div>
+          <div id="eventImgPreviewWrap" style="margin-top:8px;display:none;">
+            <img id="eventModalImgPreview" src="" alt="Event Poster Preview" style="height:60px;border-radius:6px;border:1px solid var(--border-subtle);">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelEventModal">Cancel</button>
+          <button type="submit" class="btn-publish">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit / Add Menu Item Modal (Generic for Lunch, Alacarte, Bar) -->
+  <div class="modal-overlay" id="itemEditModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="itemModalTitle">EDIT DISH</h3>
+        <button type="button" class="btn-icon" id="btnCloseItemModal">✕</button>
+      </div>
+
+      <form id="itemForm" style="display:flex;flex-direction:column;gap:14px;">
+        <input type="hidden" id="editItemScope">
+        <input type="hidden" id="editItemCategoryKey">
+        <input type="hidden" id="editItemId">
+
+        <div class="form-group">
+          <label>Item Name</label>
+          <input type="text" id="itemNameInput" required placeholder="e.g. Forest Mushroom & Truffle Soup">
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Price (LKR)</label>
+            <input type="text" id="itemPriceInput" placeholder="2,200">
+          </div>
+          <div class="form-group" id="groupPriceAlt" style="display:none;">
+            <label>Second Price (Optional)</label>
+            <input type="text" id="itemPriceAltInput" placeholder="3,400">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="toggle-wrap" id="itemVegToggleWrap">
+            <div class="toggle-box"><span class="toggle-thumb"></span></div>
+            <span style="font-size:11px;font-weight:600;color:#34d399;">🌱 Vegetarian Dish</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Description &amp; Ingredients</label>
+          <textarea id="itemDescInput" rows="3" placeholder="Ingredients and tasting notes..."></textarea>
+        </div>
+
+        <!-- Add-ons / Meta for Lunch -->
+        <div class="form-group" id="groupItemMeta">
+          <label>Add-ons / Sides (e.g. Crispy Spiced Chicken (LKR 420))</label>
+          <input type="text" id="itemMetaInput" placeholder="Crispy Spiced Chicken (LKR 420) · Seared Prawns (LKR 550)">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelItemModal">Cancel</button>
+          <button type="submit" class="btn-publish">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Studio Master JavaScript Logic -->
+  <script>
+    /* ========================================================
+       EXECUTIVE STUDIO CONTROLLER & 0ms SYNC ENGINE
+       ======================================================== */
+    var appData = null;
+    var previewIframe = document.getElementById('livePreviewFrame');
+    var liveBroadcast = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('belle_live_channel') : null;
+
+    // 1. Initialize State
+    function initStudio() {
+      try {
+        var local = localStorage.getItem('belle_data');
+        if (local) {
+          appData = JSON.parse(local);
+        } else if (window.BELLE_DEFAULT_DATA) {
+          appData = JSON.parse(JSON.stringify(window.BELLE_DEFAULT_DATA));
+        }
+      } catch(e) {
+        if (window.BELLE_DEFAULT_DATA) {
+          appData = JSON.parse(JSON.stringify(window.BELLE_DEFAULT_DATA));
+        }
+      }
+
+      if (!appData) {
+        console.error('No data found!');
+        return;
+      }
+
+      // Render each section
+      renderEventsTab();
+      renderLunchTab();
+      renderAlacarteTab();
+      renderBarTab();
+      renderTastingTab();
+      populateVenueForm();
+      bindGlobalEvents();
+      bindDeviceSwitchers();
+
+      // Listen for iframe readiness
+      previewIframe.addEventListener('load', function() {
+        sendLiveUpdate();
+        setTimeout(function() {
+          navigatePreview('events');
+        }, 400);
+      });
+    }
+
+    // 2. Transmit Live Updates to Preview Frame (0ms)
+    function sendLiveUpdate() {
+      if (!appData) return;
+      try {
+        localStorage.setItem('belle_data', JSON.stringify(appData));
+      } catch(e) {}
+
+      if (previewIframe && previewIframe.contentWindow) {
+        previewIframe.contentWindow.postMessage({
+          type: 'BELLE_DATA_UPDATE',
+          payload: appData
+        }, '*');
+      }
+
+      if (liveBroadcast) {
+        try {
+          liveBroadcast.postMessage({
+            type: 'BELLE_DATA_UPDATE',
+            payload: appData
+          });
+        } catch(e) {}
+      }
+    }
+
+    // Auto-navigate preview phone when switching tabs
+    function navigatePreview(target) {
+      if (previewIframe && previewIframe.contentWindow) {
+        previewIframe.contentWindow.postMessage({
+          type: 'BELLE_NAVIGATE',
+          target: target
+        }, '*');
+      }
+    }
+
+    // 3. Tab Switching
+    document.querySelectorAll('.studio-tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.studio-tab-btn').forEach(function(b) { b.classList.remove('is-active'); });
+        document.querySelectorAll('.studio-content-view').forEach(function(v) { v.classList.remove('is-active'); });
+        
+        btn.classList.add('is-active');
+        var targetId = btn.getAttribute('data-tab');
+        var view = document.getElementById(targetId);
+        if (view) view.classList.add('is-active');
+
+        // Smart phone preview navigation
+        if (targetId === 'tab-events') navigatePreview('events');
+        else if (targetId === 'tab-lunch') navigatePreview('lunch');
+        else if (targetId === 'tab-alacarte') navigatePreview('appetisers');
+        else if (targetId === 'tab-thebar') navigatePreview('thebar');
+        else if (targetId === 'tab-tasting') navigatePreview('tasting');
+        else if (targetId === 'tab-venue') navigatePreview('home');
+      });
+    });
+
+    // 4. Render Events Tab
+    var currentEventCatFilter = 'all';
+    function renderEventsTab() {
+      var list = document.getElementById('eventsCardsList');
+      var badge = document.getElementById('badgeCountEvents');
+      if (!list || !appData || !appData.events) return;
+
+      badge.textContent = appData.events.length;
+      var html = '';
+
+      var filtered = appData.events.filter(function(ev) {
+        if (currentEventCatFilter === 'all') return true;
+        return ev.category === currentEventCatFilter;
+      });
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-dim);">No events in this category. Click "+ Add Event" to create one.</div>';
+        return;
+      }
+
+      filtered.forEach(function(ev) {
+        var dayStr = ev.day < 10 ? '0' + ev.day : ev.day;
+        var thumb = ev.imageData || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="%23222"><rect width="24" height="24" fill="%23111"/><text x="12" y="16" font-size="10" fill="%23888" text-anchor="middle">CAL</text></svg>';
+        var isVip = !!ev.isVip;
+
+        html += '<article class="editor-item-card" data-event-id="' + ev.id + '">' +
+          '<div class="card-top-bar">' +
+            '<div class="card-meta-left">' +
+              '<img src="' + thumb + '" class="card-thumb-preview" alt="' + ev.title + '">' +
+              '<div class="card-title-stack">' +
+                '<h4>' + ev.title + '</h4>' +
+                '<div class="card-subtitle-row">' +
+                  '<span style="color:var(--gold-primary);font-weight:700;">' + dayStr + ' ' + (ev.month || 'OCT') + ' (' + (ev.dow || 'THU') + ')</span>' +
+                  '<span>•</span>' +
+                  '<span>' + (ev.time || '') + '</span>' +
+                  '<span>•</span>' +
+                  '<span>' + (ev.venue || '') + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="card-controls-right">' +
+              (isVip ? '<span class="card-price-pill" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);">SPECIAL</span>' : '') +
+              '<span class="card-price-pill">' + (ev.categoryLabel || ev.category.toUpperCase()) + '</span>' +
+              '<button type="button" class="btn-icon btn-edit-event" data-id="' + ev.id + '" title="Edit Event">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+              '</button>' +
+              '<button type="button" class="btn-icon btn-delete btn-delete-event" data-id="' + ev.id + '" title="Delete Event">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);line-height:1.4;">' + (ev.desc || '') + '</div>' +
+        '</article>';
+      });
+
+      list.innerHTML = html;
+
+      // Bind edit and delete clicks
+      list.querySelectorAll('.btn-edit-event').forEach(function(b) {
+        b.addEventListener('click', function() {
+          var id = b.getAttribute('data-id');
+          openEditEventModal(id);
+        });
+      });
+      list.querySelectorAll('.btn-delete-event').forEach(function(b) {
+        b.addEventListener('click', function() {
+          var id = b.getAttribute('data-id');
+          deleteEvent(id);
+        });
+      });
+    }
+
+    // Events filter pills
+    document.querySelectorAll('#eventsFilterBar .sub-pill-btn').forEach(function(p) {
+      p.addEventListener('click', function() {
+        document.querySelectorAll('#eventsFilterBar .sub-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
+        p.classList.add('is-active');
+        currentEventCatFilter = p.getAttribute('data-cat');
+        renderEventsTab();
+      });
+    });
+
+    // 5. Render Lunch Tab
+    function renderLunchTab() {
+      var list = document.getElementById('lunchCardsList');
+      var badge = document.getElementById('badgeCountLunch');
+      if (!list || !appData || !appData.lunchItems) return;
+
+      badge.textContent = appData.lunchItems.length;
+      var html = '';
+
+      appData.lunchItems.forEach(function(item, idx) {
+        var isVeg = !!item.isVeg;
+        html += '<article class="editor-item-card" data-lunch-id="' + item.id + '">' +
+          '<div class="card-top-bar">' +
+            '<div class="card-meta-left">' +
+              '<div style="width:24px;font-family:var(--font-serif);color:var(--gold-primary);font-size:13px;font-weight:700;">' + (idx + 1) + '.</div>' +
+              '<div class="card-title-stack">' +
+                '<h4>' + item.name + '</h4>' +
+                '<div class="card-subtitle-row">' +
+                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Vegetarian</span>' : '<span style="color:var(--text-dim);">Meat / Seafood</span>') +
+                  (item.meta ? '<span>•</span><span style="color:var(--gold-primary);">' + item.meta.badge + '</span>' : '') +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="card-controls-right">' +
+              (item.price ? '<span class="card-price-pill">LKR ' + item.price + '</span>' : '') +
+              '<button type="button" class="btn-icon btn-edit-lunch" data-id="' + item.id + '" title="Edit Dish">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+              '</button>' +
+              '<button type="button" class="btn-icon btn-delete btn-delete-lunch" data-id="' + item.id + '" title="Delete Dish">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);line-height:1.4;">' + (item.desc || '') + '</div>' +
+          (item.meta ? '<div style="font-size:10px;color:var(--gold-light);background:rgba(188,166,133,0.06);padding:6px 10px;border-radius:4px;border:1px solid rgba(188,166,133,0.15);">' + item.meta.text + '</div>' : '') +
+        '</article>';
+      });
+
+      list.innerHTML = html;
+
+      list.querySelectorAll('.btn-edit-lunch').forEach(function(b) {
+        b.addEventListener('click', function() {
+          openEditItemModal('lunch', null, b.getAttribute('data-id'));
+        });
+      });
+      list.querySelectorAll('.btn-delete-lunch').forEach(function(b) {
+        b.addEventListener('click', function() {
+          deleteLunchItem(b.getAttribute('data-id'));
+        });
+      });
+    }
+
+    // 6. Render À La Carte Tab
+    var currentAlacarteKey = 'appetisers';
+    function renderAlacarteTab() {
+      var list = document.getElementById('alacarteCardsList');
+      if (!list || !appData || !appData.aLaCarte) return;
+
+      var cat = appData.aLaCarte.find(function(c) {
+        return c.key === currentAlacarteKey || c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentAlacarteKey;
+      });
+
+      if (!cat) {
+        list.innerHTML = '<div style="padding:40px;color:var(--text-dim);text-align:center;">Course not found.</div>';
+        return;
+      }
+
+      var html = '';
+      (cat.items || []).forEach(function(it, idx) {
+        var isVeg = (it.tags || []).indexOf('Vegetarian') !== -1;
+        html += '<article class="editor-item-card" data-ala-id="' + it.id + '">' +
+          '<div class="card-top-bar">' +
+            '<div class="card-meta-left">' +
+              '<div style="width:24px;font-family:var(--font-serif);color:var(--gold-primary);font-size:13px;font-weight:700;">' + (idx + 1) + '.</div>' +
+              '<div class="card-title-stack">' +
+                '<h4>' + it.name + '</h4>' +
+                '<div class="card-subtitle-row">' +
+                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Vegetarian</span>' : '<span style="color:var(--text-dim);">Signature</span>') +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="card-controls-right">' +
+              (it.price ? '<span class="card-price-pill">LKR ' + it.price + '</span>' : '') +
+              '<button type="button" class="btn-icon btn-edit-ala" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Edit Dish">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+              '</button>' +
+              '<button type="button" class="btn-icon btn-delete btn-delete-ala" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Delete Dish">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);line-height:1.4;">' + (it.desc || '') + '</div>' +
+        '</article>';
+      });
+
+      list.innerHTML = html;
+
+      list.querySelectorAll('.btn-edit-ala').forEach(function(b) {
+        b.addEventListener('click', function() {
+          openEditItemModal('alacarte', b.getAttribute('data-cat'), b.getAttribute('data-id'));
+        });
+      });
+      list.querySelectorAll('.btn-delete-ala').forEach(function(b) {
+        b.addEventListener('click', function() {
+          deleteAlacarteItem(b.getAttribute('data-cat'), b.getAttribute('data-id'));
+        });
+      });
+    }
+
+    // À La Carte course pill clicks
+    document.querySelectorAll('#alacarteCoursePills .sub-pill-btn').forEach(function(p) {
+      p.addEventListener('click', function() {
+        document.querySelectorAll('#alacarteCoursePills .sub-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
+        p.classList.add('is-active');
+        currentAlacarteKey = p.getAttribute('data-course');
+        renderAlacarteTab();
+        navigatePreview(currentAlacarteKey);
+      });
+    });
+
+    // 7. Render The Bar Tab
+    var currentBarKey = 'the-garden';
+    function renderBarTab() {
+      var list = document.getElementById('barCardsList');
+      if (!list || !appData || !appData.theGardenAndBar) return;
+
+      var cat = appData.theGardenAndBar.find(function(c) {
+        return c.key === currentBarKey || c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentBarKey;
+      });
+
+      if (!cat) {
+        list.innerHTML = '<div style="padding:40px;color:var(--text-dim);text-align:center;">Section not found.</div>';
+        return;
+      }
+
+      var html = '';
+      (cat.items || []).forEach(function(it, idx) {
+        var isVeg = (it.tags || []).indexOf('Vegetarian') !== -1;
+        html += '<article class="editor-item-card" data-bar-id="' + it.id + '">' +
+          '<div class="card-top-bar">' +
+            '<div class="card-meta-left">' +
+              '<div style="width:24px;font-family:var(--font-serif);color:var(--gold-primary);font-size:13px;font-weight:700;">' + (idx + 1) + '.</div>' +
+              '<div class="card-title-stack">' +
+                '<h4>' + it.name + '</h4>' +
+                '<div class="card-subtitle-row">' +
+                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Vegetarian</span>' : '<span style="color:var(--gold-light);">Curated Craft</span>') +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="card-controls-right">' +
+              (it.price ? '<span class="card-price-pill">LKR ' + it.price + '</span>' : '') +
+              '<button type="button" class="btn-icon btn-edit-bar" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Edit Item">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+              '</button>' +
+              '<button type="button" class="btn-icon btn-delete btn-delete-bar" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Delete Item">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);line-height:1.4;">' + (it.desc || '') + '</div>' +
+        '</article>';
+      });
+
+      list.innerHTML = html;
+
+      list.querySelectorAll('.btn-edit-bar').forEach(function(b) {
+        b.addEventListener('click', function() {
+          openEditItemModal('thebar', b.getAttribute('data-cat'), b.getAttribute('data-id'));
+        });
+      });
+      list.querySelectorAll('.btn-delete-bar').forEach(function(b) {
+        b.addEventListener('click', function() {
+          deleteBarItem(b.getAttribute('data-cat'), b.getAttribute('data-id'));
+        });
+      });
+    }
+
+    document.querySelectorAll('#barCategoryPills .sub-pill-btn').forEach(function(p) {
+      p.addEventListener('click', function() {
+        document.querySelectorAll('#barCategoryPills .sub-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
+        p.classList.add('is-active');
+        currentBarKey = p.getAttribute('data-barcat');
+        renderBarTab();
+        navigatePreview('thebar');
+      });
+    });
+
+    // 8. Render Tasting Menus Tab
+    var currentTastingType = 'fiveCourse';
+    function renderTastingTab() {
+      var area = document.getElementById('tastingEditorArea');
+      if (!area || !appData || !appData.tastingMenus) return;
+
+      var menu = appData.tastingMenus[currentTastingType];
+      if (!menu) return;
+
+      var html = '<div class="editor-item-card" style="padding:20px;">' +
+        '<div class="form-row-2">' +
+          '<div class="form-group">' +
+            '<label>Menu Title</label>' +
+            '<input type="text" id="tastingTitleInput" value="' + (menu.title || '') + '">' +
+          '</div>' +
+          '<div class="form-group">' +
+            '<label>Pill Short Title</label>' +
+            '<input type="text" id="tastingShortTitleInput" value="' + (menu.shortTitle || '') + '">' +
+          '</div>' +
+        '</div>' +
+        '<div class="form-row-2" style="margin-top:12px;">' +
+          '<div class="form-group">' +
+            '<label>Price: Menu Only (LKR)</label>' +
+            '<input type="text" id="tastingPriceMenuInput" value="' + (menu.priceMenuOnly || '') + '">' +
+          '</div>' +
+          '<div class="form-group">' +
+            '<label>Price: Wine Pairing (LKR)</label>' +
+            '<input type="text" id="tastingPriceWineInput" value="' + (menu.priceWinePairing || '') + '">' +
+          '</div>' +
+        '</div>' +
+        '<div class="form-group" style="margin-top:12px;">' +
+          '<label>Wine Pairing Subtitle</label>' +
+          '<input type="text" id="tastingWineSubInput" value="' + (menu.wineCountText || '') + '">' +
+        '</div>' +
+      '</div>';
+
+      area.innerHTML = html;
+
+      // Realtime listener for tasting inputs
+      ['tastingTitleInput', 'tastingShortTitleInput', 'tastingPriceMenuInput', 'tastingPriceWineInput', 'tastingWineSubInput'].forEach(function(inpId) {
+        var el = document.getElementById(inpId);
+        if (el) {
+          el.addEventListener('input', function() {
+            var m = appData.tastingMenus[currentTastingType];
+            if (inpId === 'tastingTitleInput') m.title = el.value;
+            if (inpId === 'tastingShortTitleInput') m.shortTitle = el.value;
+            if (inpId === 'tastingPriceMenuInput') m.priceMenuOnly = el.value;
+            if (inpId === 'tastingPriceWineInput') m.priceWinePairing = el.value;
+            if (inpId === 'tastingWineSubInput') m.wineCountText = el.value;
+            sendLiveUpdate();
+          });
+        }
+      });
+    }
+
+    document.querySelectorAll('#tastingPills .sub-pill-btn').forEach(function(p) {
+      p.addEventListener('click', function() {
+        document.querySelectorAll('#tastingPills .sub-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
+        p.classList.add('is-active');
+        currentTastingType = p.getAttribute('data-tasting');
+        renderTastingTab();
+        navigatePreview('tasting');
+      });
+    });
+
+    // 9. Populate Venue Form
+    function populateVenueForm() {
+      if (!appData || !appData.venue) return;
+      var v = appData.venue;
+      document.getElementById('venuePhone').value = v.phone || '';
+      document.getElementById('venueWaRaw').value = v.whatsappNumber || '';
+      document.getElementById('venueIgHandle').value = v.instagramHandle || '';
+      document.getElementById('venueIgUrl').value = v.instagramUrl || '';
+      document.getElementById('venueFbUrl').value = v.facebookUrl || '';
+      document.getElementById('venueHours').value = v.hours || '';
+      document.getElementById('venueAddress').value = v.address || '';
+      document.getElementById('venueMaps').value = v.googleMapsUrl || '';
+      document.getElementById('venueTax').value = v.taxNote || '';
+
+      var fields = [
+        { id: 'venuePhone', key: 'phone' },
+        { id: 'venueWaRaw', key: 'whatsappNumber' },
+        { id: 'venueIgHandle', key: 'instagramHandle' },
+        { id: 'venueIgUrl', key: 'instagramUrl' },
+        { id: 'venueFbUrl', key: 'facebookUrl' },
+        { id: 'venueHours', key: 'hours' },
+        { id: 'venueAddress', key: 'address' },
+        { id: 'venueMaps', key: 'googleMapsUrl' },
+        { id: 'venueTax', key: 'taxNote' }
+      ];
+
+      fields.forEach(function(f) {
+        var input = document.getElementById(f.id);
+        if (input) {
+          input.addEventListener('input', function() {
+            appData.venue[f.key] = input.value;
+            sendLiveUpdate();
+          });
+        }
+      });
+    }
+
+    // 10. Event CRUD Modals
+    var eventEditModal = document.getElementById('eventEditModal');
+    var isEventVipChecked = false;
+    var currentEventImageData = null;
+
+    document.getElementById('btnAddEvent').addEventListener('click', function() {
+      document.getElementById('eventModalTitle').textContent = 'ADD NEW EVENT';
+      document.getElementById('editEventId').value = '';
+      document.getElementById('eventTitleInput').value = '';
+      document.getElementById('eventCatInput').value = 'dining';
+      document.getElementById('eventCatLabelInput').value = 'DINING';
+      document.getElementById('eventDayInput').value = '25';
+      document.getElementById('eventDowInput').value = 'SAT';
+      document.getElementById('eventMonthInput').value = 'OCT';
+      document.getElementById('eventTimeInput').value = '7:00 PM – 11:00 PM';
+      document.getElementById('eventVenueInput').value = 'The Courtyard';
+      document.getElementById('eventDescInput').value = '';
+      document.getElementById('eventPresetImgSelect').value = '';
+      isEventVipChecked = false;
+      updateVipToggleUI();
+      currentEventImageData = null;
+      document.getElementById('eventImgPreviewWrap').style.display = 'none';
+      eventEditModal.classList.add('is-open');
+    });
+
+    function openEditEventModal(id) {
+      var ev = (appData.events || []).find(function(e) { return e.id === id; });
+      if (!ev) return;
+      document.getElementById('eventModalTitle').textContent = 'EDIT EVENT';
+      document.getElementById('editEventId').value = ev.id;
+      document.getElementById('eventTitleInput').value = ev.title || '';
+      document.getElementById('eventCatInput').value = ev.category || 'dining';
+      document.getElementById('eventCatLabelInput').value = ev.categoryLabel || ev.category.toUpperCase();
+      document.getElementById('eventDayInput').value = ev.day || '';
+      document.getElementById('eventDowInput').value = ev.dow || 'THU';
+      document.getElementById('eventMonthInput').value = ev.month || 'OCT';
+      document.getElementById('eventTimeInput').value = ev.time || '';
+      document.getElementById('eventVenueInput').value = ev.venue || '';
+      document.getElementById('eventDescInput').value = ev.desc || '';
+      isEventVipChecked = !!ev.isVip;
+      updateVipToggleUI();
+      currentEventImageData = ev.imageData || null;
+      document.getElementById('eventPresetImgSelect').value = ev.imageKey || '';
+      if (currentEventImageData) {
+        document.getElementById('eventModalImgPreview').src = currentEventImageData;
+        document.getElementById('eventImgPreviewWrap').style.display = 'block';
+      } else {
+        document.getElementById('eventImgPreviewWrap').style.display = 'none';
+      }
+      eventEditModal.classList.add('is-open');
+    }
+
+    function updateVipToggleUI() {
+      var wrap = document.getElementById('eventVipToggleWrap');
+      if (wrap) wrap.classList.toggle('is-checked', isEventVipChecked);
+    }
+    document.getElementById('eventVipToggleWrap').addEventListener('click', function() {
+      isEventVipChecked = !isEventVipChecked;
+      updateVipToggleUI();
+    });
+
+    // Preset Image Selector
+    document.getElementById('eventPresetImgSelect').addEventListener('change', function(e) {
+      var key = e.target.value;
+      if (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.events) {
+        var found = window.BELLE_DEFAULT_DATA.events.find(function(ev) { return ev.imageKey === key; });
+        if (found && found.imageData) {
+          currentEventImageData = found.imageData;
+          document.getElementById('eventModalImgPreview').src = currentEventImageData;
+          document.getElementById('eventImgPreviewWrap').style.display = 'block';
+        }
+      }
+    });
+
+    // Custom Image File Upload
+    document.getElementById('eventCustomImgFile').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(evt) {
+        currentEventImageData = evt.target.result;
+        document.getElementById('eventModalImgPreview').src = currentEventImageData;
+        document.getElementById('eventImgPreviewWrap').style.display = 'block';
+        showToast('Image uploaded and optimized for event!');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('btnCloseEventModal').addEventListener('click', function() { eventEditModal.classList.remove('is-open'); });
+    document.getElementById('btnCancelEventModal').addEventListener('click', function() { eventEditModal.classList.remove('is-open'); });
+
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var id = document.getElementById('editEventId').value;
+      var title = document.getElementById('eventTitleInput').value.trim();
+      var cat = document.getElementById('eventCatInput').value;
+      var catLabel = document.getElementById('eventCatLabelInput').value.trim() || cat.toUpperCase();
+      var day = parseInt(document.getElementById('eventDayInput').value, 10);
+      var dow = document.getElementById('eventDowInput').value.trim().toUpperCase();
+      var month = document.getElementById('eventMonthInput').value.trim().toUpperCase() || 'OCT';
+      var time = document.getElementById('eventTimeInput').value.trim();
+      var venue = document.getElementById('eventVenueInput').value.trim();
+      var desc = document.getElementById('eventDescInput').value.trim();
+
+      if (!id) {
+        // Create new
+        var newEv = {
+          id: 'event-' + Date.now(),
+          title: title,
+          category: cat,
+          categoryLabel: catLabel,
+          day: day,
+          dow: dow,
+          month: month,
+          time: time,
+          venue: venue,
+          desc: desc,
+          isVip: isEventVipChecked,
+          hasImage: !!currentEventImageData,
+          imageKey: document.getElementById('eventPresetImgSelect').value,
+          imageData: currentEventImageData
+        };
+        appData.events.push(newEv);
+        showToast('Event "' + title + '" added successfully!');
+      } else {
+        // Update existing
+        var ev = appData.events.find(function(x) { return x.id === id; });
+        if (ev) {
+          ev.title = title;
+          ev.category = cat;
+          ev.categoryLabel = catLabel;
+          ev.day = day;
+          ev.dow = dow;
+          ev.month = month;
+          ev.time = time;
+          ev.venue = venue;
+          ev.desc = desc;
+          ev.isVip = isEventVipChecked;
+          if (currentEventImageData) ev.imageData = currentEventImageData;
+          showToast('Event updated: ' + title);
+        }
+      }
+
+      eventEditModal.classList.remove('is-open');
+      renderEventsTab();
+      sendLiveUpdate();
+      navigatePreview('events');
+    });
+
+    function deleteEvent(id) {
+      var ev = appData.events.find(function(x) { return x.id === id; });
+      if (!ev) return;
+      if (confirm('Delete event "' + ev.title + '"?')) {
+        appData.events = appData.events.filter(function(x) { return x.id !== id; });
+        renderEventsTab();
+        sendLiveUpdate();
+        showToast('Event deleted.');
+      }
+    }
+
+    // 11. Generic Item CRUD Modal (Lunch, Alacarte, Bar)
+    var itemEditModal = document.getElementById('itemEditModal');
+    var isItemVegChecked = false;
+
+    function openEditItemModal(scope, categoryKey, id) {
+      document.getElementById('editItemScope').value = scope;
+      document.getElementById('editItemCategoryKey').value = categoryKey || '';
+      document.getElementById('editItemId').value = id || '';
+
+      var item = null;
+      if (scope === 'lunch') {
+        item = (appData.lunchItems || []).find(function(x) { return x.id === id; });
+        document.getElementById('groupItemMeta').style.display = 'block';
+        document.getElementById('groupPriceAlt').style.display = 'none';
+      } else if (scope === 'alacarte') {
+        var cat = appData.aLaCarte.find(function(c) { return c.key === categoryKey; });
+        if (cat) item = (cat.items || []).find(function(x) { return x.id === id; });
+        document.getElementById('groupItemMeta').style.display = 'none';
+        document.getElementById('groupPriceAlt').style.display = 'block';
+      } else if (scope === 'thebar') {
+        var bcat = appData.theGardenAndBar.find(function(c) { return c.key === categoryKey; });
+        if (bcat) item = (bcat.items || []).find(function(x) { return x.id === id; });
+        document.getElementById('groupItemMeta').style.display = 'none';
+        document.getElementById('groupPriceAlt').style.display = 'none';
+      }
+
+      if (item) {
+        document.getElementById('itemModalTitle').textContent = 'EDIT DISH';
+        document.getElementById('itemNameInput').value = item.name || '';
+        document.getElementById('itemPriceInput').value = item.price || '';
+        document.getElementById('itemPriceAltInput').value = item.price2 || '';
+        document.getElementById('itemDescInput').value = item.desc || '';
+        document.getElementById('itemMetaInput').value = (item.meta && item.meta.text) ? item.meta.text : '';
+        isItemVegChecked = (scope === 'lunch') ? !!item.isVeg : ((item.tags || []).indexOf('Vegetarian') !== -1);
+      } else {
+        document.getElementById('itemModalTitle').textContent = 'ADD DISH';
+        document.getElementById('itemNameInput').value = '';
+        document.getElementById('itemPriceInput').value = '';
+        document.getElementById('itemPriceAltInput').value = '';
+        document.getElementById('itemDescInput').value = '';
+        document.getElementById('itemMetaInput').value = '';
+        isItemVegChecked = false;
+      }
+
+      updateItemVegToggleUI();
+      itemEditModal.classList.add('is-open');
+    }
+
+    function updateItemVegToggleUI() {
+      var wrap = document.getElementById('itemVegToggleWrap');
+      if (wrap) wrap.classList.toggle('is-checked', isItemVegChecked);
+    }
+    document.getElementById('itemVegToggleWrap').addEventListener('click', function() {
+      isItemVegChecked = !isItemVegChecked;
+      updateItemVegToggleUI();
+    });
+
+    document.getElementById('btnCloseItemModal').addEventListener('click', function() { itemEditModal.classList.remove('is-open'); });
+    document.getElementById('btnCancelItemModal').addEventListener('click', function() { itemEditModal.classList.remove('is-open'); });
+
+    document.getElementById('btnAddLunch').addEventListener('click', function() {
+      openEditItemModal('lunch', null, null);
+    });
+    document.getElementById('btnAddAlacarte').addEventListener('click', function() {
+      openEditItemModal('alacarte', currentAlacarteKey, null);
+    });
+    document.getElementById('btnAddBarItem').addEventListener('click', function() {
+      openEditItemModal('thebar', currentBarKey, null);
+    });
+
+    document.getElementById('itemForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var scope = document.getElementById('editItemScope').value;
+      var catKey = document.getElementById('editItemCategoryKey').value;
+      var id = document.getElementById('editItemId').value;
+
+      var name = document.getElementById('itemNameInput').value.trim();
+      var price = document.getElementById('itemPriceInput').value.trim();
+      var price2 = document.getElementById('itemPriceAltInput').value.trim();
+      var desc = document.getElementById('itemDescInput').value.trim();
+      var metaText = document.getElementById('itemMetaInput').value.trim();
+
+      if (scope === 'lunch') {
+        if (!id) {
+          var newLunch = {
+            id: 'lunch-' + Date.now(),
+            name: name,
+            isVeg: isItemVegChecked,
+            price: price,
+            desc: desc,
+            meta: metaText ? { badge: 'ADD-ONS', text: metaText } : null
+          };
+          appData.lunchItems.push(newLunch);
+        } else {
+          var it = appData.lunchItems.find(function(x) { return x.id === id; });
+          if (it) {
+            it.name = name;
+            it.isVeg = isItemVegChecked;
+            it.price = price;
+            it.desc = desc;
+            it.meta = metaText ? { badge: 'ADD-ONS', text: metaText } : null;
+          }
+        }
+        renderLunchTab();
+        navigatePreview('lunch');
+      } else if (scope === 'alacarte') {
+        var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+        if (cat) {
+          if (!id) {
+            var newDish = {
+              id: catKey + '-' + Date.now(),
+              name: name,
+              tags: isItemVegChecked ? ['Vegetarian'] : [],
+              price: price,
+              price2: price2,
+              desc: desc
+            };
+            cat.items.push(newDish);
+          } else {
+            var dish = cat.items.find(function(x) { return x.id === id; });
+            if (dish) {
+              dish.name = name;
+              dish.tags = isItemVegChecked ? ['Vegetarian'] : [];
+              dish.price = price;
+              dish.price2 = price2;
+              dish.desc = desc;
+            }
+          }
+          renderAlacarteTab();
+          navigatePreview(catKey);
+        }
+      } else if (scope === 'thebar') {
+        var bcat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+        if (bcat) {
+          if (!id) {
+            var newBarItem = {
+              id: 'bar-' + Date.now(),
+              name: name,
+              tags: isItemVegChecked ? ['Vegetarian'] : [],
+              price: price,
+              desc: desc
+            };
+            bcat.items.push(newBarItem);
+          } else {
+            var bitem = bcat.items.find(function(x) { return x.id === id; });
+            if (bitem) {
+              bitem.name = name;
+              bitem.tags = isItemVegChecked ? ['Vegetarian'] : [];
+              bitem.price = price;
+              bitem.desc = desc;
+            }
+          }
+          renderBarTab();
+          navigatePreview('thebar');
+        }
+      }
+
+      itemEditModal.classList.remove('is-open');
+      sendLiveUpdate();
+      showToast('Saved: ' + name);
+    });
+
+    function deleteLunchItem(id) {
+      if (confirm('Delete this lunch item?')) {
+        appData.lunchItems = appData.lunchItems.filter(function(x) { return x.id !== id; });
+        renderLunchTab();
+        sendLiveUpdate();
+        showToast('Lunch item deleted.');
+      }
+    }
+    function deleteAlacarteItem(catKey, id) {
+      if (confirm('Delete this dish?')) {
+        var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+        if (cat) {
+          cat.items = cat.items.filter(function(x) { return x.id !== id; });
+          renderAlacarteTab();
+          sendLiveUpdate();
+          showToast('Dish deleted.');
+        }
+      }
+    }
+    function deleteBarItem(catKey, id) {
+      if (confirm('Delete this item?')) {
+        var cat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+        if (cat) {
+          cat.items = cat.items.filter(function(x) { return x.id !== id; });
+          renderBarTab();
+          sendLiveUpdate();
+          showToast('Item deleted.');
+        }
+      }
+    }
+
+    // 12. Save & Publish Action
+    document.getElementById('btnSavePublish').addEventListener('click', function() {
+      sendLiveUpdate();
+      showToast('✨ All changes published and synchronized across all channels!');
+    });
+
+    // 13. Export & Import JSON
+    document.getElementById('btnDownloadDataJs').addEventListener('click', function() {
+      var jsContent = '// Belle Colombo Central Production Data Store\n' +
+        '// Automatically synchronized with Executive Admin Studio\n' +
+        '(function(root) {\n' +
+        '  var data = ' + JSON.stringify(appData, null, 2) + ';\n' +
+        '  if (typeof window !== \'undefined\') { window.BELLE_DEFAULT_DATA = data; }\n' +
+        '  if (typeof module !== \'undefined\' && module.exports) { module.exports = data; }\n' +
+        '  if (typeof root !== \'undefined\') { root.BELLE_DEFAULT_DATA = data; }\n' +
+        '})(typeof globalThis !== \'undefined\' ? globalThis : this);\n';
+
+      var blob = new Blob([jsContent], { type: 'application/javascript;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', url);
+      downloadAnchor.setAttribute('download', 'belleData.js');
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      URL.revokeObjectURL(url);
+      showToast('Downloaded production belleData.js! Replace in your project root to deploy.');
+    });
+
+    document.getElementById('btnExportJson').addEventListener('click', function() {
+      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      var downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "belle-colombo-backup-" + new Date().toISOString().slice(0,10) + ".json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup JSON downloaded successfully!');
+    });
+
+    var importFileInput = document.getElementById('importFileInput');
+    document.getElementById('btnImportJson').addEventListener('click', function() {
+      importFileInput.click();
+    });
+    importFileInput.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          var parsed = JSON.parse(evt.target.result);
+          if (parsed && (parsed.lunchItems || parsed.events || parsed.venue)) {
+            appData = parsed;
+            renderEventsTab();
+            renderLunchTab();
+            renderAlacarteTab();
+            renderBarTab();
+            renderTastingTab();
+            populateVenueForm();
+            sendLiveUpdate();
+            showToast('Backup restored successfully!');
+          } else {
+            alert('Invalid backup file format.');
+          }
+        } catch(err) {
+          alert('Error parsing JSON backup file: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // 14. Cloud Sync / Firebase Free Setup
+    var cloudModal = document.getElementById('cloudSyncModal');
+    document.getElementById('btnCloudSync').addEventListener('click', function() {
+      cloudModal.classList.add('is-open');
+    });
+    document.getElementById('btnCloseCloudModal').addEventListener('click', function() { cloudModal.classList.remove('is-open'); });
+    document.getElementById('btnCancelCloud').addEventListener('click', function() { cloudModal.classList.remove('is-open'); });
+    document.getElementById('btnSaveCloud').addEventListener('click', function() {
+      var val = document.getElementById('firebaseConfigInput').value.trim();
+      if (val) {
+        try {
+          localStorage.setItem('belle_firebase_config', val);
+          showToast('Firebase Cloud Sync configuration saved!');
+        } catch(e) {}
+      }
+      cloudModal.classList.remove('is-open');
+    });
+
+    // 15. Device Switcher
+    function bindDeviceSwitchers() {
+      var chassis = document.getElementById('phoneChassis');
+      document.querySelectorAll('.device-pill-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.device-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          var w = btn.getAttribute('data-width');
+          var h = btn.getAttribute('data-height');
+          chassis.style.width = w + 'px';
+          chassis.style.height = h + 'px';
+        });
+      });
+
+      document.getElementById('btnReloadPreview').addEventListener('click', function() {
+        previewIframe.src = 'index.html';
+        showToast('Phone preview reloaded.');
+      });
+      document.getElementById('btnOpenNewTab').addEventListener('click', function() {
+        window.open('index.html', '_blank');
+      });
+    }
+
+    // 16. Toast Utility
+    function showToast(msg) {
+      var container = document.getElementById('toastContainer');
+      var toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = '<span style="color:var(--gold-primary);font-size:14px;">✦</span><span>' + msg + '</span>';
+      container.appendChild(toast);
+      setTimeout(function() {
+        toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(function() { toast.remove(); }, 400);
+      }, 3200);
+    }
+
+    function bindGlobalEvents() {
+      window.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault();
+          sendLiveUpdate();
+          showToast('✨ Published and synchronized (Ctrl+S)!');
+        }
+      });
+    }
+
+    // Launch
+    window.addEventListener('DOMContentLoaded', initStudio);
+  </script>
+</body>
+</html>
