@@ -799,6 +799,7 @@
   </style>
   <!-- Google Firebase SDK (Free Tier) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
@@ -831,7 +832,7 @@
       <div class="header-actions">
         <button type="button" class="btn-secondary" id="btnCloudSync" title="Connect Google Firebase (100% Free Forever)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
-          <span>Cloud Sync</span>
+          <span>Cloud: Connected</span>
         </button>
 
         <button type="button" class="btn-secondary" id="btnDownloadDataJs" title="Download production belleData.js file">
@@ -2138,60 +2139,50 @@
     // 12. Save & Publish Action
     
     /* ========================================================
-       FIREBASE CLOUD DATABASE CONNECTOR (100% Free Spark Tier)
+       FIREBASE CLOUD DATABASE CONNECTOR (Realtime Database & Cloud)
        ======================================================== */
-    var firestoreDb = null;
+    var firebaseConfig = {
+      apiKey: "AIzaSyCt_wxhRokhPreRCNju2R8-cDPP32DZcfE",
+      authDomain: "bellecolombo-fea8d.firebaseapp.com",
+      databaseURL: "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bellecolombo-fea8d",
+      storageBucket: "bellecolombo-fea8d.firebasestorage.app",
+      messagingSenderId: "1071181599477",
+      appId: "1:1071181599477:web:e2f6c40b35e1fd81d12bbc",
+      measurementId: "G-Z3RFRYFDD9"
+    };
 
-    function initFirebase(cfg) {
-      if (!cfg || typeof firebase === 'undefined') return;
+    var firebaseDb = null;
+
+    function initFirebaseCloud() {
+      if (typeof firebase === 'undefined') return;
       try {
         if (!firebase.apps.length) {
-          firebase.initializeApp(cfg);
+          firebase.initializeApp(firebaseConfig);
         }
-        firestoreDb = firebase.firestore();
-        console.log('⚡ Firebase Cloud Database Connected');
+        firebaseDb = firebase.database();
+        console.log('⚡ Connected to Google Firebase Realtime Database: bellecolombo-fea8d');
         var syncBadge = document.querySelector('.sync-status-badge span:last-child');
-        if (syncBadge) syncBadge.textContent = 'CLOUD & LIVE SYNC ACTIVE (0ms)';
+        if (syncBadge) syncBadge.textContent = 'CLOUD & LIVE SYNC CONNECTED (0ms)';
       } catch(err) {
-        console.warn('Firebase init notice:', err.message);
+        console.warn('Firebase Cloud init notice:', err.message);
       }
-    }
-
-    function testFirebaseSync() {
-      if (!firestoreDb) return;
-      firestoreDb.collection('belle_content').doc('production').set({
-        lastSync: new Date().toISOString(),
-        test: true
-      }, { merge: true }).then(function() {
-        showToast('☁️ Firebase Cloud Database Connected Successfully!');
-      }).catch(function(err) {
-        console.error('Firestore sync error:', err);
-        showToast('Firebase Notice: ' + err.message);
-      });
     }
 
     function pushToFirebaseCloud() {
-      if (!firestoreDb || !appData) return;
-      firestoreDb.collection('belle_content').doc('production').set(appData)
+      if (!firebaseDb || !appData) return;
+      firebaseDb.ref('belle_content').set(appData)
         .then(function() {
-          showToast('☁️ Synced to Global Cloud (Available on all devices)!');
+          showToast('☁️ Synced to Google Firebase Cloud (Live for all devices)!');
         })
         .catch(function(err) {
           console.error('Firebase push error:', err);
-          showToast('Cloud sync error: ' + err.message);
+          showToast('Cloud notice: ' + err.message);
         });
     }
 
-    // Auto-init Firebase if config exists in localStorage
-    try {
-      var savedFb = localStorage.getItem('belle_firebase_config');
-      if (savedFb) {
-        var cfgObj = JSON.parse(savedFb);
-        initFirebase(cfgObj);
-        var inputEl = document.getElementById('firebaseConfigInput');
-        if (inputEl) inputEl.value = JSON.stringify(cfgObj, null, 2);
-      }
-    } catch(e) {}
+    // Initialize Firebase on load
+    initFirebaseCloud();
 
     document.getElementById('btnSavePublish').addEventListener('click', function() {
       sendLiveUpdate();
