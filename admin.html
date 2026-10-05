@@ -797,6 +797,9 @@
       }
     }
   </style>
+  <!-- Google Firebase SDK (Free Tier) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -2133,9 +2136,67 @@
     }
 
     // 12. Save & Publish Action
+    
+    /* ========================================================
+       FIREBASE CLOUD DATABASE CONNECTOR (100% Free Spark Tier)
+       ======================================================== */
+    var firestoreDb = null;
+
+    function initFirebase(cfg) {
+      if (!cfg || typeof firebase === 'undefined') return;
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(cfg);
+        }
+        firestoreDb = firebase.firestore();
+        console.log('⚡ Firebase Cloud Database Connected');
+        var syncBadge = document.querySelector('.sync-status-badge span:last-child');
+        if (syncBadge) syncBadge.textContent = 'CLOUD & LIVE SYNC ACTIVE (0ms)';
+      } catch(err) {
+        console.warn('Firebase init notice:', err.message);
+      }
+    }
+
+    function testFirebaseSync() {
+      if (!firestoreDb) return;
+      firestoreDb.collection('belle_content').doc('production').set({
+        lastSync: new Date().toISOString(),
+        test: true
+      }, { merge: true }).then(function() {
+        showToast('☁️ Firebase Cloud Database Connected Successfully!');
+      }).catch(function(err) {
+        console.error('Firestore sync error:', err);
+        showToast('Firebase Notice: ' + err.message);
+      });
+    }
+
+    function pushToFirebaseCloud() {
+      if (!firestoreDb || !appData) return;
+      firestoreDb.collection('belle_content').doc('production').set(appData)
+        .then(function() {
+          showToast('☁️ Synced to Global Cloud (Available on all devices)!');
+        })
+        .catch(function(err) {
+          console.error('Firebase push error:', err);
+          showToast('Cloud sync error: ' + err.message);
+        });
+    }
+
+    // Auto-init Firebase if config exists in localStorage
+    try {
+      var savedFb = localStorage.getItem('belle_firebase_config');
+      if (savedFb) {
+        var cfgObj = JSON.parse(savedFb);
+        initFirebase(cfgObj);
+        var inputEl = document.getElementById('firebaseConfigInput');
+        if (inputEl) inputEl.value = JSON.stringify(cfgObj, null, 2);
+      }
+    } catch(e) {}
+
     document.getElementById('btnSavePublish').addEventListener('click', function() {
       sendLiveUpdate();
-      showToast('✨ All changes published and synchronized across all channels!');
+      pushToFirebaseCloud();
+      showToast('✨ All changes saved & published!');
     });
 
     // 13. Export & Import JSON
@@ -2214,9 +2275,14 @@
       var val = document.getElementById('firebaseConfigInput').value.trim();
       if (val) {
         try {
-          localStorage.setItem('belle_firebase_config', val);
-          showToast('Firebase Cloud Sync configuration saved!');
-        } catch(e) {}
+          var cfg = JSON.parse(val);
+          localStorage.setItem('belle_firebase_config', JSON.stringify(cfg));
+          initFirebase(cfg);
+          testFirebaseSync();
+        } catch(e) {
+          alert('Please enter valid JSON for Firebase config: ' + e.message);
+          return;
+        }
       }
       cloudModal.classList.remove('is-open');
     });

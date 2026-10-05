@@ -2202,6 +2202,9 @@
 
   </style>
   <script src="belleData.js"></script>
+  <!-- Google Firebase SDK (Free Tier) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -5119,6 +5122,27 @@ Choose your spread/rillette style:</p>
       var saved = localStorage.getItem('belle_data');
       if (saved) {
         applyBelleData(JSON.parse(saved));
+      }
+    } catch(e) {}
+
+    
+    // Listen to Firebase Cloud Database if configured
+    try {
+      var fbCfgStr = localStorage.getItem('belle_firebase_config');
+      if (fbCfgStr && typeof firebase !== 'undefined') {
+        var fbCfg = JSON.parse(fbCfgStr);
+        if (!firebase.apps.length) {
+          firebase.initializeApp(fbCfg);
+        }
+        var clientDb = firebase.firestore();
+        clientDb.collection('belle_content').doc('production').onSnapshot(function(doc) {
+          if (doc.exists && doc.data()) {
+            applyBelleData(doc.data());
+            console.log('⚡ Loaded live update from Firebase Cloud');
+          }
+        }, function(err) {
+          console.warn('Firestore subscription notice:', err.message);
+        });
       }
     } catch(e) {}
 
