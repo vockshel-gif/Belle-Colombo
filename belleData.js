@@ -26,7 +26,7 @@
       "priceLabel": "",
       "desc": "Fire-roasted tomatoes | Smoky chipotle chillies | Roasted garlic | Toasted cumin | Lime-avocado crema | Fresh coriander oil | Herb pressed focaccia",
       "meta": null,
-      "image": "assets/images/chef_plating.jpg"
+      "image": "assets/images/chef_plating.webp"
     },
     {
       "id": "lunch-2",
@@ -39,7 +39,7 @@
         "badge": "ADD-ONS",
         "text": "Crispy Spiced Chicken (<strong>LKR 420</strong>) · Seared Prawns (<strong>LKR 550</strong>) · Grilled Octopus (<strong>LKR 600</strong>)"
       },
-      "image": "assets/images/artisan_salad.jpg"
+      "image": "assets/images/artisan_salad.webp"
     },
     {
       "id": "lunch-3",
@@ -49,7 +49,7 @@
       "priceLabel": "",
       "desc": "Mixed selected greens | Herb-emulsion | Toasted pumpkin | Sunflower | Sesame seeds.",
       "meta": null,
-      "image": "assets/images/artisan_salad.jpg"
+      "image": "assets/images/artisan_salad.webp"
     },
     {
       "id": "lunch-4",
@@ -59,7 +59,7 @@
       "priceLabel": "",
       "desc": "Tomatoes | Goat's cheese | Basil | Greens and assorted herb base | Passionfruit dressing | Toasted pumpkin | Sunflower seeds.",
       "meta": null,
-      "image": "assets/images/artisan_salad.jpg"
+      "image": "assets/images/artisan_salad.webp"
     },
     {
       "id": "lunch-5",
@@ -69,7 +69,7 @@
       "priceLabel": "",
       "desc": "Chicken liver pâté | Shredded duck rillettes | Smoked meats | Tangy house pickles | Sharp mustard | Toasted sourdough.",
       "meta": null,
-      "image": "assets/images/bg/slide_glazed_ribs.jpg"
+      "image": "assets/images/bg/slide_glazed_ribs.webp"
     },
     {
       "id": "lunch-6",
@@ -82,7 +82,7 @@
         "badge": "ADD-ONS",
         "text": "Double Patty (<strong>LKR 1,050</strong>) · Beef Bacon (<strong>LKR 250</strong>) · Sunny-Side-Up Egg (<strong>LKR 150</strong>)"
       },
-      "image": "assets/images/bg/slide_steak_grill.jpg"
+      "image": "assets/images/bg/slide_steak_grill.webp"
     },
     {
       "id": "lunch-7",
@@ -95,7 +95,7 @@
         "badge": "SIDES",
         "text": "Choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt, or Fresh Side Salad"
       },
-      "image": "assets/images/bg/slide_steak_grill.jpg"
+      "image": "assets/images/bg/slide_steak_grill.webp"
     },
     {
       "id": "lunch-8",
@@ -108,7 +108,7 @@
         "badge": "SIDES",
         "text": "Choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt, or Fresh Side Salad"
       },
-      "image": "assets/images/bg/slide_tacos_kitchen.jpg"
+      "image": "assets/images/bg/slide_tacos_kitchen.webp"
     },
     {
       "id": "lunch-9",
@@ -118,7 +118,7 @@
       "priceLabel": "",
       "desc": "Melted Swiss cheese | Dills | Sharp local mustard on toasted rye.",
       "meta": null,
-      "image": "assets/images/bg/slide_glazed_ribs.jpg"
+      "image": "assets/images/bg/slide_glazed_ribs.webp"
     },
     {
       "id": "lunch-10",
@@ -131,7 +131,7 @@
         "badge": "ADD-ONS",
         "text": "Sautéed Mushrooms (<strong>LKR 140</strong>) · Charred Peppers (<strong>LKR 100</strong>)"
       },
-      "image": "assets/images/bg/slide_steak_grill.jpg"
+      "image": "assets/images/bg/slide_steak_grill.webp"
     }
   ],
   "aLaCarte": [
