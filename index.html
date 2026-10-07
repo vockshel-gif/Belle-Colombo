@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="assets/images/chef_plating.webp" type="image/webp" />
+  <link rel="preload" as="image" href="assets/images/artisan_salad.webp" type="image/webp" />
   <script>document.documentElement.classList.add('js');</script>
   <style>
     :root {
@@ -2400,18 +2402,18 @@
 
     <!-- Menu Items & Beyond Animated Slideshow Background -->
     <div class="ambient-slideshow-layer" id="ambientSlideshowLayer">
-      <div class="ambient-slide is-active" style="background-image: url('assets/images/bg/slide_lamb_chops.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_bar_counter.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_tacos_kitchen.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_cocktail_smoke.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_glazed_ribs.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_chef_plating.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_crispy_tempura.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_luxury_dessert.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_vip_lounge.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_guest_dining.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
-      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_gourmet_meatballs.jpg');"></div>
+      <div class="ambient-slide is-active" style="background-image: url('assets/images/bg/slide_lamb_chops.webp');"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_bar_counter.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_tacos_kitchen.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_cocktail_smoke.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_glazed_ribs.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_chef_plating.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_crispy_tempura.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_luxury_dessert.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_vip_lounge.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_guest_dining.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_steak_grill.webp"></div>
+      <div class="ambient-slide" data-bg="assets/images/bg/slide_gourmet_meatballs.webp"></div>
       <div class="ambient-slideshow-scrim"></div>
     </div>
   </div>
@@ -2559,7 +2561,7 @@
     <section class="lunch-item-slot" data-index="0" aria-label="Roasted Tomato & Chipotle Soup">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/chef_plating.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/chef_plating.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2590,7 +2592,7 @@
     <section class="lunch-item-slot" data-index="1" aria-label="The Signature Caesar">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2626,7 +2628,7 @@
     <section class="lunch-item-slot" data-index="2" aria-label="Organic Green Salad">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2657,7 +2659,7 @@
     <section class="lunch-item-slot" data-index="3" aria-label="Heirloom Tomato, Goat’s Cheese & Basil Salad">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2688,7 +2690,7 @@
     <section class="lunch-item-slot" data-index="4" aria-label="House-Made Pâté, Duck Rillettes & Smoked Meat Platter">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_glazed_ribs.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_glazed_ribs.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2728,7 +2730,7 @@
     <section class="lunch-item-slot" data-index="5" aria-label="The Classic Burger">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2769,7 +2771,7 @@
     <section class="lunch-item-slot" data-index="6" aria-label="The Shogun Burger">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2805,7 +2807,7 @@
     <section class="lunch-item-slot" data-index="7" aria-label="The Smoked Club">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_tacos_kitchen.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_tacos_kitchen.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2841,7 +2843,7 @@
     <section class="lunch-item-slot" data-index="8" aria-label="The Classic Rye">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_glazed_ribs.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_glazed_ribs.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -2853,25 +2855,25 @@
           </div>
           <p class="lunch-card-desc">Melted Swiss cheese | Dills | Sharp local mustard on toasted rye.</p>
           
-            <div class="lunch-choices-list is-cuts-list">
-              
-                <div class="choice-row">
-                  <div class="choice-label">
-                    <span class="choice-dot">•</span>
-                    <span class="choice-text">Slow-Simmered Corned Beef </span>
-                  </div>
-                  <span class="choice-price">3,100</span>
-                </div>
-              
-                <div class="choice-row">
-                  <div class="choice-label">
-                    <span class="choice-dot">•</span>
-                    <span class="choice-text">House-Cured Pastrami </span>
-                  </div>
-                  <span class="choice-price">3,900</span>
-                </div>
-              
+          <div class="lunch-choices-list is-cuts-list">
+            
+            <div class="choice-row">
+              <div class="choice-label">
+                <span class="choice-dot">•</span>
+                <span class="choice-text">Slow-Simmered Corned Beef </span>
+              </div>
+              <span class="choice-price">3,100</span>
             </div>
+            
+            <div class="choice-row">
+              <div class="choice-label">
+                <span class="choice-dot">•</span>
+                <span class="choice-text">House-Cured Pastrami </span>
+              </div>
+              <span class="choice-price">3,900</span>
+            </div>
+            
+          </div>
           
           
           
@@ -2887,7 +2889,7 @@
     <section class="lunch-item-slot" data-index="9" aria-label="The Signature Steak Sandwich">
       <div class="lunch-slot-content">
         <div class="lunch-slot-bg" aria-hidden="true">
-          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.webp');"></div>
           <div class="lunch-slot-bg-scrim"></div>
         </div>
         <article class="lunch-card">
@@ -4271,10 +4273,21 @@ Choose your spread/rillette style:</p>
       var slideTimer = null;
       var SLIDE_INTERVAL = 5000;
 
+      function ensureSlideLoaded(idx) {
+        if (!slides[idx]) return;
+        var el = slides[idx];
+        if (el.dataset && el.dataset.bg && (!el.style.backgroundImage || el.style.backgroundImage === 'none')) {
+          el.style.backgroundImage = "url('" + el.dataset.bg + "')";
+        }
+      }
+
       function nextSlide() {
         if (!slides.length) return;
+        var nextIdx = (currentSlideIdx + 1) % slides.length;
+        ensureSlideLoaded(nextIdx);
+        ensureSlideLoaded((nextIdx + 1) % slides.length);
         slides[currentSlideIdx].classList.remove('is-active');
-        currentSlideIdx = (currentSlideIdx + 1) % slides.length;
+        currentSlideIdx = nextIdx;
         slides[currentSlideIdx].classList.add('is-active');
       }
 
@@ -4312,17 +4325,17 @@ Choose your spread/rillette style:</p>
 
       // Context-aware slide focus when opening menu sections
       var categorySlideMap = {
-        'thebar': 'slide_cocktail_smoke.jpg',
-        'bar': 'slide_cocktail_smoke.jpg',
-        'lunch': 'slide_lamb_chops.jpg',
-        'alacarte': 'slide_glazed_ribs.jpg',
-        'appetisers': 'slide_crispy_tempura.jpg',
-        'entrees': 'slide_gourmet_meatballs.jpg',
-        'mains': 'slide_lamb_chops.jpg',
-        'grill': 'slide_steak_grill.jpg',
-        'desserts': 'slide_luxury_dessert.jpg',
-        'tasting': 'slide_chef_plating.jpg',
-        'events': 'slide_vip_lounge.jpg'
+        'thebar': 'slide_cocktail_smoke.webp',
+        'bar': 'slide_cocktail_smoke.webp',
+        'lunch': 'slide_lamb_chops.webp',
+        'alacarte': 'slide_glazed_ribs.webp',
+        'appetisers': 'slide_crispy_tempura.webp',
+        'entrees': 'slide_gourmet_meatballs.webp',
+        'mains': 'slide_lamb_chops.webp',
+        'grill': 'slide_steak_grill.webp',
+        'desserts': 'slide_luxury_dessert.webp',
+        'tasting': 'slide_chef_plating.webp',
+        'events': 'slide_vip_lounge.webp'
       };
 
       function focusCategorySlide(catKey) {
@@ -4330,7 +4343,10 @@ Choose your spread/rillette style:</p>
         var targetImg = categorySlideMap[catKey];
         if (!targetImg) return;
         for (var i = 0; i < slides.length; i++) {
-          if (slides[i].style.backgroundImage.indexOf(targetImg) !== -1) {
+          var bgAttr = (slides[i].dataset && slides[i].dataset.bg ? slides[i].dataset.bg : '') + ' ' + (slides[i].style.backgroundImage || '');
+          if (bgAttr.indexOf(targetImg) !== -1) {
+            ensureSlideLoaded(i);
+            ensureSlideLoaded((i + 1) % slides.length);
             if (i !== currentSlideIdx) {
               slides[currentSlideIdx].classList.remove('is-active');
               currentSlideIdx = i;
@@ -4344,6 +4360,8 @@ Choose your spread/rillette style:</p>
       window.ambientBg = {
         onEnterMenu: function() {
           pauseVideo();
+          ensureSlideLoaded(currentSlideIdx);
+          ensureSlideLoaded((currentSlideIdx + 1) % slides.length);
           startSlideshow();
         },
         onEnterHome: function() {
@@ -4354,6 +4372,26 @@ Choose your spread/rillette style:</p>
           focusCategorySlide(catKey);
         }
       };
+
+      // Silent background cache pre-warming for lunch items during idle time
+      window.addEventListener('load', function() {
+        var preloadDishes = [
+          'assets/images/bg/slide_glazed_ribs.webp',
+          'assets/images/bg/slide_steak_grill.webp',
+          'assets/images/bg/slide_tacos_kitchen.webp'
+        ];
+        var warmCache = function() {
+          preloadDishes.forEach(function(src) {
+            var img = new Image();
+            img.src = src;
+          });
+        };
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(warmCache, { timeout: 2000 });
+        } else {
+          setTimeout(warmCache, 600);
+        }
+      }, { once: true });
 
       // Autoplay activation and user interaction listeners
       playVideo();
@@ -5292,16 +5330,16 @@ Choose your spread/rillette style:</p>
     }
 
     var defaultLunchImages = [
-      'assets/images/chef_plating.jpg',
-      'assets/images/artisan_salad.jpg',
-      'assets/images/artisan_salad.jpg',
-      'assets/images/artisan_salad.jpg',
-      'assets/images/bg/slide_glazed_ribs.jpg',
-      'assets/images/bg/slide_steak_grill.jpg',
-      'assets/images/bg/slide_steak_grill.jpg',
-      'assets/images/bg/slide_tacos_kitchen.jpg',
-      'assets/images/bg/slide_glazed_ribs.jpg',
-      'assets/images/bg/slide_steak_grill.jpg'
+      'assets/images/chef_plating.webp',
+      'assets/images/artisan_salad.webp',
+      'assets/images/artisan_salad.webp',
+      'assets/images/artisan_salad.webp',
+      'assets/images/bg/slide_glazed_ribs.webp',
+      'assets/images/bg/slide_steak_grill.webp',
+      'assets/images/bg/slide_steak_grill.webp',
+      'assets/images/bg/slide_tacos_kitchen.webp',
+      'assets/images/bg/slide_glazed_ribs.webp',
+      'assets/images/bg/slide_steak_grill.webp'
     ];
 
     function renderLunchList(items) {
