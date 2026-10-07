@@ -6272,6 +6272,8 @@ Choose your spread/rillette style:</p>
         } else {
           openPanel(target);
         }
+      } else if (ev.data.type === 'BELLE_RELOAD') {
+        window.location.reload();
       }
     });
 

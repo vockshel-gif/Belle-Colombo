@@ -5432,7 +5432,18 @@
       });
 
       document.getElementById('btnReloadPreview').addEventListener('click', function() {
-        previewIframe.src = 'index.html';
+        var signaled = false;
+        if (previewIframe && previewIframe.contentWindow) {
+          try {
+            previewIframe.contentWindow.postMessage({ type: 'BELLE_RELOAD' }, '*');
+            signaled = true;
+          } catch(e) {}
+        }
+        if (!signaled) {
+          try {
+            previewIframe.src = 'index.html';
+          } catch(e) {}
+        }
         showToast('Phone preview reloaded.');
       });
       document.getElementById('btnOpenNewTab').addEventListener('click', function() {
