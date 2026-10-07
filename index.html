@@ -214,6 +214,100 @@
       animation: none !important;
     }
 
+    /* ---------- Ambient Background System (Wine Video & Slideshow) ---------- */
+    :root {
+      --ambient-video-opacity: 0.52;
+      --ambient-slideshow-opacity: 0.44;
+    }
+
+    .ambient-bg-system {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      width: 100dvw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 0;
+      background: #000000;
+    }
+
+    /* Ambient Video Layer (Landing Page Hero - Strictly Video Only) */
+    .ambient-video-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.85s var(--ease-out), visibility 0.85s;
+      will-change: opacity;
+    }
+    .is-menu-active .ambient-video-layer {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .ambient-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 36%;
+      opacity: var(--ambient-video-opacity, 0.52);
+      filter: contrast(1.10) brightness(0.95);
+      transform: translateZ(0);
+    }
+    .ambient-video-scrim {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.65) 75%, rgba(0, 0, 0, 0.88) 100%);
+      pointer-events: none;
+    }
+
+    /* Ambient Slideshow Layer (Menu Navigation & Beyond) */
+    .ambient-slideshow-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.9s var(--ease-out), visibility 0.9s;
+      will-change: opacity;
+    }
+    .is-menu-active .ambient-slideshow-layer {
+      opacity: 1;
+      visibility: visible;
+    }
+    .ambient-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transform: scale(1.0);
+      transition: opacity 1.5s ease-in-out, transform 8s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: opacity, transform;
+    }
+    .ambient-slide.is-active {
+      opacity: var(--ambient-slideshow-opacity, 0.44);
+      transform: scale(1.045);
+    }
+    .ambient-slideshow-scrim {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.65) 75%, rgba(0, 0, 0, 0.88) 100%);
+      pointer-events: none;
+    }
+
     /* ---------- STATE 1: HOME LANDING VIEW (Centered 3 Elements: MENU, EVENTS, SOCIAL) ---------- */
     .app-viewport {
       min-height: 100vh;
@@ -224,6 +318,7 @@
       align-items: center;
       padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem max(1.5rem, env(safe-area-inset-bottom));
       position: relative;
+      z-index: 10;
       width: 100%;
       max-width: 480px;
       margin-inline: auto;
@@ -349,7 +444,9 @@
       margin-inline: auto;
       padding: max(1rem, env(safe-area-inset-top)) 1.25rem max(1.2rem, env(safe-area-inset-bottom));
       box-sizing: border-box;
-      background: #000000;
+      background: rgba(0, 0, 0, 0.52);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       z-index: 50;
     }
     .is-menu-active .view-menu-hub {
@@ -710,7 +807,9 @@
 
     /* ---------- LUNCH VIEW (High Contrast Monochrome Vertical Snappy 3-Item View) ---------- */
     .view-food-panel.lunch-theme {
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       color: #000000;
       position: fixed;
       inset: 0;
@@ -723,7 +822,6 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      background: #ffffff;
       padding: 0;
       box-sizing: border-box;
       z-index: 50;
@@ -932,6 +1030,53 @@
       min-height: 0;
       padding: 0.6rem 0;
       box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Per-Item Dish Photo Attached to Element (Multi-Sided Silk Edge Fade & Luxury Aura) */
+    .lunch-slot-bg {
+      position: absolute;
+      inset: -6px -8px;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Golden Ambient Backlight (Belle Colombo Brand Gold Glow #BCA685) */
+    .lunch-slot-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 42% 52% at 75% 50%, rgba(188, 166, 133, 0.32) 0%, rgba(200, 180, 150, 0.12) 48%, transparent 76%);
+      pointer-events: none;
+    }
+
+    .lunch-slot-bg-photo {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      opacity: 0.32; /* Delicious authentic culinary vibrancy */
+      filter: saturate(1.24) contrast(1.08) brightness(1.02);
+      
+      /* Multi-directional silk edge fade: smooth dissolve on left, right, top, and bottom edges */
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, transparent 18%, rgba(0,0,0,0.12) 32%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.85) 78%, rgba(0,0,0,0.18) 90%, transparent 96%),
+        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,1) 28%, rgba(0,0,0,1) 72%, rgba(0,0,0,0.7) 88%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, transparent 0%, transparent 18%, rgba(0,0,0,0.12) 32%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.85) 78%, rgba(0,0,0,0.18) 90%, transparent 96%),
+        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,1) 28%, rgba(0,0,0,1) 72%, rgba(0,0,0,0.7) 88%, transparent 100%);
+      mask-composite: intersect;
+
+      transform: scale(1.03);
+      transition: transform 0.6s var(--ease-out), opacity 0.4s ease;
+    }
+
+    /* Scrim removed from boxy rectangle: pure seamless canvas */
+    .lunch-slot-bg-scrim {
+      display: none;
     }
 
     /* Item Card */
@@ -943,6 +1088,8 @@
       box-sizing: border-box;
       user-select: none;
       -webkit-user-select: none;
+      position: relative;
+      z-index: 2;
     }
     .lunch-card-head {
       display: flex;
@@ -964,6 +1111,7 @@
       line-height: 1.20;
       letter-spacing: -0.01em;
       word-break: normal;
+      text-shadow: 0 1px 6px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.9);
     }
     .badge-v {
       display: inline-flex;
@@ -1012,9 +1160,10 @@
     }
     .lunch-card-price {
       font-size: clamp(1.02rem, 3.8vw, 1.18rem);
-      font-weight: 500;
+      font-weight: 600;
       color: #000000;
       letter-spacing: 0.01em;
+      text-shadow: 0 1px 6px rgba(255, 255, 255, 0.95);
     }
 
     /* Single and Double stacked into TWO LINES for maximum topic width */
@@ -1040,21 +1189,23 @@
       font-weight: 600;
       color: #000000;
       letter-spacing: 0.01em;
+      text-shadow: 0 1px 6px rgba(255, 255, 255, 0.95);
     }
     .price-stacked .tag {
       font-size: 0.58rem;
       font-weight: 600;
-      color: #555555;
+      color: #333333;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
     .lunch-card-desc {
       font-size: clamp(0.72rem, 2.6vw, 0.80rem);
-      color: #444444;
+      color: #1a1a1a;
       line-height: 1.40;
-      font-weight: 400;
+      font-weight: 480;
       white-space: pre-line;
+      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.85);
     }
 
     /* Clean Luxury Meta: Add-ons & Portion Options */
@@ -1066,7 +1217,10 @@
       margin-top: 0.2rem;
       font-size: clamp(0.64rem, 2.3vw, 0.72rem);
       line-height: 1.30;
-      color: #555555;
+      color: #222222;
+      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95);
+      position: relative;
+      z-index: 2;
     }
     .meta-pill {
       font-size: 0.52rem;
@@ -1464,7 +1618,9 @@
        TASTING MENUS VIEW (Matching Belle Colombo PDF Pages 3 & 4)
        ======================================================== */
     #panel-tasting {
-      background: #fbfbf9;
+      background: rgba(251, 251, 249, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       color: #111111;
       overflow: hidden;
       display: flex;
@@ -1747,7 +1903,9 @@
        EVENT CALENDAR VIEW (Matching media_1791182288111.png)
        ======================================================== */
     #panel-events {
-      background: #fbfbf9;
+      background: rgba(251, 251, 249, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       color: #111111;
       overflow: hidden;
       display: flex;
@@ -2224,6 +2382,40 @@
     </div>
   </div>
 
+  <!-- ========================================================
+       BELLE AMBIENT BACKGROUND SYSTEM
+       Strictly non-element: 100% decoupled from layout.
+       Landing Page: Red Wine Pouring Video.
+       Menu Items & Beyond: Atmospheric Restaurant Slideshow.
+       Reduced transparency preserves complete readability.
+       ======================================================== -->
+  <div id="ambientBgSystem" class="ambient-bg-system" aria-hidden="true">
+    <!-- Landing Page Wine Pouring Video Background (Strictly Video Only) -->
+    <div class="ambient-video-layer" id="ambientVideoLayer">
+      <video id="heroWineVideo" class="ambient-video" autoplay muted loop playsinline preload="auto">
+        <source src="assets/video/bg_hero_landscape.mp4" type="video/mp4" />
+      </video>
+      <div class="ambient-video-scrim"></div>
+    </div>
+
+    <!-- Menu Items & Beyond Animated Slideshow Background -->
+    <div class="ambient-slideshow-layer" id="ambientSlideshowLayer">
+      <div class="ambient-slide is-active" style="background-image: url('assets/images/bg/slide_lamb_chops.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_bar_counter.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_tacos_kitchen.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_cocktail_smoke.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_glazed_ribs.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_chef_plating.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_crispy_tempura.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_luxury_dessert.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_vip_lounge.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_guest_dining.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
+      <div class="ambient-slide" style="background-image: url('assets/images/bg/slide_gourmet_meatballs.jpg');"></div>
+      <div class="ambient-slideshow-scrim"></div>
+    </div>
+  </div>
+
   <main class="app-viewport">
 
     <!-- ===== STATE 1: HOME LANDING VIEW (Centered 3 Elements: MENU, EVENTS, SOCIAL DOCK) ===== -->
@@ -2366,6 +2558,10 @@
       
     <section class="lunch-item-slot" data-index="0" aria-label="Roasted Tomato & Chipotle Soup">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/chef_plating.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2393,6 +2589,10 @@
   
     <section class="lunch-item-slot" data-index="1" aria-label="The Signature Caesar">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2425,6 +2625,10 @@
   
     <section class="lunch-item-slot" data-index="2" aria-label="Organic Green Salad">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2452,6 +2656,10 @@
   
     <section class="lunch-item-slot" data-index="3" aria-label="Heirloom Tomato, Goat’s Cheese & Basil Salad">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/artisan_salad.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2479,6 +2687,10 @@
   
     <section class="lunch-item-slot" data-index="4" aria-label="House-Made Pâté, Duck Rillettes & Smoked Meat Platter">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_glazed_ribs.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2515,6 +2727,10 @@
   
     <section class="lunch-item-slot" data-index="5" aria-label="The Classic Burger">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2552,6 +2768,10 @@
   
     <section class="lunch-item-slot" data-index="6" aria-label="The Shogun Burger">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2584,6 +2804,10 @@
   
     <section class="lunch-item-slot" data-index="7" aria-label="The Smoked Club">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_tacos_kitchen.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2616,6 +2840,10 @@
   
     <section class="lunch-item-slot" data-index="8" aria-label="The Classic Rye">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_glazed_ribs.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -2658,6 +2886,10 @@
   
     <section class="lunch-item-slot" data-index="9" aria-label="The Signature Steak Sandwich">
       <div class="lunch-slot-content">
+        <div class="lunch-slot-bg" aria-hidden="true">
+          <div class="lunch-slot-bg-photo" style="background-image: url('assets/images/bg/slide_steak_grill.jpg');"></div>
+          <div class="lunch-slot-bg-scrim"></div>
+        </div>
         <article class="lunch-card">
           <div class="lunch-card-head">
             <div class="lunch-card-title-wrap">
@@ -4024,12 +4256,123 @@ Choose your spread/rillette style:</p>
     var panels = document.querySelectorAll('.view-food-panel');
     var backToHubButtons = document.querySelectorAll('[data-back-to-hub]');
 
+    /* ========================================================
+       AMBIENT BACKGROUND CONTROLLER
+       Manages background video on landing page and smooth,
+       cinematic slideshow when navigating menu items.
+       100% decoupled from the UI layout and elements.
+       ======================================================== */
+    (function initAmbientBackground() {
+      var video = document.getElementById('heroWineVideo');
+      var slideshowLayer = document.getElementById('ambientSlideshowLayer');
+      var slides = slideshowLayer ? Array.prototype.slice.call(slideshowLayer.querySelectorAll('.ambient-slide')) : [];
+      
+      var currentSlideIdx = 0;
+      var slideTimer = null;
+      var SLIDE_INTERVAL = 5000;
+
+      function nextSlide() {
+        if (!slides.length) return;
+        slides[currentSlideIdx].classList.remove('is-active');
+        currentSlideIdx = (currentSlideIdx + 1) % slides.length;
+        slides[currentSlideIdx].classList.add('is-active');
+      }
+
+      function startSlideshow() {
+        if (slideTimer) clearInterval(slideTimer);
+        slideTimer = setInterval(nextSlide, SLIDE_INTERVAL);
+      }
+
+      function stopSlideshow() {
+        if (slideTimer) {
+          clearInterval(slideTimer);
+          slideTimer = null;
+        }
+      }
+
+      function playVideo() {
+        if (video) {
+          video.muted = true;
+          video.defaultMuted = true;
+          video.playsInline = true;
+          var p = video.play();
+          if (p && typeof p.catch === 'function') {
+            p.catch(function() {
+              // Silently handle autoplay restrictions until user interaction
+            });
+          }
+        }
+      }
+
+      function pauseVideo() {
+        if (video && !video.paused) {
+          video.pause();
+        }
+      }
+
+      // Context-aware slide focus when opening menu sections
+      var categorySlideMap = {
+        'thebar': 'slide_cocktail_smoke.jpg',
+        'bar': 'slide_cocktail_smoke.jpg',
+        'lunch': 'slide_lamb_chops.jpg',
+        'alacarte': 'slide_glazed_ribs.jpg',
+        'appetisers': 'slide_crispy_tempura.jpg',
+        'entrees': 'slide_gourmet_meatballs.jpg',
+        'mains': 'slide_lamb_chops.jpg',
+        'grill': 'slide_steak_grill.jpg',
+        'desserts': 'slide_luxury_dessert.jpg',
+        'tasting': 'slide_chef_plating.jpg',
+        'events': 'slide_vip_lounge.jpg'
+      };
+
+      function focusCategorySlide(catKey) {
+        if (!slides.length) return;
+        var targetImg = categorySlideMap[catKey];
+        if (!targetImg) return;
+        for (var i = 0; i < slides.length; i++) {
+          if (slides[i].style.backgroundImage.indexOf(targetImg) !== -1) {
+            if (i !== currentSlideIdx) {
+              slides[currentSlideIdx].classList.remove('is-active');
+              currentSlideIdx = i;
+              slides[currentSlideIdx].classList.add('is-active');
+            }
+            break;
+          }
+        }
+      }
+
+      window.ambientBg = {
+        onEnterMenu: function() {
+          pauseVideo();
+          startSlideshow();
+        },
+        onEnterHome: function() {
+          stopSlideshow();
+          playVideo();
+        },
+        onOpenCategory: function(catKey) {
+          focusCategorySlide(catKey);
+        }
+      };
+
+      // Autoplay activation and user interaction listeners
+      playVideo();
+      var resumeVideoOnce = function() {
+        if (!document.body.classList.contains('is-menu-active')) {
+          playVideo();
+        }
+      };
+      window.addEventListener('touchstart', resumeVideoOnce, { passive: true, once: true });
+      window.addEventListener('click', resumeVideoOnce, { passive: true, once: true });
+    })();
+
     function openMenuHub() {
       // Re-trigger entrance animation smoothly
       document.body.classList.remove('is-menu-active');
       void document.body.offsetWidth; // Force CSS reflow
       document.body.classList.add('is-menu-active');
       window.scrollTo(0, 0);
+      if (window.ambientBg) window.ambientBg.onEnterMenu();
     }
 
     function returnToHome() {
@@ -4037,9 +4380,11 @@ Choose your spread/rillette style:</p>
       panels.forEach(function (p) { p.classList.remove('is-active'); });
       window.scrollTo(0, 0);
       playHomeDividers();
+      if (window.ambientBg) window.ambientBg.onEnterHome();
     }
 
     function openPanel(targetId) {
+      document.body.classList.add('is-menu-active');
       panels.forEach(function (p) { p.classList.remove('is-active'); });
       var courseKeys = ['appetisers', 'entrees', 'mains', 'grill', 'desserts'];
       var isCourse = courseKeys.indexOf(targetId) !== -1;
@@ -4047,6 +4392,10 @@ Choose your spread/rillette style:</p>
       var targetPanel = document.getElementById('panel-' + panelId);
       if (targetPanel) {
         targetPanel.classList.add('is-active');
+        if (window.ambientBg) {
+          window.ambientBg.onEnterMenu();
+          window.ambientBg.onOpenCategory(targetId);
+        }
         if (targetId === 'lunch' && lunchVerticalScroll) {
           lunchVerticalScroll.scrollTop = 0;
           goToLunchItem(0, false);
@@ -4065,6 +4414,7 @@ Choose your spread/rillette style:</p>
 
     function returnToMenuHub() {
       panels.forEach(function (p) { p.classList.remove('is-active'); });
+      if (window.ambientBg) window.ambientBg.onEnterMenu();
     }
 
     // Click on MENU link on Home page
@@ -4346,8 +4696,11 @@ Choose your spread/rillette style:</p>
         }
       });
 
-      // Window resize re-alignment
+      // Window resize re-alignment (guarded to width-only changes to avoid mobile address bar scroll snapping)
+      var lastWindowWidth = window.innerWidth;
       window.addEventListener('resize', function() {
+        if (window.innerWidth === lastWindowWidth) return;
+        lastWindowWidth = window.innerWidth;
         if (panelLunch && panelLunch.classList.contains('is-active') && lunchVerticalScroll) {
           var slots = lunchVerticalScroll.querySelectorAll('.lunch-item-slot');
           lunchVerticalScroll.scrollTop = slots[currentLunchItemIndex] ? slots[currentLunchItemIndex].offsetTop : currentLunchItemIndex * getSlotHeight();
@@ -4536,6 +4889,7 @@ Choose your spread/rillette style:</p>
     function selectAlacarteCourse(key) {
       var meta = aLaCarteMeta[key];
       if (!meta) return;
+      if (window.ambientBg) window.ambientBg.onOpenCategory(key);
       currentAlacarteCourseKey = key;
       currentAlacarteItemIndex = 0;
       maxAlacarteIndex = Math.max(0, meta.totalItems - visibleAlacarteItems + (meta.nextKey ? 1 : 0));
@@ -4814,9 +5168,19 @@ Choose your spread/rillette style:</p>
       var h = window.location.hash;
       if (h === '#menu') {
         document.body.classList.add('is-ready', 'is-menu-active');
+        if (window.ambientBg) window.ambientBg.onEnterMenu();
       } else if (h === '#lunch') {
         document.body.classList.add('is-ready', 'is-menu-active');
         openPanel('lunch');
+        try {
+          var urlParams = new URLSearchParams(window.location.search);
+          var targetItemParam = urlParams.get('item');
+          if (targetItemParam !== null && !isNaN(parseInt(targetItemParam))) {
+            setTimeout(function() {
+              goToLunchItem(parseInt(targetItemParam), false);
+            }, 100);
+          }
+        } catch(e) {}
       } else if (h === '#alacarte' || h === '#appetisers') {
         document.body.classList.add('is-ready', 'is-menu-active');
         openPanel('appetisers');
@@ -4835,6 +5199,12 @@ Choose your spread/rillette style:</p>
       } else if (h === '#thebar' || h === '#bar') {
         document.body.classList.add('is-ready', 'is-menu-active');
         openPanel('thebar');
+      } else if (h === '#tasting') {
+        document.body.classList.add('is-ready', 'is-menu-active');
+        openPanel('tasting');
+      } else if (h === '#events') {
+        document.body.classList.add('is-ready', 'is-menu-active');
+        openPanel('events');
       } else if (document.body.classList.contains('is-ready')) {
         returnToHome();
       }
@@ -4852,6 +5222,7 @@ Choose your spread/rillette style:</p>
     function renderEventsList(events) {
       var scrollContainer = document.getElementById('eventsViewScroll');
       if (!scrollContainer) return;
+      var savedScrollTop = scrollContainer.scrollTop;
       var existingCards = scrollContainer.querySelectorAll('.event-card');
       existingCards.forEach(function(c) { c.remove(); });
 
@@ -4917,17 +5288,38 @@ Choose your spread/rillette style:</p>
         }
       });
       eventCards = scrollContainer.querySelectorAll('.event-card');
+      scrollContainer.scrollTop = savedScrollTop;
     }
+
+    var defaultLunchImages = [
+      'assets/images/chef_plating.jpg',
+      'assets/images/artisan_salad.jpg',
+      'assets/images/artisan_salad.jpg',
+      'assets/images/artisan_salad.jpg',
+      'assets/images/bg/slide_glazed_ribs.jpg',
+      'assets/images/bg/slide_steak_grill.jpg',
+      'assets/images/bg/slide_steak_grill.jpg',
+      'assets/images/bg/slide_tacos_kitchen.jpg',
+      'assets/images/bg/slide_glazed_ribs.jpg',
+      'assets/images/bg/slide_steak_grill.jpg'
+    ];
 
     function renderLunchList(items) {
       if (!lunchVerticalScroll) return;
+      var savedScrollTop = lunchVerticalScroll.scrollTop;
+      var savedIdx = currentLunchItemIndex || 0;
       var total = (items || []).length;
       var html = '';
       (items || []).forEach(function(item, idx) {
         var isVeg = !!item.isVeg;
         var hasMeta = !!item.meta;
+        var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
         html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
           '<div class="lunch-slot-content">' +
+            '<div class="lunch-slot-bg" aria-hidden="true">' +
+              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + itemImg + '\');"></div>' +
+              '<div class="lunch-slot-bg-scrim"></div>' +
+            '</div>' +
             '<article class="lunch-card">' +
               '<div class="lunch-card-head">' +
                 '<div class="lunch-card-title-wrap">' +
@@ -4956,7 +5348,9 @@ Choose your spread/rillette style:</p>
       });
       lunchVerticalScroll.innerHTML = html;
       maxLunchIndex = Math.max(0, total - visibleLunchItems);
-      updateDividers(currentLunchItemIndex || 0);
+      lunchVerticalScroll.scrollTop = savedScrollTop;
+      currentLunchItemIndex = Math.min(savedIdx, maxLunchIndex);
+      updateDividers(currentLunchItemIndex);
       if (sliderThumb) {
         sliderThumb.setAttribute('aria-valuemax', total);
       }
@@ -5022,13 +5416,21 @@ Choose your spread/rillette style:</p>
         aLaCarteCoursesHtml[key] = html;
       });
 
-      if (currentAlacarteCourseKey && aLaCarteCoursesHtml[currentAlacarteCourseKey]) {
-        selectAlacarteCourse(currentAlacarteCourseKey);
+      if (currentAlacarteCourseKey && aLaCarteCoursesHtml[currentAlacarteCourseKey] && alacarteVerticalScroll) {
+        var savedScrollTop = alacarteVerticalScroll.scrollTop;
+        var savedIdx = currentAlacarteItemIndex || 0;
+        alacarteVerticalScroll.innerHTML = aLaCarteCoursesHtml[currentAlacarteCourseKey];
+        bindAlacarteNextButtons();
+        alacarteVerticalScroll.scrollTop = savedScrollTop;
+        currentAlacarteItemIndex = Math.min(savedIdx, maxAlacarteIndex);
+        updateAlacarteDividers(currentAlacarteItemIndex);
       }
     }
 
     function renderBarList(categories) {
       if (!categories || !barVerticalScroll) return;
+      var savedScrollTop = barVerticalScroll.scrollTop;
+      var savedIdx = currentBarItemIndex || 0;
       var total = 0;
       var html = '';
       (categories || []).forEach(function(cat) {
@@ -5060,7 +5462,9 @@ Choose your spread/rillette style:</p>
       });
       barVerticalScroll.innerHTML = html;
       maxBarIndex = Math.max(0, total - visibleBarItems);
-      updateBarDividers(currentBarItemIndex || 0);
+      barVerticalScroll.scrollTop = savedScrollTop;
+      currentBarItemIndex = Math.min(savedIdx, maxBarIndex);
+      updateBarDividers(currentBarItemIndex);
     }
 
     function renderTastingData(tasting) {
@@ -5108,8 +5512,28 @@ Choose your spread/rillette style:</p>
       });
     }
 
-    function applyBelleData(data) {
-      if (!data) return;
+    var lastAppliedDataJson = null;
+
+    // Initialize cache with default data so first fetch doesn't trigger redundant re-render
+    if (window.BELLE_DEFAULT_DATA) {
+      try {
+        lastAppliedDataJson = JSON.stringify(window.BELLE_DEFAULT_DATA);
+      } catch(e) {}
+    }
+
+    function applyBelleData(data, force) {
+      if (!data || typeof data !== 'object') return;
+      var newJson = '';
+      try {
+        newJson = JSON.stringify(data);
+      } catch (e) {
+        newJson = '';
+      }
+      // If the incoming data is identical to what is currently rendered, do not touch DOM or reset scroll!
+      if (!force && lastAppliedDataJson && newJson === lastAppliedDataJson) {
+        return;
+      }
+      lastAppliedDataJson = newJson;
       window.belleCurrentData = data;
       if (data.events) renderEventsList(data.events);
       if (data.lunchItems) renderLunchList(data.lunchItems);
@@ -5120,16 +5544,17 @@ Choose your spread/rillette style:</p>
       console.log('⚡ Belle Colombo Live Data Applied Successfully (0ms)');
     }
 
-    // Check localStorage on load
+    // Check localStorage on load, fallback to default production data
     try {
       var saved = localStorage.getItem('belle_data');
       if (saved) {
         applyBelleData(JSON.parse(saved));
+      } else if (window.BELLE_DEFAULT_DATA) {
+        applyBelleData(window.BELLE_DEFAULT_DATA);
       }
     } catch(e) {}
 
-    
-        /* ========================================================
+    /* ========================================================
        GOOGLE FIREBASE REAL-TIME CLOUD SYNC (Customer Live Link)
        ======================================================== */
     var fbCloudUrl = "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content.json";
@@ -5143,19 +5568,23 @@ Choose your spread/rillette style:</p>
         .then(function(cloudData) {
           if (cloudData && typeof cloudData === 'object') {
             applyBelleData(cloudData);
-            console.log('⚡ Synchronized live from Firebase Cloud');
           }
         })
         .catch(function(err) {
-          console.warn('Firebase sync notice:', err.message);
+          // Silent fallback on offline/restricted network
         });
     }
 
-    // Immediate fetch on load
+    // Initial background sync check on load
     syncFromFirebaseCloud();
 
-    // Auto-poll cloud every 3 seconds to guarantee real-time updates everywhere
-    setInterval(syncFromFirebaseCloud, 3000);
+    // Background sync check every 30s (non-intrusive, checks for changes without resetting scroll)
+    setInterval(syncFromFirebaseCloud, 30000);
+
+    // Also re-check when user returns to this browser tab
+    window.addEventListener('visibilitychange', function() {
+      if (!document.hidden) syncFromFirebaseCloud();
+    });
 
     // Listen to iframe postMessage from Admin Studio
     window.addEventListener('message', function(ev) {
@@ -5170,9 +5599,6 @@ Choose your spread/rillette style:</p>
         } else if (target === 'menu-hub') {
           openMenuHub();
         } else {
-          if (target !== 'events') {
-            document.body.classList.add('is-menu-active');
-          }
           openPanel(target);
         }
       }

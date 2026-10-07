@@ -7,3 +7,10 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# Camera RAW files (large uncompressed sensor dumps)
+*.RAF
+*.raw
+*.cr2
+*.nef
+
