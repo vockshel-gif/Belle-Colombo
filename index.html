@@ -436,8 +436,10 @@
       height: 100vh;
       height: 100dvh;
       max-height: 100vh;
-      max-height: 100dvh;
-      overflow: hidden !important; /* STRICTLY NON-SCROLLABLE */
+      overflow-y: auto !important; /* Smooth scroll support if multiple custom categories are added */
+      overflow-x: hidden !important;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
       display: none;
       flex-direction: column;
       justify-content: space-between;
@@ -453,6 +455,9 @@
     }
     .is-menu-active .view-menu-hub {
       display: flex;
+    }
+    .view-menu-hub::-webkit-scrollbar {
+      display: none;
     }
 
     /* Keyframe Animations for Menu Hub Entrance */
@@ -641,56 +646,56 @@
     }
     .menu-cat-btn.cat-btn-thebar:hover { letter-spacing: .16em; color: #ffffff; }
 
+    .menu-cat-btn.cat-btn-custom {
+      font-size: clamp(1.8rem, 7.8vw, 2.9rem);
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .menu-cat-btn.cat-btn-custom:hover { letter-spacing: .14em; color: #ffffff; }
+
     /* Staggered Entrance Animations for Menu Hub Items */
+    .is-menu-active .menu-cat-btn {
+      animation: hubWordEntrance 0.85s var(--ease-out) var(--stagger-delay, 0.32s) both;
+    }
     .is-menu-active .menu-cat-btn.cat-btn-lunch {
-      animation: hubWordEntrance 0.85s var(--ease-out) 0.32s both;
+      animation: hubWordEntrance 0.85s var(--ease-out) var(--stagger-delay, 0.32s) both;
     }
     .is-menu-active .menu-cat-btn.cat-btn-alacarte {
-      animation: hubWordEntrance 0.85s var(--ease-out) 0.52s both;
+      animation: hubWordEntrance 0.85s var(--ease-out) var(--stagger-delay, 0.52s) both;
     }
     .is-menu-active .menu-cat-btn.cat-btn-tasting {
-      animation: hubWordEntrance 0.85s var(--ease-out) 0.72s both;
+      animation: hubWordEntrance 0.85s var(--ease-out) var(--stagger-delay, 0.72s) both;
     }
     .is-menu-active .menu-cat-btn.cat-btn-thebar {
-      animation: hubWordEntrance 0.85s var(--ease-out) 0.92s both;
+      animation: hubWordEntrance 0.85s var(--ease-out) var(--stagger-delay, 0.92s) both;
     }
 
-    .menu-hub-div-1, .menu-hub-div-2, .menu-hub-div-3 {
+    .menu-hub-div-1, .menu-hub-div-2, .menu-hub-div-3, .menu-divider.menu-hub-div {
       width: min(88%, 320px);
       margin: clamp(0.12rem, 0.7vh, 0.35rem) auto;
       opacity: 0;
       flex-shrink: 0;
     }
-    .is-menu-active .menu-hub-div-1 {
-      opacity: 1;
-      transition: opacity .5s;
-    }
-    .is-menu-active .menu-hub-div-2 {
-      opacity: 1;
-      transition: opacity .5s;
-    }
-    .is-menu-active .menu-hub-div-3 {
+    .is-menu-active .menu-hub-div-1,
+    .is-menu-active .menu-hub-div-2,
+    .is-menu-active .menu-hub-div-3,
+    .is-menu-active .menu-divider.menu-hub-div {
       opacity: 1;
       transition: opacity .5s;
     }
 
-    .is-menu-active .menu-hub-div-1 .d-line {
-      animation: grow 0.85s var(--ease-out) 0.42s forwards;
+    .is-menu-active .menu-hub-div-1 .d-line,
+    .is-menu-active .menu-hub-div-2 .d-line,
+    .is-menu-active .menu-hub-div-3 .d-line,
+    .is-menu-active .menu-divider.menu-hub-div .d-line {
+      animation: grow 0.85s var(--ease-out) var(--stagger-delay, 0.42s) forwards;
     }
-    .is-menu-active .menu-hub-div-1 .divider-circle {
-      animation: popCircle 0.5s var(--ease-out) 0.42s forwards;
-    }
-    .is-menu-active .menu-hub-div-2 .d-line {
-      animation: grow 0.85s var(--ease-out) 0.62s forwards;
-    }
-    .is-menu-active .menu-hub-div-2 .divider-circle {
-      animation: popCircle 0.5s var(--ease-out) 0.62s forwards;
-    }
-    .is-menu-active .menu-hub-div-3 .d-line {
-      animation: grow 0.85s var(--ease-out) 0.82s forwards;
-    }
-    .is-menu-active .menu-hub-div-3 .divider-circle {
-      animation: popCircle 0.5s var(--ease-out) 0.82s forwards;
+    .is-menu-active .menu-hub-div-1 .divider-circle,
+    .is-menu-active .menu-hub-div-2 .divider-circle,
+    .is-menu-active .menu-hub-div-3 .divider-circle,
+    .is-menu-active .menu-divider.menu-hub-div .divider-circle {
+      animation: popCircle 0.5s var(--ease-out) var(--stagger-delay, 0.42s) forwards;
     }
 
     /* Bottom Social Media Dock inside Menu Hub (Direct match to media_1791123734994.png) */
@@ -2537,8 +2542,8 @@
         </svg>
       </div>
 
-      <!-- Categories List: LUNCH, À La Carte, TASTING MENUS, THE BAR (Single Line, Staggered Entrance) -->
-      <div class="menu-cat-list">
+      <!-- Categories List: LUNCH, À La Carte, TASTING MENUS, THE BAR & Custom Categories (Single Line, Staggered Entrance) -->
+      <div class="menu-cat-list" id="menuCatList">
         <button type="button" class="menu-cat-btn cat-btn-lunch" data-target="lunch">LUNCH</button>
         <div class="menu-divider menu-hub-div-1" style="--t:0s" aria-hidden="true">
   <span class="d-line line-left"></span>
@@ -3987,6 +3992,66 @@ Choose your spread/rillette style:</p>
 
     </div>
 
+  <!-- DYNAMIC CUSTOM CATEGORY VIEW (Full Lunch Layout: White theme, Watermark + Center Title, Subcategory Pills, Top Slider, 2-Item Snappy View, Social Dock) -->
+  <div class="view-food-panel lunch-theme" id="panel-custom-category" role="dialog" aria-label="Menu Category" aria-modal="true">
+    
+    <!-- Top-Left Back Button -->
+    <button type="button" class="btn-lunch-back" id="backFromCustomCategory" data-back-to-hub aria-label="Back to Menu Categories">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+
+    <!-- Header Region: Category Name + Slider Track -->
+    <header class="lunch-top-region">
+      <div class="lunch-header-group">
+        <svg class="lunch-header-svg" viewBox="0 0 380 84" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <text x="190" y="42" class="watermark-lunch" id="customCatWatermark">CATEGORY</text>
+          <text x="190" y="44" class="center-lunch" id="customCatTitle">CATEGORY</text>
+        </svg>
+      </div>
+
+      <!-- Dynamic Sub-category Nav Bar -->
+      <nav class="lunch-subcat-nav" id="customSubcatNav" aria-label="Category Sub-categories"></nav>
+
+      <!-- Top Slider Track -->
+      <div class="lunch-slider-wrap">
+        <div class="lunch-slider-track" id="customSliderTrack" title="Scroll through category dishes">
+          <div class="lunch-slider-thumb" id="customSliderThumb" role="slider" aria-label="Category Dishes Progress" aria-valuenow="1" aria-valuemin="1" aria-valuemax="8"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Top Boundary Divider identifying scrollable area -->
+    <div class="lunch-boundary-divider top-divider" aria-hidden="true"></div>
+
+    <!-- Vertically Scrollable Container (Interval of 1 with Dynamic Swipe Speed) -->
+    <div class="lunch-vertical-scroll" id="customVerticalScroll">
+      <!-- Dishes injected dynamically -->
+    </div>
+
+    <!-- Bottom Boundary Divider & Social Media Dock -->
+    <div class="lunch-boundary-divider bottom-divider" aria-hidden="true"></div>
+
+    <div class="lunch-dock-wrapper">
+      <footer class="lunch-sm-dock" aria-label="Social and Contact links">
+        <a href="https://wa.me/94770315589?text=Hi%20Belle%20Colombo%2C%20I%20would%20like%20to%20reserve%20a%20table." class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp (+94 77 031 5589)" title="Reserve via WhatsApp (+94 77 031 5589)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3.6 20.4l1.25-4.4A8.4 8.4 0 1 1 8.1 19.3z"/><path fill="currentColor" d="M9.3 7.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.6l-.5.6c-.1.1-.2.3 0 .5.5.9 1.3 1.7 2.3 2.3.2.1.4.1.5 0l.6-.7c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.4 0 .3 0 1-.4 1.5-.4.5-1.3.9-2 .9-.8 0-2.6-.4-4.3-2.1S8.4 10.6 8.4 9.7c0-.9.6-1.7.9-2.1z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/belle.colombo/" class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="Instagram (@belle.colombo)" title="Follow @belle.colombo on Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+        </a>
+        <a href="https://www.facebook.com/belle.colombo/" class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="Facebook (Belle Colombo)" title="Belle Colombo on Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.4 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.7v3h2.6V21z"/></svg>
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Belle+Colombo,+58A+Horton+Place,+Colombo+00700" class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="Location (58A Horton Place, Colombo 7)" title="Find us at 58A Horton Place, Colombo 7">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </a>
+      </footer>
+      <span class="lunch-dock-line"></span>
+    </div>
+
   </div>
 
   <!-- EVENT CALENDAR VIEW (Exact Match to media_1791182288111.png) -->
@@ -4476,7 +4541,7 @@ Choose your spread/rillette style:</p>
 
     function returnToHome() {
       document.body.classList.remove('is-menu-active');
-      panels.forEach(function (p) { p.classList.remove('is-active'); });
+      document.querySelectorAll('.view-food-panel').forEach(function (p) { p.classList.remove('is-active'); });
       window.scrollTo(0, 0);
       playHomeDividers();
       if (window.ambientBg) window.ambientBg.onEnterHome();
@@ -4484,7 +4549,8 @@ Choose your spread/rillette style:</p>
 
     function openPanel(targetId) {
       document.body.classList.add('is-menu-active');
-      panels.forEach(function (p) { p.classList.remove('is-active'); });
+      var allPanels = document.querySelectorAll('.view-food-panel');
+      allPanels.forEach(function (p) { p.classList.remove('is-active'); });
       var courseKeys = ['appetisers', 'entrees', 'mains', 'grill', 'desserts'];
       var isCourse = courseKeys.indexOf(targetId) !== -1;
       var panelId = isCourse ? 'alacarte' : targetId;
@@ -4508,11 +4574,30 @@ Choose your spread/rillette style:</p>
           selectTastingMenu('five-course');
           if (tastingViewScroll) tastingViewScroll.scrollTop = 0;
         }
+      } else {
+        // Dynamic custom category panel activation
+        var allCats = (window.belleCurrentData && window.belleCurrentData.menuCategories) ||
+                      (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) || [];
+        var foundCat = allCats.find(function(c) { return c.id === targetId; });
+        if (!foundCat && window.belleCurrentData && window.belleCurrentData.customCategories) {
+          foundCat = window.belleCurrentData.customCategories.find(function(c) { return c.id === targetId; });
+        }
+        if (foundCat) {
+          renderCustomCategory(foundCat);
+          var customPanel = document.getElementById('panel-custom-category');
+          if (customPanel) {
+            customPanel.classList.add('is-active');
+            if (window.ambientBg) {
+              window.ambientBg.onEnterMenu();
+              window.ambientBg.onOpenCategory(targetId);
+            }
+          }
+        }
       }
     }
 
     function returnToMenuHub() {
-      panels.forEach(function (p) { p.classList.remove('is-active'); });
+      document.querySelectorAll('.view-food-panel').forEach(function (p) { p.classList.remove('is-active'); });
       if (window.ambientBg) window.ambientBg.onEnterMenu();
     }
 
@@ -4792,6 +4877,20 @@ Choose your spread/rillette style:</p>
             e.preventDefault();
             goToBarItem(currentBarItemIndex - 2, true);
           }
+        } else if (panelCustom && panelCustom.classList.contains('is-active')) {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            goToCustomItem(currentCustomItemIndex + 1, true);
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            goToCustomItem(currentCustomItemIndex - 1, true);
+          } else if (e.key === 'PageDown') {
+            e.preventDefault();
+            goToCustomItem(currentCustomItemIndex + 2, true);
+          } else if (e.key === 'PageUp') {
+            e.preventDefault();
+            goToCustomItem(currentCustomItemIndex - 2, true);
+          }
         }
       });
 
@@ -4812,6 +4911,10 @@ Choose your spread/rillette style:</p>
           var bSlots = barVerticalScroll.querySelectorAll('.lunch-item-slot');
           barVerticalScroll.scrollTop = bSlots[currentBarItemIndex] ? bSlots[currentBarItemIndex].offsetTop : currentBarItemIndex * getBarSlotHeight();
           updateBarDividers(currentBarItemIndex);
+        } else if (panelCustom && panelCustom.classList.contains('is-active') && customVerticalScroll) {
+          var cSlots = customVerticalScroll.querySelectorAll('.lunch-item-slot');
+          customVerticalScroll.scrollTop = cSlots[currentCustomItemIndex] ? cSlots[currentCustomItemIndex].offsetTop : currentCustomItemIndex * getCustomSlotHeight();
+          updateCustomDividers(currentCustomItemIndex);
         }
       });
 
@@ -5256,6 +5359,156 @@ Choose your spread/rillette style:</p>
       barSliderThumb.addEventListener('pointercancel', endBThumbDrag);
     }
 
+    // Custom Category Scroller & Slider Engine
+    var customVerticalScroll = document.getElementById('customVerticalScroll');
+    var panelCustom = document.getElementById('panel-custom-category');
+    var customSliderTrack = document.getElementById('customSliderTrack');
+    var customSliderThumb = document.getElementById('customSliderThumb');
+    var backFromCustomCategory = document.getElementById('backFromCustomCategory');
+
+    var currentCustomCategoryData = null;
+    var currentCustomItemsRaw = [];
+    var currentCustomFilterSubcat = 'all';
+    var currentCustomItemIndex = 0;
+    var maxCustomIndex = 0;
+    var visibleCustomItems = 2;
+
+    if (backFromCustomCategory) {
+      backFromCustomCategory.addEventListener('click', function(e) {
+        e.preventDefault();
+        returnToMenuHub();
+      });
+    }
+
+    function getCustomSlotHeight() {
+      if (!customVerticalScroll) return 180;
+      var firstSlot = customVerticalScroll.querySelector('.lunch-item-slot');
+      if (firstSlot && firstSlot.offsetHeight > 0) {
+        return firstSlot.offsetHeight;
+      }
+      return customVerticalScroll.clientHeight / visibleCustomItems;
+    }
+
+    function updateCustomDividers(topIndex) {
+      if (!customVerticalScroll) return;
+      var slots = customVerticalScroll.querySelectorAll('.lunch-item-slot');
+      slots.forEach(function(slot, idx) {
+        var div = slot.querySelector('.lunch-mid-divider');
+        if (!div) return;
+        if (idx === topIndex) {
+          div.style.visibility = 'visible';
+        } else {
+          div.style.visibility = 'hidden';
+        }
+      });
+    }
+
+    function updateCustomThumb(ratio) {
+      if (!customSliderThumb) return;
+      var pct = Math.max(0, Math.min(100, ratio * 100));
+      customSliderThumb.style.left = pct + '%';
+      customSliderThumb.setAttribute('aria-valuenow', (currentCustomItemIndex + 1).toString());
+    }
+
+    function goToCustomItem(index, smooth) {
+      if (!customVerticalScroll) return;
+      currentCustomItemIndex = Math.max(0, Math.min(maxCustomIndex, index));
+      var slotH = getCustomSlotHeight();
+      var slots = customVerticalScroll.querySelectorAll('.lunch-item-slot');
+      var targetTop = slots[currentCustomItemIndex] ? slots[currentCustomItemIndex].offsetTop : currentCustomItemIndex * slotH;
+
+      customVerticalScroll.scrollTo({
+        top: targetTop,
+        behavior: smooth !== false ? 'smooth' : 'auto'
+      });
+      if (maxCustomIndex > 0) {
+        updateCustomThumb(currentCustomItemIndex / maxCustomIndex);
+      } else {
+        updateCustomThumb(0);
+      }
+      updateCustomDividers(currentCustomItemIndex);
+    }
+
+    if (customVerticalScroll) {
+      var isCustomTicking = false;
+      customVerticalScroll.addEventListener('scroll', function() {
+        if (!isCustomTicking) {
+          window.requestAnimationFrame(function() {
+            var maxScroll = customVerticalScroll.scrollHeight - customVerticalScroll.clientHeight;
+            if (maxScroll > 0) {
+              var ratio = customVerticalScroll.scrollTop / maxScroll;
+              updateCustomThumb(ratio);
+              var slots = customVerticalScroll.querySelectorAll('.lunch-item-slot');
+              var sTop = customVerticalScroll.scrollTop;
+              var closestIdx = 0;
+              var minDist = Infinity;
+              for (var i = 0; i <= maxCustomIndex; i++) {
+                if (slots[i]) {
+                  var dist = Math.abs(slots[i].offsetTop - sTop);
+                  if (dist < minDist) {
+                    minDist = dist;
+                    closestIdx = i;
+                  }
+                }
+              }
+              if (closestIdx !== currentCustomItemIndex) {
+                currentCustomItemIndex = closestIdx;
+                updateCustomDividers(currentCustomItemIndex);
+              }
+            }
+            isCustomTicking = false;
+          });
+          isCustomTicking = true;
+        }
+      }, { passive: true });
+    }
+
+    if (customSliderTrack && customVerticalScroll) {
+      customSliderTrack.addEventListener('click', function(e) {
+        var rect = customSliderTrack.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        var ratio = Math.max(0, Math.min(1, clickX / rect.width));
+        var targetItem = Math.round(ratio * maxCustomIndex);
+        goToCustomItem(targetItem, true);
+      });
+    }
+
+    if (customSliderThumb && customVerticalScroll) {
+      var isCThumbDragging = false;
+      customSliderThumb.addEventListener('pointerdown', function(e) {
+        isCThumbDragging = true;
+        customSliderThumb.setPointerCapture(e.pointerId);
+      });
+      customSliderThumb.addEventListener('pointermove', function(e) {
+        if (!isCThumbDragging || !customSliderTrack) return;
+        var rect = customSliderTrack.getBoundingClientRect();
+        var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        var maxScroll = customVerticalScroll.scrollHeight - customVerticalScroll.clientHeight;
+        customVerticalScroll.scrollTop = ratio * maxScroll;
+      });
+      function endCThumbDrag() {
+        if (isCThumbDragging) {
+          isCThumbDragging = false;
+          var slots = customVerticalScroll.querySelectorAll('.lunch-item-slot');
+          var sTop = customVerticalScroll.scrollTop;
+          var closestIdx = 0;
+          var minDist = Infinity;
+          for (var i = 0; i <= maxCustomIndex; i++) {
+            if (slots[i]) {
+              var dist = Math.abs(slots[i].offsetTop - sTop);
+              if (dist < minDist) {
+                minDist = dist;
+                closestIdx = i;
+              }
+            }
+          }
+          goToCustomItem(closestIdx, true);
+        }
+      }
+      customSliderThumb.addEventListener('pointerup', endCThumbDrag);
+      customSliderThumb.addEventListener('pointercancel', endCThumbDrag);
+    }
+
     // Initial setup on load
     updateDividers(0);
     updateAlacarteDividers(0);
@@ -5304,6 +5557,20 @@ Choose your spread/rillette style:</p>
       } else if (h === '#events') {
         document.body.classList.add('is-ready', 'is-menu-active');
         openPanel('events');
+      } else if (h && h.length > 1 && h !== '#home' && h !== '#menu') {
+        var catId = h.substring(1);
+        var allCats = (window.belleCurrentData && window.belleCurrentData.menuCategories) ||
+                      (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) || [];
+        var match = allCats.find(function(c) { return c.id === catId; });
+        if (!match && window.belleCurrentData && window.belleCurrentData.customCategories) {
+          match = window.belleCurrentData.customCategories.find(function(c) { return c.id === catId; });
+        }
+        if (match) {
+          document.body.classList.add('is-ready', 'is-menu-active');
+          openPanel(catId);
+        } else if (document.body.classList.contains('is-ready')) {
+          returnToHome();
+        }
       } else if (document.body.classList.contains('is-ready')) {
         returnToHome();
       }
@@ -5520,6 +5787,197 @@ Choose your spread/rillette style:</p>
       renderLunchListFiltered();
     }
 
+    /* ========================================================
+       DYNAMIC MENU CATEGORIES & CUSTOM CATEGORY PANEL ENGINE
+       ======================================================== */
+    function renderMenuHubCategories(categories) {
+      var container = document.getElementById('menuCatList');
+      if (!container) return;
+      var cats = (categories && Array.isArray(categories) && categories.length) ? categories : [
+        { id: 'lunch', name: 'LUNCH' },
+        { id: 'alacarte', name: 'À LA CARTE' },
+        { id: 'tasting', name: 'TASTING MENUS' },
+        { id: 'thebar', name: 'THE BAR' }
+      ];
+
+      var html = '';
+      cats.forEach(function(cat, idx) {
+        var catClass = 'cat-btn-' + (cat.id || 'custom');
+        if (['lunch', 'alacarte', 'tasting', 'thebar'].indexOf(cat.id) === -1) {
+          catClass = 'cat-btn-custom';
+        }
+        var btnDelay = (0.32 + idx * 0.16).toFixed(2) + 's';
+        var divDelay = (0.42 + idx * 0.16).toFixed(2) + 's';
+
+        html += '<button type="button" class="menu-cat-btn ' + catClass + '" data-target="' + (cat.id || '') + '" style="--stagger-delay:' + btnDelay + ';">' + (cat.name || 'MENU') + '</button>';
+
+        if (idx < cats.length - 1) {
+          html += '<div class="menu-divider menu-hub-div menu-hub-div-' + (idx + 1) + '" style="--t:0s;--stagger-delay:' + divDelay + ';" aria-hidden="true">' +
+            '<span class="d-line line-left"></span>' +
+            '<span class="divider-circle" style="width:8px;height:8px;" aria-hidden="true"></span>' +
+            '<span class="d-line line-right"></span>' +
+          '</div>';
+        }
+      });
+
+      container.innerHTML = html;
+
+      container.querySelectorAll('.menu-cat-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var target = btn.getAttribute('data-target');
+          openPanel(target);
+        });
+      });
+    }
+
+    function renderCustomCategory(cat) {
+      if (!cat) return;
+      currentCustomCategoryData = cat;
+
+      var wText = document.getElementById('customCatWatermark');
+      var cText = document.getElementById('customCatTitle');
+      var catName = (cat.name || 'MENU').toUpperCase();
+      if (wText) wText.textContent = catName;
+      if (cText) cText.textContent = catName;
+
+      var items = cat.items || [];
+      if ((!items || items.length === 0) && window.belleCurrentData && window.belleCurrentData.customCategories) {
+        var found = window.belleCurrentData.customCategories.find(function(c) { return c.id === cat.id; });
+        if (found && found.items) items = found.items;
+      }
+      currentCustomItemsRaw = (items || []).slice();
+      currentCustomFilterSubcat = 'all';
+
+      renderCustomSubcatNav();
+      renderCustomListFiltered();
+    }
+
+    function renderCustomSubcatNav() {
+      var nav = document.getElementById('customSubcatNav');
+      if (!nav || !currentCustomCategoryData) return;
+      var catId = currentCustomCategoryData.id;
+      var subcats = [];
+
+      if (window.belleCurrentData && window.belleCurrentData.subCategories && window.belleCurrentData.subCategories[catId]) {
+        subcats = window.belleCurrentData.subCategories[catId].slice();
+      } else if (currentCustomCategoryData.subCategories && currentCustomCategoryData.subCategories.length) {
+        subcats = currentCustomCategoryData.subCategories.slice();
+      } else {
+        (currentCustomItemsRaw || []).forEach(function(it) {
+          if (it.subCategory && subcats.indexOf(it.subCategory) === -1) {
+            subcats.push(it.subCategory);
+          }
+        });
+      }
+
+      if (subcats.length === 0) {
+        nav.style.display = 'none';
+        return;
+      }
+      nav.style.display = 'flex';
+      var html = '<button type="button" class="lunch-subcat-pill ' + (currentCustomFilterSubcat === 'all' ? 'is-active' : '') + '" data-subcat="all">ALL</button>';
+      subcats.forEach(function(sc) {
+        html += '<button type="button" class="lunch-subcat-pill ' + (currentCustomFilterSubcat === sc ? 'is-active' : '') + '" data-subcat="' + sc + '">' + sc + '</button>';
+      });
+      nav.innerHTML = html;
+
+      nav.querySelectorAll('.lunch-subcat-pill').forEach(function(pill) {
+        pill.addEventListener('click', function(e) {
+          e.stopPropagation();
+          currentCustomFilterSubcat = pill.getAttribute('data-subcat');
+          nav.querySelectorAll('.lunch-subcat-pill').forEach(function(p) { p.classList.remove('is-active'); });
+          pill.classList.add('is-active');
+          renderCustomListFiltered();
+        });
+      });
+    }
+
+    function renderCustomListFiltered() {
+      var filtered = currentCustomItemsRaw;
+      if (currentCustomFilterSubcat !== 'all') {
+        filtered = currentCustomItemsRaw.filter(function(it) {
+          return it.subCategory === currentCustomFilterSubcat;
+        });
+      }
+      renderCustomDom(filtered);
+    }
+
+    function renderCustomDom(items) {
+      if (!customVerticalScroll) return;
+      var total = (items || []).length;
+      if (total === 0) {
+        customVerticalScroll.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:280px;text-align:center;padding:2.5rem 1.5rem;color:rgba(255,255,255,0.7);">' +
+          '<div style="font-size:2.4rem;margin-bottom:0.75rem;">' + ((currentCustomCategoryData && currentCustomCategoryData.icon) || '✨') + '</div>' +
+          '<h4 style="font-family:\'Cinzel\',serif;font-size:1.15rem;letter-spacing:0.12em;margin-bottom:0.4rem;color:#ffffff;">CULINARY PREPARATIONS</h4>' +
+          '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.8rem;letter-spacing:0.04em;color:rgba(255,255,255,0.5);">Dishes for this category will be available shortly.</p>' +
+        '</div>';
+        maxCustomIndex = 0;
+        currentCustomItemIndex = 0;
+        if (customSliderThumb) customSliderThumb.setAttribute('aria-valuemax', '1');
+        return;
+      }
+
+      var html = '';
+      items.forEach(function(item, idx) {
+        var isVeg = !!item.isVeg;
+        var hasMeta = !!item.meta;
+
+        var mediaBackdropHtml = '';
+        if (item.video) {
+          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
+            '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+            '<div class="lunch-slot-bg-scrim"></div>' +
+          '</div>';
+        } else {
+          var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
+          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
+            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + itemImg + '\');"></div>' +
+            '<div class="lunch-slot-bg-scrim"></div>' +
+          '</div>';
+        }
+
+        html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
+          '<div class="lunch-slot-content">' +
+            mediaBackdropHtml +
+            '<article class="lunch-card">' +
+              (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
+              '<div class="lunch-card-head">' +
+                '<div class="lunch-card-title-wrap">' +
+                  '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
+                '</div>' +
+                '<div class="lunch-price-wrap">' +
+                  (isVeg ? '<span class="badge-v" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
+                  (item.price ? '<span class="lunch-card-price">' + item.price + '</span>' : '') +
+                '</div>' +
+              '</div>' +
+              (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
+              (hasMeta ? (
+                '<div class="lunch-meta-row">' +
+                  '<span class="meta-pill">' + (item.meta.badge || 'ADD-ONS') + '</span>' +
+                  '<span class="meta-content">' + (item.meta.text || '') + '</span>' +
+                '</div>'
+              ) : '') +
+            '</article>' +
+          '</div>' +
+          '<div class="lunch-mid-divider" aria-hidden="true">' +
+            '<span class="line"></span>' +
+            '<span class="circle"></span>' +
+            '<span class="line"></span>' +
+          '</div>' +
+        '</section>';
+      });
+
+      customVerticalScroll.innerHTML = html;
+      maxCustomIndex = Math.max(0, total - visibleCustomItems);
+      customVerticalScroll.scrollTop = 0;
+      currentCustomItemIndex = 0;
+      updateCustomDividers(0);
+      updateCustomThumb(0);
+      if (customSliderThumb) {
+        customSliderThumb.setAttribute('aria-valuemax', total);
+      }
+    }
+
     function renderAlacarteList(categories) {
       if (!categories) return;
       (categories || []).forEach(function(cat) {
@@ -5730,11 +6188,23 @@ Choose your spread/rillette style:</p>
       lastAppliedDataJson = newJson;
       window.belleCurrentData = data;
       if (data.events) renderEventsList(data.events);
+      if (data.menuCategories) renderMenuHubCategories(data.menuCategories);
       if (data.lunchItems) renderLunchList(data.lunchItems);
       if (data.aLaCarte) renderAlacarteList(data.aLaCarte);
       if (data.theGardenAndBar) renderBarList(data.theGardenAndBar);
       if (data.tastingMenus) renderTastingData(data.tastingMenus);
       if (data.venue) renderVenueInfo(data.venue);
+
+      var customPanel = document.getElementById('panel-custom-category');
+      if (customPanel && customPanel.classList.contains('is-active') && currentCustomCategoryData) {
+        var updatedCat = (data.menuCategories || []).find(function(c) { return c.id === currentCustomCategoryData.id; });
+        if (!updatedCat && data.customCategories) {
+          updatedCat = data.customCategories.find(function(c) { return c.id === currentCustomCategoryData.id; });
+        }
+        if (updatedCat) {
+          renderCustomCategory(updatedCat);
+        }
+      }
       console.log('⚡ Belle Colombo Live Data Applied Successfully (0ms)');
     }
 
@@ -5747,6 +6217,13 @@ Choose your spread/rillette style:</p>
         applyBelleData(window.BELLE_DEFAULT_DATA);
       }
     } catch(e) {}
+
+    // Ensure menu hub categories are rendered on load
+    if (window.belleCurrentData && window.belleCurrentData.menuCategories) {
+      renderMenuHubCategories(window.belleCurrentData.menuCategories);
+    } else if (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) {
+      renderMenuHubCategories(window.BELLE_DEFAULT_DATA.menuCategories);
+    }
 
     /* ========================================================
        GOOGLE FIREBASE REAL-TIME CLOUD SYNC (Customer Live Link)

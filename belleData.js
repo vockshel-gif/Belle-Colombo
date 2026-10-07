@@ -17,6 +17,41 @@
     "hours": "Daily | 11:00 AM – 10:30 PM",
     "taxNote": "All prices are in LKR and subject to 10% service charge and applicable government taxes."
   },
+  "menuCategories": [
+    {
+      "id": "lunch",
+      "name": "LUNCH",
+      "subtitle": "Express Midday Selection",
+      "icon": "🥗",
+      "type": "standard",
+      "isSystem": true
+    },
+    {
+      "id": "alacarte",
+      "name": "À LA CARTE",
+      "subtitle": "5-Course Gourmet Odyssey",
+      "icon": "🍽️",
+      "type": "courses",
+      "isSystem": true
+    },
+    {
+      "id": "tasting",
+      "name": "TASTING MENUS",
+      "subtitle": "Curated Pairings & Sommelier Odysseys",
+      "icon": "🍷",
+      "type": "tasting",
+      "isSystem": true
+    },
+    {
+      "id": "thebar",
+      "name": "THE BAR",
+      "subtitle": "Botanical Spirits & Bites",
+      "icon": "🍸",
+      "type": "bar",
+      "isSystem": true
+    }
+  ],
+  "customCategories": [],
   "subCategories": {
     "lunch": ["Soups & Starters", "Artisan Salads", "Sharing Platters", "Burgers & Sandwiches"],
     "alacarte": ["Appetisers", "Entrées", "Mains", "From The Grill", "Desserts"],
