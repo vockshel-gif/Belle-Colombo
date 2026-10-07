@@ -91,14 +91,16 @@
 
     /* Top Executive Header */
     .top-header {
-      height: var(--header-height);
+      min-height: var(--header-height);
+      height: auto;
       background: rgba(15, 15, 19, 0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
+      gap: 16px;
+      padding: 8px 24px;
       z-index: 100;
       flex-shrink: 0;
     }
@@ -156,6 +158,8 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       color: #34d399;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .sync-pulse {
       width: 7px;
@@ -377,7 +381,109 @@
       transform: translateY(-50%);
       width: 12px;
       height: 12px;
+    }
+    /* Master Menu Categories Bar */
+    .menu-cat-master-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .menu-cat-master-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      padding: 9px 15px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .menu-cat-master-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--gold-light);
+      border-color: var(--border-gold);
+    }
+    .menu-cat-master-btn.is-active {
+      background: linear-gradient(135deg, rgba(188, 166, 133, 0.16) 0%, rgba(188, 166, 133, 0.05) 100%);
+      color: var(--gold-light);
+      border-color: var(--gold-primary);
+      box-shadow: 0 2px 10px rgba(188, 166, 133, 0.12);
+    }
+    .menu-cat-master-btn .cat-btn-icon {
+      font-size: 13px;
+      line-height: 1;
+    }
+    .menu-cat-master-btn .cat-btn-badge {
+      background: rgba(188, 166, 133, 0.18);
+      color: var(--gold-primary);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .menu-cat-master-btn.is-active .cat-btn-badge {
+      background: var(--gold-primary);
+      color: #0b0b0e;
+    }
+    .menu-cat-master-btn .cat-actions-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-left: 3px;
+    }
+    .menu-cat-master-btn .cat-action-icon {
       color: var(--text-dim);
+      padding: 2px 4px;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .menu-cat-master-btn .cat-action-icon:hover {
+      color: var(--text-white);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .menu-cat-master-btn .cat-action-icon.is-del:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.2);
+    }
+    .btn-quick-add-category {
+      background: transparent;
+      border: 1px dashed var(--gold-primary);
+      color: var(--gold-primary);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .btn-quick-add-category:hover {
+      background: rgba(188, 166, 133, 0.12);
+      border-style: solid;
+      color: var(--gold-light);
+    }
+    .category-workspace-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     /* Cards List */
@@ -804,6 +910,8 @@
       cursor: pointer;
       transition: all 0.25s ease;
       user-select: none;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .storage-gauge-widget:hover {
       background: rgba(188, 166, 133, 0.16);
@@ -815,23 +923,29 @@
       position: relative;
       width: 38px;
       height: 38px;
+      min-width: 38px;
+      min-height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      overflow: hidden;
     }
     .radial-gauge-svg {
       width: 38px;
       height: 38px;
+      max-width: 38px;
+      max-height: 38px;
+      display: block;
       transform: rotate(-90deg);
     }
     .radial-gauge-bg {
-      fill: none;
+      fill: none !important;
       stroke: rgba(188, 166, 133, 0.18);
       stroke-width: 3.2;
     }
     .radial-gauge-fill {
-      fill: none;
+      fill: none !important;
       stroke: var(--gold-light);
       stroke-width: 3.2;
       stroke-linecap: round;
@@ -1380,8 +1494,8 @@
       <div class="storage-gauge-widget" id="storageGaugeWidget" title="1.00 GB Cloud Database Storage Quota — Click to inspect usage breakdown">
         <div class="radial-gauge-wrap">
           <svg class="radial-gauge-svg" viewBox="0 0 36 36">
-            <path class="radial-gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            <path class="radial-gauge-fill" id="radialGaugeFill" stroke-dasharray="0.1, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="radial-gauge-bg" fill="none" stroke="rgba(188, 166, 133, 0.18)" stroke-width="3.2" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="radial-gauge-fill" id="radialGaugeFill" fill="none" stroke="var(--gold-light)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0.1, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
           </svg>
           <div class="radial-gauge-text" id="radialGaugePercent">0%</div>
         </div>
@@ -1428,25 +1542,14 @@
         
         <!-- Tabs Bar -->
         <nav class="studio-tabs" aria-label="Editor Modules">
-          <button type="button" class="studio-tab-btn is-active" data-tab="tab-events">
+          <button type="button" class="studio-tab-btn is-active" data-tab="tab-menu">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <span>Menu</span>
+            <span class="tab-badge" id="badgeCountMenu">4</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="tab-events">
             <span>Upcoming Events</span>
             <span class="tab-badge" id="badgeCountEvents">5</span>
-          </button>
-          <button type="button" class="studio-tab-btn" data-tab="tab-lunch">
-            <span>Lunch Menu</span>
-            <span class="tab-badge" id="badgeCountLunch">10</span>
-          </button>
-          <button type="button" class="studio-tab-btn" data-tab="tab-alacarte">
-            <span>À La Carte</span>
-            <span class="tab-badge">5 Courses</span>
-          </button>
-          <button type="button" class="studio-tab-btn" data-tab="tab-thebar">
-            <span>The Bar</span>
-            <span class="tab-badge">Curated</span>
-          </button>
-          <button type="button" class="studio-tab-btn" data-tab="tab-tasting">
-            <span>Tasting Menus</span>
-            <span class="tab-badge">Pairings</span>
           </button>
           <button type="button" class="studio-tab-btn" data-tab="tab-venue">
             <span>Venue &amp; Socials</span>
@@ -1458,9 +1561,153 @@
         </nav>
 
         <!-- ==========================================
-             TAB 1: UPCOMING EVENTS
+             TAB 1: UNIFIED MENU SUITE
              ========================================== -->
-        <div class="studio-content-view is-active" id="tab-events">
+        <div class="studio-content-view is-active" id="tab-menu">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>CULINARY &amp; BEVERAGE MENU SUITE</h2>
+              <p>Curate all dining menus, courses, sub-categories, and media backdrops, or create new custom categories.</p>
+            </div>
+            <div class="subheader-actions">
+              <button type="button" class="btn-gold-outline" id="btnAddMenuCategory">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Category</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Master Category Selector Bar -->
+          <div class="menu-cat-master-bar" id="menuCategoriesMasterBar">
+            <!-- Dynamically populated: Lunch, À La Carte, The Bar, Tasting Menus, + Custom Categories -->
+          </div>
+
+          <!-- Category Workspaces Area -->
+          <div id="menuCategoryWorkspaces">
+            
+            <!-- Category View: LUNCH -->
+            <div class="category-workspace-panel" id="catWorkspace-lunch">
+              <div class="content-subheader" style="margin-bottom:14px;">
+                <div class="subheader-title-group">
+                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">EXPRESS LUNCH SELECTION</h3>
+                  <p>Curate midday soups, artisan burgers, sandwiches, and culinary add-ons.</p>
+                </div>
+                <div class="subheader-actions">
+                  <button type="button" class="btn-gold-outline" id="btnManageLunchSubcats" title="Organize and customize sub-categories">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <span>Sub-categories</span>
+                  </button>
+                  <button type="button" class="btn-gold-outline" id="btnAddLunch">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Add Lunch Item</span>
+                  </button>
+                </div>
+              </div>
+              <div class="sub-filter-pills" id="lunchSubcatFilterBar"></div>
+              <div class="item-cards-grid" id="lunchCardsList"></div>
+            </div>
+
+            <!-- Category View: À LA CARTE -->
+            <div class="category-workspace-panel" id="catWorkspace-alacarte" style="display:none;">
+              <div class="content-subheader" style="margin-bottom:14px;">
+                <div class="subheader-title-group">
+                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">À LA CARTE COURSES</h3>
+                  <p>Manage all courses: Appetisers, Entrées, Mains, From The Grill, and Desserts.</p>
+                </div>
+                <div class="subheader-actions">
+                  <button type="button" class="btn-gold-outline" id="btnManageAlacarteSubcats" title="Manage courses and sub-categories">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <span>Courses / Sub-cats</span>
+                  </button>
+                  <button type="button" class="btn-gold-outline" id="btnAddAlacarte">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Add Dish</span>
+                  </button>
+                </div>
+              </div>
+              <div class="sub-filter-pills" id="alacarteCoursePills">
+                <button type="button" class="sub-pill-btn is-active" data-course="appetisers">Appetisers</button>
+                <button type="button" class="sub-pill-btn" data-course="entrees">Entrées</button>
+                <button type="button" class="sub-pill-btn" data-course="mains">Mains</button>
+                <button type="button" class="sub-pill-btn" data-course="grill">From The Grill</button>
+                <button type="button" class="sub-pill-btn" data-course="desserts">Desserts</button>
+              </div>
+              <div class="item-cards-grid" id="alacarteCardsList"></div>
+            </div>
+
+            <!-- Category View: THE BAR -->
+            <div class="category-workspace-panel" id="catWorkspace-thebar" style="display:none;">
+              <div class="content-subheader" style="margin-bottom:14px;">
+                <div class="subheader-title-group">
+                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">THE BAR &amp; BITES</h3>
+                  <p>Spirits, botanical garden cocktails, craft infusions, and small culinary plates.</p>
+                </div>
+                <div class="subheader-actions">
+                  <button type="button" class="btn-gold-outline" id="btnManageBarSubcats" title="Manage bar categories">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <span>Sub-categories</span>
+                  </button>
+                  <button type="button" class="btn-gold-outline" id="btnAddBarItem">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Add Item</span>
+                  </button>
+                </div>
+              </div>
+              <div class="sub-filter-pills" id="barCategoryPills">
+                <button type="button" class="sub-pill-btn is-active" data-barcat="the-garden">The Garden</button>
+                <button type="button" class="sub-pill-btn" data-barcat="the-bar-bites">The Bar Bites</button>
+              </div>
+              <div class="item-cards-grid" id="barCardsList"></div>
+            </div>
+
+            <!-- Category View: TASTING MENUS -->
+            <div class="category-workspace-panel" id="catWorkspace-tasting" style="display:none;">
+              <div class="content-subheader" style="margin-bottom:14px;">
+                <div class="subheader-title-group">
+                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">CURATED TASTING MENUS</h3>
+                  <p>Configure 5-Course Wine Pairing and 7-Course Grand Tasting prices and selections.</p>
+                </div>
+              </div>
+              <div class="sub-filter-pills" id="tastingPills">
+                <button type="button" class="sub-pill-btn is-active" data-tasting="fiveCourse">5 Course Pairing</button>
+                <button type="button" class="sub-pill-btn" data-tasting="sevenCourse">7 Course Grand</button>
+              </div>
+              <div id="tastingEditorArea"></div>
+            </div>
+
+            <!-- Category View: CUSTOM CATEGORY (Dynamic Workspace) -->
+            <div class="category-workspace-panel" id="catWorkspace-custom" style="display:none;">
+              <div class="content-subheader" style="margin-bottom:14px;">
+                <div class="subheader-title-group">
+                  <h3 id="customCatTitle" style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">CUSTOM MENU</h3>
+                  <p id="customCatSubtitle">Manage items, prices, and media backdrops.</p>
+                </div>
+                <div class="subheader-actions">
+                  <button type="button" class="btn-secondary" id="btnEditCustomCatMeta" title="Edit Category Settings">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span>Edit Category</span>
+                  </button>
+                  <button type="button" class="btn-gold-outline" id="btnManageCustomSubcats" title="Organize sub-categories">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <span>Sub-categories</span>
+                  </button>
+                  <button type="button" class="btn-gold-outline" id="btnAddCustomDish">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Add Dish</span>
+                  </button>
+                </div>
+              </div>
+              <div class="sub-filter-pills" id="customSubcatFilterBar"></div>
+              <div class="item-cards-grid" id="customCardsList"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ==========================================
+             TAB 2: UPCOMING EVENTS
+             ========================================== -->
+        <div class="studio-content-view" id="tab-events">
           <div class="content-subheader">
             <div class="subheader-title-group">
               <h2>UPCOMING EVENTS CALENDAR</h2>
@@ -1485,124 +1732,6 @@
 
           <!-- Events Card List -->
           <div class="item-cards-grid" id="eventsCardsList">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <!-- ==========================================
-             TAB 2: LUNCH MENU
-             ========================================== -->
-        <div class="studio-content-view" id="tab-lunch">
-          <div class="content-subheader">
-            <div class="subheader-title-group">
-              <h2>EXPRESS LUNCH SELECTION</h2>
-              <p>Curate midday soups, artisan burgers, sandwiches, and culinary add-ons.</p>
-            </div>
-            <div class="subheader-actions">
-              <button type="button" class="btn-gold-outline" id="btnManageLunchSubcats" title="Organize and customize sub-categories">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                <span>Sub-categories</span>
-              </button>
-              <button type="button" class="btn-gold-outline" id="btnAddLunch">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <span>Add Lunch Item</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Dynamic Sub-category Filter Pills for Lunch -->
-          <div class="sub-filter-pills" id="lunchSubcatFilterBar">
-            <!-- Dynamically populated with All Dishes, Soups, Salads, Burgers, etc. -->
-          </div>
-
-          <div class="item-cards-grid" id="lunchCardsList">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <!-- ==========================================
-             TAB 3: À LA CARTE
-             ========================================== -->
-        <div class="studio-content-view" id="tab-alacarte">
-          <div class="content-subheader">
-            <div class="subheader-title-group">
-              <h2>À LA CARTE COURSES</h2>
-              <p>Manage all courses: Appetisers, Entrées, Mains, From The Grill, and Desserts.</p>
-            </div>
-            <div class="subheader-actions">
-              <button type="button" class="btn-gold-outline" id="btnManageAlacarteSubcats" title="Manage courses and sub-categories">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                <span>Courses / Sub-cats</span>
-              </button>
-              <button type="button" class="btn-gold-outline" id="btnAddAlacarte">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <span>Add Dish</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Sub course tabs -->
-          <div class="sub-filter-pills" id="alacarteCoursePills">
-            <button type="button" class="sub-pill-btn is-active" data-course="appetisers">Appetisers</button>
-            <button type="button" class="sub-pill-btn" data-course="entrees">Entrées</button>
-            <button type="button" class="sub-pill-btn" data-course="mains">Mains</button>
-            <button type="button" class="sub-pill-btn" data-course="grill">From The Grill</button>
-            <button type="button" class="sub-pill-btn" data-course="desserts">Desserts</button>
-          </div>
-
-          <div class="item-cards-grid" id="alacarteCardsList">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <!-- ==========================================
-             TAB 4: THE BAR
-             ========================================== -->
-        <div class="studio-content-view" id="tab-thebar">
-          <div class="content-subheader">
-            <div class="subheader-title-group">
-              <h2>THE BAR &amp; BITES</h2>
-              <p>Spirits, botanical garden cocktails, craft infusions, and small culinary plates.</p>
-            </div>
-            <div class="subheader-actions">
-              <button type="button" class="btn-gold-outline" id="btnManageBarSubcats" title="Manage bar categories">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                <span>Sub-categories</span>
-              </button>
-              <button type="button" class="btn-gold-outline" id="btnAddBarItem">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <span>Add Item</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="sub-filter-pills" id="barCategoryPills">
-            <button type="button" class="sub-pill-btn is-active" data-barcat="the-garden">The Garden</button>
-            <button type="button" class="sub-pill-btn" data-barcat="the-bar-bites">The Bar Bites</button>
-          </div>
-
-          <div class="item-cards-grid" id="barCardsList">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <!-- ==========================================
-             TAB 5: TASTING MENUS
-             ========================================== -->
-        <div class="studio-content-view" id="tab-tasting">
-          <div class="content-subheader">
-            <div class="subheader-title-group">
-              <h2>CURATED TASTING MENUS</h2>
-              <p>Configure 5-Course Wine Pairing and 7-Course Grand Tasting prices and selections.</p>
-            </div>
-          </div>
-
-          <div class="sub-filter-pills" id="tastingPills">
-            <button type="button" class="sub-pill-btn is-active" data-tasting="fiveCourse">5 Course Pairing</button>
-            <button type="button" class="sub-pill-btn" data-tasting="sevenCourse">7 Course Grand</button>
-          </div>
-
-          <div id="tastingEditorArea">
             <!-- Dynamically populated -->
           </div>
         </div>
@@ -2218,10 +2347,45 @@
         <select id="mediaUploadDishSelect"></select>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" id="btnCancelMediaUploadTarget">Cancel</button>
-        <button type="button" class="btn-publish" id="btnConfirmMediaUploadTarget">Attach &amp; Save</button>
+  <!-- Menu Category Management Modal -->
+  <div class="modal-overlay" id="menuCategoryModal">
+    <div class="modal-box" style="max-width: 520px;">
+      <div class="modal-head">
+        <h3 id="menuCategoryModalTitle">CREATE MENU CATEGORY</h3>
+        <button type="button" class="btn-icon" id="btnCloseMenuCategoryModal">✕</button>
       </div>
+      <p style="font-size:11px;color:var(--text-muted);">Add or edit a primary dining category (e.g. Breakfast, Desserts, Sunday Brunch, Beverages).</p>
+
+      <form id="menuCategoryForm" style="display:flex;flex-direction:column;gap:14px;margin-top:10px;">
+        <input type="hidden" id="editMenuCatId" value="">
+
+        <div class="form-row-2">
+          <div class="form-group" style="flex:2;">
+            <label>Category Display Name *</label>
+            <input type="text" id="menuCatNameInput" placeholder="e.g. Breakfast & Brunch" required>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>Icon / Emoji</label>
+            <input type="text" id="menuCatIconInput" placeholder="🥞" style="text-align:center;font-size:16px;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Subtitle / Tagline</label>
+          <input type="text" id="menuCatSubtitleInput" placeholder="e.g. Morning Delights & Artisan Coffee">
+        </div>
+
+        <div class="form-group">
+          <label>Initial Sub-Categories (comma-separated)</label>
+          <input type="text" id="menuCatSubcatsInput" placeholder="e.g. Artisan Pastries, Egg Dishes, Fresh Juices">
+          <span style="font-size:10px;color:var(--text-dim);margin-top:3px;display:block;">You can add, edit, or delete more sub-categories at any time.</span>
+        </div>
+
+        <div class="modal-footer" style="margin-top:8px;">
+          <button type="button" class="btn-secondary" id="btnCancelMenuCategoryModal">Cancel</button>
+          <button type="submit" class="btn-publish" id="btnSaveMenuCategory">Save Category</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -2276,6 +2440,16 @@
         appData.events.forEach(function(ev) {
           if (ev.imageData) imgBytes += ev.imageData.length;
           evBytes += 1200;
+        });
+      }
+      if (appData.menuCategories) {
+        appData.menuCategories.forEach(function(cat) {
+          if (!cat.isSystem && cat.items) {
+            cat.items.forEach(function(it) {
+              if (it.image) imgBytes += it.image.startsWith('data:') ? it.image.length : 85000;
+              if (it.video) vidBytes += it.video.startsWith('data:') ? it.video.length : 1500000;
+            });
+          }
         });
       }
       if (appData.standaloneMedia) {
@@ -2397,8 +2571,11 @@
         alacarte: 'MANAGE À LA CARTE SUB-CATEGORIES',
         thebar: 'MANAGE THE BAR SUB-CATEGORIES'
       };
+      var cat = (appData.menuCategories || []).find(function(c) { return c.id === activeSubcatManageSection; });
       var modalTitle = document.getElementById('subcatModalTitle');
-      if (modalTitle) modalTitle.textContent = titleMap[activeSubcatManageSection] || 'MANAGE SUB-CATEGORIES';
+      if (modalTitle) {
+        modalTitle.textContent = cat ? ('MANAGE ' + cat.name + ' SUB-CATEGORIES') : (titleMap[activeSubcatManageSection] || 'MANAGE SUB-CATEGORIES');
+      }
 
       var input = document.getElementById('subcatNewInput');
       if (input) input.value = '';
@@ -2431,6 +2608,11 @@
           (appData.theGardenAndBar || []).forEach(function(cat) {
             count += (cat.items || []).filter(function(it) { return it.subCategory === sc; }).length;
           });
+        } else {
+          var cCat = (appData.menuCategories || []).find(function(c) { return c.id === activeSubcatManageSection; });
+          if (cCat && cCat.items) {
+            count = cCat.items.filter(function(it) { return it.subCategory === sc; }).length;
+          }
         }
 
         html += '<div class="subcat-manage-item" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border-subtle);border-radius:6px;">' +
@@ -2485,6 +2667,9 @@
       }
       renderSubcatManageList();
       if (sectionKey === 'lunch') renderLunchTab();
+      else if (sectionKey === 'alacarte') renderAlacarteTab();
+      else if (sectionKey === 'thebar') renderBarTab();
+      else renderCustomCategoryTab(sectionKey);
     }
 
     function renameSubcat(sectionKey, oldName, newName) {
@@ -2513,10 +2698,19 @@
             });
           });
         }
+        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
+        if (cCat && cCat.items) {
+          cCat.items.forEach(function(it) {
+            if (it.subCategory === oldName) it.subCategory = newName;
+          });
+        }
         sendLiveUpdate();
         pushToFirebaseCloud();
         renderSubcatManageList();
         if (sectionKey === 'lunch') renderLunchTab();
+        else if (sectionKey === 'alacarte') renderAlacarteTab();
+        else if (sectionKey === 'thebar') renderBarTab();
+        else renderCustomCategoryTab(sectionKey);
         showToast('Renamed "' + oldName + '" to "' + newName + '"');
       }
     }
@@ -2525,10 +2719,14 @@
       if (!appData || !appData.subCategories || !appData.subCategories[sectionKey]) return;
       appData.subCategories[sectionKey] = appData.subCategories[sectionKey].filter(function(x) { return x !== name; });
       if (currentLunchSubcatFilter === name) currentLunchSubcatFilter = 'all';
+      if (currentCustomSubcatFilter === name) currentCustomSubcatFilter = 'all';
       sendLiveUpdate();
       pushToFirebaseCloud();
       renderSubcatManageList();
       if (sectionKey === 'lunch') renderLunchTab();
+      else if (sectionKey === 'alacarte') renderAlacarteTab();
+      else if (sectionKey === 'thebar') renderBarTab();
+      else renderCustomCategoryTab(sectionKey);
       showToast('Sub-category "' + name + '" removed.');
     }
 
@@ -2745,7 +2943,45 @@
         }
       });
 
-      // 5. Standalone Library Media
+      // 5. Custom Categories
+      (appData.menuCategories || []).forEach(function(cat) {
+        if (!cat.isSystem && cat.items) {
+          cat.items.forEach(function(it) {
+            if (it.video) {
+              assets.push({
+                id: 'custom-vid-' + it.id,
+                scope: 'custom',
+                itemId: it.id,
+                targetName: it.name || 'Dish',
+                sectionLabel: cat.name,
+                categoryKey: cat.id,
+                subCategory: it.subCategory || '',
+                mediaType: 'video',
+                url: it.video,
+                isUpload: it.video.startsWith('data:'),
+                sizeBytes: it.video.startsWith('data:') ? it.video.length : 1500000
+              });
+            }
+            if (it.image) {
+              assets.push({
+                id: 'custom-img-' + it.id,
+                scope: 'custom',
+                itemId: it.id,
+                targetName: it.name || 'Dish',
+                sectionLabel: cat.name,
+                categoryKey: cat.id,
+                subCategory: it.subCategory || '',
+                mediaType: 'photo',
+                url: it.image,
+                isUpload: it.image.startsWith('data:'),
+                sizeBytes: it.image.startsWith('data:') ? it.image.length : 85000
+              });
+            }
+          });
+        }
+      });
+
+      // 6. Standalone Library Media
       (appData.standaloneMedia || []).forEach(function(m, idx) {
         assets.push({
           id: 'standalone-' + idx,
@@ -2972,6 +3208,15 @@
             else if (asset.mediaType === 'photo') bItem.image = '';
           }
         });
+      } else if (asset.scope === 'custom') {
+        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === asset.categoryKey; });
+        if (cCat && cCat.items) {
+          var cItem = cCat.items.find(function(it) { return it.id === asset.itemId; });
+          if (cItem) {
+            if (asset.mediaType === 'video') cItem.video = '';
+            else if (asset.mediaType === 'photo') cItem.image = '';
+          }
+        }
       } else if (asset.scope === 'event') {
         var ev = (appData.events || []).find(function(e) { return e.id === asset.itemId; });
         if (ev) {
@@ -2995,10 +3240,33 @@
       renderAlacarteTab();
       renderBarTab();
       renderEventsTab();
+      if (asset.scope === 'custom' && typeof renderCustomCategoryTab === 'function') {
+        renderCustomCategoryTab(asset.categoryKey);
+      }
       updateStorageGauge();
       sendLiveUpdate();
       pushToFirebaseCloud();
       showToast('Media deleted! ' + formatBytes(asset.sizeBytes) + ' freed up.');
+    }
+
+    function populateMediaUploadSectionSelect() {
+      var secSelect = document.getElementById('mediaUploadSectionSelect');
+      if (!secSelect || !appData) return;
+      var curVal = secSelect.value || 'lunch';
+      var html = '<option value="lunch">Lunch Menu</option>' +
+        '<option value="alacarte">À La Carte</option>' +
+        '<option value="thebar">The Bar</option>' +
+        '<option value="events">Upcoming Events</option>' +
+        '<option value="library">Standalone Library Asset</option>';
+      (appData.menuCategories || []).forEach(function(c) {
+        if (!c.isSystem) {
+          html += '<option value="' + c.id + '">' + (c.icon ? c.icon + ' ' : '') + c.name + '</option>';
+        }
+      });
+      secSelect.innerHTML = html;
+      if (Array.from(secSelect.options).some(function(o) { return o.value === curVal; })) {
+        secSelect.value = curVal;
+      }
     }
 
     function populateMediaUploadDishOptions() {
@@ -3035,6 +3303,13 @@
         (appData.events || []).forEach(function(ev) {
           html += '<option value="' + ev.id + '">' + ev.title + ' (' + (ev.categoryLabel || ev.category) + ')</option>';
         });
+      } else if (sec.startsWith('cat-')) {
+        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sec; });
+        if (cCat && cCat.items) {
+          cCat.items.forEach(function(it) {
+            html += '<option value="' + it.id + '">' + it.name + (it.subCategory ? ' (' + it.subCategory + ')' : '') + '</option>';
+          });
+        }
       }
 
       dishSelect.innerHTML = html || '<option value="">No items available</option>';
@@ -3164,6 +3439,15 @@
                 else it.image = pendingUploadedMediaData.url;
               }
             });
+          } else if (sec.startsWith('cat-')) {
+            var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sec; });
+            if (cCat && cCat.items) {
+              var it = cCat.items.find(function(x) { return x.id === itemId; });
+              if (it) {
+                if (pendingUploadedMediaData.type === 'video') it.video = pendingUploadedMediaData.url;
+                else it.image = pendingUploadedMediaData.url;
+              }
+            }
           } else if (sec === 'events') {
             var ev = (appData.events || []).find(function(x) { return x.id === itemId; });
             if (ev) {
@@ -3185,6 +3469,9 @@
           renderAlacarteTab();
           renderBarTab();
           renderEventsTab();
+          if (sec.startsWith('cat-') && typeof renderCustomCategoryTab === 'function') {
+            renderCustomCategoryTab(sec);
+          }
           updateStorageGauge();
           sendLiveUpdate();
           pushToFirebaseCloud();
@@ -3208,12 +3495,13 @@
           if (mediaView) mediaView.classList.add('is-active');
 
           renderMediaLibraryTab();
-          navigatePreview('lunch');
+          navigatePreview('menu-hub');
         });
       }
     }
 
     function openMediaUploadTargetModal() {
+      populateMediaUploadSectionSelect();
       populateMediaUploadDishOptions();
       var targetModal = document.getElementById('mediaUploadTargetModal');
       if (targetModal) targetModal.classList.add('is-open');
@@ -3240,27 +3528,32 @@
       }
 
       initSubCategoriesState();
+      initMenuCategoriesState();
 
       // Render each section
-      renderEventsTab();
+      renderMenuCategoriesMasterBar();
       renderLunchTab();
       renderAlacarteTab();
       renderBarTab();
       renderTastingTab();
+      renderEventsTab();
       populateVenueForm();
       renderMediaLibraryTab();
       bindGlobalEvents();
       bindDeviceSwitchers();
       bindStorageAndSubcatModals();
+      bindMenuCategoryControls();
       bindMediaStudioControls();
       bindMediaLibraryControls();
       updateStorageGauge();
+
+      switchMenuCategory(activeMenuCategoryKey);
 
       // Listen for iframe readiness
       previewIframe.addEventListener('load', function() {
         sendLiveUpdate();
         setTimeout(function() {
-          navigatePreview('events');
+          navigatePreview(activeMenuCategoryKey);
         }, 400);
       });
     }
@@ -3316,18 +3609,450 @@
         if (view) view.classList.add('is-active');
 
         // Smart phone preview navigation
-        if (targetId === 'tab-events') navigatePreview('events');
-        else if (targetId === 'tab-lunch') navigatePreview('lunch');
-        else if (targetId === 'tab-alacarte') navigatePreview('appetisers');
-        else if (targetId === 'tab-thebar') navigatePreview('thebar');
-        else if (targetId === 'tab-tasting') navigatePreview('tasting');
+        if (targetId === 'tab-menu') {
+          switchMenuCategory(activeMenuCategoryKey);
+        } else if (targetId === 'tab-events') navigatePreview('events');
         else if (targetId === 'tab-venue') navigatePreview('home');
         else if (targetId === 'tab-media') {
           renderMediaLibraryTab();
-          navigatePreview('lunch');
+          navigatePreview('menu-hub');
         }
       });
     });
+
+    /* ========================================================
+       MENU SUITE & DYNAMIC CATEGORIES CONTROLLER
+       ======================================================== */
+    var activeMenuCategoryKey = 'lunch';
+    var currentCustomSubcatFilter = 'all';
+
+    function initMenuCategoriesState() {
+      if (!appData) return;
+      if (!appData.menuCategories || !Array.isArray(appData.menuCategories)) {
+        appData.menuCategories = [
+          { id: 'lunch', name: 'LUNCH', subtitle: 'Express Midday Selection', icon: '🥗', type: 'standard', isSystem: true },
+          { id: 'alacarte', name: 'À LA CARTE', subtitle: '5-Course Gourmet Odyssey', icon: '🍽️', type: 'courses', isSystem: true },
+          { id: 'thebar', name: 'THE BAR', subtitle: 'Botanical Spirits & Bites', icon: '🍸', type: 'bar', isSystem: true },
+          { id: 'tasting', name: 'TASTING MENUS', subtitle: 'Curated Pairings & Wine Odysseys', icon: '🍷', type: 'tasting', isSystem: true }
+        ];
+      }
+      if (!appData.subCategories) {
+        appData.subCategories = {
+          lunch: ["Soups & Starters", "Artisan Salads", "Sharing Platters", "Burgers & Sandwiches"],
+          alacarte: ["Appetisers", "Entrées", "Mains", "From The Grill", "Desserts"],
+          thebar: ["The Garden", "The Bar Bites"]
+        };
+      }
+      appData.menuCategories.forEach(function(cat) {
+        if (!cat.isSystem) {
+          if (!cat.items) cat.items = [];
+          if (!appData.subCategories[cat.id]) {
+            appData.subCategories[cat.id] = cat.subCategories || [];
+          }
+        }
+      });
+    }
+
+    function renderMenuCategoriesMasterBar() {
+      var bar = document.getElementById('menuCategoriesMasterBar');
+      var badgeMenu = document.getElementById('badgeCountMenu');
+      if (!bar || !appData || !appData.menuCategories) return;
+
+      if (badgeMenu) badgeMenu.textContent = appData.menuCategories.length;
+
+      var html = '';
+      appData.menuCategories.forEach(function(cat) {
+        var count = 0;
+        if (cat.id === 'lunch') {
+          count = (appData.lunchItems || []).length;
+        } else if (cat.id === 'alacarte') {
+          (appData.aLaCarte || []).forEach(function(c) { count += (c.items || []).length; });
+        } else if (cat.id === 'thebar') {
+          (appData.theGardenAndBar || []).forEach(function(c) { count += (c.items || []).length; });
+        } else if (cat.id === 'tasting') {
+          count = 2;
+        } else {
+          count = (cat.items || []).length;
+        }
+
+        var isActive = (activeMenuCategoryKey === cat.id);
+        var iconHtml = cat.icon ? '<span class="cat-btn-icon">' + cat.icon + '</span>' : '';
+        
+        var customActionsHtml = '';
+        if (!cat.isSystem) {
+          customActionsHtml = '<span class="cat-actions-wrap">' +
+            '<span class="cat-action-icon btn-quick-edit-cat" data-cat-id="' + cat.id + '" title="Edit Category Settings">✎</span>' +
+            '<span class="cat-action-icon is-del btn-quick-del-cat" data-cat-id="' + cat.id + '" title="Delete Category">✕</span>' +
+          '</span>';
+        }
+
+        html += '<button type="button" class="menu-cat-master-btn ' + (isActive ? 'is-active' : '') + '" data-cat-id="' + cat.id + '">' +
+          iconHtml +
+          '<span>' + cat.name + '</span>' +
+          '<span class="cat-btn-badge">' + count + '</span>' +
+          customActionsHtml +
+        '</button>';
+      });
+
+      html += '<button type="button" class="btn-quick-add-category" id="btnQuickAddCategoryBar" title="Create a new menu category">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>' +
+        '<span>Add Category</span>' +
+      '</button>';
+
+      bar.innerHTML = html;
+
+      // Event listeners for category buttons
+      bar.querySelectorAll('.menu-cat-master-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          if (e.target.closest('.btn-quick-edit-cat') || e.target.closest('.btn-quick-del-cat')) return;
+          var catId = btn.getAttribute('data-cat-id');
+          switchMenuCategory(catId);
+        });
+      });
+
+      // Quick edit custom category
+      bar.querySelectorAll('.btn-quick-edit-cat').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var catId = btn.getAttribute('data-cat-id');
+          openMenuCategoryModal(catId);
+        });
+      });
+
+      // Quick delete custom category
+      bar.querySelectorAll('.btn-quick-del-cat').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var catId = btn.getAttribute('data-cat-id');
+          deleteMenuCategory(catId);
+        });
+      });
+
+      // Quick Add category
+      var quickAddBtn = document.getElementById('btnQuickAddCategoryBar');
+      if (quickAddBtn) {
+        quickAddBtn.addEventListener('click', function() {
+          openMenuCategoryModal();
+        });
+      }
+    }
+
+    function switchMenuCategory(catId) {
+      activeMenuCategoryKey = catId || 'lunch';
+      renderMenuCategoriesMasterBar();
+
+      // Hide all category workspaces
+      document.querySelectorAll('#menuCategoryWorkspaces .category-workspace-panel').forEach(function(p) {
+        p.style.display = 'none';
+      });
+
+      if (catId === 'lunch') {
+        var el = document.getElementById('catWorkspace-lunch');
+        if (el) el.style.display = 'block';
+        renderLunchTab();
+        navigatePreview('lunch');
+      } else if (catId === 'alacarte') {
+        var el = document.getElementById('catWorkspace-alacarte');
+        if (el) el.style.display = 'block';
+        renderAlacarteTab();
+        navigatePreview(currentAlacarteKey || 'appetisers');
+      } else if (catId === 'thebar') {
+        var el = document.getElementById('catWorkspace-thebar');
+        if (el) el.style.display = 'block';
+        renderBarTab();
+        navigatePreview('thebar');
+      } else if (catId === 'tasting') {
+        var el = document.getElementById('catWorkspace-tasting');
+        if (el) el.style.display = 'block';
+        renderTastingTab();
+        navigatePreview('tasting');
+      } else {
+        // Custom Category
+        var el = document.getElementById('catWorkspace-custom');
+        if (el) el.style.display = 'block';
+        renderCustomCategoryTab(catId);
+        navigatePreview(catId);
+      }
+    }
+
+    function renderCustomCategoryTab(catId) {
+      if (!appData || !appData.menuCategories) return;
+      var cat = appData.menuCategories.find(function(c) { return c.id === catId; });
+      if (!cat) return;
+
+      var titleEl = document.getElementById('customCatTitle');
+      var subEl = document.getElementById('customCatSubtitle');
+      if (titleEl) titleEl.textContent = (cat.icon ? cat.icon + ' ' : '') + cat.name;
+      if (subEl) subEl.textContent = cat.subtitle || 'Manage dishes and media backdrops.';
+
+      // Sub-category filter pills
+      var subcatBar = document.getElementById('customSubcatFilterBar');
+      var subcats = (appData.subCategories && appData.subCategories[catId]) ? appData.subCategories[catId] : [];
+      var items = cat.items || [];
+
+      if (subcatBar) {
+        var pillHtml = '<button type="button" class="sub-pill-btn ' + (currentCustomSubcatFilter === 'all' ? 'is-active' : '') + '" data-csub="all">' +
+          'All Dishes <span class="subcat-pill-badge">' + items.length + '</span>' +
+        '</button>';
+
+        subcats.forEach(function(sc) {
+          var count = items.filter(function(it) { return it.subCategory === sc; }).length;
+          pillHtml += '<button type="button" class="sub-pill-btn ' + (currentCustomSubcatFilter === sc ? 'is-active' : '') + '" data-csub="' + sc + '">' +
+            sc + ' <span class="subcat-pill-badge">' + count + '</span>' +
+          '</button>';
+        });
+
+        pillHtml += '<button type="button" class="sub-pill-btn" id="btnQuickAddCustomSubcat" style="border-style:dashed;color:var(--gold-primary);">+ Add Sub-cat</button>';
+        subcatBar.innerHTML = pillHtml;
+
+        subcatBar.querySelectorAll('.sub-pill-btn[data-csub]').forEach(function(b) {
+          b.addEventListener('click', function() {
+            currentCustomSubcatFilter = b.getAttribute('data-csub');
+            renderCustomCategoryTab(catId);
+          });
+        });
+
+        var addSubcatBtn = document.getElementById('btnQuickAddCustomSubcat');
+        if (addSubcatBtn) {
+          addSubcatBtn.addEventListener('click', function() {
+            openSubcatModal(catId);
+          });
+        }
+      }
+
+      // Filtered items
+      var filtered = items.filter(function(it) {
+        if (currentCustomSubcatFilter === 'all') return true;
+        return it.subCategory === currentCustomSubcatFilter;
+      });
+
+      var list = document.getElementById('customCardsList');
+      if (!list) return;
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-dim);">' +
+          'No dishes in this category yet. Click "+ Add Dish" above to create one.</div>';
+        return;
+      }
+
+      var html = '';
+      filtered.forEach(function(item) {
+        var isVeg = (item.isVeg || (item.tags && item.tags.indexOf('Vegetarian') !== -1));
+        var mediaHtml = '';
+        if (item.video) {
+          mediaHtml = '<div class="dish-thumb-wrap" title="Video Backdrop Attached">' +
+            '<video class="dish-thumb-video" src="' + item.video + '" muted playsinline></video>' +
+            '<span class="dish-thumb-badge" style="color:#60a5fa;">VIDEO</span>' +
+          '</div>';
+        } else if (item.image) {
+          mediaHtml = '<div class="dish-thumb-wrap" title="Photo Backdrop Attached">' +
+            '<img class="dish-thumb-img" src="' + item.image + '" alt="' + item.name + '">' +
+            '<span class="dish-thumb-badge">PHOTO</span>' +
+          '</div>';
+        } else {
+          mediaHtml = '<div class="dish-thumb-wrap" style="display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:9px;">' +
+            '<span>NONE</span>' +
+          '</div>';
+        }
+
+        html += '<article class="editor-item-card" data-custom-id="' + item.id + '">' +
+          '<div class="card-top-bar">' +
+            '<div class="card-meta-left">' +
+              mediaHtml +
+              '<div class="card-title-stack">' +
+                '<h4>' + item.name + '</h4>' +
+                '<div class="card-subtitle-row">' +
+                  (item.subCategory ? '<span class="subcat-badge">' + item.subCategory + '</span>' : '') +
+                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Vegetarian</span>' : '<span style="color:var(--text-dim);">Signature</span>') +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="card-controls-right">' +
+              (item.price ? '<span class="card-price-pill">LKR ' + item.price + '</span>' : '') +
+              '<button type="button" class="btn-icon btn-edit-custom-dish" data-cat="' + catId + '" data-id="' + item.id + '" title="Edit Dish & Media">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+              '</button>' +
+              '<button type="button" class="btn-icon btn-delete btn-delete-custom-dish" data-cat="' + catId + '" data-id="' + item.id + '" title="Delete Dish">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);line-height:1.4;">' + (item.desc || '') + '</div>' +
+        '</article>';
+      });
+
+      list.innerHTML = html;
+
+      list.querySelectorAll('.btn-edit-custom-dish').forEach(function(b) {
+        b.addEventListener('click', function() {
+          openEditItemModal('custom', b.getAttribute('data-cat'), b.getAttribute('data-id'));
+        });
+      });
+      list.querySelectorAll('.btn-delete-custom-dish').forEach(function(b) {
+        b.addEventListener('click', function() {
+          deleteCustomDish(b.getAttribute('data-cat'), b.getAttribute('data-id'));
+        });
+      });
+    }
+
+    function openMenuCategoryModal(catId) {
+      var modal = document.getElementById('menuCategoryModal');
+      var titleEl = document.getElementById('menuCategoryModalTitle');
+      var idInput = document.getElementById('editMenuCatId');
+      var nameInput = document.getElementById('menuCatNameInput');
+      var iconInput = document.getElementById('menuCatIconInput');
+      var subInput = document.getElementById('menuCatSubtitleInput');
+      var subcatsInput = document.getElementById('menuCatSubcatsInput');
+
+      if (catId) {
+        var cat = (appData.menuCategories || []).find(function(c) { return c.id === catId; });
+        if (!cat) return;
+        if (titleEl) titleEl.textContent = 'EDIT MENU CATEGORY';
+        if (idInput) idInput.value = cat.id;
+        if (nameInput) nameInput.value = cat.name;
+        if (iconInput) iconInput.value = cat.icon || '';
+        if (subInput) subInput.value = cat.subtitle || '';
+        var scs = (appData.subCategories && appData.subCategories[cat.id]) ? appData.subCategories[cat.id] : [];
+        if (subcatsInput) subcatsInput.value = scs.join(', ');
+      } else {
+        if (titleEl) titleEl.textContent = 'CREATE MENU CATEGORY';
+        if (idInput) idInput.value = '';
+        if (nameInput) nameInput.value = '';
+        if (iconInput) iconInput.value = '🍽️';
+        if (subInput) subInput.value = '';
+        if (subcatsInput) subcatsInput.value = '';
+      }
+
+      if (modal) modal.classList.add('is-open');
+    }
+
+    function deleteMenuCategory(catId) {
+      var cat = (appData.menuCategories || []).find(function(c) { return c.id === catId; });
+      if (!cat) return;
+      if (cat.isSystem) {
+        alert('System core category "' + cat.name + '" cannot be deleted.');
+        return;
+      }
+      var count = (cat.items || []).length;
+      var msg = 'Delete menu category "' + cat.name + '"' + (count > 0 ? ' and its ' + count + ' dish(es)?' : '?');
+      if (confirm(msg)) {
+        appData.menuCategories = appData.menuCategories.filter(function(c) { return c.id !== catId; });
+        if (appData.subCategories && appData.subCategories[catId]) {
+          delete appData.subCategories[catId];
+        }
+        if (activeMenuCategoryKey === catId) {
+          activeMenuCategoryKey = 'lunch';
+        }
+        switchMenuCategory(activeMenuCategoryKey);
+        updateStorageGauge();
+        sendLiveUpdate();
+        pushToFirebaseCloud();
+        showToast('Category "' + cat.name + '" deleted.');
+      }
+    }
+
+    function deleteCustomDish(catId, dishId) {
+      var cat = (appData.menuCategories || []).find(function(c) { return c.id === catId; });
+      if (!cat || !cat.items) return;
+      if (confirm('Delete this dish?')) {
+        cat.items = cat.items.filter(function(it) { return it.id !== dishId; });
+        renderCustomCategoryTab(catId);
+        updateStorageGauge();
+        sendLiveUpdate();
+        pushToFirebaseCloud();
+        showToast('Dish deleted.');
+      }
+    }
+
+    function bindMenuCategoryControls() {
+      var btnAdd = document.getElementById('btnAddMenuCategory');
+      var modal = document.getElementById('menuCategoryModal');
+      var btnClose = document.getElementById('btnCloseMenuCategoryModal');
+      var btnCancel = document.getElementById('btnCancelMenuCategoryModal');
+      var form = document.getElementById('menuCategoryForm');
+
+      if (btnAdd) btnAdd.addEventListener('click', function() { openMenuCategoryModal(); });
+      if (btnClose) btnClose.addEventListener('click', function() { if (modal) modal.classList.remove('is-open'); });
+      if (btnCancel) btnCancel.addEventListener('click', function() { if (modal) modal.classList.remove('is-open'); });
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var id = document.getElementById('editMenuCatId').value;
+          var name = document.getElementById('menuCatNameInput').value.trim();
+          var icon = document.getElementById('menuCatIconInput').value.trim() || '🍽️';
+          var subtitle = document.getElementById('menuCatSubtitleInput').value.trim();
+          var subcatsRaw = document.getElementById('menuCatSubcatsInput').value.trim();
+
+          if (!name) return;
+
+          var subcats = [];
+          if (subcatsRaw) {
+            subcats = subcatsRaw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+          }
+
+          if (id) {
+            var cat = appData.menuCategories.find(function(c) { return c.id === id; });
+            if (cat) {
+              cat.name = name;
+              cat.icon = icon;
+              cat.subtitle = subtitle;
+              if (subcats.length > 0) {
+                if (!appData.subCategories[id]) appData.subCategories[id] = [];
+                subcats.forEach(function(sc) {
+                  if (appData.subCategories[id].indexOf(sc) === -1) appData.subCategories[id].push(sc);
+                });
+              }
+            }
+            showToast('Category "' + name + '" updated!');
+          } else {
+            var newId = 'cat-' + Date.now();
+            var newCat = {
+              id: newId,
+              name: name,
+              subtitle: subtitle,
+              icon: icon,
+              type: 'custom',
+              isSystem: false,
+              items: [],
+              subCategories: subcats
+            };
+            appData.menuCategories.push(newCat);
+            if (!appData.subCategories) appData.subCategories = {};
+            appData.subCategories[newId] = subcats;
+            activeMenuCategoryKey = newId;
+            showToast('Category "' + name + '" created!');
+          }
+
+          if (modal) modal.classList.remove('is-open');
+
+          switchMenuCategory(activeMenuCategoryKey);
+          updateStorageGauge();
+          sendLiveUpdate();
+          pushToFirebaseCloud();
+        });
+      }
+
+      var btnAddDish = document.getElementById('btnAddCustomDish');
+      var btnManageSub = document.getElementById('btnManageCustomSubcats');
+      var btnEditMeta = document.getElementById('btnEditCustomCatMeta');
+
+      if (btnAddDish) {
+        btnAddDish.addEventListener('click', function() {
+          openEditItemModal('custom', activeMenuCategoryKey, null);
+        });
+      }
+      if (btnManageSub) {
+        btnManageSub.addEventListener('click', function() {
+          openSubcatModal(activeMenuCategoryKey);
+        });
+      }
+      if (btnEditMeta) {
+        btnEditMeta.addEventListener('click', function() {
+          openMenuCategoryModal(activeMenuCategoryKey);
+        });
+      }
+    }
 
     // 4. Render Events Tab
     var currentEventCatFilter = 'all';
@@ -3456,7 +4181,7 @@
 
       renderLunchSubcatFilterBar();
 
-      badge.textContent = appData.lunchItems.length;
+      if (badge) badge.textContent = appData.lunchItems.length;
       var filtered = appData.lunchItems.filter(function(item) {
         if (currentLunchSubcatFilter === 'all') return true;
         return item.subCategory === currentLunchSubcatFilter;
@@ -4254,12 +4979,18 @@
         if (bcat) item = (bcat.items || []).find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'none';
         document.getElementById('groupPriceAlt').style.display = 'none';
+      } else if (scope === 'custom') {
+        var ccat = (appData.menuCategories || []).find(function(c) { return c.id === categoryKey; });
+        if (ccat && ccat.items) item = ccat.items.find(function(x) { return x.id === id; });
+        document.getElementById('groupItemMeta').style.display = 'none';
+        document.getElementById('groupPriceAlt').style.display = 'none';
       }
 
       // Populate Sub-Category selector
       var subcatSelect = document.getElementById('itemSubcatSelect');
       if (subcatSelect) {
-        var list = (appData.subCategories && appData.subCategories[scope]) ? appData.subCategories[scope] : [];
+        var scKey = (scope === 'custom') ? categoryKey : scope;
+        var list = (appData.subCategories && appData.subCategories[scKey]) ? appData.subCategories[scKey] : [];
         var sHtml = '<option value="">-- Choose Sub-Category --</option>';
         list.forEach(function(sc) {
           sHtml += '<option value="' + sc + '">' + sc + '</option>';
@@ -4457,6 +5188,39 @@
           }
           renderBarTab();
           navigatePreview('thebar');
+        }
+      } else if (scope === 'custom') {
+        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === catKey; });
+        if (cCat) {
+          if (!cCat.items) cCat.items = [];
+          if (!id) {
+            var newCustomDish = {
+              id: 'dish-' + Date.now(),
+              name: name,
+              subCategory: subCategory,
+              tags: isItemVegChecked ? ['Vegetarian'] : [],
+              isVeg: isItemVegChecked,
+              price: price,
+              desc: desc,
+              image: finalImage,
+              video: finalVideo
+            };
+            cCat.items.push(newCustomDish);
+          } else {
+            var dish = cCat.items.find(function(x) { return x.id === id; });
+            if (dish) {
+              dish.name = name;
+              dish.subCategory = subCategory;
+              dish.tags = isItemVegChecked ? ['Vegetarian'] : [];
+              dish.isVeg = isItemVegChecked;
+              dish.price = price;
+              dish.desc = desc;
+              dish.image = finalImage;
+              dish.video = finalVideo;
+            }
+          }
+          renderCustomCategoryTab(catKey);
+          navigatePreview(catKey);
         }
       }
 
