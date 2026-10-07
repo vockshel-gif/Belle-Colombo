@@ -4537,6 +4537,11 @@ Choose your spread/rillette style:</p>
       document.body.classList.add('is-menu-active');
       window.scrollTo(0, 0);
       if (window.ambientBg) window.ambientBg.onEnterMenu();
+      if (window.belleCurrentData && window.belleCurrentData.menuCategories) {
+        renderMenuHubCategories(window.belleCurrentData.menuCategories);
+      } else if (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) {
+        renderMenuHubCategories(window.BELLE_DEFAULT_DATA.menuCategories);
+      }
     }
 
     function returnToHome() {
@@ -5793,12 +5798,26 @@ Choose your spread/rillette style:</p>
     function renderMenuHubCategories(categories) {
       var container = document.getElementById('menuCatList');
       if (!container) return;
-      var cats = (categories && Array.isArray(categories) && categories.length) ? categories : [
+      var cats = (categories && Array.isArray(categories) && categories.length) ? categories.slice() : [
         { id: 'lunch', name: 'LUNCH' },
         { id: 'alacarte', name: 'À LA CARTE' },
         { id: 'tasting', name: 'TASTING MENUS' },
         { id: 'thebar', name: 'THE BAR' }
       ];
+
+      // Merge any customCategories if present in state
+      if (window.belleCurrentData && Array.isArray(window.belleCurrentData.customCategories)) {
+        window.belleCurrentData.customCategories.forEach(function(cc) {
+          if (!cats.some(function(c) { return c.id === cc.id; })) {
+            cats.push(cc);
+          }
+        });
+      }
+
+      // Filter out stale test breakfast category
+      cats = cats.filter(function(c) {
+        return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+      });
 
       var html = '';
       cats.forEach(function(cat, idx) {
@@ -6186,6 +6205,16 @@ Choose your spread/rillette style:</p>
         return;
       }
       lastAppliedDataJson = newJson;
+      if (data.menuCategories) {
+        data.menuCategories = data.menuCategories.filter(function(c) {
+          return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+        });
+      }
+      if (data.customCategories) {
+        data.customCategories = data.customCategories.filter(function(c) {
+          return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+        });
+      }
       window.belleCurrentData = data;
       if (data.events) renderEventsList(data.events);
       if (data.menuCategories) renderMenuHubCategories(data.menuCategories);
@@ -6211,6 +6240,12 @@ Choose your spread/rillette style:</p>
     // Check localStorage on load, fallback to default production data
     try {
       var saved = localStorage.getItem('belle_data');
+      if (saved) {
+        if (saved.indexOf('Breakfast') !== -1 || saved.indexOf('cat-breakfast') !== -1) {
+          localStorage.removeItem('belle_data');
+          saved = null;
+        }
+      }
       if (saved) {
         applyBelleData(JSON.parse(saved));
       } else if (window.BELLE_DEFAULT_DATA) {
