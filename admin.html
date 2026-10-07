@@ -2347,6 +2347,13 @@
         <select id="mediaUploadDishSelect"></select>
       </div>
 
+      <div class="modal-footer" style="margin-top:12px;">
+        <button type="button" class="btn-secondary" id="btnCancelMediaUploadTarget">Cancel</button>
+        <button type="button" class="btn-publish" id="btnConfirmMediaUploadTarget">Attach Asset</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Menu Category Management Modal -->
   <div class="modal-overlay" id="menuCategoryModal">
     <div class="modal-box" style="max-width: 520px;">
@@ -3512,6 +3519,12 @@
       try {
         var local = localStorage.getItem('belle_data');
         if (local) {
+          if (local.indexOf('Breakfast') !== -1 || local.indexOf('cat-breakfast') !== -1) {
+            localStorage.removeItem('belle_data');
+            local = null;
+          }
+        }
+        if (local) {
           appData = JSON.parse(local);
         } else if (window.BELLE_DEFAULT_DATA) {
           appData = JSON.parse(JSON.stringify(window.BELLE_DEFAULT_DATA));
@@ -3526,6 +3539,28 @@
         console.error('No data found!');
         return;
       }
+
+      // Auto-purge any stale breakfast test entries from appData
+      if (appData.menuCategories) {
+        appData.menuCategories = appData.menuCategories.filter(function(c) {
+          return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+        });
+      }
+      if (appData.customCategories) {
+        appData.customCategories = appData.customCategories.filter(function(c) {
+          return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+        });
+      }
+      if (appData.subCategories && appData.subCategories['cat-breakfast']) {
+        delete appData.subCategories['cat-breakfast'];
+      }
+
+      // Dismiss any modal when clicking backdrop
+      document.querySelectorAll('.modal-overlay').forEach(function(modalEl) {
+        modalEl.addEventListener('click', function(e) {
+          if (e.target === modalEl) modalEl.classList.remove('is-open');
+        });
+      });
 
       initSubCategoriesState();
       initMenuCategoriesState();
@@ -3937,15 +3972,18 @@
       var msg = 'Delete menu category "' + cat.name + '"' + (count > 0 ? ' and its ' + count + ' dish(es)?' : '?');
       if (confirm(msg)) {
         appData.menuCategories = appData.menuCategories.filter(function(c) { return c.id !== catId; });
+        if (appData.customCategories) {
+          appData.customCategories = appData.customCategories.filter(function(c) { return c.id !== catId; });
+        }
         if (appData.subCategories && appData.subCategories[catId]) {
           delete appData.subCategories[catId];
         }
         if (activeMenuCategoryKey === catId) {
           activeMenuCategoryKey = 'lunch';
         }
-        switchMenuCategory(activeMenuCategoryKey);
         updateStorageGauge();
         sendLiveUpdate();
+        switchMenuCategory(activeMenuCategoryKey);
         pushToFirebaseCloud();
         showToast('Category "' + cat.name + '" deleted.');
       }
@@ -4004,6 +4042,15 @@
                 });
               }
             }
+            if (appData.customCategories) {
+              var ccat = appData.customCategories.find(function(c) { return c.id === id; });
+              if (ccat) {
+                ccat.name = name;
+                ccat.icon = icon;
+                ccat.subtitle = subtitle;
+                ccat.subCategories = subcats;
+              }
+            }
             showToast('Category "' + name + '" updated!');
           } else {
             var newId = 'cat-' + Date.now();
@@ -4018,6 +4065,8 @@
               subCategories: subcats
             };
             appData.menuCategories.push(newCat);
+            if (!appData.customCategories) appData.customCategories = [];
+            appData.customCategories.push(newCat);
             if (!appData.subCategories) appData.subCategories = {};
             appData.subCategories[newId] = subcats;
             activeMenuCategoryKey = newId;
@@ -4026,9 +4075,9 @@
 
           if (modal) modal.classList.remove('is-open');
 
-          switchMenuCategory(activeMenuCategoryKey);
           updateStorageGauge();
           sendLiveUpdate();
+          switchMenuCategory(activeMenuCategoryKey);
           pushToFirebaseCloud();
         });
       }
