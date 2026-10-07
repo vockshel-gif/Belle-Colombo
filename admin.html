@@ -1126,6 +1126,218 @@
       gap: 8px;
     }
 
+    /* Media Assets Manager & Gallery */
+    .media-stats-banner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .media-stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .media-stat-num {
+      font-family: var(--font-serif);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+    .media-stat-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .media-toolbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .media-grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+      max-height: calc(100vh - 300px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .media-grid-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+      position: relative;
+    }
+    .media-grid-card:hover {
+      border-color: var(--border-gold);
+      transform: translateY(-2px);
+    }
+    .media-card-preview-wrap {
+      position: relative;
+      width: 100%;
+      height: 135px;
+      background: #000000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .media-card-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .media-grid-card:hover .media-card-preview-img {
+      transform: scale(1.05);
+    }
+    .media-card-preview-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .media-card-badge-type {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      backdrop-filter: blur(4px);
+    }
+    .media-card-badge-type.is-video {
+      border-color: rgba(96, 165, 250, 0.4);
+      color: #93c5fd;
+    }
+    .media-card-badge-origin {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(188, 166, 133, 0.35);
+      color: var(--gold-light);
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .media-card-badge-origin.is-upload {
+      border-color: rgba(52, 211, 153, 0.4);
+      color: #34d399;
+      background: rgba(6, 78, 59, 0.6);
+    }
+    .media-card-info {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+    .media-card-target-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .media-card-target-section {
+      font-size: 10px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .media-card-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+    .media-card-actions {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px 10px;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .media-card-actions .btn-media-action {
+      flex: 1;
+      padding: 5px 8px;
+      font-size: 10px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-light);
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+    .media-card-actions .btn-media-action:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-gold);
+    }
+    .media-card-actions .btn-media-delete {
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .media-card-actions .btn-media-delete:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    /* Lightbox Modal */
+    .media-lightbox-preview-wrap {
+      width: 100%;
+      max-height: 440px;
+      background: #000000;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-subtle);
+      margin: 12px 0;
+    }
+    .media-lightbox-preview-wrap img {
+      max-width: 100%;
+      max-height: 440px;
+      object-fit: contain;
+    }
+    .media-lightbox-preview-wrap video {
+      max-width: 100%;
+      max-height: 440px;
+      outline: none;
+    }
+
     /* Responsive Helpers */
     @media (max-width: 1100px) {
       .studio-pane {
@@ -1238,6 +1450,10 @@
           </button>
           <button type="button" class="studio-tab-btn" data-tab="tab-venue">
             <span>Venue &amp; Socials</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="tab-media">
+            <span>Media Library</span>
+            <span class="tab-badge" id="badgeCountMedia" style="background:rgba(188,166,133,0.2);color:var(--gold-light);">0</span>
           </button>
         </nav>
 
@@ -1451,6 +1667,64 @@
               <label>Tax &amp; Service Charge Note</label>
               <textarea id="venueTax" rows="2"></textarea>
             </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             TAB 7: MEDIA ASSETS & UPLOAD MANAGER
+             ========================================== -->
+        <div class="studio-content-view" id="tab-media">
+          <div class="content-subheader">
+            <div class="subheader-title-group">
+              <h2>UPLOADED MEDIA &amp; BACKDROP ASSETS</h2>
+              <p>Manage, inspect, and delete uploaded photos, dish backdrop videos, and poster assets across your database.</p>
+            </div>
+            <div class="subheader-actions">
+              <button type="button" class="btn-gold-outline" id="btnUploadNewMedia" title="Upload a photo or video to your database">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Upload Media</span>
+              </button>
+              <input type="file" id="mediaDirectUploadInput" accept="image/*,video/mp4,video/webm" style="display:none;">
+            </div>
+          </div>
+
+          <!-- Media Stats Banner -->
+          <div class="media-stats-banner">
+            <div class="media-stat-box">
+              <span class="media-stat-num" id="statMediaTotalCount">0</span>
+              <span class="media-stat-label">TOTAL ASSETS</span>
+            </div>
+            <div class="media-stat-box">
+              <span class="media-stat-num" id="statMediaImagesCount">0</span>
+              <span class="media-stat-label">PHOTOS</span>
+            </div>
+            <div class="media-stat-box">
+              <span class="media-stat-num" id="statMediaVideosCount">0</span>
+              <span class="media-stat-label">VIDEOS</span>
+            </div>
+            <div class="media-stat-box">
+              <span class="media-stat-num" id="statMediaStorageSize">0 KB</span>
+              <span class="media-stat-label">DATABASE PAYLOAD</span>
+            </div>
+          </div>
+
+          <!-- Filter Pills & Search -->
+          <div class="media-toolbar-row">
+            <div class="sub-filter-pills" id="mediaFilterBar">
+              <button type="button" class="sub-pill-btn is-active" data-mfilter="all">All Assets</button>
+              <button type="button" class="sub-pill-btn" data-mfilter="photos">Photos Only</button>
+              <button type="button" class="sub-pill-btn" data-mfilter="videos">Videos Only</button>
+              <button type="button" class="sub-pill-btn" data-mfilter="uploads">Custom Uploads</button>
+              <button type="button" class="sub-pill-btn" data-mfilter="presets">Presets</button>
+            </div>
+            <div style="flex:1;max-width:240px;">
+              <input type="text" id="mediaSearchInput" placeholder="Filter by dish or title..." style="font-size:11px;padding:6px 10px;">
+            </div>
+          </div>
+
+          <!-- Media Gallery Grid -->
+          <div class="media-grid-container" id="mediaGalleryGrid">
+            <!-- Dynamically populated -->
           </div>
         </div>
 
@@ -1836,10 +2110,15 @@
       </div>
 
       <div class="modal-footer" style="justify-content:space-between;">
-        <button type="button" class="btn-secondary" id="btnRecalculateStorage">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-          <span>Recalculate</span>
-        </button>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn-secondary" id="btnRecalculateStorage">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Recalculate</span>
+          </button>
+          <button type="button" class="btn-gold-outline" id="btnOpenMediaLibraryFromStorage" style="font-size:11px;padding:6px 12px;" title="Jump directly to Media Library to inspect or delete uploaded photos and videos">
+            <span>Media Library →</span>
+          </button>
+        </div>
         <button type="button" class="btn-publish" id="btnCloseStorageBtn">Close Cockpit</button>
       </div>
     </div>
@@ -1868,6 +2147,80 @@
 
       <div class="modal-footer">
         <button type="button" class="btn-publish" id="btnCloseSubcatModalBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media Fullscreen Inspection & Quick-Delete Lightbox Modal -->
+  <div class="modal-overlay" id="mediaLightboxModal">
+    <div class="modal-box" style="max-width: 640px;">
+      <div class="modal-head">
+        <h3 id="lightboxModalTitle">INSPECT MEDIA ASSET</h3>
+        <button type="button" class="btn-icon" id="btnCloseLightboxModal">✕</button>
+      </div>
+
+      <div class="media-lightbox-preview-wrap">
+        <img id="lightboxImgEl" src="" alt="Media Preview" style="display:none;">
+        <video id="lightboxVideoEl" src="" controls autoplay loop playsinline style="display:none;"></video>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:6px;border:1px solid var(--border-subtle);font-size:11px;">
+        <div>
+          <span style="color:var(--text-dim);">Attached Target:</span>
+          <strong id="lightboxTargetName" style="color:var(--text-white);display:block;margin-top:2px;">Dish Name</strong>
+        </div>
+        <div>
+          <span style="color:var(--text-dim);">Section &amp; Course:</span>
+          <strong id="lightboxSectionLabel" style="color:var(--gold-primary);display:block;margin-top:2px;">Section</strong>
+        </div>
+        <div>
+          <span style="color:var(--text-dim);">Media Type:</span>
+          <strong id="lightboxMediaType" style="color:var(--text-white);display:block;margin-top:2px;">PHOTO</strong>
+        </div>
+        <div>
+          <span style="color:var(--text-dim);">Database Payload Size:</span>
+          <strong id="lightboxMediaSize" style="color:#34d399;display:block;margin-top:2px;">0 KB</strong>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="justify-content:space-between;">
+        <button type="button" class="btn-icon btn-delete" id="btnLightboxDeleteMedia" style="width:auto;height:auto;padding:8px 16px;font-size:11px;display:flex;gap:6px;align-items:center;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>Delete This Media</span>
+        </button>
+        <button type="button" class="btn-publish" id="btnCloseLightboxBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Direct Media Upload Target Modal -->
+  <div class="modal-overlay" id="mediaUploadTargetModal">
+    <div class="modal-box" style="max-width: 520px;">
+      <div class="modal-head">
+        <h3>ATTACH MEDIA ASSET</h3>
+        <button type="button" class="btn-icon" id="btnCloseMediaUploadTarget">✕</button>
+      </div>
+      <p style="font-size:11px;color:var(--text-muted);">Choose which dish or event you want to attach this uploaded media to, or save directly as a library asset.</p>
+      
+      <div class="form-group" style="margin-top:12px;">
+        <label>Target Section</label>
+        <select id="mediaUploadSectionSelect">
+          <option value="lunch">Lunch Menu</option>
+          <option value="alacarte">À La Carte</option>
+          <option value="thebar">The Bar</option>
+          <option value="events">Upcoming Events</option>
+          <option value="library">Standalone Library Asset</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="groupMediaUploadDishSelect">
+        <label>Select Dish / Event Target</label>
+        <select id="mediaUploadDishSelect"></select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnCancelMediaUploadTarget">Cancel</button>
+        <button type="button" class="btn-publish" id="btnConfirmMediaUploadTarget">Attach &amp; Save</button>
       </div>
     </div>
   </div>
@@ -1925,6 +2278,12 @@
           evBytes += 1200;
         });
       }
+      if (appData.standaloneMedia) {
+        appData.standaloneMedia.forEach(function(m) {
+          if (m.type === 'video') vidBytes += m.url.startsWith('data:') ? m.url.length : 1500000;
+          else imgBytes += m.url.startsWith('data:') ? m.url.length : 85000;
+        });
+      }
       menuBytes = Math.max(1024, totalBytes - (imgBytes + vidBytes + evBytes));
 
       var usedMb = (totalBytes / (1024 * 1024)).toFixed(2);
@@ -1964,6 +2323,12 @@
       
       var strokeColor = m.pct > 90 ? '#ef4444' : (m.pct > 75 ? '#f59e0b' : '#dfcfb7');
       if (fillEl) fillEl.style.stroke = strokeColor;
+
+      // Update Media tab badge if function exists
+      var mediaBadge = document.getElementById('badgeCountMedia');
+      if (mediaBadge && typeof collectAllMediaAssets === 'function') {
+        mediaBadge.textContent = collectAllMediaAssets().length;
+      }
       
       // Update modal cockpit
       var modalFill = document.getElementById('modalRadialGaugeFill');
@@ -2242,6 +2607,618 @@
       }
     }
 
+    /* ========================================================
+       MEDIA ASSETS & UPLOAD MANAGER
+       ======================================================== */
+    var currentMediaFilter = 'all'; // 'all' | 'photos' | 'videos' | 'uploads' | 'presets'
+    var currentMediaSearchKeyword = '';
+    var activeLightboxAsset = null;
+    var pendingUploadedMediaData = null; // { url, type, size, name }
+
+    function collectAllMediaAssets() {
+      var assets = [];
+      if (!appData) return assets;
+
+      // 1. Lunch items
+      (appData.lunchItems || []).forEach(function(it) {
+        if (it.video) {
+          assets.push({
+            id: 'lunch-vid-' + it.id,
+            scope: 'lunch',
+            itemId: it.id,
+            targetName: it.name || 'Lunch Dish',
+            sectionLabel: 'Lunch Menu',
+            categoryKey: null,
+            subCategory: it.subCategory || '',
+            mediaType: 'video',
+            url: it.video,
+            isUpload: it.video.startsWith('data:'),
+            sizeBytes: it.video.startsWith('data:') ? it.video.length : 1500000
+          });
+        }
+        if (it.image) {
+          assets.push({
+            id: 'lunch-img-' + it.id,
+            scope: 'lunch',
+            itemId: it.id,
+            targetName: it.name || 'Lunch Dish',
+            sectionLabel: 'Lunch Menu',
+            categoryKey: null,
+            subCategory: it.subCategory || '',
+            mediaType: 'photo',
+            url: it.image,
+            isUpload: it.image.startsWith('data:'),
+            sizeBytes: it.image.startsWith('data:') ? it.image.length : 85000
+          });
+        }
+      });
+
+      // 2. À La Carte
+      (appData.aLaCarte || []).forEach(function(cat) {
+        (cat.items || []).forEach(function(it) {
+          if (it.video) {
+            assets.push({
+              id: 'alacarte-vid-' + it.id,
+              scope: 'alacarte',
+              itemId: it.id,
+              targetName: it.name || 'À La Carte Dish',
+              sectionLabel: 'À La Carte (' + (cat.title || cat.key) + ')',
+              categoryKey: cat.key,
+              subCategory: it.subCategory || '',
+              mediaType: 'video',
+              url: it.video,
+              isUpload: it.video.startsWith('data:'),
+              sizeBytes: it.video.startsWith('data:') ? it.video.length : 1500000
+            });
+          }
+          if (it.image) {
+            assets.push({
+              id: 'alacarte-img-' + it.id,
+              scope: 'alacarte',
+              itemId: it.id,
+              targetName: it.name || 'À La Carte Dish',
+              sectionLabel: 'À La Carte (' + (cat.title || cat.key) + ')',
+              categoryKey: cat.key,
+              subCategory: it.subCategory || '',
+              mediaType: 'photo',
+              url: it.image,
+              isUpload: it.image.startsWith('data:'),
+              sizeBytes: it.image.startsWith('data:') ? it.image.length : 85000
+            });
+          }
+        });
+      });
+
+      // 3. The Bar
+      (appData.theGardenAndBar || []).forEach(function(cat) {
+        (cat.items || []).forEach(function(it) {
+          if (it.video) {
+            assets.push({
+              id: 'thebar-vid-' + it.id,
+              scope: 'thebar',
+              itemId: it.id,
+              targetName: it.name || 'Bar Item',
+              sectionLabel: 'The Bar (' + (cat.category || cat.key) + ')',
+              categoryKey: cat.key,
+              subCategory: it.subCategory || '',
+              mediaType: 'video',
+              url: it.video,
+              isUpload: it.video.startsWith('data:'),
+              sizeBytes: it.video.startsWith('data:') ? it.video.length : 1500000
+            });
+          }
+          if (it.image) {
+            assets.push({
+              id: 'thebar-img-' + it.id,
+              scope: 'thebar',
+              itemId: it.id,
+              targetName: it.name || 'Bar Item',
+              sectionLabel: 'The Bar (' + (cat.category || cat.key) + ')',
+              categoryKey: cat.key,
+              subCategory: it.subCategory || '',
+              mediaType: 'photo',
+              url: it.image,
+              isUpload: it.image.startsWith('data:'),
+              sizeBytes: it.image.startsWith('data:') ? it.image.length : 85000
+            });
+          }
+        });
+      });
+
+      // 4. Events
+      (appData.events || []).forEach(function(ev) {
+        var img = ev.imageData || (ev.hasImage && ev.imageKey ? ev.imageKey : '');
+        if (img) {
+          assets.push({
+            id: 'event-img-' + ev.id,
+            scope: 'event',
+            itemId: ev.id,
+            targetName: ev.title || 'Calendar Event',
+            sectionLabel: 'Upcoming Event',
+            categoryKey: ev.category,
+            subCategory: '',
+            mediaType: 'photo',
+            url: img,
+            isUpload: img.startsWith('data:'),
+            sizeBytes: img.startsWith('data:') ? img.length : 95000
+          });
+        }
+      });
+
+      // 5. Standalone Library Media
+      (appData.standaloneMedia || []).forEach(function(m, idx) {
+        assets.push({
+          id: 'standalone-' + idx,
+          scope: 'library',
+          itemId: idx,
+          targetName: m.name || ('Media Asset #' + (idx + 1)),
+          sectionLabel: 'Media Library',
+          categoryKey: null,
+          subCategory: '',
+          mediaType: m.type || (m.url.indexOf('.mp4') !== -1 || m.url.indexOf('video') !== -1 ? 'video' : 'photo'),
+          url: m.url,
+          isUpload: m.url.startsWith('data:'),
+          sizeBytes: m.url.startsWith('data:') ? m.url.length : 120000
+        });
+      });
+
+      return assets;
+    }
+
+    function renderMediaLibraryTab() {
+      var grid = document.getElementById('mediaGalleryGrid');
+      var badge = document.getElementById('badgeCountMedia');
+      var statTotal = document.getElementById('statMediaTotalCount');
+      var statImgs = document.getElementById('statMediaImagesCount');
+      var statVids = document.getElementById('statMediaVideosCount');
+      var statSize = document.getElementById('statMediaStorageSize');
+
+      var allAssets = collectAllMediaAssets();
+
+      // Update badge & stats
+      if (badge) badge.textContent = allAssets.length;
+      if (statTotal) statTotal.textContent = allAssets.length;
+
+      var imgCount = allAssets.filter(function(a) { return a.mediaType === 'photo'; }).length;
+      var vidCount = allAssets.filter(function(a) { return a.mediaType === 'video'; }).length;
+      var totalBytes = allAssets.reduce(function(sum, a) { return sum + a.sizeBytes; }, 0);
+
+      if (statImgs) statImgs.textContent = imgCount;
+      if (statVids) statVids.textContent = vidCount;
+      if (statSize) statSize.textContent = formatBytes(totalBytes);
+
+      if (!grid) return;
+
+      // Filter
+      var filtered = allAssets.filter(function(a) {
+        if (currentMediaFilter === 'photos' && a.mediaType !== 'photo') return false;
+        if (currentMediaFilter === 'videos' && a.mediaType !== 'video') return false;
+        if (currentMediaFilter === 'uploads' && !a.isUpload) return false;
+        if (currentMediaFilter === 'presets' && a.isUpload) return false;
+
+        if (currentMediaSearchKeyword) {
+          var kw = currentMediaSearchKeyword.toLowerCase();
+          var match = (a.targetName && a.targetName.toLowerCase().indexOf(kw) !== -1) ||
+                      (a.sectionLabel && a.sectionLabel.toLowerCase().indexOf(kw) !== -1) ||
+                      (a.subCategory && a.subCategory.toLowerCase().indexOf(kw) !== -1);
+          if (!match) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--text-dim);">' +
+          '<div style="font-size: 32px; margin-bottom: 10px;">📸</div>' +
+          '<h4 style="color: var(--text-white); font-size: 14px; margin-bottom: 6px;">No Media Assets Found</h4>' +
+          '<p style="font-size: 11px;">' + (currentMediaFilter !== 'all' || currentMediaSearchKeyword ? 'Try changing your filter or search query.' : 'Upload photos or videos using "+ Upload Media" above or in the dish editor.') + '</p>' +
+        '</div>';
+        return;
+      }
+
+      var html = '';
+      filtered.forEach(function(asset) {
+        var isVid = asset.mediaType === 'video';
+        var originBadge = asset.isUpload ?
+          '<span class="media-card-badge-origin is-upload">Custom Upload</span>' :
+          '<span class="media-card-badge-origin">Preset</span>';
+
+        var typeBadge = isVid ?
+          '<span class="media-card-badge-type is-video">🎬 Video</span>' :
+          '<span class="media-card-badge-type">📷 Photo</span>';
+
+        var previewMedia = isVid ?
+          '<video class="media-card-preview-video" src="' + asset.url + '" muted loop playsinline preload="metadata"></video>' :
+          '<img class="media-card-preview-img" src="' + asset.url + '" alt="' + asset.targetName + '" loading="lazy">';
+
+        html += '<div class="media-grid-card" data-asset-id="' + asset.id + '">' +
+          '<div class="media-card-preview-wrap btn-inspect-asset" data-asset-id="' + asset.id + '" title="Click to inspect">' +
+            previewMedia +
+            typeBadge +
+            originBadge +
+          '</div>' +
+          '<div class="media-card-info">' +
+            '<div class="media-card-target-name" title="' + asset.targetName + '">' + asset.targetName + '</div>' +
+            '<div class="media-card-target-section">' + asset.sectionLabel + (asset.subCategory ? ' · ' + asset.subCategory : '') + '</div>' +
+            '<div class="media-card-meta-row">' +
+              '<span>' + (isVid ? 'Looping Clip' : 'Backdrop Image') + '</span>' +
+              '<span style="color:' + (asset.isUpload ? '#34d399' : 'var(--text-dim)') + ';font-weight:600;">' + formatBytes(asset.sizeBytes) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="media-card-actions">' +
+            '<button type="button" class="btn-media-action btn-inspect-asset" data-asset-id="' + asset.id + '" title="View fullscreen">' +
+              '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+              '<span>View</span>' +
+            '</button>' +
+            (asset.scope !== 'library' ?
+              '<button type="button" class="btn-media-action btn-edit-asset-item" data-asset-id="' + asset.id + '" title="Edit item">' +
+                '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+                '<span>Edit</span>' +
+              '</button>' : '') +
+            '<button type="button" class="btn-media-action btn-media-delete btn-del-asset" data-asset-id="' + asset.id + '" title="Delete this media and free up database quota">' +
+              '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+              '<span>Delete</span>' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      });
+
+      grid.innerHTML = html;
+
+      // Video preview hover play
+      grid.querySelectorAll('video.media-card-preview-video').forEach(function(v) {
+        var card = v.closest('.media-grid-card');
+        if (card) {
+          card.addEventListener('mouseenter', function() { v.play().catch(function() {}); });
+          card.addEventListener('mouseleave', function() { v.pause(); v.currentTime = 0; });
+        }
+      });
+
+      // Bind inspect / view
+      grid.querySelectorAll('.btn-inspect-asset').forEach(function(b) {
+        b.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openMediaLightbox(b.getAttribute('data-asset-id'));
+        });
+      });
+
+      // Bind edit item
+      grid.querySelectorAll('.btn-edit-asset-item').forEach(function(b) {
+        b.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var assetId = b.getAttribute('data-asset-id');
+          var ast = allAssets.find(function(x) { return x.id === assetId; });
+          if (!ast) return;
+          if (ast.scope === 'event') {
+            openEditEventModal(ast.itemId);
+          } else {
+            openEditItemModal(ast.scope, ast.categoryKey, ast.itemId);
+          }
+        });
+      });
+
+      // Bind delete media
+      grid.querySelectorAll('.btn-del-asset').forEach(function(b) {
+        b.addEventListener('click', function(e) {
+          e.stopPropagation();
+          deleteMediaAsset(b.getAttribute('data-asset-id'));
+        });
+      });
+    }
+
+    function openMediaLightbox(assetId) {
+      var assets = collectAllMediaAssets();
+      var asset = assets.find(function(a) { return a.id === assetId; });
+      if (!asset) return;
+
+      activeLightboxAsset = asset;
+      var modal = document.getElementById('mediaLightboxModal');
+      var imgEl = document.getElementById('lightboxImgEl');
+      var vidEl = document.getElementById('lightboxVideoEl');
+      var tName = document.getElementById('lightboxTargetName');
+      var sLabel = document.getElementById('lightboxSectionLabel');
+      var mType = document.getElementById('lightboxMediaType');
+      var mSize = document.getElementById('lightboxMediaSize');
+
+      if (tName) tName.textContent = asset.targetName;
+      if (sLabel) sLabel.textContent = asset.sectionLabel + (asset.subCategory ? ' · ' + asset.subCategory : '');
+      if (mType) mType.textContent = (asset.mediaType === 'video' ? '🎬 Looping Video' : '📷 High-Res Photo') + (asset.isUpload ? ' (Custom Upload)' : ' (Preset)');
+      if (mSize) mSize.textContent = formatBytes(asset.sizeBytes);
+
+      if (asset.mediaType === 'video') {
+        imgEl.style.display = 'none';
+        vidEl.style.display = 'block';
+        vidEl.src = asset.url;
+        vidEl.play().catch(function() {});
+      } else {
+        vidEl.style.display = 'none';
+        vidEl.pause();
+        imgEl.style.display = 'block';
+        imgEl.src = asset.url;
+      }
+
+      if (modal) modal.classList.add('is-open');
+    }
+
+    function deleteMediaAsset(assetId) {
+      var assets = collectAllMediaAssets();
+      var asset = assets.find(function(a) { return a.id === assetId; });
+      if (!asset) return;
+
+      var typeStr = asset.mediaType === 'video' ? 'video backdrop' : 'photo';
+      var confirmMsg = 'Delete this ' + typeStr + ' from "' + asset.targetName + '" (' + asset.sectionLabel + ')?\n\n' +
+        'This will immediately remove the media and free up ' + formatBytes(asset.sizeBytes) + ' in your database quota.';
+
+      if (!confirm(confirmMsg)) return;
+
+      if (asset.scope === 'lunch') {
+        var lItem = (appData.lunchItems || []).find(function(it) { return it.id === asset.itemId; });
+        if (lItem) {
+          if (asset.mediaType === 'video') lItem.video = '';
+          else if (asset.mediaType === 'photo') lItem.image = '';
+        }
+      } else if (asset.scope === 'alacarte') {
+        (appData.aLaCarte || []).forEach(function(cat) {
+          var aItem = (cat.items || []).find(function(it) { return it.id === asset.itemId; });
+          if (aItem) {
+            if (asset.mediaType === 'video') aItem.video = '';
+            else if (asset.mediaType === 'photo') aItem.image = '';
+          }
+        });
+      } else if (asset.scope === 'thebar') {
+        (appData.theGardenAndBar || []).forEach(function(cat) {
+          var bItem = (cat.items || []).find(function(it) { return it.id === asset.itemId; });
+          if (bItem) {
+            if (asset.mediaType === 'video') bItem.video = '';
+            else if (asset.mediaType === 'photo') bItem.image = '';
+          }
+        });
+      } else if (asset.scope === 'event') {
+        var ev = (appData.events || []).find(function(e) { return e.id === asset.itemId; });
+        if (ev) {
+          ev.imageData = null;
+          ev.hasImage = false;
+          ev.imageKey = '';
+        }
+      } else if (asset.scope === 'library') {
+        if (appData.standaloneMedia) {
+          appData.standaloneMedia.splice(asset.itemId, 1);
+        }
+      }
+
+      // Close lightbox if open
+      var lbModal = document.getElementById('mediaLightboxModal');
+      if (lbModal) lbModal.classList.remove('is-open');
+
+      // Refresh all views & storage metrics
+      renderMediaLibraryTab();
+      renderLunchTab();
+      renderAlacarteTab();
+      renderBarTab();
+      renderEventsTab();
+      updateStorageGauge();
+      sendLiveUpdate();
+      pushToFirebaseCloud();
+      showToast('Media deleted! ' + formatBytes(asset.sizeBytes) + ' freed up.');
+    }
+
+    function populateMediaUploadDishOptions() {
+      var secSelect = document.getElementById('mediaUploadSectionSelect');
+      var dishSelect = document.getElementById('mediaUploadDishSelect');
+      var groupDish = document.getElementById('groupMediaUploadDishSelect');
+      if (!secSelect || !dishSelect) return;
+
+      var sec = secSelect.value;
+      if (sec === 'library') {
+        if (groupDish) groupDish.style.display = 'none';
+        return;
+      }
+      if (groupDish) groupDish.style.display = 'block';
+
+      var html = '';
+      if (sec === 'lunch') {
+        (appData.lunchItems || []).forEach(function(it) {
+          html += '<option value="' + it.id + '">' + it.name + (it.subCategory ? ' (' + it.subCategory + ')' : '') + '</option>';
+        });
+      } else if (sec === 'alacarte') {
+        (appData.aLaCarte || []).forEach(function(cat) {
+          (cat.items || []).forEach(function(it) {
+            html += '<option value="' + it.id + '" data-cat="' + cat.key + '">' + it.name + ' (' + (cat.title || cat.key) + ')</option>';
+          });
+        });
+      } else if (sec === 'thebar') {
+        (appData.theGardenAndBar || []).forEach(function(cat) {
+          (cat.items || []).forEach(function(it) {
+            html += '<option value="' + it.id + '" data-cat="' + cat.key + '">' + it.name + ' (' + (cat.category || cat.key) + ')</option>';
+          });
+        });
+      } else if (sec === 'events') {
+        (appData.events || []).forEach(function(ev) {
+          html += '<option value="' + ev.id + '">' + ev.title + ' (' + (ev.categoryLabel || ev.category) + ')</option>';
+        });
+      }
+
+      dishSelect.innerHTML = html || '<option value="">No items available</option>';
+    }
+
+    function bindMediaLibraryControls() {
+      // Filter buttons
+      document.querySelectorAll('#mediaFilterBar .sub-pill-btn').forEach(function(p) {
+        p.addEventListener('click', function() {
+          document.querySelectorAll('#mediaFilterBar .sub-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
+          p.classList.add('is-active');
+          currentMediaFilter = p.getAttribute('data-mfilter') || 'all';
+          renderMediaLibraryTab();
+        });
+      });
+
+      // Search input
+      var searchInput = document.getElementById('mediaSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          currentMediaSearchKeyword = e.target.value.trim();
+          renderMediaLibraryTab();
+        });
+      }
+
+      // Lightbox modal controls
+      var lbModal = document.getElementById('mediaLightboxModal');
+      var closeLb = document.getElementById('btnCloseLightboxModal');
+      var closeLbBtn = document.getElementById('btnCloseLightboxBtn');
+      var delLbBtn = document.getElementById('btnLightboxDeleteMedia');
+
+      if (closeLb) closeLb.addEventListener('click', function() { lbModal.classList.remove('is-open'); });
+      if (closeLbBtn) closeLbBtn.addEventListener('click', function() { lbModal.classList.remove('is-open'); });
+      if (delLbBtn) {
+        delLbBtn.addEventListener('click', function() {
+          if (activeLightboxAsset) {
+            deleteMediaAsset(activeLightboxAsset.id);
+          }
+        });
+      }
+
+      // Direct Upload trigger button
+      var btnUpload = document.getElementById('btnUploadNewMedia');
+      var fileInput = document.getElementById('mediaDirectUploadInput');
+      if (btnUpload && fileInput) {
+        btnUpload.addEventListener('click', function() {
+          fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function(e) {
+          var file = e.target.files[0];
+          if (!file) return;
+
+          var isVid = file.type.indexOf('video') !== -1;
+          if (isVid) {
+            if (file.size > 20 * 1024 * 1024) {
+              alert('Video file is ' + formatBytes(file.size) + '. For optimal mobile loading speed, please upload a video under 20 MB.');
+              return;
+            }
+            showToast('Reading video (' + formatBytes(file.size) + ')...');
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+              pendingUploadedMediaData = {
+                url: evt.target.result,
+                type: 'video',
+                size: file.size,
+                name: file.name
+              };
+              openMediaUploadTargetModal();
+            };
+            reader.readAsDataURL(file);
+          } else {
+            showToast('Optimizing photo for database storage...');
+            optimizeAndReadImage(file, function(optUrl) {
+              pendingUploadedMediaData = {
+                url: optUrl,
+                type: 'photo',
+                size: optUrl.length,
+                name: file.name
+              };
+              openMediaUploadTargetModal();
+            });
+          }
+          fileInput.value = '';
+        });
+      }
+
+      // Media Upload Target Modal
+      var targetModal = document.getElementById('mediaUploadTargetModal');
+      var secSelect = document.getElementById('mediaUploadSectionSelect');
+      var btnCloseTarget = document.getElementById('btnCloseMediaUploadTarget');
+      var btnCancelTarget = document.getElementById('btnCancelMediaUploadTarget');
+      var btnConfirmTarget = document.getElementById('btnConfirmMediaUploadTarget');
+
+      if (secSelect) {
+        secSelect.addEventListener('change', populateMediaUploadDishOptions);
+      }
+      if (btnCloseTarget) btnCloseTarget.addEventListener('click', function() { targetModal.classList.remove('is-open'); });
+      if (btnCancelTarget) btnCancelTarget.addEventListener('click', function() { targetModal.classList.remove('is-open'); });
+
+      if (btnConfirmTarget) {
+        btnConfirmTarget.addEventListener('click', function() {
+          if (!pendingUploadedMediaData) return;
+          var sec = document.getElementById('mediaUploadSectionSelect').value;
+          var dishSelect = document.getElementById('mediaUploadDishSelect');
+          var itemId = dishSelect ? dishSelect.value : null;
+
+          if (sec === 'lunch') {
+            var it = (appData.lunchItems || []).find(function(x) { return x.id === itemId; });
+            if (it) {
+              if (pendingUploadedMediaData.type === 'video') it.video = pendingUploadedMediaData.url;
+              else it.image = pendingUploadedMediaData.url;
+            }
+          } else if (sec === 'alacarte') {
+            (appData.aLaCarte || []).forEach(function(cat) {
+              var it = (cat.items || []).find(function(x) { return x.id === itemId; });
+              if (it) {
+                if (pendingUploadedMediaData.type === 'video') it.video = pendingUploadedMediaData.url;
+                else it.image = pendingUploadedMediaData.url;
+              }
+            });
+          } else if (sec === 'thebar') {
+            (appData.theGardenAndBar || []).forEach(function(cat) {
+              var it = (cat.items || []).find(function(x) { return x.id === itemId; });
+              if (it) {
+                if (pendingUploadedMediaData.type === 'video') it.video = pendingUploadedMediaData.url;
+                else it.image = pendingUploadedMediaData.url;
+              }
+            });
+          } else if (sec === 'events') {
+            var ev = (appData.events || []).find(function(x) { return x.id === itemId; });
+            if (ev) {
+              ev.imageData = pendingUploadedMediaData.url;
+              ev.hasImage = true;
+            }
+          } else if (sec === 'library') {
+            if (!appData.standaloneMedia) appData.standaloneMedia = [];
+            appData.standaloneMedia.push({
+              name: pendingUploadedMediaData.name || 'Custom Asset',
+              type: pendingUploadedMediaData.type,
+              url: pendingUploadedMediaData.url
+            });
+          }
+
+          targetModal.classList.remove('is-open');
+          renderMediaLibraryTab();
+          renderLunchTab();
+          renderAlacarteTab();
+          renderBarTab();
+          renderEventsTab();
+          updateStorageGauge();
+          sendLiveUpdate();
+          pushToFirebaseCloud();
+          showToast('Media attached successfully!');
+        });
+      }
+
+      // Jump to Media Library from Storage Cockpit button
+      var btnJump = document.getElementById('btnOpenMediaLibraryFromStorage');
+      if (btnJump) {
+        btnJump.addEventListener('click', function() {
+          var storageModal = document.getElementById('storageCockpitModal');
+          if (storageModal) storageModal.classList.remove('is-open');
+
+          document.querySelectorAll('.studio-tab-btn').forEach(function(b) { b.classList.remove('is-active'); });
+          document.querySelectorAll('.studio-content-view').forEach(function(v) { v.classList.remove('is-active'); });
+
+          var mediaTabBtn = document.querySelector('.studio-tab-btn[data-tab="tab-media"]');
+          var mediaView = document.getElementById('tab-media');
+          if (mediaTabBtn) mediaTabBtn.classList.add('is-active');
+          if (mediaView) mediaView.classList.add('is-active');
+
+          renderMediaLibraryTab();
+          navigatePreview('lunch');
+        });
+      }
+    }
+
+    function openMediaUploadTargetModal() {
+      populateMediaUploadDishOptions();
+      var targetModal = document.getElementById('mediaUploadTargetModal');
+      if (targetModal) targetModal.classList.add('is-open');
+    }
+
     // 1. Initialize State
     function initStudio() {
       try {
@@ -2271,10 +3248,12 @@
       renderBarTab();
       renderTastingTab();
       populateVenueForm();
+      renderMediaLibraryTab();
       bindGlobalEvents();
       bindDeviceSwitchers();
       bindStorageAndSubcatModals();
       bindMediaStudioControls();
+      bindMediaLibraryControls();
       updateStorageGauge();
 
       // Listen for iframe readiness
@@ -2343,6 +3322,10 @@
         else if (targetId === 'tab-thebar') navigatePreview('thebar');
         else if (targetId === 'tab-tasting') navigatePreview('tasting');
         else if (targetId === 'tab-venue') navigatePreview('home');
+        else if (targetId === 'tab-media') {
+          renderMediaLibraryTab();
+          navigatePreview('lunch');
+        }
       });
     });
 
