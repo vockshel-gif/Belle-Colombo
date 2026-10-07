@@ -17,20 +17,28 @@
     "hours": "Daily | 11:00 AM – 10:30 PM",
     "taxNote": "All prices are in LKR and subject to 10% service charge and applicable government taxes."
   },
+  "subCategories": {
+    "lunch": ["Soups & Starters", "Artisan Salads", "Sharing Platters", "Burgers & Sandwiches"],
+    "alacarte": ["Appetisers", "Entrées", "Mains", "From The Grill", "Desserts"],
+    "thebar": ["The Garden", "The Bar Bites"]
+  },
   "lunchItems": [
     {
       "id": "lunch-1",
       "name": "Roasted Tomato & Chipotle Soup",
+      "subCategory": "Soups & Starters",
       "isVeg": true,
       "price": "1,800",
       "priceLabel": "",
       "desc": "Fire-roasted tomatoes | Smoky chipotle chillies | Roasted garlic | Toasted cumin | Lime-avocado crema | Fresh coriander oil | Herb pressed focaccia",
       "meta": null,
-      "image": "assets/images/chef_plating.webp"
+      "image": "assets/images/chef_plating.webp",
+      "video": ""
     },
     {
       "id": "lunch-2",
       "name": "The Signature Caesar",
+      "subCategory": "Artisan Salads",
       "isVeg": false,
       "price": "2,600",
       "priceLabel": "",
@@ -39,41 +47,49 @@
         "badge": "ADD-ONS",
         "text": "Crispy Spiced Chicken (<strong>LKR 420</strong>) · Seared Prawns (<strong>LKR 550</strong>) · Grilled Octopus (<strong>LKR 600</strong>)"
       },
-      "image": "assets/images/artisan_salad.webp"
+      "image": "assets/images/artisan_salad.webp",
+      "video": ""
     },
     {
       "id": "lunch-3",
       "name": "Organic Green Salad",
+      "subCategory": "Artisan Salads",
       "isVeg": true,
       "price": "1,500",
       "priceLabel": "",
       "desc": "Mixed selected greens | Herb-emulsion | Toasted pumpkin | Sunflower | Sesame seeds.",
       "meta": null,
-      "image": "assets/images/artisan_salad.webp"
+      "image": "assets/images/artisan_salad.webp",
+      "video": ""
     },
     {
       "id": "lunch-4",
       "name": "Heirloom Tomato, Goat’s Cheese & Basil Salad",
+      "subCategory": "Artisan Salads",
       "isVeg": true,
       "price": "1,900",
       "priceLabel": "",
       "desc": "Tomatoes | Goat's cheese | Basil | Greens and assorted herb base | Passionfruit dressing | Toasted pumpkin | Sunflower seeds.",
       "meta": null,
-      "image": "assets/images/artisan_salad.webp"
+      "image": "assets/images/artisan_salad.webp",
+      "video": ""
     },
     {
       "id": "lunch-5",
       "name": "House-Made Pâté, Duck Rillettes & Smoked Meat Platter",
+      "subCategory": "Sharing Platters",
       "isVeg": false,
       "price": "",
       "priceLabel": "",
       "desc": "Chicken liver pâté | Shredded duck rillettes | Smoked meats | Tangy house pickles | Sharp mustard | Toasted sourdough.",
       "meta": null,
-      "image": "assets/images/bg/slide_glazed_ribs.webp"
+      "image": "assets/images/bg/slide_glazed_ribs.webp",
+      "video": ""
     },
     {
       "id": "lunch-6",
       "name": "The Classic Burger",
+      "subCategory": "Burgers & Sandwiches",
       "isVeg": false,
       "price": "2,800",
       "priceLabel": "",
@@ -82,11 +98,13 @@
         "badge": "ADD-ONS",
         "text": "Double Patty (<strong>LKR 1,050</strong>) · Beef Bacon (<strong>LKR 250</strong>) · Sunny-Side-Up Egg (<strong>LKR 150</strong>)"
       },
-      "image": "assets/images/bg/slide_steak_grill.webp"
+      "image": "assets/images/bg/slide_steak_grill.webp",
+      "video": ""
     },
     {
       "id": "lunch-7",
       "name": "The Shogun Burger",
+      "subCategory": "Burgers & Sandwiches",
       "isVeg": true,
       "price": "1,800",
       "priceLabel": "",
@@ -95,11 +113,13 @@
         "badge": "SIDES",
         "text": "Choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt, or Fresh Side Salad"
       },
-      "image": "assets/images/bg/slide_steak_grill.webp"
+      "image": "assets/images/bg/slide_steak_grill.webp",
+      "video": ""
     },
     {
       "id": "lunch-8",
       "name": "The Smoked Club",
+      "subCategory": "Burgers & Sandwiches",
       "isVeg": false,
       "price": "2,800",
       "priceLabel": "",
@@ -108,21 +128,25 @@
         "badge": "SIDES",
         "text": "Choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt, or Fresh Side Salad"
       },
-      "image": "assets/images/bg/slide_tacos_kitchen.webp"
+      "image": "assets/images/bg/slide_tacos_kitchen.webp",
+      "video": ""
     },
     {
       "id": "lunch-9",
       "name": "The Classic Rye",
+      "subCategory": "Burgers & Sandwiches",
       "isVeg": false,
       "price": "",
       "priceLabel": "",
       "desc": "Melted Swiss cheese | Dills | Sharp local mustard on toasted rye.",
       "meta": null,
-      "image": "assets/images/bg/slide_glazed_ribs.webp"
+      "image": "assets/images/bg/slide_glazed_ribs.webp",
+      "video": ""
     },
     {
       "id": "lunch-10",
       "name": "The Signature Steak Sandwich",
+      "subCategory": "Burgers & Sandwiches",
       "isVeg": false,
       "price": "5,200",
       "priceLabel": "",
@@ -131,7 +155,8 @@
         "badge": "ADD-ONS",
         "text": "Sautéed Mushrooms (<strong>LKR 140</strong>) · Charred Peppers (<strong>LKR 100</strong>)"
       },
-      "image": "assets/images/bg/slide_steak_grill.webp"
+      "image": "assets/images/bg/slide_steak_grill.webp",
+      "video": ""
     }
   ],
   "aLaCarte": [

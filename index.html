@@ -1076,6 +1076,64 @@
       transition: transform 0.6s var(--ease-out), opacity 0.4s ease;
     }
 
+    /* Video Element inside Dish backdrop */
+    video.lunch-slot-bg-photo {
+      object-fit: cover;
+      object-position: center right;
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+    }
+
+    /* Sub-category tag on Dish Card */
+    .lunch-card-subcat {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #92754d;
+      margin-bottom: 2px;
+    }
+
+    /* Sub-category filter pills in lunch header */
+    .lunch-subcat-nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 6px 16px 4px;
+      justify-content: flex-start;
+      margin-top: 2px;
+    }
+    .lunch-subcat-nav::-webkit-scrollbar {
+      display: none;
+    }
+    .lunch-subcat-pill {
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(188, 166, 133, 0.3);
+      color: #555555;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+    .lunch-subcat-pill:hover,
+    .lunch-subcat-pill.is-active {
+      background: #111115;
+      color: #dfcfb7;
+      border-color: #bca685;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+
     /* Scrim removed from boxy rectangle: pure seamless canvas */
     .lunch-slot-bg-scrim {
       display: none;
@@ -2543,6 +2601,9 @@
           <text x="190" y="44" class="center-lunch">LUNCH</text>
         </svg>
       </div>
+
+      <!-- Dynamic Sub-category Nav Bar -->
+      <nav class="lunch-subcat-nav" id="lunchSubcatNav" aria-label="Lunch Sub-categories"></nav>
 
       <!-- Top Slider Track -->
       <div class="lunch-slider-wrap">
@@ -5342,23 +5403,81 @@ Choose your spread/rillette style:</p>
       'assets/images/bg/slide_steak_grill.webp'
     ];
 
-    function renderLunchList(items) {
+    var currentLunchItemsRaw = [];
+    var currentLunchFilterSubcat = 'all';
+
+    function renderLunchSubcatNav(items) {
+      var nav = document.getElementById('lunchSubcatNav');
+      if (!nav) return;
+      var subcats = [];
+      if (window.belleCurrentData && window.belleCurrentData.subCategories && window.belleCurrentData.subCategories.lunch) {
+        subcats = window.belleCurrentData.subCategories.lunch.slice();
+      } else {
+        (items || []).forEach(function(it) {
+          if (it.subCategory && subcats.indexOf(it.subCategory) === -1) {
+            subcats.push(it.subCategory);
+          }
+        });
+      }
+      if (subcats.length === 0) {
+        nav.style.display = 'none';
+        return;
+      }
+      nav.style.display = 'flex';
+      var html = '<button type="button" class="lunch-subcat-pill ' + (currentLunchFilterSubcat === 'all' ? 'is-active' : '') + '" data-subcat="all">ALL</button>';
+      subcats.forEach(function(sc) {
+        html += '<button type="button" class="lunch-subcat-pill ' + (currentLunchFilterSubcat === sc ? 'is-active' : '') + '" data-subcat="' + sc + '">' + sc + '</button>';
+      });
+      nav.innerHTML = html;
+
+      nav.querySelectorAll('.lunch-subcat-pill').forEach(function(pill) {
+        pill.addEventListener('click', function(e) {
+          e.stopPropagation();
+          currentLunchFilterSubcat = pill.getAttribute('data-subcat');
+          nav.querySelectorAll('.lunch-subcat-pill').forEach(function(p) { p.classList.remove('is-active'); });
+          pill.classList.add('is-active');
+          renderLunchListFiltered();
+        });
+      });
+    }
+
+    function renderLunchListFiltered() {
+      var filtered = currentLunchItemsRaw;
+      if (currentLunchFilterSubcat !== 'all') {
+        filtered = currentLunchItemsRaw.filter(function(it) {
+          return it.subCategory === currentLunchFilterSubcat;
+        });
+      }
+      renderLunchDom(filtered);
+    }
+
+    function renderLunchDom(items) {
       if (!lunchVerticalScroll) return;
-      var savedScrollTop = lunchVerticalScroll.scrollTop;
-      var savedIdx = currentLunchItemIndex || 0;
       var total = (items || []).length;
       var html = '';
       (items || []).forEach(function(item, idx) {
         var isVeg = !!item.isVeg;
         var hasMeta = !!item.meta;
-        var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
+
+        var mediaBackdropHtml = '';
+        if (item.video) {
+          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
+            '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+            '<div class="lunch-slot-bg-scrim"></div>' +
+          '</div>';
+        } else {
+          var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
+          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
+            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + itemImg + '\');"></div>' +
+            '<div class="lunch-slot-bg-scrim"></div>' +
+          '</div>';
+        }
+
         html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
           '<div class="lunch-slot-content">' +
-            '<div class="lunch-slot-bg" aria-hidden="true">' +
-              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + itemImg + '\');"></div>' +
-              '<div class="lunch-slot-bg-scrim"></div>' +
-            '</div>' +
+            mediaBackdropHtml +
             '<article class="lunch-card">' +
+              (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
               '<div class="lunch-card-head">' +
                 '<div class="lunch-card-title-wrap">' +
                   '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
@@ -5386,12 +5505,19 @@ Choose your spread/rillette style:</p>
       });
       lunchVerticalScroll.innerHTML = html;
       maxLunchIndex = Math.max(0, total - visibleLunchItems);
-      lunchVerticalScroll.scrollTop = savedScrollTop;
-      currentLunchItemIndex = Math.min(savedIdx, maxLunchIndex);
-      updateDividers(currentLunchItemIndex);
+      lunchVerticalScroll.scrollTop = 0;
+      currentLunchItemIndex = 0;
+      updateDividers(0);
+      updateLunchThumb(0);
       if (sliderThumb) {
         sliderThumb.setAttribute('aria-valuemax', total);
       }
+    }
+
+    function renderLunchList(items) {
+      currentLunchItemsRaw = items || [];
+      renderLunchSubcatNav(currentLunchItemsRaw);
+      renderLunchListFiltered();
     }
 
     function renderAlacarteList(categories) {
@@ -5417,9 +5543,24 @@ Choose your spread/rillette style:</p>
             '</div>';
           }
 
+          var mediaBackdrop = '';
+          if (item.video) {
+            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+              '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+              '<div class="lunch-slot-bg-scrim"></div>' +
+            '</div>';
+          } else if (item.image) {
+            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + item.image + '\');"></div>' +
+              '<div class="lunch-slot-bg-scrim"></div>' +
+            '</div>';
+          }
+
           html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
             '<div class="lunch-slot-content">' +
+              mediaBackdrop +
               '<article class="lunch-card">' +
+                (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
                 '<div class="lunch-card-head">' +
                   '<div class="lunch-card-title-wrap">' +
                     '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
@@ -5474,9 +5615,24 @@ Choose your spread/rillette style:</p>
       (categories || []).forEach(function(cat) {
         (cat.items || []).forEach(function(item, idx) {
           var isVeg = (item.tags || []).indexOf('Vegetarian') !== -1;
+          var mediaBackdrop = '';
+          if (item.video) {
+            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+              '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+              '<div class="lunch-slot-bg-scrim"></div>' +
+            '</div>';
+          } else if (item.image) {
+            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + item.image + '\');"></div>' +
+              '<div class="lunch-slot-bg-scrim"></div>' +
+            '</div>';
+          }
+
           html += '<section class="lunch-item-slot" data-index="' + total + '" aria-label="' + (item.name || '') + '">' +
             '<div class="lunch-slot-content">' +
+              mediaBackdrop +
               '<article class="lunch-card">' +
+                (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
                 '<div class="lunch-card-head">' +
                   '<div class="lunch-card-title-wrap">' +
                     '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
