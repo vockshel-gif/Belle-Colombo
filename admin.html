@@ -418,7 +418,7 @@
     .studio-content-view {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 28px;
+      padding: 24px 28px 120px;
       display: none;
     }
     .studio-content-view.is-active {
@@ -847,6 +847,19 @@
     }
 
     /* Subcategory Badges */
+    .subcat-badge.badge-veg {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(52, 211, 153, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .subcat-badge.badge-nonveg {
+      color: var(--text-dim);
+      background: transparent;
+      border-color: var(--border-subtle);
+    }
     .subcat-badge {
       display: inline-block;
       font-family: var(--font-mono);
@@ -981,42 +994,39 @@
     }
 
     /* ========================================================
-       RIGHT SIDE BILLBOARD STAGE (Subway Wall Billboard)
-       Matching the exact reference image with:
-       - Dark outer frame with hard shadow
-       - Station header bar: DELANCEY ST-ESSEX ST
-       - Colored subway circular bullets: [F] [J] [M] [Z]
-       - Ceramic Subway tile grid pattern wall
-       - Dashed road/track strip with periwinkle button
+       RIGHT SIDE STAGE: EXECUTIVE GUEST APP PREVIEW
+       High-end architectural canvas for client presentation
        ======================================================== */
     .preview-pane {
       flex: 1;
-      background: #0f120d;
+      background: #0e110c;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 16px 20px;
+      padding: 16px 20px 60px;
       position: relative;
       overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
     .billboard-container {
       width: 100%;
-      max-width: 480px;
-      background: #181d15;
-      border: 2px solid #282f22;
-      box-shadow: var(--shadow-billboard);
+      max-width: 440px;
+      background: #161a13;
+      border: 1.5px solid var(--border-hard);
+      box-shadow: 8px 8px 0px #080a06;
       display: flex;
       flex-direction: column;
       margin: 0 auto;
       position: relative;
     }
 
-    /* Top Station Header Bar */
+    /* Top Stage Header Bar */
     .subway-station-header {
       background: #11140f;
-      border-bottom: 2px solid #282f22;
+      border-bottom: 1.5px solid var(--border-subtle);
       padding: 10px 16px;
       display: flex;
       align-items: center;
@@ -1024,35 +1034,41 @@
       gap: 12px;
       flex-shrink: 0;
     }
-    .station-name {
+    .station-meta-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .station-kicker {
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 8px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.14em;
+      color: var(--lime-primary);
+      text-transform: uppercase;
+    }
+    .station-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
       color: var(--text-white);
       text-transform: uppercase;
     }
-    .subway-bullets-group {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .subway-bullet {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
+    .stage-location-tag {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 11px;
-      font-weight: 800;
-      color: #ffffff;
-      line-height: 1;
-      user-select: none;
+      gap: 5px;
+      padding: 3px 8px;
+      background: #1c2217;
+      border: 1px solid var(--border-hard);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
-    .bullet-f, .bullet-m { background: var(--accent-orange); }
-    .bullet-j, .bullet-z { background: var(--accent-ochre); }
 
     /* Preview Toolbar */
     .preview-toolbar {
@@ -1061,15 +1077,15 @@
       align-items: center;
       justify-content: space-between;
       padding: 8px 14px;
-      background: #151912;
-      border-bottom: 1.5px solid #282f22;
+      background: #131710;
+      border-bottom: 1.5px solid var(--border-subtle);
       gap: 10px;
       flex-shrink: 0;
     }
 
     .device-pills {
       display: flex;
-      background: #11140f;
+      background: #0d100a;
       padding: 2px;
       border-radius: 0px;
       border: 1px solid var(--border-subtle);
@@ -1087,6 +1103,9 @@
       cursor: pointer;
       transition: all 0.15s;
     }
+    .device-pill-btn:hover {
+      color: var(--text-cream);
+    }
     .device-pill-btn.is-active {
       background: var(--lime-primary);
       color: #141712;
@@ -1097,31 +1116,30 @@
       gap: 6px;
     }
 
-    /* Subway Tile Wall (Behind Phone Chassis) */
+    /* Executive Stage Backdrop (Deep Architectural Canvas) */
     .subway-tile-wall {
-      background-color: #e5ded0;
+      background-color: #0d100b;
       background-image: 
-        linear-gradient(#cac0ac 1.5px, transparent 1.5px),
-        linear-gradient(90deg, #cac0ac 1.5px, transparent 1.5px);
-      background-size: 64px 38px;
+        radial-gradient(rgba(181, 212, 113, 0.14) 1px, transparent 1px);
+      background-size: 20px 20px;
       padding: 20px 14px;
       display: flex;
       justify-content: center;
       align-items: center;
-      border-bottom: 2px solid #282f22;
+      border-bottom: 1.5px solid var(--border-subtle);
       position: relative;
       overflow: hidden;
     }
 
     /* Phone Simulator Frame */
     .phone-simulator-frame {
-      width: 393px;
-      height: 720px;
-      max-height: calc(100vh - var(--header-height) - 180px);
+      width: 380px;
+      height: 740px;
+      max-height: calc(100vh - var(--header-height) - 160px);
       background: #000;
       border-radius: 44px;
-      border: 10px solid #1c1c1e;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(0, 0, 0, 0.8);
+      border: 9px solid #1c2219;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
       position: relative;
       display: flex;
       flex-direction: column;
@@ -1135,10 +1153,10 @@
       top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      width: 92px;
-      height: 22px;
+      width: 88px;
+      height: 20px;
       background: #000;
-      border-radius: 14px;
+      border-radius: 12px;
       z-index: 50;
       display: flex;
       align-items: center;
@@ -1147,8 +1165,8 @@
       pointer-events: none;
     }
     .island-camera-lens {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #0a0a14;
       border: 1px solid #1a1a2e;
@@ -1162,21 +1180,35 @@
       flex: 1;
     }
 
-    /* Subway Track Graphic Footer */
+    /* Stage Footer */
     .subway-track-footer {
-      background: #171b14;
-      padding: 12px 16px;
+      background: #11140f;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      border-top: 1.5px solid #20261b;
+      gap: 14px;
+      border-top: 1.5px solid var(--border-subtle);
       position: relative;
     }
     .track-dashed-line {
       flex: 1;
-      height: 4px;
-      background: repeating-linear-gradient(90deg, #3d4734 0, #3d4734 16px, transparent 16px, transparent 28px);
+      height: 2px;
+      background: repeating-linear-gradient(90deg, #384230 0, #384230 12px, transparent 12px, transparent 20px);
+    }
+    .stage-sync-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: #171d13;
+      border: 1px solid var(--border-hard);
+      color: #4ade80;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
     }
 
     /* ========================================================
@@ -2248,14 +2280,15 @@
         
         <div class="billboard-container">
           
-          <!-- Station Header Bar (Exact match to DELANCEY ST-ESSEX ST with F, J, M, Z) -->
+          <!-- Executive App Header (Belle Colombo Verified) -->
           <div class="subway-station-header">
-            <div class="station-name">DELANCEY ST-ESSEX ST · BELLE COLOMBO</div>
-            <div class="subway-bullets-group">
-              <span class="subway-bullet bullet-f" title="Food / Lunch">F</span>
-              <span class="subway-bullet bullet-j" title="Juice / Bar">J</span>
-              <span class="subway-bullet bullet-m" title="Menu / À La Carte">M</span>
-              <span class="subway-bullet bullet-z" title="Zone / Tasting">Z</span>
+            <div class="station-meta-left">
+              <span class="station-kicker">LIVE GUEST APPLICATION</span>
+              <h3 class="station-name">BELLE COLOMBO</h3>
+            </div>
+            <div class="stage-location-tag">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <span>58A HORTON PLACE</span>
             </div>
           </div>
 
@@ -2287,16 +2320,13 @@
             </div>
           </div>
 
-          <!-- Subway Track / Road Strip Graphic with Dashed Center Markings & Periwinkle Badge -->
           <div class="subway-track-footer">
             <div class="track-dashed-line"></div>
-            <!-- Exact Match to "+ 1 MISSING TILE FOUND" -->
-            <button type="button" class="btn-purple-badge" id="btnSyncIndicatorPill" title="Real-time connected to client application">
-              + 1 LIVE APP SYNCED
-            </button>
+            <div class="stage-sync-badge">
+              <span class="sync-pulse"></span>
+              <span>0ms INSTANT SYNC ACTIVE</span>
+            </div>
           </div>
-
-        </div>
 
       </section>
 
@@ -2311,7 +2341,7 @@
     <div class="modal-box">
       <div class="modal-head">
         <h3>GOOGLE FIREBASE CLOUD SYNC (100% FREE)</h3>
-        <button type="button" class="btn-icon" id="btnCloseCloudModal">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseCloudModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">
@@ -2340,7 +2370,7 @@
     <div class="modal-box">
       <div class="modal-head">
         <h3 id="eventModalTitle">ADD EVENT</h3>
-        <button type="button" class="btn-icon" id="btnCloseEventModal">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseEventModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <form id="eventForm" style="display:flex;flex-direction:column;gap:14px;">
@@ -2440,7 +2470,7 @@
     <div class="modal-box">
       <div class="modal-head">
         <h3 id="itemModalTitle">EDIT DISH</h3>
-        <button type="button" class="btn-icon" id="btnCloseItemModal">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseItemModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <form id="itemForm" style="display:flex;flex-direction:column;gap:14px;">
@@ -2488,7 +2518,7 @@
         <div class="form-group">
           <label class="toggle-wrap" id="itemVegToggleWrap">
             <div class="toggle-box"><span class="toggle-thumb"></span></div>
-            <span style="font-size:11px;font-weight:600;color:#34d399;">🌱 Vegetarian Dish</span>
+            <span style="font-size:11px;font-weight:700;color:#34d399;display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7Z"></path><path d="M11 20v-8"></path></svg> Vegetarian Dish</span>
           </label>
         </div>
 
@@ -2512,8 +2542,8 @@
             </div>
             <!-- Media Type Switcher -->
             <div class="media-type-pills">
-              <button type="button" class="media-pill-btn is-active" id="btnMtypePhoto" data-mtype="photo">📷 Photo</button>
-              <button type="button" class="media-pill-btn" id="btnMtypeVideo" data-mtype="video">🎬 Video</button>
+              <button type="button" class="media-pill-btn is-active" id="btnMtypePhoto" data-mtype="photo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> <span>Photo</span></button>
+              <button type="button" class="media-pill-btn" id="btnMtypeVideo" data-mtype="video"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg> <span>Video</span></button>
               <button type="button" class="media-pill-btn" id="btnMtypeNone" data-mtype="none">None</button>
             </div>
           </div>
@@ -2571,7 +2601,7 @@
                 <span class="media-size-tag" id="itemMediaSizeTag">0 KB</span>
               </div>
             </div>
-            <button type="button" class="btn-icon btn-delete" id="btnClearDishMedia" title="Remove backdrop media" style="font-size:11px;padding:4px 8px;width:auto;height:auto;">✕ Remove</button>
+            <button type="button" class="btn-icon btn-delete" id="btnClearDishMedia" title="Remove backdrop media" style="font-size:11px;padding:4px 8px;width:auto;height:auto;display:inline-flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Remove</button>
           </div>
         </div>
 
@@ -2588,7 +2618,7 @@
     <div class="modal-box" style="max-width: 580px;">
       <div class="modal-head">
         <h3>DATABASE STORAGE &amp; CLOUD COCKPIT</h3>
-        <button type="button" class="btn-icon" id="btnCloseStorageModal">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseStorageModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <div class="storage-modal-hero">
@@ -2609,7 +2639,7 @@
       <div class="storage-breakdown-list">
         <div class="storage-row">
           <div class="storage-row-header">
-            <span class="storage-row-label">🥗 Menu Items, Dishes &amp; Pricing</span>
+            <span class="storage-row-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--lime-primary)" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg> Menu Items, Dishes &amp; Pricing</span>
             <span class="storage-row-val" id="storageValMenu">0 KB</span>
           </div>
           <div class="storage-bar-track"><div class="storage-bar-fill" id="storageBarMenu" style="width: 2%;"></div></div>
@@ -2617,7 +2647,7 @@
 
         <div class="storage-row">
           <div class="storage-row-header">
-            <span class="storage-row-label">📸 Dish Backdrops &amp; Poster Images</span>
+            <span class="storage-row-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--lime-primary)" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> Dish Backdrops &amp; Poster Images</span>
             <span class="storage-row-val" id="storageValImages">0 KB</span>
           </div>
           <div class="storage-bar-track"><div class="storage-bar-fill" id="storageBarImages" style="width: 4%;"></div></div>
@@ -2625,7 +2655,7 @@
 
         <div class="storage-row">
           <div class="storage-row-header">
-            <span class="storage-row-label">🎬 Dish Motion &amp; Ambient Videos</span>
+            <span class="storage-row-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--lime-primary)" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg> Dish Motion &amp; Ambient Videos</span>
             <span class="storage-row-val" id="storageValVideos">0 KB</span>
           </div>
           <div class="storage-bar-track"><div class="storage-bar-fill" id="storageBarVideos" style="width: 1%;"></div></div>
@@ -2633,7 +2663,7 @@
 
         <div class="storage-row">
           <div class="storage-row-header">
-            <span class="storage-row-label">📅 Calendar Events &amp; Venue Data</span>
+            <span class="storage-row-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--lime-primary)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Calendar Events &amp; Venue Data</span>
             <span class="storage-row-val" id="storageValEvents">0 KB</span>
           </div>
           <div class="storage-bar-track"><div class="storage-bar-fill" id="storageBarEvents" style="width: 1%;"></div></div>
@@ -2641,7 +2671,7 @@
 
         <div class="storage-row">
           <div class="storage-row-header">
-            <span class="storage-row-label" style="color:var(--text-dim);">⚡ Available Free Capacity</span>
+            <span class="storage-row-label" style="color:var(--text-dim);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg> Available Free Storage</span>
             <span class="storage-row-val" style="color:var(--accent-green);" id="storageValFree">1,023.7 MB Free</span>
           </div>
           <div class="storage-bar-track"><div class="storage-bar-fill" id="storageBarFree" style="width: 98%; background: var(--accent-green); opacity: 0.3;"></div></div>
@@ -2668,7 +2698,7 @@
     <div class="modal-box" style="max-width: 500px;">
       <div class="modal-head">
         <h3 id="subcatModalTitle">MANAGE SUB-CATEGORIES</h3>
-        <button type="button" class="btn-icon" id="btnCloseSubcatModal">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseSubcatModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <p style="font-size:11px;color:var(--text-muted);">Organize, add, rename, or delete sub-categories for this menu section.</p>
@@ -2695,7 +2725,7 @@
     <div class="modal-box" style="max-width: 640px;">
       <div class="modal-head">
         <h3 id="lightboxModalTitle">INSPECT MEDIA ASSET</h3>
-        <button type="button" class="btn-icon" id="btnCloseLightboxModal">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseLightboxModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
 
       <div class="media-lightbox-preview-wrap">
@@ -2737,7 +2767,7 @@
     <div class="modal-box" style="max-width: 520px;">
       <div class="modal-head">
         <h3>ATTACH MEDIA ASSET</h3>
-        <button type="button" class="btn-icon" id="btnCloseMediaUploadTarget">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseMediaUploadTarget" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
       <p style="font-size:11px;color:var(--text-muted);">Choose which dish or event you want to attach this uploaded media to, or save directly as a library asset.</p>
       
@@ -2769,7 +2799,7 @@
     <div class="modal-box" style="max-width: 520px;">
       <div class="modal-head">
         <h3 id="menuCategoryModalTitle">CREATE MENU CATEGORY</h3>
-        <button type="button" class="btn-icon" id="btnCloseMenuCategoryModal">✕</button>
+        <button type="button" class="btn-icon" id="btnCloseMenuCategoryModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
       <p style="font-size:11px;color:var(--text-muted);">Add or edit a primary dining category (e.g. Breakfast, Desserts, Sunday Brunch, Beverages).</p>
 
@@ -2782,8 +2812,15 @@
             <input type="text" id="menuCatNameInput" placeholder="e.g. Breakfast & Brunch" required>
           </div>
           <div class="form-group" style="flex:1;">
-            <label>Icon / Emoji</label>
-            <input type="text" id="menuCatIconInput" placeholder="🥞" style="text-align:center;font-size:16px;">
+            <label>Category Icon</label>
+            <select id="menuCatIconInput" style="height:36px;font-family:var(--font-mono);font-size:11px;">
+     <option value="lunch">Salad / Fresh</option>
+     <option value="alacarte" selected>Gourmet Cloche</option>
+     <option value="thebar">Bar / Spirits</option>
+     <option value="tasting">Wine Pairing</option>
+     <option value="coffee">Coffee / Breakfast</option>
+     <option value="dessert">Desserts</option>
+   </select>
           </div>
         </div>
 
@@ -2808,6 +2845,35 @@
 
   <!-- Studio Master JavaScript Logic -->
   <script>
+
+    /* ========================================================
+       SVG ICON HELPER SYSTEM (No Consumer Emojis)
+       ======================================================== */
+        function getCategoryIconSvg(key) {
+      var k = String(key || '').toLowerCase();
+      if (k.indexOf('bar') !== -1 || k.indexOf('cocktail') !== -1 || k.indexOf('thebar') !== -1 || k.indexOf('🍸') !== -1) {
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"></path><path d="M12 11v11"></path><path d="m19 3-7 8-7-8Z"></path></svg>';
+      }
+      if (k.indexOf('wine') !== -1 || k.indexOf('tasting') !== -1 || k.indexOf('🍷') !== -1 || k.indexOf('🥂') !== -1) {
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"></path><path d="M12 15v7"></path><path d="M12 15a5 5 0 0 0 5-5c0-4-2-7-5-7s-5 3-5 7a5 5 0 0 0 5 5Z"></path></svg>';
+      }
+      if (k.indexOf('lunch') !== -1 || k.indexOf('salad') !== -1 || k.indexOf('🥗') !== -1) {
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7Z"></path><path d="M11 20v-8"></path></svg>';
+      }
+      if (k.indexOf('coffee') !== -1 || k.indexOf('cafe') !== -1 || k.indexOf('breakfast') !== -1 || k.indexOf('☕') !== -1 || k.indexOf('🥞') !== -1) {
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8Z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>';
+      }
+      if (k.indexOf('dessert') !== -1 || k.indexOf('sweet') !== -1 || k.indexOf('🍰') !== -1) {
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M12 11v11"></path><path d="M4 17h16"></path></svg>';
+      }
+      // Default Gourmet Cloche
+      return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2v4a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V2"></path><path d="M12 9v13"></path><path d="M8 22h8"></path></svg>';
+    }
+
+    function getVegBadgeHtml() {
+      return '<span class="subcat-badge badge-veg"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7Z"></path><path d="M11 20v-8"></path></svg> VEGETARIAN</span>';
+    }
+
     /* ========================================================
        EXECUTIVE STUDIO CONTROLLER & 0ms SYNC ENGINE
        ======================================================== */
@@ -3461,7 +3527,7 @@
 
       if (filtered.length === 0) {
         grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--text-dim);">' +
-          '<div style="font-size: 32px; margin-bottom: 10px;">📸</div>' +
+          '<div style="margin-bottom: 12px; color: var(--lime-primary);"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>' +
           '<h4 style="color: var(--text-white); font-size: 14px; margin-bottom: 6px;">No Media Assets Found</h4>' +
           '<p style="font-size: 11px;">' + (currentMediaFilter !== 'all' || currentMediaSearchKeyword ? 'Try changing your filter or search query.' : 'Upload photos or videos using "+ Upload Media" above or in the dish editor.') + '</p>' +
         '</div>';
@@ -3476,8 +3542,8 @@
           '<span class="media-card-badge-origin">Preset</span>';
 
         var typeBadge = isVid ?
-          '<span class="media-card-badge-type is-video">🎬 Video</span>' :
-          '<span class="media-card-badge-type">📷 Photo</span>';
+          '<span class="media-card-badge-type is-video"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg> Video</span>' :
+          '<span class="media-card-badge-type"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> Photo</span>';
 
         var previewMedia = isVid ?
           '<video class="media-card-preview-video" src="' + asset.url + '" muted loop playsinline preload="metadata"></video>' :
@@ -3574,7 +3640,7 @@
 
       if (tName) tName.textContent = asset.targetName;
       if (sLabel) sLabel.textContent = asset.sectionLabel + (asset.subCategory ? ' · ' + asset.subCategory : '');
-      if (mType) mType.textContent = (asset.mediaType === 'video' ? '🎬 Looping Video' : '📷 High-Res Photo') + (asset.isUpload ? ' (Custom Upload)' : ' (Preset)');
+      if (mType) mType.textContent = (asset.mediaType === 'video' ? 'Looping Video (MP4)' : 'High-Resolution Photo') + (asset.isUpload ? ' (Custom Upload)' : ' (Preset)');
       if (mSize) mSize.textContent = formatBytes(asset.sizeBytes);
 
       if (asset.mediaType === 'video') {
@@ -4075,10 +4141,10 @@
       if (!appData) return;
       if (!appData.menuCategories || !Array.isArray(appData.menuCategories)) {
         appData.menuCategories = [
-          { id: 'lunch', name: 'LUNCH', subtitle: 'Express Midday Selection', icon: '🥗', type: 'standard', isSystem: true },
-          { id: 'alacarte', name: 'À LA CARTE', subtitle: '5-Course Gourmet Odyssey', icon: '🍽️', type: 'courses', isSystem: true },
-          { id: 'thebar', name: 'THE BAR', subtitle: 'Botanical Spirits & Bites', icon: '🍸', type: 'bar', isSystem: true },
-          { id: 'tasting', name: 'TASTING MENUS', subtitle: 'Curated Pairings & Wine Odysseys', icon: '🍷', type: 'tasting', isSystem: true }
+          { id: 'lunch', name: 'LUNCH', subtitle: 'Express Midday Selection', icon: 'lunch', type: 'standard', isSystem: true },
+          { id: 'alacarte', name: 'À LA CARTE', subtitle: '5-Course Gourmet Odyssey', icon: 'alacarte', type: 'courses', isSystem: true },
+          { id: 'thebar', name: 'THE BAR', subtitle: 'Botanical Spirits & Bites', icon: 'thebar', type: 'bar', isSystem: true },
+          { id: 'tasting', name: 'TASTING MENUS', subtitle: 'Curated Pairings & Wine Odysseys', icon: 'tasting', type: 'tasting', isSystem: true }
         ];
       }
       if (!appData.subCategories) {
@@ -4121,13 +4187,13 @@
         }
 
         var isActive = (activeMenuCategoryKey === cat.id);
-        var iconHtml = cat.icon ? '<span class="cat-btn-icon">' + cat.icon + '</span>' : '';
+        var iconHtml = '<span class="cat-btn-icon">' + getCategoryIconSvg(cat.icon || cat.id) + '</span>';
         
         var customActionsHtml = '';
         if (!cat.isSystem) {
           customActionsHtml = '<span class="cat-actions-wrap">' +
-            '<span class="cat-action-icon btn-quick-edit-cat" data-cat-id="' + cat.id + '" title="Edit Category Settings">✎</span>' +
-            '<span class="cat-action-icon is-del btn-quick-del-cat" data-cat-id="' + cat.id + '" title="Delete Category">✕</span>' +
+            '<span class="cat-action-icon btn-quick-edit-cat" data-cat-id="' + cat.id + '" title="Edit Category Settings"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>' +
+            '<span class="cat-action-icon is-del btn-quick-del-cat" data-cat-id="' + cat.id + '" title="Delete Category"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>' +
           '</span>';
         }
 
@@ -4308,7 +4374,7 @@
                 '<h4>' + item.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
                   (item.subCategory ? '<span class="subcat-badge">' + item.subCategory + '</span>' : '') +
-                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Vegetarian</span>' : '<span style="color:var(--text-dim);">Signature</span>') +
+                  getVegBadgeHtml(isVeg) +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -4363,7 +4429,7 @@
         if (titleEl) titleEl.textContent = 'CREATE MENU CATEGORY';
         if (idInput) idInput.value = '';
         if (nameInput) nameInput.value = '';
-        if (iconInput) iconInput.value = '🍽️';
+        if (iconInput) iconInput.value = 'dish';
         if (subInput) subInput.value = '';
         if (subcatsInput) subcatsInput.value = '';
       }
@@ -4428,7 +4494,7 @@
           e.preventDefault();
           var id = document.getElementById('editMenuCatId').value;
           var name = document.getElementById('menuCatNameInput').value.trim();
-          var icon = document.getElementById('menuCatIconInput').value.trim() || '🍽️';
+          var icon = document.getElementById('menuCatIconInput').value.trim() || 'dish';
           var subtitle = document.getElementById('menuCatSubtitleInput').value.trim();
           var subcatsRaw = document.getElementById('menuCatSubcatsInput').value.trim();
 
@@ -4680,7 +4746,7 @@
                 '<h4>' + item.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
                   (item.subCategory ? '<span class="subcat-badge">' + item.subCategory + '</span>' : '') +
-                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Veg</span>' : '<span style="color:var(--text-dim);">Non-Veg</span>') +
+                  (isVeg ? getVegBadgeHtml() : '<span class="subcat-badge badge-nonveg">NON-VEG</span>') +
                   (item.meta ? '<span>•</span><span style="color:var(--gold-primary);">' + item.meta.badge + '</span>' : '') +
                 '</div>' +
               '</div>' +
@@ -4757,7 +4823,7 @@
                 '<h4>' + it.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
                   (it.subCategory ? '<span class="subcat-badge">' + it.subCategory + '</span>' : '') +
-                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Vegetarian</span>' : '<span style="color:var(--text-dim);">Signature</span>') +
+                  getVegBadgeHtml(isVeg) +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -4843,7 +4909,7 @@
                 '<h4>' + it.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
                   (it.subCategory ? '<span class="subcat-badge">' + it.subCategory + '</span>' : '') +
-                  (isVeg ? '<span style="color:#34d399;font-weight:600;">🌱 Vegetarian</span>' : '<span style="color:var(--gold-light);">Curated Craft</span>') +
+                  (isVeg ? getVegBadgeHtml(true) : '<span style="color:var(--gold-light);font-family:var(--font-mono);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;">Curated Craft</span>') +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -5749,7 +5815,7 @@
           firebase.initializeApp(firebaseConfig);
         }
         firebaseDb = firebase.database();
-        console.log('⚡ Connected to Google Firebase Realtime Database: bellecolombo-fea8d');
+        console.log('[Firebase] Connected to Google Firebase Realtime Database: bellecolombo-fea8d');
         var syncBadge = document.querySelector('.sync-status-badge span:last-child');
         if (syncBadge) syncBadge.textContent = 'CLOUD & LIVE SYNC CONNECTED (0ms)';
       } catch(err) {
@@ -5770,8 +5836,8 @@
         return res.json();
       })
       .then(function(data) {
-        console.log('⚡ Successfully published to Firebase Realtime Database!');
-        showToast('☁️ Live published to Google Firebase Cloud!');
+        console.log('[Firebase] Successfully published to Firebase Realtime Database!');
+        showToast('Live published to Google Firebase Cloud!');
       })
       .catch(function(err) {
         console.error('Firebase Cloud push error:', err);
@@ -5785,7 +5851,7 @@
     document.getElementById('btnSavePublish').addEventListener('click', function() {
       sendLiveUpdate();
       pushToFirebaseCloud();
-      showToast('✨ All changes saved & published!');
+      showToast('All changes saved & published!');
     });
 
     // 13. Export & Import JSON
@@ -5915,7 +5981,7 @@
       var container = document.getElementById('toastContainer');
       var toast = document.createElement('div');
       toast.className = 'toast';
-      toast.innerHTML = '<span style="color:var(--gold-primary);font-size:14px;">✦</span><span>' + msg + '</span>';
+      toast.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--lime-primary)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>' + msg + '</span>';
       container.appendChild(toast);
       setTimeout(function() {
         toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
@@ -5931,7 +5997,7 @@
           e.preventDefault();
           sendLiveUpdate();
           pushToFirebaseCloud();
-          showToast('✨ Published to Cloud & synchronized (Ctrl+S)!');
+          showToast('Published to Cloud & synchronized (Ctrl+S)!');
         }
       });
     }
