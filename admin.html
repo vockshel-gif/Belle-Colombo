@@ -585,9 +585,10 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 20px;
+      margin-top: 14px;
+      margin-bottom: 22px;
       overflow-x: auto;
-      padding-bottom: 6px;
+      padding-bottom: 8px;
       border-bottom: 1.5px solid var(--border-subtle);
     }
     .menu-cat-master-btn {
@@ -1252,72 +1253,90 @@
     .storage-gauge-widget {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 5px 12px;
+      gap: 12px;
+      padding: 6px 14px;
       border-radius: 0px;
       background: #171d13;
       border: 1.5px solid var(--border-hard);
       cursor: pointer;
-      box-shadow: var(--shadow-hard);
+      box-shadow: 2px 2px 0px #0a0c08;
       transition: all 0.15s ease;
       user-select: none;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .storage-gauge-widget:hover {
-      background: #232c1c;
+      background: #222a1b;
       border-color: var(--lime-primary);
       transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0px #000;
     }
     .radial-gauge-wrap {
       position: relative;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
     .radial-gauge-svg {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       transform: rotate(-90deg);
     }
     .radial-gauge-bg {
       fill: none;
-      stroke: #2e3725;
-      stroke-width: 3.5;
+      stroke: #252e1f;
+      stroke-width: 3.2;
     }
     .radial-gauge-fill {
       fill: none;
       stroke: var(--lime-primary);
-      stroke-width: 3.5;
-      stroke-linecap: square;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.4s ease;
     }
     .radial-gauge-text {
       position: absolute;
       font-family: var(--font-mono);
       font-size: 8px;
       font-weight: 700;
-      color: var(--lime-primary);
+      color: var(--text-white);
+      letter-spacing: -0.02em;
     }
     .storage-gauge-meta {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 2px;
     }
-    .storage-gauge-title {
+    .storage-gauge-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-white);
+    }
+    .storage-gauge-title-row svg {
+      color: var(--lime-primary);
+    }
+    .storage-quota-badge {
+      background: #242c1d;
+      color: var(--lime-primary);
+      padding: 1px 5px;
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--lime-primary);
+      border: 1px solid var(--border-hard);
+      border-radius: 0px;
     }
     .storage-gauge-sub {
       font-family: var(--font-mono);
       font-size: 10px;
-      color: var(--text-dim);
+      color: var(--text-muted);
       font-weight: 500;
     }
 
@@ -1859,24 +1878,22 @@
         </div>
       </div>
 
-      <!-- Live Sync Status Indicator -->
-      <div class="sync-status-badge">
-        <span class="sync-pulse"></span>
-        <span>LIVE STUDIO SYNC ACTIVE (0ms)</span>
-      </div>
-
       <!-- 1 GB Database Storage Radial Percentage Widget -->
       <div class="storage-gauge-widget" id="storageGaugeWidget" title="1.00 GB Cloud Database Storage Quota — Click to inspect usage breakdown">
         <div class="radial-gauge-wrap">
           <svg class="radial-gauge-svg" viewBox="0 0 36 36">
-            <path class="radial-gauge-bg" fill="none" stroke="rgba(188, 166, 133, 0.18)" stroke-width="3.2" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            <path class="radial-gauge-fill" id="radialGaugeFill" fill="none" stroke="var(--gold-light)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0.1, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="radial-gauge-bg" fill="none" stroke="#252e1f" stroke-width="3.2" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="radial-gauge-fill" id="radialGaugeFill" fill="none" stroke="var(--lime-primary)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0.1, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
           </svg>
-          <div class="radial-gauge-text" id="radialGaugePercent">0%</div>
+          <div class="radial-gauge-text" id="radialGaugePercent">&lt;0.1%</div>
         </div>
         <div class="storage-gauge-meta">
-          <div class="storage-gauge-title">DATABASE 1GB</div>
-          <div class="storage-gauge-sub" id="storageGaugeSub">0.24 MB / 1,024 MB</div>
+          <div class="storage-gauge-title-row">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            <span>DATABASE</span>
+            <span class="storage-quota-badge">1 GB</span>
+          </div>
+          <div class="storage-gauge-sub" id="storageGaugeSub">0.05 MB / 1,024 MB</div>
         </div>
       </div>
 
@@ -1939,32 +1956,6 @@
              TAB 1: UNIFIED MENU SUITE
              ========================================== -->
         <div class="studio-content-view is-active" id="tab-menu">
-          <!-- Exact Reference Style Hero -->
-          <div class="neo-hero-section">
-            <div class="neo-kicker">■ BELLE COLOMBO · CULINARY STUDIO · COCKPIT 01</div>
-            <h1 class="neo-hero-headline">
-              The menu is<br>
-              <span class="accent-lime">curated</span><br>
-              here.
-            </h1>
-            <p class="neo-hero-subtext">
-              Spot an empty patch in the dining selection? Curate dishes, sub-categories and backdrops in real-time.
-            </p>
-            <div class="neo-hero-actions">
-              <button type="button" class="btn-lime-primary" id="btnAddMenuCategory">
-                <span>+ ADD CATEGORY</span>
-                <span class="btn-arrow">→</span>
-              </button>
-              <button type="button" class="btn-neo-secondary" id="btnManageLunchSubcatsHero" onclick="document.getElementById('btnManageLunchSubcats') && document.getElementById('btnManageLunchSubcats').click()">
-                <span>VIEW SUBCATEGORIES</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="subway-road-divider">
-            <div class="road-dashed-strip"></div>
-          </div>
-
           <!-- Dynamic Master Category Selector Bar -->
           <div class="menu-cat-master-bar" id="menuCategoriesMasterBar">
             <!-- Dynamically populated: Lunch, À La Carte, The Bar, Tasting Menus, + Custom Categories -->
@@ -2978,7 +2969,7 @@
       if (pctEl) pctEl.textContent = m.pctDisplay + '%';
       if (subEl) subEl.textContent = m.usedMb + ' MB / 1,024 MB';
       
-      var strokeColor = m.pct > 90 ? '#ef4444' : (m.pct > 75 ? '#f59e0b' : '#dfcfb7');
+      var strokeColor = m.pct > 90 ? '#ef4444' : (m.pct > 75 ? '#f59e0b' : '#b5d471');
       if (fillEl) fillEl.style.stroke = strokeColor;
 
       // Update Media tab badge if function exists
@@ -4205,9 +4196,9 @@
         '</button>';
       });
 
-      html += '<button type="button" class="btn-quick-add-category" id="btnQuickAddCategoryBar" title="Create a new menu category">' +
+      html += '<button type="button" class="btn-quick-add-category" id="btnAddMenuCategory" title="Create a new menu category">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>' +
-        '<span>Add Category</span>' +
+        '<span>+ Add Category</span>' +
       '</button>';
 
       bar.innerHTML = html;
@@ -4240,7 +4231,7 @@
       });
 
       // Quick Add category
-      var quickAddBtn = document.getElementById('btnQuickAddCategoryBar');
+      var quickAddBtn = document.getElementById('btnAddMenuCategory') || document.getElementById('btnQuickAddCategoryBar');
       if (quickAddBtn) {
         quickAddBtn.addEventListener('click', function() {
           openMenuCategoryModal();
@@ -5816,8 +5807,6 @@
         }
         firebaseDb = firebase.database();
         console.log('[Firebase] Connected to Google Firebase Realtime Database: bellecolombo-fea8d');
-        var syncBadge = document.querySelector('.sync-status-badge span:last-child');
-        if (syncBadge) syncBadge.textContent = 'CLOUD & LIVE SYNC CONNECTED (0ms)';
       } catch(err) {
         console.warn('Firebase Cloud init notice:', err.message);
       }
