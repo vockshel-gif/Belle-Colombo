@@ -50,7 +50,6 @@
       --font-mono: 'Space Mono', 'Courier New', monospace;
       --font-sans: 'Space Grotesk', -apple-system, sans-serif;
       --header-height: 58px;
-      --ribbon-height: 32px;
     }
 
     * {
@@ -92,7 +91,7 @@
     .app-shell {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - var(--ribbon-height));
+      height: 100vh;
       width: 100vw;
       overflow: hidden;
       position: relative;
@@ -123,32 +122,23 @@
       color: inherit;
     }
 
-    .brand-crest {
-      width: 36px;
-      height: 36px;
-      border-radius: 0px;
-      border: 1.5px solid var(--lime-primary);
-      background: #191f15;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--lime-primary);
-      box-shadow: 2px 2px 0px #0a0c08;
-      flex-shrink: 0;
-    }
-    .brand-crest svg {
-      width: 18px;
-      height: 18px;
+    .header-restaurant-logo {
+      height: 34px;
+      width: auto;
+      max-width: 140px;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
     }
 
     .brand-info {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
     .brand-kicker {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -158,28 +148,26 @@
       gap: 6px;
       line-height: 1;
     }
-    .brand-info h1 {
-      font-family: var(--font-display);
-      font-size: 16px;
-      letter-spacing: -0.02em;
-      color: var(--text-white);
-      line-height: 1.1;
-      font-weight: 800;
-      text-transform: lowercase;
+    .brand-status-sub {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-    .brand-badge-pill {
-      background: #232b1d;
-      border: 1px solid var(--border-hard);
-      color: var(--lime-primary);
-      font-family: var(--font-mono);
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      padding: 1px 6px;
+      gap: 6px;
       text-transform: uppercase;
+      line-height: 1;
+    }
+    .brand-pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+      display: inline-block;
+      animation: pulseGreen 1.8s infinite;
     }
 
     /* Live Sync Indicator */
@@ -222,62 +210,78 @@
     }
 
     .btn-secondary {
-      background: #171c14;
-      border: 1.5px solid var(--border-hard);
-      color: var(--text-cream);
+      background: rgba(24, 30, 21, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #d8ded2;
       padding: 7px 13px;
-      border-radius: 0px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 2px 2px 0px #0a0c08;
-      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .btn-secondary:hover {
-      background: #232a1e;
-      color: var(--lime-primary);
-      border-color: var(--lime-primary);
-      transform: translate(-1px, -1px);
-      box-shadow: 3px 3px 0px #000;
+      background: rgba(35, 45, 30, 0.95);
+      color: #ffffff;
+      border-color: rgba(181, 212, 113, 0.45);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     }
     .btn-secondary:active {
-      transform: translate(1px, 1px);
-      box-shadow: 1px 1px 0px #000;
+      transform: translateY(1px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
-    /* Primary CTA Button: Exact Match to "REPORT A MISSING TILE  —" */
-    .btn-publish, .btn-lime-primary {
-      background: var(--lime-btn);
-      color: #141712;
-      border: 1.5px solid #141712;
-      padding: 8px 18px;
-      border-radius: 0px;
+    /* Cloud Sync Status Pill */
+    #btnCloudSync {
+      background: rgba(18, 28, 19, 0.95);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      color: #4ade80;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.06em;
+      padding: 7px 13px;
+    }
+    #btnCloudSync:hover {
+      background: rgba(22, 38, 24, 0.98);
+      border-color: #4ade80;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.25);
+    }
+
+    /* Primary CTA Button: Executive Save & Publish */
+    .btn-publish, .btn-lime-primary {
+      background: linear-gradient(135deg, #b5d471 0%, #8cae49 100%);
+      color: #0d120a;
+      border: 1px solid #c9e888;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-family: var(--font-display);
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: var(--shadow-hard);
-      transition: all 0.15s ease;
+      gap: 7px;
+      box-shadow: 0 4px 14px rgba(181, 212, 113, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .btn-publish:hover, .btn-lime-primary:hover {
-      background: var(--lime-btn-hover);
-      transform: translate(-1px, -1px);
-      box-shadow: 5px 5px 0px #000000;
+      background: linear-gradient(135deg, #c5e482 0%, #9bc052 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(181, 212, 113, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     }
     .btn-publish:active, .btn-lime-primary:active {
-      transform: translate(1px, 1px);
-      box-shadow: 1px 1px 0px #000000;
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(181, 212, 113, 0.25);
     }
     .btn-arrow {
       font-size: 13px;
@@ -341,7 +345,7 @@
     .workspace-body {
       display: flex;
       flex: 1;
-      height: calc(100vh - var(--header-height) - var(--ribbon-height));
+      height: calc(100vh - var(--header-height));
       overflow: hidden;
       position: relative;
     }
@@ -1213,97 +1217,195 @@
     }
 
     /* ========================================================
-       BOTTOM RUNNING MARQUEE RIBBON
-       Exact match to green bottom banner in reference:
-       "■ BELLE COLOMBO · EXECUTIVE CONTROL · SPOT AN EMPTY PATCH..."
+       IN-CONTEXT DISH EDITOR (Side-by-Side with Phone Preview)
        ======================================================== */
-    .bottom-marquee-ribbon {
-      height: var(--ribbon-height);
-      background: var(--lime-ribbon);
-      color: #141712;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      overflow: hidden;
-      white-space: nowrap;
+    .context-dish-editor {
+      background: #161e13;
+      border: 1.5px solid #4b5e3d;
+      border-radius: 8px;
+      padding: 24px 28px 30px;
+      margin-top: 14px;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.6);
+      animation: fadeInContextEditor 0.22s ease-out;
+    }
+    @keyframes fadeInContextEditor {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .context-editor-topbar {
       display: flex;
       align-items: center;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 900;
-      border-top: 2px solid #141712;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
     }
-    .marquee-track {
+    .btn-context-back {
+      background: #242f1e;
+      border: 1.5px solid #4d633d;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       display: inline-flex;
-      white-space: nowrap;
-      animation: marqueeRunning 28s linear infinite;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.18s ease;
     }
-    @keyframes marqueeRunning {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+    .btn-context-back:hover {
+      background: #314227;
+      color: var(--lime-primary);
+      border-color: var(--lime-primary);
+      transform: translateX(-2px);
+    }
+    .context-editor-heading {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .context-editor-scope-pill {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--lime-primary);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .context-editor-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .context-editor-live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.14);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(74, 222, 128, 0.35);
+    }
+    .context-editor-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .context-dish-editor .form-group label {
+      color: #f0f4ec;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .context-dish-editor .form-group input,
+    .context-dish-editor .form-group select,
+    .context-dish-editor .form-group textarea {
+      background: #0c100a;
+      border: 1.5px solid #3c4c32;
+      border-radius: 6px;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 14px;
+      transition: all 0.15s ease;
+    }
+    .context-dish-editor .form-group input:focus,
+    .context-dish-editor .form-group select:focus,
+    .context-dish-editor .form-group textarea:focus {
+      background: #11170e;
+      border-color: var(--lime-primary);
+      box-shadow: 0 0 0 2px rgba(181, 212, 113, 0.35);
+      outline: none;
+    }
+    .context-dish-editor .dish-media-studio-box {
+      background: #131a10;
+      border: 1.5px solid #38462f;
+      border-radius: 6px;
+      padding: 14px 16px;
+    }
+    .context-editor-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 6px;
     }
 
     /* ========================================================
-       STORAGE GAUGE WIDGET (Compact in Header)
+       STORAGE GAUGE WIDGET (Executive Cockpit Meter)
        ======================================================== */
     .storage-gauge-widget {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 6px 14px;
-      border-radius: 0px;
-      background: #171d13;
-      border: 1.5px solid var(--border-hard);
+      border-radius: 8px;
+      background: rgba(22, 28, 19, 0.94);
+      border: 1px solid rgba(181, 212, 113, 0.28);
       cursor: pointer;
-      box-shadow: 2px 2px 0px #0a0c08;
-      transition: all 0.15s ease;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       user-select: none;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .storage-gauge-widget:hover {
-      background: #222a1b;
+      background: rgba(28, 36, 23, 0.98);
       border-color: var(--lime-primary);
-      transform: translate(-1px, -1px);
-      box-shadow: 3px 3px 0px #000;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 0 10px rgba(181, 212, 113, 0.15);
     }
     .radial-gauge-wrap {
       position: relative;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
     .radial-gauge-svg {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       transform: rotate(-90deg);
     }
     .radial-gauge-bg {
       fill: none;
-      stroke: #252e1f;
+      stroke: rgba(255, 255, 255, 0.08);
       stroke-width: 3.2;
     }
     .radial-gauge-fill {
       fill: none;
-      stroke: var(--lime-primary);
+      stroke: #4ade80;
       stroke-width: 3.2;
       stroke-linecap: round;
-      transition: stroke-dasharray 0.4s ease;
+      transition: stroke-dasharray 0.4s ease, stroke 0.4s ease;
+      filter: drop-shadow(0 0 3px rgba(74, 222, 128, 0.5));
     }
     .radial-gauge-text {
       position: absolute;
       font-family: var(--font-mono);
-      font-size: 8px;
-      font-weight: 700;
-      color: var(--text-white);
+      font-size: 9px;
+      font-weight: 800;
+      color: #ffffff;
       letter-spacing: -0.02em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
     .storage-gauge-meta {
       display: flex;
@@ -1319,25 +1421,25 @@
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--text-white);
+      color: #f1f4ed;
     }
     .storage-gauge-title-row svg {
       color: var(--lime-primary);
     }
     .storage-quota-badge {
-      background: #242c1d;
-      color: var(--lime-primary);
-      padding: 1px 5px;
-      font-size: 9px;
+      background: rgba(74, 222, 128, 0.14);
+      color: #4ade80;
+      padding: 1px 6px;
+      font-size: 8.5px;
       font-weight: 700;
-      border: 1px solid var(--border-hard);
-      border-radius: 0px;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      border-radius: 4px;
     }
     .storage-gauge-sub {
       font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      font-weight: 500;
+      font-size: 9.5px;
+      color: var(--text-dim);
+      font-weight: 600;
     }
 
     /* Modal Sheet (Brutalist Popup Box) */
@@ -1816,7 +1918,7 @@
     /* Toast Notification */
     .toast-container {
       position: fixed;
-      bottom: calc(var(--ribbon-height) + 16px);
+      bottom: 24px;
       right: 24px;
       z-index: 1000;
       display: flex;
@@ -1865,61 +1967,56 @@
     <!-- Top Executive Header -->
     <header class="top-header">
       <div class="header-brand">
-        <div class="brand-crest" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-            <polyline points="2 17 12 22 22 17"></polyline>
-            <polyline points="2 12 12 17 22 12"></polyline>
-          </svg>
-        </div>
+        <img src="belle_logo_white.png" alt="Belle Colombo" class="header-restaurant-logo">
         <div class="brand-info">
-          <div class="brand-kicker">■ BELLE COLOMBO · EXECUTIVE CONTROL · STUDIO 01</div>
-          <h1>belle colombo <span class="brand-badge-pill">STUDIO</span></h1>
+          <div class="brand-kicker">EXECUTIVE STUDIO &amp; CMS</div>
+          <div class="brand-status-sub"><span class="brand-pulse-dot"></span> LIVE SYSTEM · ONLINE</div>
         </div>
       </div>
 
       <!-- 1 GB Database Storage Radial Percentage Widget -->
-      <div class="storage-gauge-widget" id="storageGaugeWidget" title="1.00 GB Cloud Database Storage Quota — Click to inspect usage breakdown">
+      <div class="storage-gauge-widget" id="storageGaugeWidget" title="1.00 GB Cloud Database Quota (Free Tier) — Click to open Cloud Cockpit">
         <div class="radial-gauge-wrap">
           <svg class="radial-gauge-svg" viewBox="0 0 36 36">
-            <path class="radial-gauge-bg" fill="none" stroke="#252e1f" stroke-width="3.2" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            <path class="radial-gauge-fill" id="radialGaugeFill" fill="none" stroke="var(--lime-primary)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0.1, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="radial-gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="radial-gauge-fill" id="radialGaugeFill" stroke-dasharray="2, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
           </svg>
-          <div class="radial-gauge-text" id="radialGaugePercent">&lt;0.1%</div>
+          <div class="radial-gauge-text" id="radialGaugePercent">0.1%</div>
         </div>
         <div class="storage-gauge-meta">
           <div class="storage-gauge-title-row">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-            <span>DATABASE</span>
-            <span class="storage-quota-badge">1 GB</span>
+            <span>CLOUD DB</span>
+            <span class="storage-quota-badge">1 GB FREE</span>
           </div>
           <div class="storage-gauge-sub" id="storageGaugeSub">0.05 MB / 1,024 MB</div>
         </div>
       </div>
 
-      <!-- Header Actions -->
+      <!-- Header Actions (Executive Suite) -->
       <div class="header-actions">
-        <button type="button" class="btn-secondary" id="btnCloudSync" title="Connect Google Firebase (100% Free Forever)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+        <button type="button" class="btn-secondary" id="btnCloudSync" title="Google Firebase Realtime Database">
+          <span class="brand-pulse-dot" style="width:7px;height:7px;"></span>
           <span>Cloud: Connected</span>
         </button>
 
-        <button type="button" class="btn-secondary" id="btnDownloadDataJs" title="Download production belleData.js file">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          <span>Download data.js</span>
+        <button type="button" class="btn-secondary" id="btnDownloadDataJs" title="Download production data.js file">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>data.js</span>
         </button>
-        <button type="button" class="btn-secondary" id="btnExportJson" title="Download backup JSON">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+
+        <button type="button" class="btn-secondary" id="btnExportJson" title="Export Backup JSON">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           <span>Export</span>
         </button>
 
-        <button type="button" class="btn-secondary" id="btnImportJson" title="Restore from backup JSON">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <button type="button" class="btn-secondary" id="btnImportJson" title="Restore from Backup JSON">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
           <span>Import</span>
         </button>
         <input type="file" id="importFileInput" accept=".json" style="display:none;">
 
-        <button type="button" class="btn-publish" id="btnSavePublish">
+        <button type="button" class="btn-publish" id="btnSavePublish" title="Save and synchronize all live updates">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
           <span>Save &amp; Publish</span>
         </button>
@@ -1959,6 +2056,163 @@
           <!-- Dynamic Master Category Selector Bar -->
           <div class="menu-cat-master-bar" id="menuCategoriesMasterBar">
             <!-- Dynamically populated: Lunch, À La Carte, The Bar, Tasting Menus, + Custom Categories -->
+          </div>
+
+          <!-- In-Context Live Dish Editor (Side-by-Side with Phone Preview, No Blocking Pop-up) -->
+          <div id="contextDishEditor" class="context-dish-editor" style="display:none;">
+            <div class="context-editor-topbar">
+              <button type="button" class="btn-context-back" id="btnBackToDishList">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Back to Dishes</span>
+              </button>
+              <div class="context-editor-heading">
+                <div class="context-editor-scope-pill" id="contextDishScopePill">EXPRESS LUNCH SELECTION</div>
+                <h3 id="itemModalTitle" class="context-editor-title">EDIT DISH</h3>
+              </div>
+              <div class="context-editor-live-indicator">
+                <span class="brand-pulse-dot"></span>
+                <span>Live Syncing to Preview</span>
+              </div>
+            </div>
+
+            <form id="itemForm" class="context-editor-form">
+              <input type="hidden" id="editItemScope">
+              <input type="hidden" id="editItemCategoryKey">
+              <input type="hidden" id="editItemId">
+              <input type="hidden" id="itemMediaTypeHidden" value="photo">
+
+              <!-- Sub-Category Row -->
+              <div class="form-row-2">
+                <div class="form-group" style="flex:1;">
+                  <label>Sub-Category</label>
+                  <div style="display:flex;gap:6px;">
+                    <select id="itemSubcatSelect" style="flex:1;">
+                      <option value="">-- Choose Sub-Category --</option>
+                    </select>
+                    <button type="button" class="btn-secondary" id="btnQuickAddSubcat" title="Quick add sub-category" style="padding:6px 10px;font-size:11px;white-space:nowrap;">+ New</button>
+                  </div>
+                </div>
+                <div class="form-group" id="groupNewSubcatInline" style="display:none;flex:1;">
+                  <label>New Sub-Category Name</label>
+                  <div style="display:flex;gap:6px;">
+                    <input type="text" id="itemNewSubcatInput" placeholder="e.g. Signature Burgers">
+                    <button type="button" class="btn-publish" id="btnConfirmNewSubcat" style="padding:6px 12px;font-size:10px;">Add</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Item Name</label>
+                <input type="text" id="itemNameInput" required placeholder="e.g. Forest Mushroom &amp; Truffle Soup">
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Price (LKR)</label>
+                  <input type="text" id="itemPriceInput" placeholder="2,200">
+                </div>
+                <div class="form-group" id="groupPriceAlt" style="display:none;">
+                  <label>Second Price (Optional)</label>
+                  <input type="text" id="itemPriceAltInput" placeholder="3,400">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="toggle-wrap" id="itemVegToggleWrap">
+                  <div class="toggle-box"><span class="toggle-thumb"></span></div>
+                  <span style="font-size:11px;font-weight:700;color:#34d399;display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7Z"></path><path d="M11 20v-8"></path></svg> Vegetarian Dish</span>
+                </label>
+              </div>
+
+              <div class="form-group">
+                <label>Description &amp; Ingredients</label>
+                <textarea id="itemDescInput" rows="3" placeholder="Ingredients and tasting notes..."></textarea>
+              </div>
+
+              <!-- Add-ons / Meta for Lunch -->
+              <div class="form-group" id="groupItemMeta">
+                <label>Add-ons / Sides (e.g. Crispy Spiced Chicken (LKR 420))</label>
+                <input type="text" id="itemMetaInput" placeholder="Crispy Spiced Chicken (LKR 420) · Seared Prawns (LKR 550)">
+              </div>
+
+              <!-- Dish Media Backdrop Studio (Photos & Videos) -->
+              <div class="dish-media-studio-box">
+                <div class="dish-media-header">
+                  <div>
+                    <label style="font-size:11px;font-weight:700;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.08em;">Dish Backdrop Media (Photo &amp; Video)</label>
+                    <p style="font-size:10px;color:var(--text-dim);margin-top:2px;">Attach a high-resolution photo or looping ambient video behind this dish.</p>
+                  </div>
+                  <!-- Media Type Switcher -->
+                  <div class="media-type-pills">
+                    <button type="button" class="media-pill-btn is-active" id="btnMtypePhoto" data-mtype="photo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> <span>Photo</span></button>
+                    <button type="button" class="media-pill-btn" id="btnMtypeVideo" data-mtype="video"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg> <span>Video</span></button>
+                    <button type="button" class="media-pill-btn" id="btnMtypeNone" data-mtype="none">None</button>
+                  </div>
+                </div>
+
+                <!-- Photo Controls -->
+                <div id="mediaPhotoControls" class="media-control-panel">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <select id="itemPresetImgSelect" style="flex:1;">
+                      <option value="">-- Choose Existing Photo Preset --</option>
+                      <option value="assets/images/chef_plating.webp">Preset: Chef Plating (Soup / Entree)</option>
+                      <option value="assets/images/artisan_salad.webp">Preset: Artisan Salad</option>
+                      <option value="assets/images/bg/slide_glazed_ribs.webp">Preset: Glazed Ribs &amp; Meats</option>
+                      <option value="assets/images/bg/slide_steak_grill.webp">Preset: Steak on Fire Grill</option>
+                      <option value="assets/images/bg/slide_tacos_kitchen.webp">Preset: Kitchen Tacos &amp; Club</option>
+                      <option value="assets/images/bg/slide_lamb_chops.webp">Preset: Gourmet Lamb Chops</option>
+                      <option value="assets/images/bg/slide_crispy_tempura.webp">Preset: Crispy Tempura</option>
+                      <option value="assets/images/bg/slide_cocktail_smoke.webp">Preset: Smoked Cocktail</option>
+                      <option value="assets/images/bg/slide_luxury_dessert.webp">Preset: Luxury Dessert</option>
+                      <option value="assets/images/bg/slide_bar_counter.webp">Preset: Bar Counter Ambience</option>
+                    </select>
+                    <label class="btn-secondary" style="margin:0;cursor:pointer;" title="Upload custom photo from computer or phone">
+                      <span>Upload Photo</span>
+                      <input type="file" id="itemCustomImgFile" accept="image/*" style="display:none;">
+                    </label>
+                  </div>
+                  <div style="margin-top:4px;">
+                    <input type="text" id="itemCustomImgUrl" placeholder="Or enter image URL / path (e.g. assets/images/...)" style="font-size:11px;">
+                  </div>
+                </div>
+
+                <!-- Video Controls -->
+                <div id="mediaVideoControls" class="media-control-panel" style="display:none;">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <select id="itemPresetVideoSelect" style="flex:1;">
+                      <option value="">-- Choose Existing Video Preset --</option>
+                      <option value="assets/video/bg_hero_landscape.mp4">Preset: Hero Restaurant Ambience (MP4)</option>
+                    </select>
+                    <label class="btn-secondary" style="margin:0;cursor:pointer;" title="Upload short looping MP4/WebM video">
+                      <span>Upload Video</span>
+                      <input type="file" id="itemCustomVideoFile" accept="video/mp4,video/webm" style="display:none;">
+                    </label>
+                  </div>
+                  <div style="margin-top:4px;">
+                    <input type="text" id="itemCustomVideoUrl" placeholder="Or enter video URL / path (e.g. assets/video/...)" style="font-size:11px;">
+                  </div>
+                </div>
+
+                <!-- Live Media Preview Box -->
+                <div id="itemMediaPreviewBox" class="media-live-preview-box" style="display:none;">
+                  <div class="media-preview-inner">
+                    <img id="itemImgPreviewEl" alt="Dish Photo Preview" style="display:none;">
+                    <video id="itemVideoPreviewEl" autoplay muted loop playsinline controls style="display:none;"></video>
+                    <div class="media-preview-meta">
+                      <span class="media-type-tag" id="itemMediaTypeTag">PHOTO BACKDROP</span>
+                      <span class="media-size-tag" id="itemMediaSizeTag">0 KB</span>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-icon btn-delete" id="btnClearDishMedia" title="Remove backdrop media" style="font-size:11px;padding:4px 8px;width:auto;height:auto;display:inline-flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Remove</button>
+                </div>
+              </div>
+
+              <!-- Context Editor Actions -->
+              <div class="context-editor-actions">
+                <button type="button" class="btn-secondary" id="btnCancelItemModal">Discard &amp; Back</button>
+                <button type="submit" class="btn-publish">Save Changes</button>
+              </div>
+            </form>
           </div>
 
           <!-- Category Workspaces Area -->
@@ -2456,153 +2710,6 @@
     </div>
   </div>
 
-  <!-- Edit / Add Menu Item Modal (Generic for Lunch, Alacarte, Bar) -->
-  <div class="modal-overlay" id="itemEditModal">
-    <div class="modal-box">
-      <div class="modal-head">
-        <h3 id="itemModalTitle">EDIT DISH</h3>
-        <button type="button" class="btn-icon" id="btnCloseItemModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-      </div>
-
-      <form id="itemForm" style="display:flex;flex-direction:column;gap:14px;">
-        <input type="hidden" id="editItemScope">
-        <input type="hidden" id="editItemCategoryKey">
-        <input type="hidden" id="editItemId">
-        <input type="hidden" id="itemMediaTypeHidden" value="photo">
-
-        <!-- Sub-Category Row -->
-        <div class="form-row-2">
-          <div class="form-group" style="flex:1;">
-            <label>Sub-Category</label>
-            <div style="display:flex;gap:6px;">
-              <select id="itemSubcatSelect" style="flex:1;">
-                <option value="">-- Choose Sub-Category --</option>
-              </select>
-              <button type="button" class="btn-secondary" id="btnQuickAddSubcat" title="Quick add sub-category" style="padding:6px 10px;font-size:11px;white-space:nowrap;">+ New</button>
-            </div>
-          </div>
-          <div class="form-group" id="groupNewSubcatInline" style="display:none;flex:1;">
-            <label>New Sub-Category Name</label>
-            <div style="display:flex;gap:6px;">
-              <input type="text" id="itemNewSubcatInput" placeholder="e.g. Signature Burgers">
-              <button type="button" class="btn-publish" id="btnConfirmNewSubcat" style="padding:6px 12px;font-size:10px;">Add</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Item Name</label>
-          <input type="text" id="itemNameInput" required placeholder="e.g. Forest Mushroom & Truffle Soup">
-        </div>
-
-        <div class="form-row-2">
-          <div class="form-group">
-            <label>Price (LKR)</label>
-            <input type="text" id="itemPriceInput" placeholder="2,200">
-          </div>
-          <div class="form-group" id="groupPriceAlt" style="display:none;">
-            <label>Second Price (Optional)</label>
-            <input type="text" id="itemPriceAltInput" placeholder="3,400">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="toggle-wrap" id="itemVegToggleWrap">
-            <div class="toggle-box"><span class="toggle-thumb"></span></div>
-            <span style="font-size:11px;font-weight:700;color:#34d399;display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7Z"></path><path d="M11 20v-8"></path></svg> Vegetarian Dish</span>
-          </label>
-        </div>
-
-        <div class="form-group">
-          <label>Description &amp; Ingredients</label>
-          <textarea id="itemDescInput" rows="3" placeholder="Ingredients and tasting notes..."></textarea>
-        </div>
-
-        <!-- Add-ons / Meta for Lunch -->
-        <div class="form-group" id="groupItemMeta">
-          <label>Add-ons / Sides (e.g. Crispy Spiced Chicken (LKR 420))</label>
-          <input type="text" id="itemMetaInput" placeholder="Crispy Spiced Chicken (LKR 420) · Seared Prawns (LKR 550)">
-        </div>
-
-        <!-- Dish Media Backdrop Studio (Photos & Videos) -->
-        <div class="dish-media-studio-box">
-          <div class="dish-media-header">
-            <div>
-              <label style="font-size:11px;font-weight:700;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.08em;">Dish Backdrop Media (Photo &amp; Video)</label>
-              <p style="font-size:10px;color:var(--text-dim);margin-top:2px;">Attach a high-resolution photo or looping ambient video behind this dish.</p>
-            </div>
-            <!-- Media Type Switcher -->
-            <div class="media-type-pills">
-              <button type="button" class="media-pill-btn is-active" id="btnMtypePhoto" data-mtype="photo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> <span>Photo</span></button>
-              <button type="button" class="media-pill-btn" id="btnMtypeVideo" data-mtype="video"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg> <span>Video</span></button>
-              <button type="button" class="media-pill-btn" id="btnMtypeNone" data-mtype="none">None</button>
-            </div>
-          </div>
-
-          <!-- Photo Controls -->
-          <div id="mediaPhotoControls" class="media-control-panel">
-            <div style="display:flex;gap:10px;align-items:center;">
-              <select id="itemPresetImgSelect" style="flex:1;">
-                <option value="">-- Choose Existing Photo Preset --</option>
-                <option value="assets/images/chef_plating.webp">Preset: Chef Plating (Soup / Entree)</option>
-                <option value="assets/images/artisan_salad.webp">Preset: Artisan Salad</option>
-                <option value="assets/images/bg/slide_glazed_ribs.webp">Preset: Glazed Ribs &amp; Meats</option>
-                <option value="assets/images/bg/slide_steak_grill.webp">Preset: Steak on Fire Grill</option>
-                <option value="assets/images/bg/slide_tacos_kitchen.webp">Preset: Kitchen Tacos &amp; Club</option>
-                <option value="assets/images/bg/slide_lamb_chops.webp">Preset: Gourmet Lamb Chops</option>
-                <option value="assets/images/bg/slide_crispy_tempura.webp">Preset: Crispy Tempura</option>
-                <option value="assets/images/bg/slide_cocktail_smoke.webp">Preset: Smoked Cocktail</option>
-                <option value="assets/images/bg/slide_luxury_dessert.webp">Preset: Luxury Dessert</option>
-                <option value="assets/images/bg/slide_bar_counter.webp">Preset: Bar Counter Ambience</option>
-              </select>
-              <label class="btn-secondary" style="margin:0;cursor:pointer;" title="Upload custom photo from computer or phone">
-                <span>Upload Photo</span>
-                <input type="file" id="itemCustomImgFile" accept="image/*" style="display:none;">
-              </label>
-            </div>
-            <div style="margin-top:4px;">
-              <input type="text" id="itemCustomImgUrl" placeholder="Or enter image URL / path (e.g. assets/images/...)" style="font-size:11px;">
-            </div>
-          </div>
-
-          <!-- Video Controls -->
-          <div id="mediaVideoControls" class="media-control-panel" style="display:none;">
-            <div style="display:flex;gap:10px;align-items:center;">
-              <select id="itemPresetVideoSelect" style="flex:1;">
-                <option value="">-- Choose Existing Video Preset --</option>
-                <option value="assets/video/bg_hero_landscape.mp4">Preset: Hero Restaurant Ambience (MP4)</option>
-              </select>
-              <label class="btn-secondary" style="margin:0;cursor:pointer;" title="Upload short looping MP4/WebM video">
-                <span>Upload Video</span>
-                <input type="file" id="itemCustomVideoFile" accept="video/mp4,video/webm" style="display:none;">
-              </label>
-            </div>
-            <div style="margin-top:4px;">
-              <input type="text" id="itemCustomVideoUrl" placeholder="Or enter video URL / path (e.g. assets/video/...)" style="font-size:11px;">
-            </div>
-          </div>
-
-          <!-- Live Media Preview Box -->
-          <div id="itemMediaPreviewBox" class="media-live-preview-box" style="display:none;">
-            <div class="media-preview-inner">
-              <img id="itemImgPreviewEl" alt="Dish Photo Preview" style="display:none;">
-              <video id="itemVideoPreviewEl" autoplay muted loop playsinline controls style="display:none;"></video>
-              <div class="media-preview-meta">
-                <span class="media-type-tag" id="itemMediaTypeTag">PHOTO BACKDROP</span>
-                <span class="media-size-tag" id="itemMediaSizeTag">0 KB</span>
-              </div>
-            </div>
-            <button type="button" class="btn-icon btn-delete" id="btnClearDishMedia" title="Remove backdrop media" style="font-size:11px;padding:4px 8px;width:auto;height:auto;display:inline-flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Remove</button>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" id="btnCancelItemModal">Cancel</button>
-          <button type="submit" class="btn-publish">Save Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <!-- 1 GB Cloud Database Storage Inspector Modal -->
   <div class="modal-overlay" id="storageCockpitModal">
@@ -2965,11 +3072,12 @@
       var pctEl = document.getElementById('radialGaugePercent');
       var subEl = document.getElementById('storageGaugeSub');
       
-      if (fillEl) fillEl.setAttribute('stroke-dasharray', m.pct.toFixed(1) + ', 100');
+      var visualArc = Math.max(2.0, m.pct).toFixed(1);
+      if (fillEl) fillEl.setAttribute('stroke-dasharray', visualArc + ', 100');
       if (pctEl) pctEl.textContent = m.pctDisplay + '%';
       if (subEl) subEl.textContent = m.usedMb + ' MB / 1,024 MB';
       
-      var strokeColor = m.pct > 90 ? '#ef4444' : (m.pct > 75 ? '#f59e0b' : '#b5d471');
+      var strokeColor = m.pct > 90 ? '#ef4444' : (m.pct > 75 ? '#f59e0b' : '#4ade80');
       if (fillEl) fillEl.style.stroke = strokeColor;
 
       // Update Media tab badge if function exists
@@ -4240,6 +4348,9 @@
     }
 
     function switchMenuCategory(catId) {
+      if (typeof closeContextDishEditor === 'function') {
+        closeContextDishEditor();
+      }
       activeMenuCategoryKey = catId || 'lunch';
       renderMenuCategoriesMasterBar();
 
@@ -5206,8 +5317,8 @@
       }
     }
 
-    // 11. Generic Item CRUD Modal (Lunch, Alacarte, Bar) & Dish Media Studio
-    var itemEditModal = document.getElementById('itemEditModal');
+    // 11. Generic Item In-Context Studio & Dish Media Studio
+    var itemEditModal = document.getElementById('contextDishEditor') || { classList: { add: function(){}, remove: function(){} } };
     var isItemVegChecked = false;
 
     /* Dish Media Backdrop Studio State */
@@ -5475,31 +5586,104 @@
       }
     }
 
+    var editingItemOriginalSnapshot = null;
+
+    function closeContextDishEditor() {
+      var editor = document.getElementById('contextDishEditor');
+      var workspaces = document.getElementById('menuCategoryWorkspaces');
+      if (editor) editor.style.display = 'none';
+      if (workspaces) workspaces.style.display = 'block';
+      editingItemOriginalSnapshot = null;
+    }
+
+    function cancelAndRevertDishEditor() {
+      if (editingItemOriginalSnapshot) {
+        var scope = document.getElementById('editItemScope').value;
+        var catKey = document.getElementById('editItemCategoryKey').value;
+        var id = document.getElementById('editItemId').value;
+        if (id && appData) {
+          var targetItem = null;
+          if (scope === 'lunch') {
+            targetItem = (appData.lunchItems || []).find(function(x) { return x.id === id; });
+          } else if (scope === 'alacarte') {
+            var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+            if (cat) targetItem = (cat.items || []).find(function(x) { return x.id === id; });
+          } else if (scope === 'thebar') {
+            var bcat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+            if (bcat) targetItem = (bcat.items || []).find(function(x) { return x.id === id; });
+          } else if (scope === 'custom') {
+            var ccat = (appData.menuCategories || []).find(function(c) { return c.id === catKey; });
+            if (ccat && ccat.items) targetItem = ccat.items.find(function(x) { return x.id === id; });
+          }
+          if (targetItem) {
+            Object.assign(targetItem, editingItemOriginalSnapshot);
+            sendLiveUpdate();
+          }
+        }
+      }
+      closeContextDishEditor();
+    }
+
     function openEditItemModal(scope, categoryKey, id) {
+      // 1. Ensure Menu tab view is active
+      var menuTabBtn = document.querySelector('.studio-tab-btn[data-tab="tab-menu"]');
+      var menuView = document.getElementById('tab-menu');
+      if (menuTabBtn && !menuTabBtn.classList.contains('is-active')) {
+        document.querySelectorAll('.studio-tab-btn').forEach(function(b) { b.classList.remove('is-active'); });
+        document.querySelectorAll('.studio-content-view').forEach(function(v) { v.classList.remove('is-active'); });
+        menuTabBtn.classList.add('is-active');
+        if (menuView) menuView.classList.add('is-active');
+      }
+
+      // 2. Hide category workspaces and reveal in-context editor
+      var editor = document.getElementById('contextDishEditor');
+      var workspaces = document.getElementById('menuCategoryWorkspaces');
+      if (workspaces) workspaces.style.display = 'none';
+      if (editor) editor.style.display = 'block';
+
       document.getElementById('editItemScope').value = scope;
       document.getElementById('editItemCategoryKey').value = categoryKey || '';
       document.getElementById('editItemId').value = id || '';
 
       var item = null;
+      var scopeLabel = 'MENU ITEM';
       if (scope === 'lunch') {
+        scopeLabel = 'EXPRESS LUNCH SELECTION';
         item = (appData.lunchItems || []).find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'block';
         document.getElementById('groupPriceAlt').style.display = 'none';
+        navigatePreview('lunch');
       } else if (scope === 'alacarte') {
         var cat = appData.aLaCarte.find(function(c) { return c.key === categoryKey; });
+        scopeLabel = 'À LA CARTE: ' + (cat ? cat.title.toUpperCase() : 'COURSE');
         if (cat) item = (cat.items || []).find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'none';
         document.getElementById('groupPriceAlt').style.display = 'block';
+        navigatePreview(categoryKey || 'lunch');
       } else if (scope === 'thebar') {
         var bcat = appData.theGardenAndBar.find(function(c) { return c.key === categoryKey; });
+        scopeLabel = 'THE BAR & BITES: ' + (bcat ? bcat.title.toUpperCase() : 'DRINKS');
         if (bcat) item = (bcat.items || []).find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'none';
         document.getElementById('groupPriceAlt').style.display = 'none';
+        navigatePreview('thebar');
       } else if (scope === 'custom') {
         var ccat = (appData.menuCategories || []).find(function(c) { return c.id === categoryKey; });
+        scopeLabel = ccat ? ccat.name.toUpperCase() : 'CUSTOM MENU';
         if (ccat && ccat.items) item = ccat.items.find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'none';
         document.getElementById('groupPriceAlt').style.display = 'none';
+        navigatePreview(categoryKey);
+      }
+
+      var scopePill = document.getElementById('contextDishScopePill');
+      if (scopePill) scopePill.textContent = scopeLabel;
+
+      // Snapshot for live preview revert
+      if (item) {
+        editingItemOriginalSnapshot = JSON.parse(JSON.stringify(item));
+      } else {
+        editingItemOriginalSnapshot = null;
       }
 
       // Populate Sub-Category selector
@@ -5548,8 +5732,9 @@
         setDishMediaType('none');
       }
 
+      var modalTitle = document.getElementById('itemModalTitle');
       if (item) {
-        document.getElementById('itemModalTitle').textContent = 'EDIT DISH';
+        if (modalTitle) modalTitle.textContent = 'EDIT DISH: ' + (item.name || '').toUpperCase();
         document.getElementById('itemNameInput').value = item.name || '';
         document.getElementById('itemPriceInput').value = item.price || '';
         document.getElementById('itemPriceAltInput').value = item.price2 || '';
@@ -5557,7 +5742,7 @@
         document.getElementById('itemMetaInput').value = (item.meta && item.meta.text) ? item.meta.text : '';
         isItemVegChecked = (scope === 'lunch') ? !!item.isVeg : ((item.tags || []).indexOf('Vegetarian') !== -1);
       } else {
-        document.getElementById('itemModalTitle').textContent = 'ADD DISH';
+        if (modalTitle) modalTitle.textContent = 'ADD NEW DISH';
         document.getElementById('itemNameInput').value = '';
         document.getElementById('itemPriceInput').value = '';
         document.getElementById('itemPriceAltInput').value = '';
@@ -5567,7 +5752,9 @@
       }
 
       updateItemVegToggleUI();
-      itemEditModal.classList.add('is-open');
+
+      // Smooth scroll editor pane to top
+      if (menuView) menuView.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function updateItemVegToggleUI() {
@@ -5577,10 +5764,82 @@
     document.getElementById('itemVegToggleWrap').addEventListener('click', function() {
       isItemVegChecked = !isItemVegChecked;
       updateItemVegToggleUI();
+      // Live sync veg toggle
+      var scope = document.getElementById('editItemScope').value;
+      var catKey = document.getElementById('editItemCategoryKey').value;
+      var id = document.getElementById('editItemId').value;
+      if (id && appData) {
+        var item = null;
+        if (scope === 'lunch') item = (appData.lunchItems || []).find(function(x) { return x.id === id; });
+        else if (scope === 'alacarte') {
+          var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+          if (cat) item = (cat.items || []).find(function(x) { return x.id === id; });
+        } else if (scope === 'thebar') {
+          var bcat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+          if (bcat) item = (bcat.items || []).find(function(x) { return x.id === id; });
+        } else if (scope === 'custom') {
+          var ccat = (appData.menuCategories || []).find(function(c) { return c.id === catKey; });
+          if (ccat && ccat.items) item = ccat.items.find(function(x) { return x.id === id; });
+        }
+        if (item) {
+          if (scope === 'lunch' || scope === 'custom') item.isVeg = isItemVegChecked;
+          item.tags = isItemVegChecked ? ['Vegetarian'] : [];
+          sendLiveUpdate();
+        }
+      }
     });
 
-    document.getElementById('btnCloseItemModal').addEventListener('click', function() { itemEditModal.classList.remove('is-open'); });
-    document.getElementById('btnCancelItemModal').addEventListener('click', function() { itemEditModal.classList.remove('is-open'); });
+    // Back & Cancel Button Listeners (In-context, no pop-up)
+    var btnBackDish = document.getElementById('btnBackToDishList');
+    if (btnBackDish) btnBackDish.addEventListener('click', cancelAndRevertDishEditor);
+
+    var btnCancelDish = document.getElementById('btnCancelItemModal');
+    if (btnCancelDish) btnCancelDish.addEventListener('click', cancelAndRevertDishEditor);
+
+    var btnCloseDish = document.getElementById('btnCloseItemModal');
+    if (btnCloseDish) btnCloseDish.addEventListener('click', cancelAndRevertDishEditor);
+
+    // Live Instant Typing Sync with Phone Preview (0ms Keystroke Sync)
+    function setupLiveDishKeystrokeSync() {
+      function syncDishFieldLive() {
+        var scope = document.getElementById('editItemScope').value;
+        var catKey = document.getElementById('editItemCategoryKey').value;
+        var id = document.getElementById('editItemId').value;
+        if (!id || !appData) return;
+
+        var nameVal = document.getElementById('itemNameInput').value.trim();
+        var priceVal = document.getElementById('itemPriceInput').value.trim();
+        var descVal = document.getElementById('itemDescInput').value.trim();
+
+        var targetItem = null;
+        if (scope === 'lunch') targetItem = (appData.lunchItems || []).find(function(x) { return x.id === id; });
+        else if (scope === 'alacarte') {
+          var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+          if (cat) targetItem = (cat.items || []).find(function(x) { return x.id === id; });
+        } else if (scope === 'thebar') {
+          var bcat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+          if (bcat) targetItem = (bcat.items || []).find(function(x) { return x.id === id; });
+        } else if (scope === 'custom') {
+          var ccat = (appData.menuCategories || []).find(function(c) { return c.id === catKey; });
+          if (ccat && ccat.items) targetItem = ccat.items.find(function(x) { return x.id === id; });
+        }
+
+        if (targetItem) {
+          if (nameVal) targetItem.name = nameVal;
+          if (priceVal) targetItem.price = priceVal;
+          if (descVal) targetItem.desc = descVal;
+          sendLiveUpdate();
+        }
+      }
+
+      var nameInp = document.getElementById('itemNameInput');
+      var priceInp = document.getElementById('itemPriceInput');
+      var descInp = document.getElementById('itemDescInput');
+      if (nameInp) nameInp.addEventListener('input', syncDishFieldLive);
+      if (priceInp) priceInp.addEventListener('input', syncDishFieldLive);
+      if (descInp) descInp.addEventListener('input', syncDishFieldLive);
+    }
+    setupLiveDishKeystrokeSync();
 
     document.getElementById('btnAddLunch').addEventListener('click', function() {
       openEditItemModal('lunch', null, null);
@@ -5740,7 +5999,8 @@
         }
       }
 
-      itemEditModal.classList.remove('is-open');
+      editingItemOriginalSnapshot = null;
+      closeContextDishEditor();
       updateStorageGauge();
       sendLiveUpdate();
       pushToFirebaseCloud();
@@ -5995,12 +6255,5 @@
     window.addEventListener('DOMContentLoaded', initStudio);
   </script>
 
-  <!-- Running Bottom Marquee Ribbon (Exact match to green bottom banner in reference) -->
-  <footer class="bottom-marquee-ribbon" aria-hidden="true">
-    <div class="marquee-track">
-      <span>■ BELLE COLOMBO · EXECUTIVE STUDIO · REAL-TIME SYNC · DINE &amp; BEVERAGE · EVENTS CALENDAR · 58A HORTON PLACE · COLOMBO 07 · SPOT AN EMPTY PATCH · GROW SOMETHING NEW · REPORT THE GAP · &nbsp;&nbsp;&nbsp;</span>
-      <span>■ BELLE COLOMBO · EXECUTIVE STUDIO · REAL-TIME SYNC · DINE &amp; BEVERAGE · EVENTS CALENDAR · 58A HORTON PLACE · COLOMBO 07 · SPOT AN EMPTY PATCH · GROW SOMETHING NEW · REPORT THE GAP · &nbsp;&nbsp;&nbsp;</span>
-    </div>
-  </footer>
 </body>
 </html>
