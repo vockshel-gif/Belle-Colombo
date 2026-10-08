@@ -2603,8 +2603,8 @@
     <header class="lunch-top-region">
       <div class="lunch-header-group">
         <svg class="lunch-header-svg" viewBox="0 0 380 84" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-          <text x="190" y="42" class="watermark-lunch">LUNCH</text>
-          <text x="190" y="44" class="center-lunch">LUNCH</text>
+          <text x="190" y="42" class="watermark-lunch" id="lunchWatermarkTitle">LUNCH</text>
+          <text x="190" y="44" class="center-lunch" id="lunchCenterTitle">LUNCH</text>
         </svg>
       </div>
 
@@ -6218,7 +6218,16 @@ Choose your spread/rillette style:</p>
       }
       window.belleCurrentData = data;
       if (data.events) renderEventsList(data.events);
-      if (data.menuCategories) renderMenuHubCategories(data.menuCategories);
+      if (data.menuCategories) {
+        renderMenuHubCategories(data.menuCategories);
+        var lunchCat = data.menuCategories.find(function(c) { return c.id === 'lunch'; });
+        if (lunchCat && lunchCat.name) {
+          var wm = document.getElementById('lunchWatermarkTitle');
+          var ct = document.getElementById('lunchCenterTitle');
+          if (wm) wm.textContent = lunchCat.name.toUpperCase();
+          if (ct) ct.textContent = lunchCat.name.toUpperCase();
+        }
+      }
       if (data.lunchItems) renderLunchList(data.lunchItems);
       if (data.aLaCarte) renderAlacarteList(data.aLaCarte);
       if (data.theGardenAndBar) renderBarList(data.theGardenAndBar);

@@ -2222,10 +2222,14 @@
             <div class="category-workspace-panel" id="catWorkspace-lunch">
               <div class="content-subheader" style="margin-bottom:14px;">
                 <div class="subheader-title-group">
-                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">EXPRESS LUNCH SELECTION</h3>
-                  <p>Curate midday soups, artisan burgers, sandwiches, and culinary add-ons.</p>
+                  <h3 id="lunchCatTitle" style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">EXPRESS LUNCH SELECTION</h3>
+                  <p id="lunchCatSubtitle">Curate midday soups, artisan burgers, sandwiches, and culinary add-ons.</p>
                 </div>
                 <div class="subheader-actions">
+                  <button type="button" class="btn-secondary" id="btnEditLunchCatMeta" title="Edit Category Settings (Rename, Tagline, Icon)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span>Edit Category</span>
+                  </button>
                   <button type="button" class="btn-gold-outline" id="btnManageLunchSubcats" title="Organize and customize sub-categories">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     <span>Sub-categories</span>
@@ -2244,10 +2248,14 @@
             <div class="category-workspace-panel" id="catWorkspace-alacarte" style="display:none;">
               <div class="content-subheader" style="margin-bottom:14px;">
                 <div class="subheader-title-group">
-                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">À LA CARTE COURSES</h3>
-                  <p>Manage all courses: Appetisers, Entrées, Mains, From The Grill, and Desserts.</p>
+                  <h3 id="alacarteCatTitle" style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">À LA CARTE COURSES</h3>
+                  <p id="alacarteCatSubtitle">Manage all courses: Appetisers, Entrées, Mains, From The Grill, and Desserts.</p>
                 </div>
                 <div class="subheader-actions">
+                  <button type="button" class="btn-secondary" id="btnEditAlacarteCatMeta" title="Edit Category Settings (Rename, Tagline, Icon)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span>Edit Category</span>
+                  </button>
                   <button type="button" class="btn-gold-outline" id="btnManageAlacarteSubcats" title="Manage courses and sub-categories">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     <span>Courses / Sub-cats</span>
@@ -2258,13 +2266,7 @@
                   </button>
                 </div>
               </div>
-              <div class="sub-filter-pills" id="alacarteCoursePills">
-                <button type="button" class="sub-pill-btn is-active" data-course="appetisers">Appetisers</button>
-                <button type="button" class="sub-pill-btn" data-course="entrees">Entrées</button>
-                <button type="button" class="sub-pill-btn" data-course="mains">Mains</button>
-                <button type="button" class="sub-pill-btn" data-course="grill">From The Grill</button>
-                <button type="button" class="sub-pill-btn" data-course="desserts">Desserts</button>
-              </div>
+              <div class="sub-filter-pills" id="alacarteCoursePills"></div>
               <div class="item-cards-grid" id="alacarteCardsList"></div>
             </div>
 
@@ -2272,10 +2274,14 @@
             <div class="category-workspace-panel" id="catWorkspace-thebar" style="display:none;">
               <div class="content-subheader" style="margin-bottom:14px;">
                 <div class="subheader-title-group">
-                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">THE BAR &amp; BITES</h3>
-                  <p>Spirits, botanical garden cocktails, craft infusions, and small culinary plates.</p>
+                  <h3 id="barCatTitle" style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">THE BAR &amp; BITES</h3>
+                  <p id="barCatSubtitle">Spirits, botanical garden cocktails, craft infusions, and small culinary plates.</p>
                 </div>
                 <div class="subheader-actions">
+                  <button type="button" class="btn-secondary" id="btnEditBarCatMeta" title="Edit Category Settings (Rename, Tagline, Icon)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span>Edit Category</span>
+                  </button>
                   <button type="button" class="btn-gold-outline" id="btnManageBarSubcats" title="Manage bar categories">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     <span>Sub-categories</span>
@@ -2286,10 +2292,7 @@
                   </button>
                 </div>
               </div>
-              <div class="sub-filter-pills" id="barCategoryPills">
-                <button type="button" class="sub-pill-btn is-active" data-barcat="the-garden">The Garden</button>
-                <button type="button" class="sub-pill-btn" data-barcat="the-bar-bites">The Bar Bites</button>
-              </div>
+              <div class="sub-filter-pills" id="barCategoryPills"></div>
               <div class="item-cards-grid" id="barCardsList"></div>
             </div>
 
@@ -2297,8 +2300,14 @@
             <div class="category-workspace-panel" id="catWorkspace-tasting" style="display:none;">
               <div class="content-subheader" style="margin-bottom:14px;">
                 <div class="subheader-title-group">
-                  <h3 style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">CURATED TASTING MENUS</h3>
-                  <p>Configure 5-Course Wine Pairing and 7-Course Grand Tasting prices and selections.</p>
+                  <h3 id="tastingCatTitle" style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">CURATED TASTING MENUS</h3>
+                  <p id="tastingCatSubtitle">Configure 5-Course Wine Pairing and 7-Course Grand Tasting prices and selections.</p>
+                </div>
+                <div class="subheader-actions">
+                  <button type="button" class="btn-secondary" id="btnEditTastingCatMeta" title="Edit Category Settings (Rename, Tagline, Icon)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span>Edit Category</span>
+                  </button>
                 </div>
               </div>
               <div class="sub-filter-pills" id="tastingPills">
@@ -2793,26 +2802,32 @@
 
   <!-- Sub-Category Management Modal -->
   <div class="modal-overlay" id="subcatManageModal">
-    <div class="modal-box" style="max-width: 500px;">
+    <div class="modal-box" style="max-width: 520px;">
       <div class="modal-head">
         <h3 id="subcatModalTitle">MANAGE SUB-CATEGORIES</h3>
-        <button type="button" class="btn-icon" id="btnCloseSubcatModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button type="button" class="btn-secondary" id="btnEditCatFromSubcatModal" title="Edit / Rename parent menu category" style="padding:4px 8px;font-size:10px;white-space:nowrap;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            <span>Rename Category</span>
+          </button>
+          <button type="button" class="btn-icon" id="btnCloseSubcatModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
       </div>
 
-      <p style="font-size:11px;color:var(--text-muted);">Organize, add, rename, or delete sub-categories for this menu section.</p>
+      <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Add, rename, or delete sub-categories for this section. Click the <strong>pencil</strong> to rename inline, or the <strong>trash</strong> icon to delete.</p>
 
       <!-- Add New Sub-category Row -->
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
         <input type="text" id="subcatNewInput" placeholder="New sub-category name (e.g. Signature Burgers)" style="flex:1;">
         <button type="button" class="btn-publish" id="btnAddSubcatConfirm" style="padding:8px 14px;white-space:nowrap;">+ Add</button>
       </div>
 
       <!-- Current Sub-categories List -->
-      <div id="subcatItemsList" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;">
+      <div id="subcatItemsList" style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;padding-right:2px;">
         <!-- Dynamically populated -->
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" style="margin-top:14px;">
         <button type="button" class="btn-publish" id="btnCloseSubcatModalBtn">Done</button>
       </div>
     </div>
@@ -3129,6 +3144,8 @@
        ======================================================== */
     var currentLunchSubcatFilter = 'all';
     var activeSubcatManageSection = 'lunch';
+    var activeSubcatRenameIndex = null;
+    var activeSubcatDeleteConfirmIndex = null;
 
     function initSubCategoriesState() {
       if (!appData) return;
@@ -3148,15 +3165,20 @@
 
     function openSubcatModal(sectionKey) {
       activeSubcatManageSection = sectionKey || 'lunch';
+      activeSubcatRenameIndex = null;
+      activeSubcatDeleteConfirmIndex = null;
+
       var titleMap = {
-        lunch: 'MANAGE LUNCH SUB-CATEGORIES',
-        alacarte: 'MANAGE À LA CARTE SUB-CATEGORIES',
-        thebar: 'MANAGE THE BAR SUB-CATEGORIES'
+        lunch: 'LUNCH',
+        alacarte: 'À LA CARTE',
+        thebar: 'THE BAR',
+        tasting: 'TASTING'
       };
       var cat = (appData.menuCategories || []).find(function(c) { return c.id === activeSubcatManageSection; });
+      var catName = cat ? cat.name : (titleMap[activeSubcatManageSection] || 'MENU');
       var modalTitle = document.getElementById('subcatModalTitle');
       if (modalTitle) {
-        modalTitle.textContent = cat ? ('MANAGE ' + cat.name + ' SUB-CATEGORIES') : (titleMap[activeSubcatManageSection] || 'MANAGE SUB-CATEGORIES');
+        modalTitle.textContent = 'MANAGE ' + catName.toUpperCase() + ' SUB-CATEGORIES';
       }
 
       var input = document.getElementById('subcatNewInput');
@@ -3184,11 +3206,19 @@
           count = (appData.lunchItems || []).filter(function(it) { return it.subCategory === sc; }).length;
         } else if (activeSubcatManageSection === 'alacarte') {
           (appData.aLaCarte || []).forEach(function(cat) {
-            count += (cat.items || []).filter(function(it) { return it.subCategory === sc; }).length;
+            if (cat.category === sc || cat.title === sc.toUpperCase()) {
+              count += (cat.items || []).length;
+            } else {
+              count += (cat.items || []).filter(function(it) { return it.subCategory === sc; }).length;
+            }
           });
         } else if (activeSubcatManageSection === 'thebar') {
           (appData.theGardenAndBar || []).forEach(function(cat) {
-            count += (cat.items || []).filter(function(it) { return it.subCategory === sc; }).length;
+            if (cat.category === sc) {
+              count += (cat.items || []).length;
+            } else {
+              count += (cat.items || []).filter(function(it) { return it.subCategory === sc; }).length;
+            }
           });
         } else {
           var cCat = (appData.menuCategories || []).find(function(c) { return c.id === activeSubcatManageSection; });
@@ -3197,56 +3227,173 @@
           }
         }
 
-        html += '<div class="subcat-manage-item" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border-subtle);border-radius:6px;">' +
-          '<div style="display:flex;align-items:center;gap:10px;">' +
-            '<span style="font-size:13px;font-weight:600;color:var(--text-light);">' + sc + '</span>' +
-            '<span class="subcat-pill-badge" style="font-size:10px;">' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + '</span>' +
-          '</div>' +
-          '<div style="display:flex;gap:6px;">' +
-            '<button type="button" class="btn-icon btn-rename-subcat" data-index="' + idx + '" title="Rename sub-category">' +
-              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
-            '</button>' +
-            '<button type="button" class="btn-icon btn-delete btn-del-subcat" data-index="' + idx + '" title="Delete sub-category">' +
-              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
-            '</button>' +
-          '</div>' +
-        '</div>';
+        if (activeSubcatRenameIndex === idx) {
+          // Inline Rename Mode (No browser prompt)
+          html += '<div class="subcat-manage-item" style="border-color:var(--lime-primary);background:rgba(181,212,113,0.06);padding:8px 10px;">' +
+            '<div style="display:flex;align-items:center;gap:8px;width:100%;">' +
+              '<input type="text" class="input-subcat-rename-field" data-index="' + idx + '" value="' + sc.replace(/"/g, '&quot;') + '" style="flex:1;height:32px;font-family:var(--font-mono);font-size:12px;padding:4px 10px;background:#141712;border:1.5px solid var(--lime-primary);color:#fff;" autofocus>' +
+              '<button type="button" class="btn-publish btn-confirm-subcat-rename" data-index="' + idx + '" style="padding:6px 12px;font-size:11px;white-space:nowrap;">Save</button>' +
+              '<button type="button" class="btn-secondary btn-cancel-subcat-rename" data-index="' + idx + '" style="padding:6px 10px;font-size:11px;white-space:nowrap;">Cancel</button>' +
+            '</div>' +
+          '</div>';
+        } else if (activeSubcatDeleteConfirmIndex === idx) {
+          // Inline Delete Confirmation Mode (No browser confirm)
+          html += '<div class="subcat-manage-item" style="border-color:#ef4444;background:rgba(239,68,68,0.08);padding:8px 12px;">' +
+            '<div style="font-family:var(--font-mono);font-size:11px;color:#fca5a5;">' +
+              'Delete <strong>"' + sc + '"</strong>?' +
+              (count > 0 ? ' <span style="color:var(--text-dim);font-size:10px;">(' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' unlinked)</span>' : '') +
+            '</div>' +
+            '<div style="display:flex;gap:6px;">' +
+              '<button type="button" class="btn-publish btn-confirm-subcat-del" data-index="' + idx + '" style="background:#ef4444;border-color:#ef4444;color:#fff;padding:4px 10px;font-size:11px;white-space:nowrap;">Yes, Delete</button>' +
+              '<button type="button" class="btn-secondary btn-cancel-subcat-del" data-index="' + idx + '" style="padding:4px 8px;font-size:11px;white-space:nowrap;">Cancel</button>' +
+            '</div>' +
+          '</div>';
+        } else {
+          // Normal Display Mode
+          html += '<div class="subcat-manage-item">' +
+            '<div class="subcat-manage-name">' +
+              '<span>' + sc + '</span>' +
+              '<span class="subcat-pill-badge">' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + '</span>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;">' +
+              '<button type="button" class="btn-icon btn-rename-subcat" data-index="' + idx + '" title="Rename Sub-category">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+              '</button>' +
+              '<button type="button" class="btn-icon btn-delete btn-del-subcat" data-index="' + idx + '" title="Delete Sub-category">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>';
+        }
       });
 
       listEl.innerHTML = html;
 
-      // Bind rename and delete
-      listEl.querySelectorAll('.btn-rename-subcat').forEach(function(btn) {
+      // Focus and select rename input if open
+      var renameInput = listEl.querySelector('.input-subcat-rename-field');
+      if (renameInput) {
+        renameInput.focus();
+        renameInput.select();
+        renameInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            var idx = parseInt(renameInput.getAttribute('data-index'), 10);
+            var val = renameInput.value.trim();
+            if (val && val !== subcats[idx]) {
+              renameSubcat(activeSubcatManageSection, subcats[idx], val);
+            } else {
+              activeSubcatRenameIndex = null;
+              renderSubcatManageList();
+            }
+          } else if (e.key === 'Escape') {
+            activeSubcatRenameIndex = null;
+            renderSubcatManageList();
+          }
+        });
+      }
+
+      // Bind inline rename confirmation
+      listEl.querySelectorAll('.btn-confirm-subcat-rename').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var idx = parseInt(btn.getAttribute('data-index'), 10);
-          var oldName = subcats[idx];
-          var newName = prompt('Rename sub-category "' + oldName + '" to:', oldName);
-          if (newName && newName.trim() && newName.trim() !== oldName) {
-            renameSubcat(activeSubcatManageSection, oldName, newName.trim());
+          var inp = listEl.querySelector('.input-subcat-rename-field[data-index="' + idx + '"]');
+          var val = inp ? inp.value.trim() : '';
+          if (val && val !== subcats[idx]) {
+            renameSubcat(activeSubcatManageSection, subcats[idx], val);
+          } else {
+            activeSubcatRenameIndex = null;
+            renderSubcatManageList();
           }
         });
       });
 
+      // Bind inline rename cancel
+      listEl.querySelectorAll('.btn-cancel-subcat-rename').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeSubcatRenameIndex = null;
+          renderSubcatManageList();
+        });
+      });
+
+      // Bind start rename
+      listEl.querySelectorAll('.btn-rename-subcat').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-index'), 10);
+          activeSubcatRenameIndex = idx;
+          activeSubcatDeleteConfirmIndex = null;
+          renderSubcatManageList();
+        });
+      });
+
+      // Bind start delete confirm
       listEl.querySelectorAll('.btn-del-subcat').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var idx = parseInt(btn.getAttribute('data-index'), 10);
+          activeSubcatDeleteConfirmIndex = idx;
+          activeSubcatRenameIndex = null;
+          renderSubcatManageList();
+        });
+      });
+
+      // Bind confirm delete
+      listEl.querySelectorAll('.btn-confirm-subcat-del').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-index'), 10);
           var name = subcats[idx];
-          if (confirm('Delete sub-category "' + name + '"? Dishes assigned to it will retain their name until edited.')) {
-            deleteSubcat(activeSubcatManageSection, name);
-          }
+          deleteSubcat(activeSubcatManageSection, name);
+        });
+      });
+
+      // Bind cancel delete
+      listEl.querySelectorAll('.btn-cancel-subcat-del').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeSubcatDeleteConfirmIndex = null;
+          renderSubcatManageList();
         });
       });
     }
 
     function addSubcat(sectionKey, name) {
       if (!name || !appData || !appData.subCategories) return;
+      name = name.trim();
+      if (!name) return;
       if (!appData.subCategories[sectionKey]) appData.subCategories[sectionKey] = [];
       if (appData.subCategories[sectionKey].indexOf(name) === -1) {
         appData.subCategories[sectionKey].push(name);
+
+        // If in À La Carte, also ensure course category exists
+        if (sectionKey === 'alacarte' && appData.aLaCarte) {
+          var key = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          var exists = appData.aLaCarte.some(function(c) { return c.key === key || c.category === name; });
+          if (!exists) {
+            appData.aLaCarte.push({
+              key: key,
+              title: name.toUpperCase(),
+              category: name,
+              items: []
+            });
+          }
+        }
+
+        // If in The Bar, also ensure bar category exists
+        if (sectionKey === 'thebar' && appData.theGardenAndBar) {
+          var key = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          var exists = appData.theGardenAndBar.some(function(c) { return c.key === key || c.category === name; });
+          if (!exists) {
+            appData.theGardenAndBar.push({
+              key: key,
+              category: name,
+              items: []
+            });
+          }
+        }
+
         sendLiveUpdate();
         pushToFirebaseCloud();
         showToast('Sub-category "' + name + '" created!');
       }
+      activeSubcatRenameIndex = null;
+      activeSubcatDeleteConfirmIndex = null;
       renderSubcatManageList();
       if (sectionKey === 'lunch') renderLunchTab();
       else if (sectionKey === 'alacarte') renderAlacarteTab();
@@ -3256,60 +3403,206 @@
 
     function renameSubcat(sectionKey, oldName, newName) {
       if (!appData || !appData.subCategories || !appData.subCategories[sectionKey]) return;
+      newName = (newName || '').trim();
+      if (!newName || newName === oldName) return;
+
       var arr = appData.subCategories[sectionKey];
       var idx = arr.indexOf(oldName);
       if (idx !== -1) {
         arr[idx] = newName;
-        // Update dishes referencing oldName
-        if (sectionKey === 'lunch' && appData.lunchItems) {
-          appData.lunchItems.forEach(function(it) {
+      } else {
+        arr.push(newName);
+      }
+
+      // 1. Update dishes in Lunch
+      if (sectionKey === 'lunch' && appData.lunchItems) {
+        appData.lunchItems.forEach(function(it) {
+          if (it.subCategory === oldName) it.subCategory = newName;
+        });
+        if (currentLunchSubcatFilter === oldName) currentLunchSubcatFilter = newName;
+      }
+
+      // 2. Update À La Carte courses and items
+      if (sectionKey === 'alacarte' && appData.aLaCarte) {
+        appData.aLaCarte.forEach(function(cat) {
+          if (cat.category === oldName || cat.title === oldName.toUpperCase()) {
+            cat.category = newName;
+            cat.title = newName.toUpperCase();
+          }
+          (cat.items || []).forEach(function(it) {
             if (it.subCategory === oldName) it.subCategory = newName;
           });
-        }
-        if (sectionKey === 'alacarte' && appData.aLaCarte) {
-          appData.aLaCarte.forEach(function(cat) {
-            (cat.items || []).forEach(function(it) {
-              if (it.subCategory === oldName) it.subCategory = newName;
-            });
+        });
+      }
+
+      // 3. Update The Bar categories and items
+      if (sectionKey === 'thebar' && appData.theGardenAndBar) {
+        appData.theGardenAndBar.forEach(function(cat) {
+          if (cat.category === oldName) {
+            cat.category = newName;
+          }
+          (cat.items || []).forEach(function(it) {
+            if (it.subCategory === oldName) it.subCategory = newName;
           });
-        }
-        if (sectionKey === 'thebar' && appData.theGardenAndBar) {
-          appData.theGardenAndBar.forEach(function(cat) {
-            (cat.items || []).forEach(function(it) {
-              if (it.subCategory === oldName) it.subCategory = newName;
-            });
-          });
-        }
-        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
-        if (cCat && cCat.items) {
+        });
+      }
+
+      // 4. Update Custom Category
+      var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
+      if (cCat) {
+        if (cCat.items) {
           cCat.items.forEach(function(it) {
             if (it.subCategory === oldName) it.subCategory = newName;
           });
         }
-        sendLiveUpdate();
-        pushToFirebaseCloud();
-        renderSubcatManageList();
-        if (sectionKey === 'lunch') renderLunchTab();
-        else if (sectionKey === 'alacarte') renderAlacarteTab();
-        else if (sectionKey === 'thebar') renderBarTab();
-        else renderCustomCategoryTab(sectionKey);
-        showToast('Renamed "' + oldName + '" to "' + newName + '"');
+        if (cCat.subCategories) {
+          var sIdx = cCat.subCategories.indexOf(oldName);
+          if (sIdx !== -1) cCat.subCategories[sIdx] = newName;
+        }
       }
-    }
+      if (currentCustomSubcatFilter === oldName) currentCustomSubcatFilter = newName;
 
-    function deleteSubcat(sectionKey, name) {
-      if (!appData || !appData.subCategories || !appData.subCategories[sectionKey]) return;
-      appData.subCategories[sectionKey] = appData.subCategories[sectionKey].filter(function(x) { return x !== name; });
-      if (currentLunchSubcatFilter === name) currentLunchSubcatFilter = 'all';
-      if (currentCustomSubcatFilter === name) currentCustomSubcatFilter = 'all';
-      sendLiveUpdate();
-      pushToFirebaseCloud();
+      activeSubcatRenameIndex = null;
+      activeSubcatDeleteConfirmIndex = null;
       renderSubcatManageList();
       if (sectionKey === 'lunch') renderLunchTab();
       else if (sectionKey === 'alacarte') renderAlacarteTab();
       else if (sectionKey === 'thebar') renderBarTab();
       else renderCustomCategoryTab(sectionKey);
-      showToast('Sub-category "' + name + '" removed.');
+
+      updateStorageGauge();
+      sendLiveUpdate();
+      pushToFirebaseCloud();
+      showToast('Sub-category renamed to "' + newName + '"');
+    }
+
+    function deleteSubcat(sectionKey, name) {
+      if (!appData || !appData.subCategories || !appData.subCategories[sectionKey]) return;
+      appData.subCategories[sectionKey] = appData.subCategories[sectionKey].filter(function(x) { return x !== name; });
+
+      // Unassign dishes in Lunch so dishes remain safe
+      if (sectionKey === 'lunch' && appData.lunchItems) {
+        appData.lunchItems.forEach(function(it) {
+          if (it.subCategory === name) it.subCategory = '';
+        });
+      }
+
+      // Unassign dishes in À La Carte
+      if (sectionKey === 'alacarte' && appData.aLaCarte) {
+        appData.aLaCarte.forEach(function(cat) {
+          (cat.items || []).forEach(function(it) {
+            if (it.subCategory === name) it.subCategory = '';
+          });
+        });
+      }
+
+      // Unassign dishes in The Bar
+      if (sectionKey === 'thebar' && appData.theGardenAndBar) {
+        appData.theGardenAndBar.forEach(function(cat) {
+          (cat.items || []).forEach(function(it) {
+            if (it.subCategory === name) it.subCategory = '';
+          });
+        });
+      }
+
+      // Unassign dishes in Custom Category
+      var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
+      if (cCat) {
+        if (cCat.items) {
+          cCat.items.forEach(function(it) {
+            if (it.subCategory === name) it.subCategory = '';
+          });
+        }
+        if (cCat.subCategories) {
+          cCat.subCategories = cCat.subCategories.filter(function(x) { return x !== name; });
+        }
+      }
+
+      if (currentLunchSubcatFilter === name) currentLunchSubcatFilter = 'all';
+      if (currentCustomSubcatFilter === name) currentCustomSubcatFilter = 'all';
+
+      activeSubcatDeleteConfirmIndex = null;
+      activeSubcatRenameIndex = null;
+      renderSubcatManageList();
+      if (sectionKey === 'lunch') renderLunchTab();
+      else if (sectionKey === 'alacarte') renderAlacarteTab();
+      else if (sectionKey === 'thebar') renderBarTab();
+      else renderCustomCategoryTab(sectionKey);
+
+      updateStorageGauge();
+      sendLiveUpdate();
+      pushToFirebaseCloud();
+      showToast('Sub-category "' + name + '" deleted.');
+    }
+
+    // Dynamic À La Carte Course Pills
+    function renderAlacarteCoursePills() {
+      var container = document.getElementById('alacarteCoursePills');
+      if (!container || !appData || !appData.aLaCarte) return;
+
+      var html = '';
+      appData.aLaCarte.forEach(function(cat) {
+        var count = (cat.items || []).length;
+        var isActive = (currentAlacarteKey === cat.key);
+        html += '<button type="button" class="sub-pill-btn ' + (isActive ? 'is-active' : '') + '" data-course="' + cat.key + '">' +
+          (cat.category || cat.title || cat.key) + ' <span class="subcat-pill-badge">' + count + '</span>' +
+        '</button>';
+      });
+
+      html += '<button type="button" class="sub-pill-btn" id="btnQuickAddAlacarteCourse" style="border-style:dashed;color:var(--lime-primary);" title="Manage & Add Courses / Sub-categories">+ Add / Organize</button>';
+
+      container.innerHTML = html;
+
+      container.querySelectorAll('.sub-pill-btn[data-course]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentAlacarteKey = btn.getAttribute('data-course');
+          renderAlacarteCoursePills();
+          renderAlacarteTab();
+          navigatePreview(currentAlacarteKey);
+        });
+      });
+
+      var btnAdd = document.getElementById('btnQuickAddAlacarteCourse');
+      if (btnAdd) {
+        btnAdd.addEventListener('click', function() {
+          openSubcatModal('alacarte');
+        });
+      }
+    }
+
+    // Dynamic Bar Category Pills
+    function renderBarCategoryPills() {
+      var container = document.getElementById('barCategoryPills');
+      if (!container || !appData || !appData.theGardenAndBar) return;
+
+      var html = '';
+      appData.theGardenAndBar.forEach(function(cat) {
+        var count = (cat.items || []).length;
+        var isActive = (currentBarKey === cat.key);
+        html += '<button type="button" class="sub-pill-btn ' + (isActive ? 'is-active' : '') + '" data-barcat="' + cat.key + '">' +
+          (cat.category || cat.key) + ' <span class="subcat-pill-badge">' + count + '</span>' +
+        '</button>';
+      });
+
+      html += '<button type="button" class="sub-pill-btn" id="btnQuickAddBarSubcat" style="border-style:dashed;color:var(--lime-primary);" title="Manage Bar Sub-categories">+ Add / Organize</button>';
+
+      container.innerHTML = html;
+
+      container.querySelectorAll('.sub-pill-btn[data-barcat]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentBarKey = btn.getAttribute('data-barcat');
+          renderBarCategoryPills();
+          renderBarTab();
+          navigatePreview('thebar');
+        });
+      });
+
+      var btnAdd = document.getElementById('btnQuickAddBarSubcat');
+      if (btnAdd) {
+        btnAdd.addEventListener('click', function() {
+          openSubcatModal('thebar');
+        });
+      }
     }
 
     function bindStorageAndSubcatModals() {
@@ -3346,6 +3639,15 @@
       // Subcategory Modals
       var subcatModal = document.getElementById('subcatManageModal');
       var btnManageLunchSubcats = document.getElementById('btnManageLunchSubcats');
+      var btnManageAlacarteSubcats = document.getElementById('btnManageAlacarteSubcats');
+      var btnManageBarSubcats = document.getElementById('btnManageBarSubcats');
+      var btnManageCustomSubcats = document.getElementById('btnManageCustomSubcats');
+      var btnEditLunchCatMeta = document.getElementById('btnEditLunchCatMeta');
+      var btnEditAlacarteCatMeta = document.getElementById('btnEditAlacarteCatMeta');
+      var btnEditBarCatMeta = document.getElementById('btnEditBarCatMeta');
+      var btnEditTastingCatMeta = document.getElementById('btnEditTastingCatMeta');
+      var btnEditCatFromSubcatModal = document.getElementById('btnEditCatFromSubcatModal');
+
       var btnCloseSubcatModal = document.getElementById('btnCloseSubcatModal');
       var btnCloseSubcatModalBtn = document.getElementById('btnCloseSubcatModalBtn');
       var btnAddSubcatConfirm = document.getElementById('btnAddSubcatConfirm');
@@ -3356,6 +3658,50 @@
           openSubcatModal('lunch');
         });
       }
+      if (btnManageAlacarteSubcats) {
+        btnManageAlacarteSubcats.addEventListener('click', function() {
+          openSubcatModal('alacarte');
+        });
+      }
+      if (btnManageBarSubcats) {
+        btnManageBarSubcats.addEventListener('click', function() {
+          openSubcatModal('thebar');
+        });
+      }
+      if (btnManageCustomSubcats) {
+        btnManageCustomSubcats.addEventListener('click', function() {
+          openSubcatModal(activeMenuCategoryKey);
+        });
+      }
+
+      // Direct Category Edit Buttons in Workspace Subheaders
+      if (btnEditLunchCatMeta) {
+        btnEditLunchCatMeta.addEventListener('click', function() {
+          openMenuCategoryModal('lunch');
+        });
+      }
+      if (btnEditAlacarteCatMeta) {
+        btnEditAlacarteCatMeta.addEventListener('click', function() {
+          openMenuCategoryModal('alacarte');
+        });
+      }
+      if (btnEditBarCatMeta) {
+        btnEditBarCatMeta.addEventListener('click', function() {
+          openMenuCategoryModal('thebar');
+        });
+      }
+      if (btnEditTastingCatMeta) {
+        btnEditTastingCatMeta.addEventListener('click', function() {
+          openMenuCategoryModal('tasting');
+        });
+      }
+      if (btnEditCatFromSubcatModal) {
+        btnEditCatFromSubcatModal.addEventListener('click', function() {
+          if (subcatModal) subcatModal.classList.remove('is-open');
+          openMenuCategoryModal(activeSubcatManageSection);
+        });
+      }
+
       if (btnCloseSubcatModal) {
         btnCloseSubcatModal.addEventListener('click', function() {
           if (subcatModal) subcatModal.classList.remove('is-open');
@@ -4288,13 +4634,10 @@
         var isActive = (activeMenuCategoryKey === cat.id);
         var iconHtml = '<span class="cat-btn-icon">' + getCategoryIconSvg(cat.icon || cat.id) + '</span>';
         
-        var customActionsHtml = '';
-        if (!cat.isSystem) {
-          customActionsHtml = '<span class="cat-actions-wrap">' +
-            '<span class="cat-action-icon btn-quick-edit-cat" data-cat-id="' + cat.id + '" title="Edit Category Settings"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>' +
-            '<span class="cat-action-icon is-del btn-quick-del-cat" data-cat-id="' + cat.id + '" title="Delete Category"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>' +
-          '</span>';
-        }
+        var customActionsHtml = '<span class="cat-actions-wrap">' +
+          '<span class="cat-action-icon btn-quick-edit-cat" data-cat-id="' + cat.id + '" title="Edit / Rename Category"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>' +
+          '<span class="cat-action-icon is-del btn-quick-del-cat" data-cat-id="' + cat.id + '" title="Delete Category"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>' +
+        '</span>';
 
         html += '<button type="button" class="menu-cat-master-btn ' + (isActive ? 'is-active' : '') + '" data-cat-id="' + cat.id + '">' +
           iconHtml +
@@ -4320,7 +4663,7 @@
         });
       });
 
-      // Quick edit custom category
+      // Quick edit any category
       bar.querySelectorAll('.btn-quick-edit-cat').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -4329,7 +4672,7 @@
         });
       });
 
-      // Quick delete custom category
+      // Quick delete any category
       bar.querySelectorAll('.btn-quick-del-cat').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -4359,24 +4702,42 @@
         p.style.display = 'none';
       });
 
+      var cat = (appData.menuCategories || []).find(function(c) { return c.id === catId; });
+
       if (catId === 'lunch') {
         var el = document.getElementById('catWorkspace-lunch');
         if (el) el.style.display = 'block';
+        var tEl = document.getElementById('lunchCatTitle');
+        var sEl = document.getElementById('lunchCatSubtitle');
+        if (tEl && cat) tEl.textContent = (cat.name || 'LUNCH') + ' SELECTION';
+        if (sEl && cat && cat.subtitle) sEl.textContent = cat.subtitle;
         renderLunchTab();
         navigatePreview('lunch');
       } else if (catId === 'alacarte') {
         var el = document.getElementById('catWorkspace-alacarte');
         if (el) el.style.display = 'block';
+        var tEl = document.getElementById('alacarteCatTitle');
+        var sEl = document.getElementById('alacarteCatSubtitle');
+        if (tEl && cat) tEl.textContent = (cat.name || 'À LA CARTE') + ' COURSES';
+        if (sEl && cat && cat.subtitle) sEl.textContent = cat.subtitle;
         renderAlacarteTab();
         navigatePreview(currentAlacarteKey || 'appetisers');
       } else if (catId === 'thebar') {
         var el = document.getElementById('catWorkspace-thebar');
         if (el) el.style.display = 'block';
+        var tEl = document.getElementById('barCatTitle');
+        var sEl = document.getElementById('barCatSubtitle');
+        if (tEl && cat) tEl.textContent = (cat.name || 'THE BAR') + ' & BITES';
+        if (sEl && cat && cat.subtitle) sEl.textContent = cat.subtitle;
         renderBarTab();
         navigatePreview('thebar');
       } else if (catId === 'tasting') {
         var el = document.getElementById('catWorkspace-tasting');
         if (el) el.style.display = 'block';
+        var tEl = document.getElementById('tastingCatTitle');
+        var sEl = document.getElementById('tastingCatSubtitle');
+        if (tEl && cat) tEl.textContent = (cat.name || 'TASTING MENUS');
+        if (sEl && cat && cat.subtitle) sEl.textContent = cat.subtitle;
         renderTastingTab();
         navigatePreview('tasting');
       } else {
@@ -4542,11 +4903,13 @@
     function deleteMenuCategory(catId) {
       var cat = (appData.menuCategories || []).find(function(c) { return c.id === catId; });
       if (!cat) return;
-      if (cat.isSystem) {
-        alert('System core category "' + cat.name + '" cannot be deleted.');
-        return;
-      }
-      var count = (cat.items || []).length;
+      var count = 0;
+      if (catId === 'lunch') count = (appData.lunchItems || []).length;
+      else if (catId === 'alacarte') { (appData.aLaCarte || []).forEach(function(c) { count += (c.items || []).length; }); }
+      else if (catId === 'thebar') { (appData.theGardenAndBar || []).forEach(function(c) { count += (c.items || []).length; }); }
+      else if (catId === 'tasting') count = 2;
+      else count = (cat.items || []).length;
+
       var msg = 'Delete menu category "' + cat.name + '"' + (count > 0 ? ' and its ' + count + ' dish(es)?' : '?');
       if (confirm(msg)) {
         appData.menuCategories = appData.menuCategories.filter(function(c) { return c.id !== catId; });
@@ -4557,12 +4920,13 @@
           delete appData.subCategories[catId];
         }
         if (activeMenuCategoryKey === catId) {
-          activeMenuCategoryKey = 'lunch';
+          activeMenuCategoryKey = (appData.menuCategories && appData.menuCategories.length > 0) ? appData.menuCategories[0].id : 'lunch';
         }
         updateStorageGauge();
         sendLiveUpdate();
-        switchMenuCategory(activeMenuCategoryKey);
         pushToFirebaseCloud();
+        renderMenuCategoriesMasterBar();
+        switchMenuCategory(activeMenuCategoryKey);
         showToast('Category "' + cat.name + '" deleted.');
       }
     }
@@ -4655,6 +5019,7 @@
 
           updateStorageGauge();
           sendLiveUpdate();
+          renderMenuCategoriesMasterBar();
           switchMenuCategory(activeMenuCategoryKey);
           pushToFirebaseCloud();
         });
@@ -4885,15 +5250,23 @@
     // 6. Render À La Carte Tab
     var currentAlacarteKey = 'appetisers';
     function renderAlacarteTab() {
+      renderAlacarteCoursePills();
       var list = document.getElementById('alacarteCardsList');
       if (!list || !appData || !appData.aLaCarte) return;
 
       var cat = appData.aLaCarte.find(function(c) {
-        return c.key === currentAlacarteKey || c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentAlacarteKey;
+        return c.key === currentAlacarteKey || (c.category && c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentAlacarteKey);
       });
 
       if (!cat) {
-        list.innerHTML = '<div style="padding:40px;color:var(--text-dim);text-align:center;">Course not found.</div>';
+        if (appData.aLaCarte.length > 0) {
+          currentAlacarteKey = appData.aLaCarte[0].key;
+          cat = appData.aLaCarte[0];
+        }
+      }
+
+      if (!cat) {
+        list.innerHTML = '<div style="padding:40px;color:var(--text-dim);text-align:center;">Course not found. Click "+ Add / Organize" to create courses.</div>';
         return;
       }
 
@@ -4957,29 +5330,26 @@
       });
     }
 
-    // À La Carte course pill clicks
-    document.querySelectorAll('#alacarteCoursePills .sub-pill-btn').forEach(function(p) {
-      p.addEventListener('click', function() {
-        document.querySelectorAll('#alacarteCoursePills .sub-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
-        p.classList.add('is-active');
-        currentAlacarteKey = p.getAttribute('data-course');
-        renderAlacarteTab();
-        navigatePreview(currentAlacarteKey);
-      });
-    });
-
     // 7. Render The Bar Tab
     var currentBarKey = 'the-garden';
     function renderBarTab() {
+      renderBarCategoryPills();
       var list = document.getElementById('barCardsList');
       if (!list || !appData || !appData.theGardenAndBar) return;
 
       var cat = appData.theGardenAndBar.find(function(c) {
-        return c.key === currentBarKey || c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentBarKey;
+        return c.key === currentBarKey || (c.category && c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentBarKey);
       });
 
       if (!cat) {
-        list.innerHTML = '<div style="padding:40px;color:var(--text-dim);text-align:center;">Section not found.</div>';
+        if (appData.theGardenAndBar.length > 0) {
+          currentBarKey = appData.theGardenAndBar[0].key;
+          cat = appData.theGardenAndBar[0];
+        }
+      }
+
+      if (!cat) {
+        list.innerHTML = '<div style="padding:40px;color:var(--text-dim);text-align:center;">Section not found. Click "+ Add / Organize" to create sub-categories.</div>';
         return;
       }
 
@@ -5572,6 +5942,10 @@
           var val = inputInline.value.trim();
           if (!val) return;
           var scope = document.getElementById('editItemScope').value || 'lunch';
+          if (scope === 'custom') {
+            var catKey = document.getElementById('editItemCategoryKey').value;
+            if (catKey) scope = catKey;
+          }
           addSubcat(scope, val);
           var opt = document.createElement('option');
           opt.value = val;
