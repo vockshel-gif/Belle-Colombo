@@ -1094,28 +1094,29 @@
 
     /* Sub-category tag on Dish Card */
     .lunch-card-subcat {
-      display: inline-block;
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: #92754d;
-      margin-bottom: 2px;
+      display: none !important;
     }
 
-    /* Sub-category filter pills in lunch header */
+    /* Sub-category filter pills in lunch / custom header */
     .lunch-subcat-nav {
       display: flex;
       gap: 6px;
       overflow-x: auto;
+      overflow-y: hidden;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      padding: 6px 16px 4px;
+      padding: 4px 14px 6px;
       justify-content: flex-start;
       margin-top: 2px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      box-sizing: border-box;
     }
     .lunch-subcat-nav::-webkit-scrollbar {
       display: none;
+      height: 0;
+      width: 0;
     }
     .lunch-subcat-pill {
       background: rgba(0, 0, 0, 0.04);
@@ -1463,23 +1464,74 @@
     .lunch-sm-btn:active { transform: scale(0.94); }
 
     /* ========================================================
-       À LA CARTE: Course Pills Navigation & Course Transitions
+       REUSABLE SCROLLABLE SUB-CATEGORY WRAPPER & INDICATORS
        ======================================================== */
-    .alacarte-course-pills {
+    .subcat-scroll-track-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      margin: 6px auto 0;
+      display: flex;
+      align-items: center;
+      padding: 0 2px;
+      box-sizing: border-box;
+    }
+    .pills-scroll-indicator-btn {
+      position: absolute;
+      top: calc(50% - 2px);
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(17, 17, 17, 0.92);
+      color: #dfcfb7;
+      border: 1px solid rgba(188, 166, 133, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      cursor: pointer;
+      z-index: 12;
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s, background-color 0.2s, transform 0.2s;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+    }
+    .pills-scroll-indicator-btn.is-visible {
+      opacity: 0.95;
+      pointer-events: auto;
+    }
+    .pills-scroll-indicator-btn:hover {
+      opacity: 1;
+      background: #000000;
+      border-color: #bca685;
+      color: #ffffff;
+      transform: translateY(-50%) scale(1.12);
+    }
+    .pills-scroll-left { left: 2px; }
+    .pills-scroll-right { right: 2px; }
+
+    /* À LA CARTE: Course Pills Navigation */
+    .alacarte-course-pills {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
       width: 100%;
-      max-width: 375px;
-      margin: 10px auto 0;
-      padding: 0 8px;
+      padding: 4px 14px 6px;
       box-sizing: border-box;
       overflow-x: auto;
+      overflow-y: hidden;
       scrollbar-width: none;
+      -ms-overflow-style: none;
       -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
     }
-    .alacarte-course-pills::-webkit-scrollbar { display: none; }
+    .alacarte-course-pills::-webkit-scrollbar {
+      display: none;
+      height: 0;
+      width: 0;
+    }
     .course-pill {
       background: transparent;
       border: 1px solid #dcd7ce;
@@ -1489,7 +1541,7 @@
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 3.5px 7px;
+      padding: 4px 9px;
       border-radius: 12px;
       cursor: pointer;
       white-space: nowrap;
@@ -2047,16 +2099,22 @@
       align-items: center;
       gap: 6px;
       overflow-x: auto;
-      padding: 6px 14px 12px;
+      overflow-y: hidden;
+      padding: 6px 14px 10px;
       scrollbar-width: none;
       -ms-overflow-style: none;
       width: 100%;
       max-width: 100%;
       min-width: 0;
       box-sizing: border-box;
+      scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
-    .events-filter-bar::-webkit-scrollbar { display: none; }
+    .events-filter-bar::-webkit-scrollbar {
+      display: none;
+      height: 0;
+      width: 0;
+    }
     .event-filter-pill {
       border-radius: 999px;
       padding: 5px 11px;
@@ -2608,8 +2666,16 @@
         </svg>
       </div>
 
-      <!-- Dynamic Sub-category Nav Bar -->
-      <nav class="lunch-subcat-nav" id="lunchSubcatNav" aria-label="Lunch Sub-categories"></nav>
+      <!-- Dynamic Sub-category Nav Bar with Scroll Indicator Wrapper -->
+      <div class="subcat-scroll-track-wrapper" id="lunchSubcatWrapper">
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-left" id="lunchScrollLeft" aria-label="Scroll sub-categories left">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <nav class="lunch-subcat-nav" id="lunchSubcatNav" aria-label="Lunch Sub-categories"></nav>
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-right" id="lunchScrollRight" aria-label="Scroll sub-categories right">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
 
       <!-- Top Slider Track -->
       <div class="lunch-slider-wrap">
@@ -3041,14 +3107,22 @@
         </svg>
       </div>
 
-      <!-- Course Selector Pills -->
-      <nav class="alacarte-course-pills" aria-label="À La Carte Courses">
-        <button type="button" class="course-pill is-active" data-course="appetisers">APPETISERS</button>
-        <button type="button" class="course-pill" data-course="entrees">ENTRÉES</button>
-        <button type="button" class="course-pill" data-course="mains">MAINS</button>
-        <button type="button" class="course-pill" data-course="grill">THE GRILL</button>
-        <button type="button" class="course-pill" data-course="desserts">DESSERTS</button>
-      </nav>
+      <!-- Course Selector Pills with Scroll Indicator Wrapper -->
+      <div class="subcat-scroll-track-wrapper" id="alacartePillsWrapper">
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-left" id="alacarteScrollLeft" aria-label="Scroll courses left">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <nav class="alacarte-course-pills" id="alacarteCoursePills" aria-label="À La Carte Courses">
+          <button type="button" class="course-pill is-active" data-course="appetisers">APPETISERS</button>
+          <button type="button" class="course-pill" data-course="entrees">ENTRÉES</button>
+          <button type="button" class="course-pill" data-course="mains">MAINS</button>
+          <button type="button" class="course-pill" data-course="grill">THE GRILL</button>
+          <button type="button" class="course-pill" data-course="desserts">DESSERTS</button>
+        </nav>
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-right" id="alacarteScrollRight" aria-label="Scroll courses right">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
 
       <!-- Top Slider Track -->
       <div class="lunch-slider-wrap" style="margin-top: 16px; margin-bottom: 30px;">
@@ -3237,15 +3311,10 @@ Choose your spread/rillette style:</p>
         </svg>
       </div>
 
-      <!-- Bar Bites Badge Pill -->
-      <div style="display:flex; justify-content:center; margin: 4px auto 0;">
-        <span class="course-pill is-active" style="cursor:default; pointer-events:none; padding: 0.32rem 1.15rem; font-size: 0.72rem; letter-spacing: 0.10em;">BAR BITES</span>
-      </div>
-
       <!-- Top Slider Track -->
       <div class="lunch-slider-wrap" style="margin-top: 14px; margin-bottom: 24px;">
-        <div class="lunch-slider-track" id="barSliderTrack" title="Scroll through bar bites">
-          <div class="lunch-slider-thumb" id="barSliderThumb" role="slider" aria-label="Bar Bites Progress" aria-valuenow="1" aria-valuemin="1" aria-valuemax="7"></div>
+        <div class="lunch-slider-track" id="barSliderTrack" title="Scroll through the bar menu">
+          <div class="lunch-slider-thumb" id="barSliderThumb" role="slider" aria-label="Bar Menu Progress" aria-valuenow="1" aria-valuemin="1" aria-valuemax="15"></div>
         </div>
       </div>
     </header>
@@ -4013,8 +4082,16 @@ Choose your spread/rillette style:</p>
         </svg>
       </div>
 
-      <!-- Dynamic Sub-category Nav Bar -->
-      <nav class="lunch-subcat-nav" id="customSubcatNav" aria-label="Category Sub-categories"></nav>
+      <!-- Dynamic Sub-category Nav Bar with Scroll Indicator Wrapper -->
+      <div class="subcat-scroll-track-wrapper" id="customSubcatWrapper">
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-left" id="customScrollLeft" aria-label="Scroll sub-categories left">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <nav class="lunch-subcat-nav" id="customSubcatNav" aria-label="Category Sub-categories"></nav>
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-right" id="customScrollRight" aria-label="Scroll sub-categories right">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
 
       <!-- Top Slider Track -->
       <div class="lunch-slider-wrap">
@@ -4557,8 +4634,11 @@ Choose your spread/rillette style:</p>
       document.body.classList.add('is-menu-active');
       var allPanels = document.querySelectorAll('.view-food-panel');
       allPanels.forEach(function (p) { p.classList.remove('is-active'); });
-      var courseKeys = ['appetisers', 'entrees', 'mains', 'grill', 'desserts'];
-      var isCourse = courseKeys.indexOf(targetId) !== -1;
+      var isCourse = (typeof aLaCarteMeta !== 'undefined' && targetId in aLaCarteMeta) ||
+        (window.belleCurrentData && window.belleCurrentData.aLaCarte && window.belleCurrentData.aLaCarte.some(function(c) {
+          return c.key === targetId || (c.category && c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === targetId);
+        })) ||
+        ['appetisers', 'entrees', 'mains', 'grill', 'desserts'].indexOf(targetId) !== -1;
       var panelId = isCourse ? 'alacarte' : targetId;
       var targetPanel = document.getElementById('panel-' + panelId);
       if (targetPanel) {
@@ -4716,6 +4796,8 @@ Choose your spread/rillette style:</p>
           card.classList.add('is-hidden');
         }
       });
+      var efb = document.querySelector('.events-filter-bar');
+      if (efb) scrollActivePillIntoView(efb);
     }
 
     eventFilterPills.forEach(function (pill) {
@@ -4724,6 +4806,16 @@ Choose your spread/rillette style:</p>
         filterEvents(cat);
       });
     });
+
+    var eventsFilterBarEl = document.querySelector('.events-filter-bar');
+    if (eventsFilterBarEl) {
+      eventsFilterBarEl.addEventListener('wheel', function(e) {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          e.preventDefault();
+          eventsFilterBarEl.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
+    }
 
     // Calendar Day Click Selection
     calDayCells.forEach(function (cell) {
@@ -5094,7 +5186,84 @@ Choose your spread/rillette style:</p>
       });
     }
 
+    // Reusable Horizontal Scroll Controller for Course & Subcategory Pills
+    function setupHorizontalScrollControls(containerId, leftBtnId, rightBtnId) {
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      var leftBtn = leftBtnId ? document.getElementById(leftBtnId) : null;
+      var rightBtn = rightBtnId ? document.getElementById(rightBtnId) : null;
+
+      function updateButtons() {
+        var maxScroll = container.scrollWidth - container.clientWidth;
+        var canScroll = maxScroll > 4;
+        if (leftBtn) {
+          if (canScroll && container.scrollLeft > 6) {
+            leftBtn.classList.add('is-visible');
+          } else {
+            leftBtn.classList.remove('is-visible');
+          }
+        }
+        if (rightBtn) {
+          if (canScroll && container.scrollLeft < maxScroll - 6) {
+            rightBtn.classList.add('is-visible');
+          } else {
+            rightBtn.classList.remove('is-visible');
+          }
+        }
+      }
+
+      if (!container._hasScrollControls) {
+        container._hasScrollControls = true;
+        container.addEventListener('scroll', updateButtons, { passive: true });
+
+        // Translate mouse vertical wheel into horizontal scroll on desktop
+        container.addEventListener('wheel', function(e) {
+          if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            container.scrollLeft += e.deltaY;
+          }
+        }, { passive: false });
+
+        if (leftBtn) {
+          leftBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            container.scrollBy({ left: -140, behavior: 'smooth' });
+          });
+        }
+        if (rightBtn) {
+          rightBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            container.scrollBy({ left: 140, behavior: 'smooth' });
+          });
+        }
+        window.addEventListener('resize', updateButtons);
+      }
+
+      requestAnimationFrame(updateButtons);
+    }
+
+    function scrollActivePillIntoView(container) {
+      if (!container) return;
+      var activePill = container.querySelector('.is-active');
+      if (activePill && typeof activePill.scrollIntoView === 'function') {
+        activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+
     function selectAlacarteCourse(key) {
+      if (!aLaCarteMeta[key]) {
+        // Dynamic fallback if course was just created
+        var title = key.toUpperCase();
+        aLaCarteMeta[key] = {
+          title: title,
+          watermark: title.length > 10 ? title.substring(0, 10) : title,
+          watermarkFontSize: Math.max(34, Math.min(84, Math.floor(380 / Math.max(4, title.length)))),
+          titleFontSize: Math.max(18, Math.min(36, Math.floor(200 / Math.max(4, title.length)))),
+          letterSpacing: "0.15em",
+          totalItems: 0,
+          nextKey: null
+        };
+      }
       var meta = aLaCarteMeta[key];
       if (!meta) return;
       if (window.ambientBg) window.ambientBg.onOpenCategory(key);
@@ -5112,9 +5281,13 @@ Choose your spread/rillette style:</p>
         alacarteTitle.style.letterSpacing = (meta.letterSpacing || '0.15em');
       }
 
-      alacartePills.forEach(function(p) {
-        p.classList.toggle('is-active', p.getAttribute('data-course') === key);
-      });
+      var nav = document.getElementById('alacarteCoursePills');
+      if (nav) {
+        nav.querySelectorAll('.course-pill').forEach(function(p) {
+          p.classList.toggle('is-active', p.getAttribute('data-course') === key);
+        });
+        scrollActivePillIntoView(nav);
+      }
 
       if (alacarteVerticalScroll && aLaCarteCoursesHtml[key]) {
         alacarteVerticalScroll.innerHTML = aLaCarteCoursesHtml[key];
@@ -5124,13 +5297,19 @@ Choose your spread/rillette style:</p>
       }
     }
 
-    // Attach Course Pill clicks
-    alacartePills.forEach(function(pill) {
-      pill.addEventListener('click', function() {
-        var key = pill.getAttribute('data-course');
-        selectAlacarteCourse(key);
-      });
-    });
+    // Attach initial Course Pill clicks & scroll controls
+    (function initInitialAlacartePills() {
+      var nav = document.getElementById('alacarteCoursePills');
+      if (nav) {
+        nav.querySelectorAll('.course-pill').forEach(function(pill) {
+          pill.addEventListener('click', function() {
+            var key = pill.getAttribute('data-course');
+            selectAlacarteCourse(key);
+          });
+        });
+      }
+      setupHorizontalScrollControls('alacarteCoursePills', 'alacarteScrollLeft', 'alacarteScrollRight');
+    })();
 
     // Native scroll listener for continuous progress updates
     if (alacarteVerticalScroll) {
@@ -5692,6 +5871,10 @@ Choose your spread/rillette style:</p>
           }
         });
       }
+      subcats = subcats.filter(function(sc) {
+        var s = String(sc || '').trim().toLowerCase();
+        return s && s !== 'no sub-category' && s !== 'unassigned' && s.indexOf('no sub') === -1;
+      });
       if (subcats.length === 0) {
         nav.style.display = 'none';
         return;
@@ -5709,9 +5892,13 @@ Choose your spread/rillette style:</p>
           currentLunchFilterSubcat = pill.getAttribute('data-subcat');
           nav.querySelectorAll('.lunch-subcat-pill').forEach(function(p) { p.classList.remove('is-active'); });
           pill.classList.add('is-active');
+          scrollActivePillIntoView(nav);
           renderLunchListFiltered();
         });
       });
+
+      setupHorizontalScrollControls('lunchSubcatNav', 'lunchScrollLeft', 'lunchScrollRight');
+      scrollActivePillIntoView(nav);
     }
 
     function renderLunchListFiltered() {
@@ -5724,13 +5911,31 @@ Choose your spread/rillette style:</p>
       renderLunchDom(filtered);
     }
 
+    function getDishMetaHtml(item) {
+      if (!item) return '';
+      var list = [];
+      if (item.metaList && Array.isArray(item.metaList) && item.metaList.length > 0) {
+        list = item.metaList;
+      } else if (item.meta && Array.isArray(item.meta.items) && item.meta.items.length > 0) {
+        list = item.meta.items;
+      } else if (item.meta && item.meta.text) {
+        list = [item.meta];
+      }
+      if (!list.length) return '';
+      return list.map(function(m) {
+        return '<div class="lunch-meta-row">' +
+          '<span class="meta-pill">' + (m.badge || 'ADD-ONS') + '</span>' +
+          '<span class="meta-content">' + (m.text || '') + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
     function renderLunchDom(items) {
       if (!lunchVerticalScroll) return;
       var total = (items || []).length;
       var html = '';
       (items || []).forEach(function(item, idx) {
         var isVeg = !!item.isVeg;
-        var hasMeta = !!item.meta;
 
         var mediaBackdropHtml = '';
         if (item.video) {
@@ -5750,7 +5955,6 @@ Choose your spread/rillette style:</p>
           '<div class="lunch-slot-content">' +
             mediaBackdropHtml +
             '<article class="lunch-card">' +
-              (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
               '<div class="lunch-card-head">' +
                 '<div class="lunch-card-title-wrap">' +
                   '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
@@ -5761,12 +5965,7 @@ Choose your spread/rillette style:</p>
                 '</div>' +
               '</div>' +
               (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
-              (hasMeta ? (
-                '<div class="lunch-meta-row">' +
-                  '<span class="meta-pill">' + (item.meta.badge || 'ADD-ONS') + '</span>' +
-                  '<span class="meta-content">' + (item.meta.text || '') + '</span>' +
-                '</div>'
-              ) : '') +
+              getDishMetaHtml(item) +
             '</article>' +
           '</div>' +
           '<div class="lunch-mid-divider" aria-hidden="true">' +
@@ -5890,6 +6089,11 @@ Choose your spread/rillette style:</p>
         });
       }
 
+      subcats = subcats.filter(function(sc) {
+        var s = String(sc || '').trim().toLowerCase();
+        return s && s !== 'no sub-category' && s !== 'unassigned' && s.indexOf('no sub') === -1;
+      });
+
       if (subcats.length === 0) {
         nav.style.display = 'none';
         return;
@@ -5907,9 +6111,13 @@ Choose your spread/rillette style:</p>
           currentCustomFilterSubcat = pill.getAttribute('data-subcat');
           nav.querySelectorAll('.lunch-subcat-pill').forEach(function(p) { p.classList.remove('is-active'); });
           pill.classList.add('is-active');
+          scrollActivePillIntoView(nav);
           renderCustomListFiltered();
         });
       });
+
+      setupHorizontalScrollControls('customSubcatNav', 'customScrollLeft', 'customScrollRight');
+      scrollActivePillIntoView(nav);
     }
 
     function renderCustomListFiltered() {
@@ -5960,7 +6168,6 @@ Choose your spread/rillette style:</p>
           '<div class="lunch-slot-content">' +
             mediaBackdropHtml +
             '<article class="lunch-card">' +
-              (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
               '<div class="lunch-card-head">' +
                 '<div class="lunch-card-title-wrap">' +
                   '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
@@ -5971,12 +6178,7 @@ Choose your spread/rillette style:</p>
                 '</div>' +
               '</div>' +
               (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
-              (hasMeta ? (
-                '<div class="lunch-meta-row">' +
-                  '<span class="meta-pill">' + (item.meta.badge || 'ADD-ONS') + '</span>' +
-                  '<span class="meta-content">' + (item.meta.text || '') + '</span>' +
-                '</div>'
-              ) : '') +
+              getDishMetaHtml(item) +
             '</article>' +
           '</div>' +
           '<div class="lunch-mid-divider" aria-hidden="true">' +
@@ -5998,73 +6200,136 @@ Choose your spread/rillette style:</p>
       }
     }
 
+    function renderAlacarteCoursePills(categories) {
+      var nav = document.getElementById('alacarteCoursePills');
+      if (!nav || !categories) return;
+
+      var html = '';
+      categories.forEach(function(cat) {
+        var key = cat.key || (cat.category ? cat.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') : '');
+        var title = (cat.title || cat.category || key).toUpperCase();
+        var isActive = (currentAlacarteCourseKey === key);
+        html += '<button type="button" class="course-pill ' + (isActive ? 'is-active' : '') + '" data-course="' + key + '">' + title + '</button>';
+      });
+      nav.innerHTML = html;
+
+      nav.querySelectorAll('.course-pill').forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          var key = pill.getAttribute('data-course');
+          selectAlacarteCourse(key);
+        });
+      });
+
+      setupHorizontalScrollControls('alacarteCoursePills', 'alacarteScrollLeft', 'alacarteScrollRight');
+      scrollActivePillIntoView(nav);
+    }
+
     function renderAlacarteList(categories) {
-      if (!categories) return;
-      (categories || []).forEach(function(cat) {
-        var key = cat.key;
-        if (!aLaCarteMeta[key]) return;
-        aLaCarteMeta[key].totalItems = (cat.items || []).length;
-        
+      if (!categories || !categories.length) return;
+
+      // Pass 1: Build or update metadata and compute next course chaining for all categories
+      categories.forEach(function(cat, i) {
+        var key = cat.key || (cat.category ? cat.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'course_' + i);
+        var title = (cat.title || cat.category || key).toUpperCase();
+        var nextCat = (i < categories.length - 1) ? categories[i + 1] : null;
+        var nextKey = nextCat ? (nextCat.key || (nextCat.category ? nextCat.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') : null)) : null;
         var total = (cat.items || []).length;
-        var nextKey = aLaCarteMeta[key].nextKey;
-        var nextLabel = nextKey ? (aLaCarteMeta[nextKey] ? aLaCarteMeta[nextKey].title : '') : '';
-        
+
+        if (!aLaCarteMeta[key]) {
+          aLaCarteMeta[key] = {
+            title: title,
+            watermark: title.length > 10 ? title.substring(0, 10) : title,
+            watermarkFontSize: Math.max(34, Math.min(84, Math.floor(380 / Math.max(4, title.length)))),
+            titleFontSize: Math.max(18, Math.min(36, Math.floor(200 / Math.max(4, title.length)))),
+            letterSpacing: "0.15em",
+            totalItems: total,
+            nextKey: nextKey
+          };
+        } else {
+          aLaCarteMeta[key].title = title;
+          aLaCarteMeta[key].totalItems = total;
+          aLaCarteMeta[key].nextKey = nextKey;
+          if (!aLaCarteMeta[key].watermark) {
+            aLaCarteMeta[key].watermark = title.length > 10 ? title.substring(0, 10) : title;
+          }
+        }
+      });
+
+      // Pass 2: Generate HTML for each course
+      categories.forEach(function(cat, i) {
+        var key = cat.key || (cat.category ? cat.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'course_' + i);
+        var title = (cat.title || cat.category || key).toUpperCase();
+        var items = cat.items || [];
+        var total = items.length;
+        var nextKey = aLaCarteMeta[key] ? aLaCarteMeta[key].nextKey : null;
+        var nextLabel = nextKey ? (aLaCarteMeta[nextKey] ? aLaCarteMeta[nextKey].title : nextKey.toUpperCase()) : '';
+
         var html = '';
-        (cat.items || []).forEach(function(item, idx) {
-          var isVeg = (item.tags || []).indexOf('Vegetarian') !== -1;
-          var cutsHtml = '';
-          if (item.cuts && item.cuts.length) {
-            cutsHtml = '<div class="card-cuts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">' +
-              item.cuts.map(function(c) {
-                return '<div style="font-size:11px;padding:4px 8px;border:1px solid rgba(188,166,133,0.3);border-radius:4px;color:#bca685;">' + c.origin + ' – LKR ' + c.price + '</div>';
-              }).join('') +
-            '</div>';
-          }
-
-          var mediaBackdrop = '';
-          if (item.video) {
-            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-              '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
-              '<div class="lunch-slot-bg-scrim"></div>' +
-            '</div>';
-          } else if (item.image) {
-            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + item.image + '\');"></div>' +
-              '<div class="lunch-slot-bg-scrim"></div>' +
-            '</div>';
-          }
-
-          html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
-            '<div class="lunch-slot-content">' +
-              mediaBackdrop +
-              '<article class="lunch-card">' +
-                (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
-                '<div class="lunch-card-head">' +
-                  '<div class="lunch-card-title-wrap">' +
-                    '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
-                  '</div>' +
-                  '<div class="lunch-price-wrap">' +
-                    (isVeg ? '<span class="badge-v" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
-                    (item.price ? '<span class="lunch-card-price">' + item.price + '</span>' : '') +
-                  '</div>' +
-                '</div>' +
-                (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
-                cutsHtml +
-              '</article>' +
-            '</div>' +
-            '<div class="lunch-mid-divider" aria-hidden="true">' +
-              '<span class="line"></span>' +
-              '<span class="circle"></span>' +
-              '<span class="line"></span>' +
+        if (total === 0) {
+          html = '<section class="lunch-item-slot" data-index="0" aria-label="' + title + '">' +
+            '<div class="lunch-slot-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:260px;text-align:center;padding:2.5rem 1.5rem;color:rgba(255,255,255,0.75);">' +
+              '<div style="font-size:2.2rem;margin-bottom:0.75rem;">🍽️</div>' +
+              '<h4 style="font-family:\'Cinzel\',serif;font-size:1.15rem;letter-spacing:0.12em;margin-bottom:0.4rem;color:#ffffff;">' + title + '</h4>' +
+              '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.8rem;letter-spacing:0.04em;color:rgba(255,255,255,0.5);">Dishes for this course will be added shortly.</p>' +
             '</div>' +
           '</section>';
-        });
+        } else {
+          items.forEach(function(item, idx) {
+            var isVeg = (item.tags || []).indexOf('Vegetarian') !== -1;
+            var cutsHtml = '';
+            if (item.cuts && item.cuts.length) {
+              cutsHtml = '<div class="card-cuts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">' +
+                item.cuts.map(function(c) {
+                  return '<div style="font-size:11px;padding:4px 8px;border:1px solid rgba(188,166,133,0.3);border-radius:4px;color:#bca685;">' + c.origin + ' – LKR ' + c.price + '</div>';
+                }).join('') +
+              '</div>';
+            }
+
+            var mediaBackdrop = '';
+            if (item.video) {
+              mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+                '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+                '<div class="lunch-slot-bg-scrim"></div>' +
+              '</div>';
+            } else if (item.image) {
+              mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+                '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + item.image + '\');"></div>' +
+                '<div class="lunch-slot-bg-scrim"></div>' +
+              '</div>';
+            }
+
+            html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + (item.name || '') + '">' +
+              '<div class="lunch-slot-content">' +
+                mediaBackdrop +
+                '<article class="lunch-card">' +
+                  '<div class="lunch-card-head">' +
+                    '<div class="lunch-card-title-wrap">' +
+                      '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
+                    '</div>' +
+                    '<div class="lunch-price-wrap">' +
+                      (isVeg ? '<span class="badge-v" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
+                      (item.price ? '<span class="lunch-card-price">' + item.price + '</span>' : '') +
+                    '</div>' +
+                  '</div>' +
+                  (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
+                  getDishMetaHtml(item) +
+                  cutsHtml +
+                '</article>' +
+              '</div>' +
+              '<div class="lunch-mid-divider" aria-hidden="true">' +
+                '<span class="line"></span>' +
+                '<span class="circle"></span>' +
+                '<span class="line"></span>' +
+              '</div>' +
+            '</section>';
+          });
+        }
 
         if (nextKey) {
-          html += '<section class="lunch-item-slot" data-index="' + total + '" aria-label="Next Course">' +
+          html += '<section class="lunch-item-slot" data-index="' + (total || 1) + '" aria-label="Next Course">' +
             '<div class="lunch-slot-content" style="display:flex;align-items:center;justify-content:center;">' +
               '<button type="button" class="btn-next-course" data-next-course="' + nextKey + '" style="background:none;border:1px solid #bca685;color:#bca685;padding:12px 24px;border-radius:24px;font-family:Montserrat,sans-serif;font-size:12px;letter-spacing:0.1em;cursor:pointer;">' +
-                'EXPLORE ' + nextLabel + ' →' +
+                'EXPLORE ' + (nextLabel || nextKey.toUpperCase()) + ' →' +
               '</button>' +
             '</div>' +
           '</section>';
@@ -6073,7 +6338,19 @@ Choose your spread/rillette style:</p>
         aLaCarteCoursesHtml[key] = html;
       });
 
+      // Pass 3: Dynamically render navigation pills
+      renderAlacarteCoursePills(categories);
+
+      // Pass 4: Ensure active course is valid and sync scroll/view
+      if (!currentAlacarteCourseKey || !aLaCarteCoursesHtml[currentAlacarteCourseKey]) {
+        currentAlacarteCourseKey = categories[0] ? (categories[0].key || 'appetisers') : 'appetisers';
+      }
+
       if (currentAlacarteCourseKey && aLaCarteCoursesHtml[currentAlacarteCourseKey] && alacarteVerticalScroll) {
+        var meta = aLaCarteMeta[currentAlacarteCourseKey];
+        if (meta) {
+          maxAlacarteIndex = Math.max(0, meta.totalItems - visibleAlacarteItems + (meta.nextKey ? 1 : 0));
+        }
         var savedScrollTop = alacarteVerticalScroll.scrollTop;
         var savedIdx = currentAlacarteItemIndex || 0;
         alacarteVerticalScroll.innerHTML = aLaCarteCoursesHtml[currentAlacarteCourseKey];
@@ -6110,7 +6387,6 @@ Choose your spread/rillette style:</p>
             '<div class="lunch-slot-content">' +
               mediaBackdrop +
               '<article class="lunch-card">' +
-                (item.subCategory ? '<span class="lunch-card-subcat">' + item.subCategory + '</span>' : '') +
                 '<div class="lunch-card-head">' +
                   '<div class="lunch-card-title-wrap">' +
                     '<h3 class="lunch-card-title">' + (item.name || '') + '</h3>' +
@@ -6121,6 +6397,7 @@ Choose your spread/rillette style:</p>
                   '</div>' +
                 '</div>' +
                 (item.desc ? '<p class="lunch-card-desc">' + item.desc + '</p>' : '') +
+                getDishMetaHtml(item) +
               '</article>' +
             '</div>' +
             '<div class="lunch-mid-divider" aria-hidden="true">' +
@@ -6216,6 +6493,60 @@ Choose your spread/rillette style:</p>
           return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
         });
       }
+      // Sanitize any stray "No Sub-Category" or unassigned values from incoming data
+      function cleanSubcats(arr) {
+        if (!arr || !Array.isArray(arr)) return;
+        arr.forEach(function(item) {
+          if (item && item.subCategory) {
+            var sc = String(item.subCategory).trim().toLowerCase();
+            if (sc === 'no sub-category' || sc === 'unassigned' || sc.indexOf('no sub') !== -1) {
+              item.subCategory = '';
+            }
+          }
+        });
+      }
+      if (data.lunchItems) cleanSubcats(data.lunchItems);
+      if (data.aLaCarte) {
+        data.aLaCarte.forEach(function(cat) { if (cat && cat.items) cleanSubcats(cat.items); });
+      }
+      if (data.theGardenAndBar && Array.isArray(data.theGardenAndBar)) {
+        var hasLegacyBar = data.theGardenAndBar.some(function(c) {
+          return c.key === 'the-garden' || c.key === 'the-bar-bites' || c.category === 'The Garden' || c.category === 'The Bar Bites';
+        });
+        if (hasLegacyBar) {
+          var mergedBarItems = [];
+          data.theGardenAndBar.forEach(function(c) {
+            (c.items || []).forEach(function(it) {
+              if (it.subCategory === 'The Garden' || it.subCategory === 'The Bar Bites') it.subCategory = '';
+              mergedBarItems.push(it);
+            });
+          });
+          data.theGardenAndBar = [{ category: 'The Bar', key: 'the-bar', subtitle: 'Daily | 06:00 PM – 10:30 PM', items: mergedBarItems }];
+        }
+        data.theGardenAndBar.forEach(function(cat) { if (cat && cat.items) cleanSubcats(cat.items); });
+      }
+      if (data.subCategories && data.subCategories.thebar) {
+        data.subCategories.thebar = data.subCategories.thebar.filter(function(sc) {
+          return sc !== 'The Garden' && sc !== 'The Bar Bites';
+        });
+      }
+      if (data.menuCategories) {
+        data.menuCategories.forEach(function(cat) { if (cat && cat.items) cleanSubcats(cat.items); });
+      }
+      if (data.customCategories) {
+        data.customCategories.forEach(function(cat) { if (cat && cat.items) cleanSubcats(cat.items); });
+      }
+      if (data.subCategories) {
+        Object.keys(data.subCategories).forEach(function(k) {
+          if (Array.isArray(data.subCategories[k])) {
+            data.subCategories[k] = data.subCategories[k].filter(function(sc) {
+              var s = String(sc || '').trim().toLowerCase();
+              return s && s !== 'no sub-category' && s !== 'unassigned' && s.indexOf('no sub') === -1;
+            });
+          }
+        });
+      }
+
       window.belleCurrentData = data;
       if (data.events) renderEventsList(data.events);
       if (data.menuCategories) {
@@ -6291,16 +6622,30 @@ Choose your spread/rillette style:</p>
         });
     }
 
-    // Initial background sync check on load
-    syncFromFirebaseCloud();
+    // Only run automatic background cloud polling if NOT embedded inside Admin Studio iframe!
+    var isInsideAdminIframe = false;
+    try {
+      if (window.location.search && window.location.search.indexOf('preview=1') !== -1) {
+        isInsideAdminIframe = true;
+      } else {
+        isInsideAdminIframe = (window.self !== window.top);
+      }
+    } catch(e) {
+      isInsideAdminIframe = true;
+    }
 
-    // Background sync check every 30s (non-intrusive, checks for changes without resetting scroll)
-    setInterval(syncFromFirebaseCloud, 30000);
+    if (!isInsideAdminIframe) {
+      // Initial background sync check on load for guests
+      syncFromFirebaseCloud();
 
-    // Also re-check when user returns to this browser tab
-    window.addEventListener('visibilitychange', function() {
-      if (!document.hidden) syncFromFirebaseCloud();
-    });
+      // Background sync check every 30s for live customer visitors
+      setInterval(syncFromFirebaseCloud, 30000);
+
+      // Also re-check when user returns to this browser tab
+      window.addEventListener('visibilitychange', function() {
+        if (!document.hidden) syncFromFirebaseCloud();
+      });
+    }
 
     // Listen to iframe postMessage from Admin Studio
     window.addEventListener('message', function(ev) {
@@ -6318,7 +6663,8 @@ Choose your spread/rillette style:</p>
           openPanel(target);
         }
       } else if (ev.data.type === 'BELLE_RELOAD') {
-        window.location.reload();
+        applyBelleData(window.belleCurrentData || window.BELLE_DEFAULT_DATA, true);
+        returnToHome();
       }
     });
 

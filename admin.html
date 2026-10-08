@@ -704,7 +704,25 @@
       gap: 6px;
       margin-bottom: 16px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      overflow-y: hidden;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--lime-primary) var(--bg-card);
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+    .sub-filter-pills::-webkit-scrollbar {
+      height: 4px;
+    }
+    .sub-filter-pills::-webkit-scrollbar-track {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+    }
+    .sub-filter-pills::-webkit-scrollbar-thumb {
+      background: var(--lime-primary);
+    }
+    .sub-filter-pills::-webkit-scrollbar-thumb:hover {
+      background: #c8e984;
     }
     .sub-pill-btn {
       background: var(--bg-card);
@@ -720,6 +738,8 @@
       cursor: pointer;
       box-shadow: 2px 2px 0px #0a0c08;
       transition: all 0.15s;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .sub-pill-btn:hover {
       color: var(--lime-primary);
@@ -1084,6 +1104,20 @@
       border-color: var(--lime-primary);
       box-shadow: 0 0 0 1px var(--lime-primary);
     }
+    .form-group input[type="date"] {
+      color-scheme: dark;
+      cursor: pointer;
+    }
+    .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      filter: invert(0.7) sepia(0.4) saturate(2) hue-rotate(5deg);
+      opacity: 0.85;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
     .form-group textarea {
       resize: vertical;
       min-height: 60px;
@@ -1145,7 +1179,7 @@
 
     .billboard-container {
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
       background: #161a13;
       border: 1.5px solid var(--border-hard);
       box-shadow: 8px 8px 0px #080a06;
@@ -1208,11 +1242,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 14px;
+      padding: 8px 12px;
       background: #131710;
       border-bottom: 1.5px solid var(--border-subtle);
-      gap: 10px;
+      gap: 8px;
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
     .device-pills {
@@ -1243,6 +1278,32 @@
       color: #141712;
     }
 
+    .scale-pills {
+      display: inline-flex;
+      background: #0d100a;
+      padding: 2px;
+      border: 1px solid var(--border-subtle);
+      gap: 2px;
+    }
+    .scale-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 3px 6px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .scale-pill-btn:hover {
+      color: var(--text-cream);
+    }
+    .scale-pill-btn.is-active {
+      background: var(--gold-primary, #bca685);
+      color: #141712;
+    }
+
     .preview-tool-btns {
       display: flex;
       gap: 6px;
@@ -1257,51 +1318,83 @@
       padding: 20px 14px;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       border-bottom: 1.5px solid var(--border-subtle);
       position: relative;
       overflow: hidden;
+      min-height: 520px;
     }
 
-    /* Phone Simulator Frame */
+    /* Scale Wrapper & Phone Simulator Frame */
+    .phone-scale-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0 auto;
+      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
     .phone-simulator-frame {
-      width: 380px;
-      height: 740px;
-      max-height: calc(100vh - var(--header-height) - 160px);
+      box-sizing: content-box;
+      width: 393px;
+      height: 852px;
       background: #000;
-      border-radius: 44px;
-      border: 9px solid #1c2219;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+      border-radius: 48px;
+      border: 11px solid #1c2219;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
       position: relative;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       transform-origin: top center;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.25s ease;
+      flex-shrink: 0;
     }
 
     .phone-dynamic-island {
       position: absolute;
-      top: 10px;
+      top: 11px;
       left: 50%;
       transform: translateX(-50%);
-      width: 88px;
-      height: 20px;
+      width: 96px;
+      height: 24px;
       background: #000;
-      border-radius: 12px;
+      border-radius: 14px;
       z-index: 50;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding-right: 8px;
+      padding-right: 9px;
       pointer-events: none;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+      transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease;
     }
-    .island-camera-lens {
+
+    .phone-simulator-frame[data-device="iphonese"] .phone-dynamic-island {
+      display: none;
+    }
+
+    .phone-simulator-frame[data-device="galaxys24"] .phone-dynamic-island {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      padding: 0;
+      justify-content: center;
+      top: 10px;
+    }
+    .phone-simulator-frame[data-device="galaxys24"] .island-camera-lens {
       width: 6px;
       height: 6px;
+    }
+
+    .island-camera-lens {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: #0a0a14;
-      border: 1px solid #1a1a2e;
+      background: #080a10;
+      border: 1px solid #1a2230;
+      box-shadow: inset 0 0 2px #000;
     }
 
     .phone-iframe {
@@ -1309,6 +1402,7 @@
       height: 100%;
       border: none;
       background: #000;
+      display: block;
       flex: 1;
     }
 
@@ -1458,12 +1552,7 @@
       box-shadow: 0 0 0 2px rgba(181, 212, 113, 0.35);
       outline: none;
     }
-    .context-dish-editor .dish-media-studio-box {
-      background: #131a10;
-      border: 1.5px solid #38462f;
-      border-radius: 6px;
-      padding: 14px 16px;
-    }
+    /* .dish-media-studio-box is styled in detail in the dedicated Media Studio section below */
     .context-editor-actions {
       display: flex;
       align-items: center;
@@ -1688,63 +1777,249 @@
       transition: width 0.4s ease;
     }
 
-    /* Dish Media Studio Box */
-    .dish-media-studio-box {
-      background: var(--bg-card);
-      border: 1.5px solid var(--border-subtle);
-      border-radius: 0px;
-      padding: 14px 16px;
+    /* Dish Media Studio Box (Luxury Media Backdrop Studio) */
+    .dish-media-studio-box,
+    .context-dish-editor .dish-media-studio-box {
+      background: linear-gradient(180deg, #131a10 0%, #0c100a 100%);
+      border: 1.5px solid #2d3b24;
+      border-radius: 8px;
+      padding: 16px 18px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      box-shadow: var(--shadow-card);
+      gap: 13px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      position: relative;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .dish-media-studio-box:hover,
+    .context-dish-editor .dish-media-studio-box:hover {
+      border-color: #3f5233;
     }
     .dish-media-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
       flex-wrap: wrap;
     }
-    .media-type-pills {
+    .dish-media-title-group {
       display: flex;
-      background: var(--bg-input);
-      border: 1.5px solid var(--border-subtle);
-      border-radius: 0px;
-      padding: 2px;
-      gap: 2px;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .dish-media-icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      background: rgba(188, 166, 133, 0.12);
+      border: 1px solid rgba(188, 166, 133, 0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-light);
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .dish-media-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+      display: block;
+    }
+    .dish-media-subtitle {
+      font-size: 11px;
+      color: #88997c;
+      margin: 2px 0 0 0;
+      font-weight: 400;
+      line-height: 1.3;
+    }
+    .media-type-pills {
+      display: inline-flex;
+      background: #070a05;
+      border: 1.5px solid #283720;
+      border-radius: 20px;
+      padding: 3px;
+      gap: 3px;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.55);
     }
     .media-pill-btn {
-      background: none;
+      background: transparent;
       border: none;
-      color: var(--text-muted);
-      padding: 4px 10px;
-      border-radius: 0px;
+      color: #7f8f74;
+      padding: 5px 12px;
+      border-radius: 14px;
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.05em;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      outline: none;
+      user-select: none;
+    }
+    .media-pill-btn:hover {
+      color: #e5ecd6;
+      background: rgba(255, 255, 255, 0.05);
     }
     .media-pill-btn.is-active {
-      background: var(--lime-primary);
-      color: #141712;
+      background: var(--lime-primary, #b5d471);
+      color: #0c100a;
+      box-shadow: 0 2px 8px rgba(181, 212, 113, 0.35);
+    }
+    .media-pill-btn#btnMtypeVideo.is-active {
+      background: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+    }
+    .media-pill-btn#btnMtypeNone.is-active {
+      background: #252f20;
+      color: #e5ecd6;
+      box-shadow: none;
     }
     .media-control-panel {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      animation: fadeIn 0.2s ease;
+    }
+    .media-control-panel select,
+    .media-select-field {
+      width: 100%;
+      flex: 1;
+      min-width: 0;
+      background-color: #080c05 !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23bca685' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 12px center !important;
+      border: 1.5px solid #2d3b24 !important;
+      border-radius: 6px !important;
+      color: #f1f5ee !important;
+      font-family: var(--font-sans);
+      font-size: 12px !important;
+      font-weight: 500;
+      padding: 9px 34px 9px 12px !important;
+      outline: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+    .media-control-panel select:hover,
+    .media-select-field:hover {
+      border-color: #435737 !important;
+      background-color: #0b1107 !important;
+    }
+    .media-control-panel select:focus,
+    .media-select-field:focus {
+      border-color: var(--lime-primary) !important;
+      background-color: #0d1409 !important;
+      box-shadow: 0 0 0 2px rgba(181, 212, 113, 0.25) !important;
+    }
+    .media-control-panel select option {
+      background: #11170d;
+      color: #f1f5ee;
+      padding: 8px 12px;
+    }
+    .btn-media-upload {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(180deg, #1e2817 0%, #131b0e 100%);
+      border: 1.5px solid #3c4f30;
+      color: var(--gold-light, #d4c3a3);
+      padding: 9px 15px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      user-select: none;
+    }
+    .btn-media-upload:hover {
+      background: linear-gradient(180deg, #26341d 0%, #192313 100%);
+      border-color: var(--gold-light, #d4c3a3);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    .btn-media-upload:active {
+      transform: translateY(0);
+    }
+    .media-url-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .media-url-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7d60;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+    .media-control-panel input[type="text"],
+    .media-url-input {
+      width: 100% !important;
+      background: #080c05 !important;
+      border: 1.5px solid #2d3b24 !important;
+      border-radius: 6px !important;
+      color: #ffffff !important;
+      font-family: var(--font-mono) !important;
+      font-size: 11px !important;
+      padding: 9px 12px 9px 34px !important;
+      outline: none !important;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .media-control-panel input[type="text"]:hover,
+    .media-url-input:hover {
+      border-color: #435737 !important;
+      background: #0b1107 !important;
+    }
+    .media-control-panel input[type="text"]:focus,
+    .media-url-input:focus {
+      border-color: var(--lime-primary) !important;
+      background: #0d1409 !important;
+      box-shadow: 0 0 0 2px rgba(181, 212, 113, 0.25) !important;
+    }
+    .media-control-panel input[type="text"]::placeholder,
+    .media-url-input::placeholder {
+      color: #55664d !important;
+      font-family: var(--font-sans) !important;
+      font-size: 11px !important;
+      font-style: italic;
     }
     .media-live-preview-box {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 10px 12px;
-      background: #11140f;
-      border: 1.5px solid var(--border-hard);
-      border-radius: 0px;
+      gap: 14px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #0e140a 0%, #060904 100%);
+      border: 1.5px solid #283720;
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 12px rgba(0, 0, 0, 0.3);
+      margin-top: 3px;
     }
     .media-preview-inner {
       display: flex;
@@ -1755,31 +2030,73 @@
     }
     .media-preview-inner img,
     .media-preview-inner video {
-      width: 74px;
-      height: 52px;
+      width: 72px;
+      height: 48px;
       object-fit: cover;
-      border-radius: 0px;
-      border: 1.5px solid var(--border-hard);
+      border-radius: 5px;
+      border: 1.5px solid #3c4f30;
       background: #000;
       flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     }
     .media-preview-meta {
       display: flex;
       flex-direction: column;
       gap: 3px;
+      min-width: 0;
     }
     .media-type-tag {
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.1em;
-      color: var(--lime-primary);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      color: var(--gold-light, #d4c3a3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .media-type-tag::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 6px currentColor;
     }
     .media-size-tag {
       font-family: var(--font-mono);
       font-size: 10px;
-      color: var(--text-dim);
+      color: #7b8e70;
+    }
+    .btn-remove-media {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(220, 38, 38, 0.12);
+      border: 1px solid rgba(220, 38, 38, 0.35);
+      color: #f87171;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .btn-remove-media:hover {
+      background: rgba(220, 38, 38, 0.25);
+      border-color: #ef4444;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+    }
+    .btn-remove-media:active {
+      transform: translateY(0);
     }
 
     /* Subcategory Management Modal Items */
@@ -2224,23 +2541,56 @@
                 <textarea id="itemDescInput" rows="3" placeholder="Ingredients and tasting notes..."></textarea>
               </div>
 
-              <!-- Add-ons / Meta for Lunch -->
-              <div class="form-group" id="groupItemMeta">
-                <label>Add-ons / Sides (e.g. Crispy Spiced Chicken (LKR 420))</label>
-                <input type="text" id="itemMetaInput" placeholder="Crispy Spiced Chicken (LKR 420) · Seared Prawns (LKR 550)">
+              <!-- Add-ons, Sides & Dish Facts Module -->
+              <div class="form-group" id="groupItemMeta" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:14px;margin-top:6px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+                  <div>
+                    <label style="margin:0;font-size:11px;font-weight:700;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:6px;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      Add-ons, Sides &amp; Dish Facts
+                    </label>
+                    <p style="font-size:11px;color:var(--text-dim);margin:3px 0 0 0;">
+                      Tick check marks to enable options, or create custom facts &amp; notes for this dish.
+                    </p>
+                  </div>
+                  <button type="button" class="btn-secondary" id="btnAddCustomMetaOption" style="padding:5px 12px;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700;display:inline-flex;align-items:center;gap:5px;cursor:pointer;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>+ Add Custom Option</span>
+                  </button>
+                </div>
+
+                <!-- Hidden fallback input for legacy compatibility -->
+                <input type="hidden" id="itemMetaInput" value="">
+
+                <!-- Container where option rows are rendered dynamically -->
+                <div id="metaOptionsContainer" style="display:flex;flex-direction:column;gap:10px;margin-top:10px;"></div>
               </div>
 
               <!-- Dish Media Backdrop Studio (Photos & Videos) -->
               <div class="dish-media-studio-box">
                 <div class="dish-media-header">
-                  <div>
-                    <label style="font-size:11px;font-weight:700;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.08em;">Dish Backdrop Media (Photo &amp; Video)</label>
-                    <p style="font-size:10px;color:var(--text-dim);margin-top:2px;">Attach a high-resolution photo or looping ambient video behind this dish.</p>
+                  <div class="dish-media-title-group">
+                    <div class="dish-media-icon-badge">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                      </svg>
+                    </div>
+                    <div>
+                      <label class="dish-media-title">Dish Backdrop Media (Photo &amp; Video)</label>
+                      <p class="dish-media-subtitle">Attach a high-resolution photo or looping ambient video behind this dish.</p>
+                    </div>
                   </div>
                   <!-- Media Type Switcher -->
                   <div class="media-type-pills">
-                    <button type="button" class="media-pill-btn is-active" id="btnMtypePhoto" data-mtype="photo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> <span>Photo</span></button>
-                    <button type="button" class="media-pill-btn" id="btnMtypeVideo" data-mtype="video"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg> <span>Video</span></button>
+                    <button type="button" class="media-pill-btn is-active" id="btnMtypePhoto" data-mtype="photo">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                      <span>Photo</span>
+                    </button>
+                    <button type="button" class="media-pill-btn" id="btnMtypeVideo" data-mtype="video">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                      <span>Video</span>
+                    </button>
                     <button type="button" class="media-pill-btn" id="btnMtypeNone" data-mtype="none">None</button>
                   </div>
                 </div>
@@ -2248,7 +2598,7 @@
                 <!-- Photo Controls -->
                 <div id="mediaPhotoControls" class="media-control-panel">
                   <div style="display:flex;gap:10px;align-items:center;">
-                    <select id="itemPresetImgSelect" style="flex:1;">
+                    <select id="itemPresetImgSelect" class="media-select-field">
                       <option value="">-- Choose Existing Photo Preset --</option>
                       <option value="assets/images/chef_plating.webp">Preset: Chef Plating (Soup / Entree)</option>
                       <option value="assets/images/artisan_salad.webp">Preset: Artisan Salad</option>
@@ -2261,30 +2611,38 @@
                       <option value="assets/images/bg/slide_luxury_dessert.webp">Preset: Luxury Dessert</option>
                       <option value="assets/images/bg/slide_bar_counter.webp">Preset: Bar Counter Ambience</option>
                     </select>
-                    <label class="btn-secondary" style="margin:0;cursor:pointer;" title="Upload custom photo from computer or phone">
+                    <label class="btn-media-upload" title="Upload custom photo from computer or phone">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                       <span>Upload Photo</span>
                       <input type="file" id="itemCustomImgFile" accept="image/*" style="display:none;">
                     </label>
                   </div>
-                  <div style="margin-top:4px;">
-                    <input type="text" id="itemCustomImgUrl" placeholder="Or enter image URL / path (e.g. assets/images/...)" style="font-size:11px;">
+                  <div class="media-url-wrap">
+                    <span class="media-url-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    </span>
+                    <input type="text" id="itemCustomImgUrl" class="media-url-input" placeholder="Or enter image URL / path (e.g. assets/images/...)">
                   </div>
                 </div>
 
                 <!-- Video Controls -->
                 <div id="mediaVideoControls" class="media-control-panel" style="display:none;">
                   <div style="display:flex;gap:10px;align-items:center;">
-                    <select id="itemPresetVideoSelect" style="flex:1;">
+                    <select id="itemPresetVideoSelect" class="media-select-field">
                       <option value="">-- Choose Existing Video Preset --</option>
                       <option value="assets/video/bg_hero_landscape.mp4">Preset: Hero Restaurant Ambience (MP4)</option>
                     </select>
-                    <label class="btn-secondary" style="margin:0;cursor:pointer;" title="Upload short looping MP4/WebM video">
+                    <label class="btn-media-upload" title="Upload short looping MP4/WebM video">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                       <span>Upload Video</span>
                       <input type="file" id="itemCustomVideoFile" accept="video/mp4,video/webm" style="display:none;">
                     </label>
                   </div>
-                  <div style="margin-top:4px;">
-                    <input type="text" id="itemCustomVideoUrl" placeholder="Or enter video URL / path (e.g. assets/video/...)" style="font-size:11px;">
+                  <div class="media-url-wrap">
+                    <span class="media-url-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    </span>
+                    <input type="text" id="itemCustomVideoUrl" class="media-url-input" placeholder="Or enter video URL / path (e.g. assets/video/...)">
                   </div>
                 </div>
 
@@ -2298,7 +2656,10 @@
                       <span class="media-size-tag" id="itemMediaSizeTag">0 KB</span>
                     </div>
                   </div>
-                  <button type="button" class="btn-icon btn-delete" id="btnClearDishMedia" title="Remove backdrop media" style="font-size:11px;padding:4px 8px;width:auto;height:auto;display:inline-flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Remove</button>
+                  <button type="button" class="btn-remove-media" id="btnClearDishMedia" title="Remove backdrop media">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>Remove</span>
+                  </button>
                 </div>
               </div>
 
@@ -2369,8 +2730,8 @@
             <div class="category-workspace-panel" id="catWorkspace-thebar" style="display:none;">
               <div class="content-subheader" style="margin-bottom:14px;">
                 <div class="subheader-title-group">
-                  <h3 id="barCatTitle" style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">THE BAR &amp; BITES</h3>
-                  <p id="barCatSubtitle">Spirits, botanical garden cocktails, craft infusions, and small culinary plates.</p>
+                  <h3 id="barCatTitle" style="font-size:15px;color:var(--gold-light);letter-spacing:0.08em;">THE BAR</h3>
+                  <p id="barCatSubtitle">Spirits, craft infusions, cocktails, and curated bar dishes.</p>
                 </div>
                 <div class="subheader-actions">
                   <button type="button" class="btn-secondary" id="btnEditBarCatMeta" title="Edit Category Settings (Rename, Tagline, Icon)">
@@ -2644,9 +3005,18 @@
           <!-- Toolbar above phone -->
           <div class="preview-toolbar">
             <div class="device-pills">
-              <button type="button" class="device-pill-btn is-active" data-width="393" data-height="844">IPHONE 15 PRO</button>
-              <button type="button" class="device-pill-btn" data-width="375" data-height="667">IPHONE SE</button>
-              <button type="button" class="device-pill-btn" data-width="412" data-height="860">GALAXY S24</button>
+              <button type="button" class="device-pill-btn is-active" data-device="iphone15" data-width="393" data-height="852" data-radius="48">IPHONE 15 PRO</button>
+              <button type="button" class="device-pill-btn" data-device="iphonese" data-width="375" data-height="667" data-radius="36">IPHONE SE</button>
+              <button type="button" class="device-pill-btn" data-device="galaxys24" data-width="412" data-height="915" data-radius="40">GALAXY S24</button>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:5px;">
+              <span style="font-size:9px;font-family:var(--font-mono);color:var(--text-dim);letter-spacing:0.06em;font-weight:700;">SCALE:</span>
+              <div class="scale-pills">
+                <button type="button" class="scale-pill-btn is-active" data-scale="fit" title="Fit to screen height with 100% true proportions">FIT</button>
+                <button type="button" class="scale-pill-btn" data-scale="0.85" title="Scale to 85%">85%</button>
+                <button type="button" class="scale-pill-btn" data-scale="1" title="100% Native size">100%</button>
+              </div>
             </div>
 
             <div class="preview-tool-btns">
@@ -2661,11 +3031,13 @@
 
           <!-- Subway Tile Wall Simulator -->
           <div class="subway-tile-wall">
-            <div class="phone-simulator-frame" id="phoneChassis">
-              <div class="phone-dynamic-island" aria-hidden="true">
-                <div class="island-camera-lens"></div>
+            <div class="phone-scale-wrapper" id="phoneScaleWrapper">
+              <div class="phone-simulator-frame" id="phoneChassis" data-device="iphone15" data-screen-w="393" data-screen-h="852">
+                <div class="phone-dynamic-island" aria-hidden="true">
+                  <div class="island-camera-lens"></div>
+                </div>
+                <iframe id="livePreviewFrame" class="phone-iframe" src="index.html?preview=1" title="Belle Colombo Live Application Preview"></iframe>
               </div>
-              <iframe id="livePreviewFrame" class="phone-iframe" src="index.html" title="Belle Colombo Live Application Preview"></iframe>
             </div>
           </div>
 
@@ -2744,6 +3116,18 @@
             <label>Category Badge Text</label>
             <input type="text" id="eventCatLabelInput" placeholder="DINING">
           </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;background:rgba(255,255,255,0.02);padding:10px 12px;border:1px solid rgba(255,255,255,0.07);border-radius:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <label style="margin-bottom:0;display:flex;align-items:center;gap:6px;font-weight:600;color:var(--gold-light);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span>Event Date (Calendar Picker)</span>
+            </label>
+            <span style="font-size:9.5px;color:var(--lime-primary);font-family:var(--font-mono);letter-spacing:0.5px;background:rgba(181,212,113,0.12);padding:2px 7px;border-radius:4px;border:1px solid rgba(181,212,113,0.25);">✨ AUTO-FILLS DAY, DOW &amp; MONTH</span>
+          </div>
+          <input type="date" id="eventDatePickerInput" style="width:100%;font-size:12px;padding:9px 12px;background:#181c15;border:1px solid var(--border-subtle);border-radius:6px;color:#fff;cursor:pointer;">
+          <div style="font-size:10.5px;color:var(--text-dim);margin-top:5px;line-height:1.4;">Pick any date from the calendar. Day, Day of Week, and Month below will auto-populate instantly, or you can adjust them manually.</div>
         </div>
 
         <div class="form-row-3">
@@ -3004,43 +3388,19 @@
 
   <!-- Menu Category Management Modal -->
   <div class="modal-overlay" id="menuCategoryModal">
-    <div class="modal-box" style="max-width: 520px;">
+    <div class="modal-box" style="max-width: 440px;">
       <div class="modal-head">
         <h3 id="menuCategoryModalTitle">CREATE MENU CATEGORY</h3>
         <button type="button" class="btn-icon" id="btnCloseMenuCategoryModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
       </div>
-      <p style="font-size:11px;color:var(--text-muted);">Add or edit a primary dining category (e.g. Breakfast, Desserts, Sunday Brunch, Beverages).</p>
+      <p style="font-size:11px;color:var(--text-muted);">Enter the dining category name.</p>
 
       <form id="menuCategoryForm" style="display:flex;flex-direction:column;gap:14px;margin-top:10px;">
         <input type="hidden" id="editMenuCatId" value="">
 
-        <div class="form-row-2">
-          <div class="form-group" style="flex:2;">
-            <label>Category Display Name *</label>
-            <input type="text" id="menuCatNameInput" placeholder="e.g. Breakfast & Brunch" required>
-          </div>
-          <div class="form-group" style="flex:1;">
-            <label>Category Icon</label>
-            <select id="menuCatIconInput" style="height:36px;font-family:var(--font-mono);font-size:11px;">
-     <option value="lunch">Salad / Fresh</option>
-     <option value="alacarte" selected>Gourmet Cloche</option>
-     <option value="thebar">Bar / Spirits</option>
-     <option value="tasting">Wine Pairing</option>
-     <option value="coffee">Coffee / Breakfast</option>
-     <option value="dessert">Desserts</option>
-   </select>
-          </div>
-        </div>
-
         <div class="form-group">
-          <label>Subtitle / Tagline</label>
-          <input type="text" id="menuCatSubtitleInput" placeholder="e.g. Morning Delights & Artisan Coffee">
-        </div>
-
-        <div class="form-group">
-          <label>Initial Sub-Categories (comma-separated)</label>
-          <input type="text" id="menuCatSubcatsInput" placeholder="e.g. Artisan Pastries, Egg Dishes, Fresh Juices">
-          <span style="font-size:10px;color:var(--text-dim);margin-top:3px;display:block;">You can add, edit, or delete more sub-categories at any time.</span>
+          <label>Category Display Name *</label>
+          <input type="text" id="menuCatNameInput" placeholder="e.g. Breakfast & Brunch" required autocomplete="off">
         </div>
 
         <div class="modal-footer" style="margin-top:8px;">
@@ -3080,6 +3440,17 @@
 
     function getVegBadgeHtml() {
       return '<span class="subcat-badge badge-veg"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7Z"></path><path d="M11 20v-8"></path></svg> VEGETARIAN</span>';
+    }
+
+    function getAdminDishMetaBadge(item) {
+      if (!item) return '';
+      if (item.metaList && Array.isArray(item.metaList) && item.metaList.length > 0) {
+        return '<span>•</span><span style="color:var(--gold-primary);font-size:10px;font-weight:700;">' + item.metaList.map(function(m){ return m.badge; }).join(' & ') + '</span>';
+      }
+      if (item.meta && item.meta.badge) {
+        return '<span>•</span><span style="color:var(--gold-primary);font-size:10px;font-weight:700;">' + item.meta.badge + '</span>';
+      }
+      return '';
     }
 
     /* ========================================================
@@ -3254,8 +3625,13 @@
         appData.subCategories = {
           lunch: ["Soups & Starters", "Artisan Salads", "Sharing Platters", "Burgers & Sandwiches"],
           alacarte: ["Appetisers", "Entrées", "Mains", "From The Grill", "Desserts"],
-          thebar: ["The Garden", "The Bar Bites"]
+          thebar: []
         };
+      } else {
+        if (!appData.subCategories.thebar) appData.subCategories.thebar = [];
+        appData.subCategories.thebar = appData.subCategories.thebar.filter(function(sc) {
+          return sc !== 'The Garden' && sc !== 'The Bar Bites';
+        });
       }
       (appData.lunchItems || []).forEach(function(it) {
         if (it.subCategory && appData.subCategories.lunch.indexOf(it.subCategory) === -1) {
@@ -3503,11 +3879,7 @@
             '</div>' +
           '</div>';
         } else if (activeSubcatDeleteConfirmIndex === idx) {
-          // Inline Delete Confirmation Mode (Explaining dishes move to temporary folder if other subcats exist)
-          var otherSubcats = subcats.filter(function(x) { return x !== sc; });
-          var msg = (otherSubcats.length > 0 && count > 0)
-            ? ' (' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' will move to temporary "No Sub-Category" folder)'
-            : (count > 0 ? ' (' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' unlinked)' : '');
+          var msg = (count > 0 ? ' (' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' will become unassigned)' : '');
 
           html += '<div class="subcat-manage-item" style="border-color:#ef4444;background:rgba(239,68,68,0.08);padding:8px 12px;">' +
             '<div style="font-family:var(--font-mono);font-size:11px;color:#fca5a5;">' +
@@ -3537,26 +3909,6 @@
           '</div>';
         }
       });
-
-      // Temporary holding folder box inside modal if unassigned dishes exist and we have other subcategories
-      if (subcats.length > 0 && unassignedDishes.length > 0) {
-        var opts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
-        html += '<div class="subcat-temporary-notice" style="margin-top:12px;background:rgba(245,158,11,0.08);border:1.5px dashed #f59e0b;padding:10px 14px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<span style="font-size:16px;">📁</span>' +
-            '<div>' +
-              '<div style="font-size:11px;font-weight:700;color:#fbbf24;">TEMPORARY FOLDER: NO SUB-CATEGORY</div>' +
-              '<div style="font-size:10px;color:var(--text-muted);">' + unassignedDishes.length + ' ' + (unassignedDishes.length === 1 ? 'dish' : 'dishes') + ' awaiting sub-category assignment</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:6px;">' +
-            '<select class="input-field subcat-modal-move-select" style="height:28px;font-size:10px;padding:2px 8px;background:#141712;border:1px solid #f59e0b;color:#fff;">' +
-              '<option value="">Move all to...</option>' + opts +
-            '</select>' +
-            '<button type="button" class="btn-publish btn-subcat-modal-move-apply" style="padding:4px 10px;font-size:10px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;">Move All</button>' +
-          '</div>' +
-        '</div>';
-      }
 
       listEl.innerHTML = html;
 
@@ -3708,7 +4060,15 @@
       activeSubcatDeleteConfirmIndex = null;
       renderSubcatManageList();
       if (sectionKey === 'lunch') renderLunchTab();
-      else if (sectionKey === 'alacarte') { renderAlacarteCoursePills(); renderAlacarteTab(); }
+      else if (sectionKey === 'alacarte') {
+        var aKey = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        if (appData.aLaCarte && appData.aLaCarte.some(function(c) { return c.key === aKey; })) {
+          currentAlacarteKey = aKey;
+        }
+        renderAlacarteCoursePills();
+        renderAlacarteTab();
+        navigatePreview(currentAlacarteKey);
+      }
       else if (sectionKey === 'thebar') { renderBarCategoryPills(); renderBarTab(); }
       else renderCustomCategoryTab(sectionKey);
     }
@@ -3803,15 +4163,11 @@
       if (sectionKey === 'lunch' && appData.lunchItems) {
         appData.lunchItems.forEach(function(it) {
           if (it.subCategory === name) {
-            it.subCategory = hasMoreSubcats ? 'No Sub-Category' : '';
+            it.subCategory = '';
             movedCount++;
           }
         });
-        if (hasMoreSubcats && movedCount > 0) {
-          currentLunchSubcatFilter = 'No Sub-Category';
-        } else if (currentLunchSubcatFilter === name) {
-          currentLunchSubcatFilter = 'all';
-        }
+        currentLunchSubcatFilter = 'all';
       }
 
       // 2. À La Carte Section
@@ -3826,26 +4182,12 @@
           appData.aLaCarte.splice(courseIdx, 1);
 
           var remainingCourses = appData.aLaCarte.filter(function(c) { return !c.isTemporaryFolder && c.key !== 'unassigned-alacarte'; });
-          hasMoreSubcats = remainingCourses.length > 0;
-
-          if (hasMoreSubcats && courseItems.length > 0) {
-            var tempCourse = appData.aLaCarte.find(function(c) { return c.isTemporaryFolder || c.key === 'unassigned-alacarte'; });
-            if (!tempCourse) {
-              tempCourse = {
-                key: 'unassigned-alacarte',
-                category: 'No Sub-Category',
-                title: 'NO SUB-CATEGORY (TEMPORARY)',
-                subtitle: 'Dishes awaiting sub-category assignment',
-                isTemporaryFolder: true,
-                items: []
-              };
-              appData.aLaCarte.push(tempCourse);
-            }
+          if (remainingCourses.length > 0 && courseItems.length > 0) {
             courseItems.forEach(function(it) {
-              it.subCategory = 'No Sub-Category';
-              tempCourse.items.push(it);
+              it.subCategory = '';
+              remainingCourses[0].items.push(it);
             });
-            currentAlacarteKey = tempCourse.key;
+            currentAlacarteKey = remainingCourses[0].key;
           } else if (currentAlacarteKey === (removedCourse.key || '')) {
             currentAlacarteKey = appData.aLaCarte[0] ? appData.aLaCarte[0].key : 'appetisers';
           }
@@ -3864,27 +4206,14 @@
           appData.theGardenAndBar.splice(barIdx, 1);
 
           var remainingBar = appData.theGardenAndBar.filter(function(c) { return !c.isTemporaryFolder && c.key !== 'unassigned-bar'; });
-          hasMoreSubcats = remainingBar.length > 0;
-
-          if (hasMoreSubcats && barItems.length > 0) {
-            var tempBar = appData.theGardenAndBar.find(function(c) { return c.isTemporaryFolder || c.key === 'unassigned-bar'; });
-            if (!tempBar) {
-              tempBar = {
-                key: 'unassigned-bar',
-                category: 'No Sub-Category',
-                subtitle: 'Dishes awaiting sub-category assignment',
-                isTemporaryFolder: true,
-                items: []
-              };
-              appData.theGardenAndBar.push(tempBar);
-            }
+          if (remainingBar.length > 0 && barItems.length > 0) {
             barItems.forEach(function(it) {
-              it.subCategory = 'No Sub-Category';
-              tempBar.items.push(it);
+              it.subCategory = '';
+              remainingBar[0].items.push(it);
             });
-            currentBarKey = tempBar.key;
+            currentBarKey = remainingBar[0].key;
           } else if (currentBarKey === (removedBar.key || '')) {
-            currentBarKey = appData.theGardenAndBar[0] ? appData.theGardenAndBar[0].key : 'the-garden';
+            currentBarKey = appData.theGardenAndBar[0] ? appData.theGardenAndBar[0].key : 'the-bar';
           }
         }
       }
@@ -3893,22 +4222,17 @@
       var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
       if (cCat) {
         if (cCat.subCategories) {
-          cCat.subCategories = cCat.subCategories.filter(function(x) { return x !== name && x !== 'No Sub-Category'; });
-          hasMoreSubcats = cCat.subCategories.length > 0;
+          cCat.subCategories = cCat.subCategories.filter(function(x) { return x !== name && x !== 'No Sub-Category' && x !== 'Unassigned'; });
         }
         if (cCat.items) {
           cCat.items.forEach(function(it) {
             if (it.subCategory === name) {
-              it.subCategory = hasMoreSubcats ? 'No Sub-Category' : '';
+              it.subCategory = '';
               movedCount++;
             }
           });
         }
-        if (hasMoreSubcats && movedCount > 0) {
-          currentCustomSubcatFilter = 'No Sub-Category';
-        } else if (currentCustomSubcatFilter === name) {
-          currentCustomSubcatFilter = 'all';
-        }
+        currentCustomSubcatFilter = 'all';
       }
 
       // Filter subCategories master map
@@ -3927,11 +4251,7 @@
       sendLiveUpdate();
       pushToFirebaseCloud();
 
-      if (hasMoreSubcats && movedCount > 0) {
-        showToast('Sub-category "' + name + '" deleted. ' + movedCount + ' ' + (movedCount === 1 ? 'dish' : 'dishes') + ' moved to temporary "No Sub-Category" folder.');
-      } else {
-        showToast('Sub-category "' + name + '" deleted.');
-      }
+      showToast('Sub-category "' + name + '" deleted.');
     }
 
     function renderSubcatPillHtml(sectionKey, sc, count, isActive, filterAttr, filterVal) {
@@ -4066,19 +4386,11 @@
 
       var html = '';
       appData.aLaCarte.forEach(function(cat) {
+        if (cat.isTemporaryFolder || cat.key === 'unassigned-alacarte') return;
         var count = (cat.items || []).length;
         var isActive = (currentAlacarteKey === cat.key);
-        var isTemp = !!cat.isTemporaryFolder || cat.key === 'unassigned-alacarte';
-        if (isTemp) {
-          var label = '📁 No Sub-Category';
-          var badgeStyle = 'style="background:#f59e0b;color:#000;font-weight:700;"';
-          html += '<button type="button" class="sub-pill-btn sub-pill-temporary ' + (isActive ? 'is-active' : '') + '" data-course="' + cat.key + '" title="Temporary folder with unassigned dishes">' +
-            label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
-          '</button>';
-        } else {
-          var scName = cat.category || cat.title || cat.key;
-          html += renderSubcatPillHtml('alacarte', scName, count, isActive, 'data-course', cat.key);
-        }
+        var scName = cat.category || cat.title || cat.key;
+        html += renderSubcatPillHtml('alacarte', scName, count, isActive, 'data-course', cat.key);
       });
 
       html += '<button type="button" class="sub-pill-btn" id="btnQuickAddAlacarteCourse" style="border-style:dashed;color:var(--lime-primary);" title="Manage & Add Courses / Sub-categories">+ Add / Organize</button>';
@@ -4106,6 +4418,9 @@
           openSubcatModal('alacarte');
         });
       }
+
+      scrollActiveSubPillIntoView(container);
+      enableHorizontalWheelScroll('#alacarteCoursePills');
     }
 
     // Dynamic Bar Category Pills
@@ -4113,24 +4428,24 @@
       var container = document.getElementById('barCategoryPills');
       if (!container || !appData || !appData.theGardenAndBar) return;
 
-      var html = '';
-      appData.theGardenAndBar.forEach(function(cat) {
-        var count = (cat.items || []).length;
-        var isActive = (currentBarKey === cat.key);
-        var isTemp = !!cat.isTemporaryFolder || cat.key === 'unassigned-bar';
-        if (isTemp) {
-          var label = '📁 No Sub-Category';
-          var badgeStyle = 'style="background:#f59e0b;color:#000;font-weight:700;"';
-          html += '<button type="button" class="sub-pill-btn ' + (isTemp ? 'sub-pill-temporary ' : '') + (isActive ? 'is-active' : '') + '" data-barcat="' + cat.key + '" title="Temporary folder with unassigned dishes">' +
-            label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
-          '</button>';
-        } else {
-          var scName = cat.category || cat.key;
-          html += renderSubcatPillHtml('thebar', scName, count, isActive, 'data-barcat', cat.key);
-        }
+      var validCats = appData.theGardenAndBar.filter(function(cat) {
+        return !cat.isTemporaryFolder && cat.key !== 'unassigned-bar';
       });
 
-      html += '<button type="button" class="sub-pill-btn" id="btnQuickAddBarSubcat" style="border-style:dashed;color:var(--lime-primary);" title="Manage Bar Sub-categories">+ Add / Organize</button>';
+      var html = '';
+      if (validCats.length > 1) {
+        validCats.forEach(function(cat) {
+          var count = (cat.items || []).length;
+          var isActive = (currentBarKey === cat.key);
+          var scName = cat.category || cat.key;
+          html += renderSubcatPillHtml('thebar', scName, count, isActive, 'data-barcat', cat.key);
+        });
+        html += '<button type="button" class="sub-pill-btn" id="btnQuickAddBarSubcat" style="border-style:dashed;color:var(--lime-primary);" title="Manage Bar Sub-categories">+ Add / Organize</button>';
+      } else {
+        var totalBarItems = validCats[0] ? (validCats[0].items || []).length : 0;
+        html = '<button type="button" class="sub-pill-btn is-active" style="cursor:default;">All Bar Items (' + totalBarItems + ')</button>' +
+          '<button type="button" class="sub-pill-btn" id="btnQuickAddBarSubcat" style="border-style:dashed;color:var(--lime-primary);" title="Manage Bar Sub-categories">+ Add Sub-category</button>';
+      }
 
       container.innerHTML = html;
 
@@ -4155,6 +4470,9 @@
           openSubcatModal('thebar');
         });
       }
+
+      scrollActiveSubPillIntoView(container);
+      enableHorizontalWheelScroll('#barCategoryPills');
     }
 
     function bindStorageAndSubcatModals() {
@@ -4809,8 +5127,10 @@
           p.classList.add('is-active');
           currentMediaFilter = p.getAttribute('data-mfilter') || 'all';
           renderMediaLibraryTab();
+          scrollActiveSubPillIntoView(document.getElementById('mediaFilterBar'));
         });
       });
+      enableHorizontalWheelScroll('#mediaFilterBar');
 
       // Search input
       var searchInput = document.getElementById('mediaSearchInput');
@@ -4993,6 +5313,27 @@
       if (targetModal) targetModal.classList.add('is-open');
     }
 
+    function enableHorizontalWheelScroll(selector) {
+      document.querySelectorAll(selector || '.sub-filter-pills').forEach(function(el) {
+        if (el._hasHWheel) return;
+        el._hasHWheel = true;
+        el.addEventListener('wheel', function(e) {
+          if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            el.scrollLeft += e.deltaY;
+          }
+        }, { passive: false });
+      });
+    }
+
+    function scrollActiveSubPillIntoView(container) {
+      if (!container) return;
+      var activeBtn = container.querySelector('.sub-pill-btn.is-active');
+      if (activeBtn && typeof activeBtn.scrollIntoView === 'function') {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+
     // 1. Initialize State
     function initStudio() {
       try {
@@ -5034,6 +5375,85 @@
         delete appData.subCategories['cat-breakfast'];
       }
 
+      // Auto-purge any stray "No Sub-Category" or "Unassigned" strings across dishes
+      function sanitizeSubcategories(arr) {
+        if (!arr || !Array.isArray(arr)) return;
+        arr.forEach(function(item) {
+          if (item && item.subCategory) {
+            var sc = String(item.subCategory).trim().toLowerCase();
+            if (sc === 'no sub-category' || sc === 'unassigned' || sc.indexOf('no sub') !== -1) {
+              item.subCategory = '';
+            }
+          }
+        });
+      }
+      if (appData.lunchItems) sanitizeSubcategories(appData.lunchItems);
+      if (appData.aLaCarte) {
+        appData.aLaCarte.forEach(function(cat) { if (cat && cat.items) sanitizeSubcategories(cat.items); });
+      }
+      if (appData.theGardenAndBar) {
+        appData.theGardenAndBar.forEach(function(cat) { if (cat && cat.items) sanitizeSubcategories(cat.items); });
+      }
+      if (appData.menuCategories) {
+        appData.menuCategories.forEach(function(cat) { if (cat && cat.items) sanitizeSubcategories(cat.items); });
+      }
+      if (appData.customCategories) {
+        appData.customCategories.forEach(function(cat) { if (cat && cat.items) sanitizeSubcategories(cat.items); });
+      }
+      if (appData.subCategories) {
+        Object.keys(appData.subCategories).forEach(function(k) {
+          if (Array.isArray(appData.subCategories[k])) {
+            appData.subCategories[k] = appData.subCategories[k].filter(function(sc) {
+              var s = String(sc || '').trim().toLowerCase();
+              return s && s !== 'no sub-category' && s !== 'unassigned' && s.indexOf('no sub') === -1;
+            });
+          }
+        });
+      }
+
+      if (appData.aLaCarte) {
+        appData.aLaCarte = appData.aLaCarte.filter(function(c) {
+          return !c.isTemporaryFolder && c.key !== 'unassigned-alacarte' && c.category !== 'No Sub-Category';
+        });
+      }
+      if (appData.theGardenAndBar) {
+        appData.theGardenAndBar = appData.theGardenAndBar.filter(function(c) {
+          return !c.isTemporaryFolder && c.key !== 'unassigned-bar' && c.category !== 'No Sub-Category';
+        });
+      }
+
+      // Auto-migrate The Bar: purge legacy "The Garden" and "The Bar Bites" submenus and merge into single "The Bar" list
+      if (appData.subCategories && appData.subCategories.thebar) {
+        appData.subCategories.thebar = appData.subCategories.thebar.filter(function(sc) {
+          return sc !== 'The Garden' && sc !== 'The Bar Bites';
+        });
+      }
+      if (appData.theGardenAndBar && Array.isArray(appData.theGardenAndBar)) {
+        var hasLegacyBar = appData.theGardenAndBar.some(function(c) {
+          return c.key === 'the-garden' || c.key === 'the-bar-bites' || c.category === 'The Garden' || c.category === 'The Bar Bites';
+        });
+        if (hasLegacyBar) {
+          var unifiedBarItems = [];
+          appData.theGardenAndBar.forEach(function(c) {
+            (c.items || []).forEach(function(it) {
+              if (it.subCategory === 'The Garden' || it.subCategory === 'The Bar Bites') {
+                it.subCategory = '';
+              }
+              unifiedBarItems.push(it);
+            });
+          });
+          appData.theGardenAndBar = [
+            {
+              category: 'The Bar',
+              key: 'the-bar',
+              subtitle: 'Daily | 06:00 PM – 10:30 PM',
+              items: unifiedBarItems
+            }
+          ];
+          if (typeof currentBarKey !== 'undefined') currentBarKey = 'the-bar';
+        }
+      }
+
       // Dismiss any modal when clicking backdrop
       document.querySelectorAll('.modal-overlay').forEach(function(modalEl) {
         modalEl.addEventListener('click', function(e) {
@@ -5062,6 +5482,7 @@
       updateStorageGauge();
 
       switchMenuCategory(activeMenuCategoryKey);
+      enableHorizontalWheelScroll();
 
       // Listen for iframe readiness
       previewIframe.addEventListener('load', function() {
@@ -5077,18 +5498,19 @@
       if (!appData) return;
       try {
         localStorage.setItem('belle_data', JSON.stringify(appData));
-      } catch(e) {}
+      } catch(e) {
+        console.warn('localStorage quota warning:', e.message);
+      }
 
       updateStorageGauge();
-      try {
-        localStorage.setItem('belle_data', JSON.stringify(appData));
-      } catch(e) {}
 
       if (previewIframe && previewIframe.contentWindow) {
-        previewIframe.contentWindow.postMessage({
-          type: 'BELLE_DATA_UPDATE',
-          payload: appData
-        }, '*');
+        try {
+          previewIframe.contentWindow.postMessage({
+            type: 'BELLE_DATA_UPDATE',
+            payload: appData
+          }, '*');
+        } catch(e) {}
       }
 
       if (liveBroadcast) {
@@ -5154,8 +5576,13 @@
         appData.subCategories = {
           lunch: ["Soups & Starters", "Artisan Salads", "Sharing Platters", "Burgers & Sandwiches"],
           alacarte: ["Appetisers", "Entrées", "Mains", "From The Grill", "Desserts"],
-          thebar: ["The Garden", "The Bar Bites"]
+          thebar: []
         };
+      } else {
+        if (!appData.subCategories.thebar) appData.subCategories.thebar = [];
+        appData.subCategories.thebar = appData.subCategories.thebar.filter(function(sc) {
+          return sc !== 'The Garden' && sc !== 'The Bar Bites';
+        });
       }
       appData.menuCategories.forEach(function(cat) {
         if (!cat.isSystem) {
@@ -5190,7 +5617,7 @@
         }
 
         var isActive = (activeMenuCategoryKey === cat.id);
-        var iconHtml = '<span class="cat-btn-icon">' + getCategoryIconSvg(cat.icon || cat.id) + '</span>';
+        var iconHtml = '<span class="cat-btn-icon">' + getCategoryIconSvg(cat.name || cat.icon || cat.id) + '</span>';
         
         var customActionsHtml = '<span class="cat-actions-wrap">' +
           '<span class="cat-action-icon btn-quick-edit-cat" data-cat-id="' + cat.id + '" title="Edit / Rename Category"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>' +
@@ -5337,14 +5764,6 @@
           pillHtml += renderSubcatPillHtml(catId, sc, count, currentCustomSubcatFilter === sc, 'data-csub', sc);
         });
 
-        // Temporary holding folder pill only if we have more subcategories and unassigned dishes
-        if (hasOtherSubcats && unassignedDishes.length > 0) {
-          var isUnassignedActive = (currentCustomSubcatFilter === 'No Sub-Category');
-          pillHtml += '<button type="button" class="sub-pill-btn sub-pill-temporary ' + (isUnassignedActive ? 'is-active' : '') + '" data-csub="No Sub-Category" title="Temporary Folder: Dishes awaiting sub-category assignment">' +
-            '📁 No Sub-Category <span class="subcat-pill-badge" style="background:#f59e0b;color:#000;font-weight:700;">' + unassignedDishes.length + '</span>' +
-          '</button>';
-        }
-
         pillHtml += '<button type="button" class="sub-pill-btn" id="btnQuickAddCustomSubcat" style="border-style:dashed;color:var(--gold-primary);">+ Add Sub-cat</button>';
         subcatBar.innerHTML = pillHtml;
 
@@ -5366,14 +5785,13 @@
             openSubcatModal(catId);
           });
         }
+
+        scrollActiveSubPillIntoView(subcatBar);
+        enableHorizontalWheelScroll('#customSubcatFilterBar');
       }
 
       // Filtered items
-      var isUnassignedFilter = (currentCustomSubcatFilter === 'No Sub-Category');
       var filtered = items.filter(function(it) {
-        if (isUnassignedFilter) {
-          return !it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned';
-        }
         if (currentCustomSubcatFilter === 'all') return true;
         return it.subCategory === currentCustomSubcatFilter;
       });
@@ -5382,37 +5800,12 @@
       if (!list) return;
 
       if (filtered.length === 0) {
-        if (isUnassignedFilter) {
-          currentCustomSubcatFilter = 'all';
-          renderCustomCategoryTab(catId);
-          return;
-        }
         list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-dim);">' +
           'No dishes in this category yet. Click "+ Add Dish" above to create one.</div>';
         return;
       }
 
       var html = '';
-
-      // Banner for Temporary Holding Folder in Custom Category
-      if (isUnassignedFilter && hasOtherSubcats) {
-        var opts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
-        html += '<div class="temporary-folder-banner">' +
-          '<div style="display:flex;align-items:center;gap:10px;">' +
-            '<span style="font-size:20px;">📁</span>' +
-            '<div>' +
-              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + filtered.length + ' ' + (filtered.length === 1 ? 'dish' : 'dishes') + ')</div>' +
-              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Dishes moved here because their sub-category was deleted. You can reassign them below.</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<select class="input-field batch-move-custom-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
-              '<option value="">Move all dishes to...</option>' + opts +
-            '</select>' +
-            '<button type="button" class="btn-publish btn-apply-batch-custom" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
-          '</div>' +
-        '</div>';
-      }
 
       filtered.forEach(function(item) {
         var isVeg = (item.isVeg || (item.tags && item.tags.indexOf('Vegetarian') !== -1));
@@ -5435,14 +5828,7 @@
 
         var isDishUnassigned = (!item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned');
         var subcatBadgeHtml = '';
-        var quickReassignHtml = '';
-        if (isDishUnassigned && hasOtherSubcats) {
-          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
-          var quickOpts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
-          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + item.id + '" data-cat="' + catId + '" title="Quick Assign Sub-Category">' +
-            '<option value="">Move to... ▼</option>' + quickOpts +
-          '</select>';
-        } else if (item.subCategory) {
+        if (item.subCategory && !isDishUnassigned) {
           subcatBadgeHtml = '<span class="subcat-badge">' + item.subCategory + '</span>';
         }
 
@@ -5455,11 +5841,11 @@
                 '<div class="card-subtitle-row">' +
                   subcatBadgeHtml +
                   getVegBadgeHtml(isVeg) +
+                  getAdminDishMetaBadge(item) +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
-              quickReassignHtml +
               (item.price ? '<span class="card-price-pill">LKR ' + item.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-custom-dish" data-cat="' + catId + '" data-id="' + item.id + '" title="Edit Dish & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -5518,9 +5904,6 @@
       var titleEl = document.getElementById('menuCategoryModalTitle');
       var idInput = document.getElementById('editMenuCatId');
       var nameInput = document.getElementById('menuCatNameInput');
-      var iconInput = document.getElementById('menuCatIconInput');
-      var subInput = document.getElementById('menuCatSubtitleInput');
-      var subcatsInput = document.getElementById('menuCatSubcatsInput');
 
       if (catId) {
         var cat = (appData.menuCategories || []).find(function(c) { return c.id === catId; });
@@ -5528,20 +5911,14 @@
         if (titleEl) titleEl.textContent = 'EDIT MENU CATEGORY';
         if (idInput) idInput.value = cat.id;
         if (nameInput) nameInput.value = cat.name;
-        if (iconInput) iconInput.value = cat.icon || '';
-        if (subInput) subInput.value = cat.subtitle || '';
-        var scs = (appData.subCategories && appData.subCategories[cat.id]) ? appData.subCategories[cat.id] : [];
-        if (subcatsInput) subcatsInput.value = scs.join(', ');
       } else {
         if (titleEl) titleEl.textContent = 'CREATE MENU CATEGORY';
         if (idInput) idInput.value = '';
         if (nameInput) nameInput.value = '';
-        if (iconInput) iconInput.value = 'dish';
-        if (subInput) subInput.value = '';
-        if (subcatsInput) subcatsInput.value = '';
       }
 
       if (modal) modal.classList.add('is-open');
+      if (nameInput) setTimeout(function() { nameInput.focus(); }, 60);
     }
 
     function deleteMenuCategory(catId) {
@@ -5603,38 +5980,20 @@
         form.addEventListener('submit', function(e) {
           e.preventDefault();
           var id = document.getElementById('editMenuCatId').value;
-          var name = document.getElementById('menuCatNameInput').value.trim();
-          var icon = document.getElementById('menuCatIconInput').value.trim() || 'dish';
-          var subtitle = document.getElementById('menuCatSubtitleInput').value.trim();
-          var subcatsRaw = document.getElementById('menuCatSubcatsInput').value.trim();
+          var nameInput = document.getElementById('menuCatNameInput');
+          var name = nameInput ? nameInput.value.trim() : '';
 
           if (!name) return;
-
-          var subcats = [];
-          if (subcatsRaw) {
-            subcats = subcatsRaw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-          }
 
           if (id) {
             var cat = appData.menuCategories.find(function(c) { return c.id === id; });
             if (cat) {
               cat.name = name;
-              cat.icon = icon;
-              cat.subtitle = subtitle;
-              if (subcats.length > 0) {
-                if (!appData.subCategories[id]) appData.subCategories[id] = [];
-                subcats.forEach(function(sc) {
-                  if (appData.subCategories[id].indexOf(sc) === -1) appData.subCategories[id].push(sc);
-                });
-              }
             }
             if (appData.customCategories) {
               var ccat = appData.customCategories.find(function(c) { return c.id === id; });
               if (ccat) {
                 ccat.name = name;
-                ccat.icon = icon;
-                ccat.subtitle = subtitle;
-                ccat.subCategories = subcats;
               }
             }
             showToast('Category "' + name + '" updated!');
@@ -5643,18 +6002,18 @@
             var newCat = {
               id: newId,
               name: name,
-              subtitle: subtitle,
-              icon: icon,
+              subtitle: '',
+              icon: 'alacarte',
               type: 'custom',
               isSystem: false,
               items: [],
-              subCategories: subcats
+              subCategories: []
             };
             appData.menuCategories.push(newCat);
             if (!appData.customCategories) appData.customCategories = [];
             appData.customCategories.push(newCat);
             if (!appData.subCategories) appData.subCategories = {};
-            appData.subCategories[newId] = subcats;
+            appData.subCategories[newId] = [];
             activeMenuCategoryKey = newId;
             showToast('Category "' + name + '" created!');
           }
@@ -5769,8 +6128,10 @@
         p.classList.add('is-active');
         currentEventCatFilter = p.getAttribute('data-cat');
         renderEventsTab();
+        scrollActiveSubPillIntoView(document.getElementById('eventsFilterBar'));
       });
     });
+    enableHorizontalWheelScroll('#eventsFilterBar');
 
     // 5. Render Lunch Tab & Dynamic Sub-category Filter
     function renderLunchSubcatFilterBar() {
@@ -5788,19 +6149,11 @@
         'All Dishes <span class="subcat-pill-badge">' + totalCount + '</span>' +
         '</button>';
         
-      subcats.forEach(function(sc) {
+        subcats.forEach(function(sc) {
         var count = (appData.lunchItems || []).filter(function(it) { return it.subCategory === sc; }).length;
         var isActive = currentLunchSubcatFilter === sc;
         html += renderSubcatPillHtml('lunch', sc, count, isActive, 'data-subcat', sc);
       });
-
-      // Temporary holding folder pill only if we have more subcategories and unassigned dishes
-      if (hasOtherSubcats && unassignedCount > 0) {
-        var isUnassignedActive = (currentLunchSubcatFilter === 'No Sub-Category' || currentLunchSubcatFilter === 'unassigned');
-        html += '<button type="button" class="sub-pill-btn sub-pill-temporary ' + (isUnassignedActive ? 'is-active' : '') + '" data-subcat="No Sub-Category" title="Temporary Folder: Dishes awaiting sub-category assignment">' +
-          '📁 No Sub-Category <span class="subcat-pill-badge" style="background:#f59e0b;color:#000;font-weight:700;">' + unassignedCount + '</span>' +
-          '</button>';
-      }
 
       html += '<button type="button" class="sub-pill-btn" id="btnQuickAddLunchSubcat" style="border-style:dashed;color:var(--gold-primary);" title="Add New Sub-category">+ Add</button>';
 
@@ -5822,6 +6175,9 @@
           openSubcatModal('lunch');
         });
       }
+
+      scrollActiveSubPillIntoView(bar);
+      enableHorizontalWheelScroll('#lunchSubcatFilterBar');
     }
 
     function renderLunchTab() {
@@ -5834,48 +6190,19 @@
       if (badge) badge.textContent = appData.lunchItems.length;
       var rawSubcats = appData.subCategories.lunch || [];
       var subcats = rawSubcats.filter(function(x) { return x !== 'No Sub-Category' && x !== 'Unassigned'; });
-      var isUnassignedFilter = (currentLunchSubcatFilter === 'No Sub-Category' || currentLunchSubcatFilter === 'unassigned');
 
       var filtered = appData.lunchItems.filter(function(item) {
         if (currentLunchSubcatFilter === 'all') return true;
-        if (isUnassignedFilter) {
-          return !item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned';
-        }
         return item.subCategory === currentLunchSubcatFilter;
       });
 
       if (filtered.length === 0) {
-        if (isUnassignedFilter) {
-          currentLunchSubcatFilter = 'all';
-          renderLunchTab();
-          return;
-        }
         list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-dim);">' +
           'No dishes in "' + currentLunchSubcatFilter + '". Click "+ Add Lunch Item" to add a dish to this sub-category.</div>';
         return;
       }
 
       var html = '';
-
-      // Banner for Temporary Holding Folder
-      if (isUnassignedFilter && subcats.length > 0) {
-        var opts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
-        html += '<div class="temporary-folder-banner">' +
-          '<div style="display:flex;align-items:center;gap:10px;">' +
-            '<span style="font-size:20px;">📁</span>' +
-            '<div>' +
-              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + filtered.length + ' ' + (filtered.length === 1 ? 'dish' : 'dishes') + ')</div>' +
-              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Dishes moved here because their sub-category was deleted. You can reassign them below.</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<select class="input-field batch-move-lunch-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
-              '<option value="">Move all dishes to...</option>' + opts +
-            '</select>' +
-            '<button type="button" class="btn-publish btn-apply-batch-lunch" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
-          '</div>' +
-        '</div>';
-      }
 
       filtered.forEach(function(item, idx) {
         var isVeg = !!item.isVeg;
@@ -5898,18 +6225,8 @@
 
         var isDishUnassigned = (!item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned');
         var subcatBadgeHtml = '';
-        if (isDishUnassigned && subcats.length > 0) {
-          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
-        } else if (item.subCategory) {
+        if (item.subCategory && !isDishUnassigned) {
           subcatBadgeHtml = '<span class="subcat-badge">' + item.subCategory + '</span>';
-        }
-
-        var quickReassignHtml = '';
-        if (isDishUnassigned && subcats.length > 0) {
-          var quickOpts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
-          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + item.id + '" title="Quick Assign Sub-Category">' +
-            '<option value="">Move to... ▼</option>' + quickOpts +
-          '</select>';
         }
 
         html += '<article class="editor-item-card" data-lunch-id="' + item.id + '">' +
@@ -5921,12 +6238,11 @@
                 '<div class="card-subtitle-row">' +
                   subcatBadgeHtml +
                   (isVeg ? getVegBadgeHtml() : '<span class="subcat-badge badge-nonveg">NON-VEG</span>') +
-                  (item.meta ? '<span>•</span><span style="color:var(--gold-primary);">' + item.meta.badge + '</span>' : '') +
+                  getAdminDishMetaBadge(item) +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
-              quickReassignHtml +
               (item.price ? '<span class="card-price-pill">LKR ' + item.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-lunch" data-id="' + item.id + '" title="Edit Dish & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -6016,29 +6332,6 @@
 
       var html = '';
 
-      // Banner for Temporary Holding Folder in À La Carte
-      if (isTempCourse && otherCourses.length > 0) {
-        var opts = otherCourses.map(function(c) {
-          var name = c.category || c.title || c.key;
-          return '<option value="' + name + '">' + name + '</option>';
-        }).join('');
-        html += '<div class="temporary-folder-banner">' +
-          '<div style="display:flex;align-items:center;gap:10px;">' +
-            '<span style="font-size:20px;">📁</span>' +
-            '<div>' +
-              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + (cat.items || []).length + ' ' + ((cat.items || []).length === 1 ? 'dish' : 'dishes') + ')</div>' +
-              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Dishes moved here because their course was deleted. You can reassign them below.</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<select class="input-field batch-move-ala-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
-              '<option value="">Move all dishes to...</option>' + opts +
-            '</select>' +
-            '<button type="button" class="btn-publish btn-apply-batch-ala" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
-          '</div>' +
-        '</div>';
-      }
-
       (cat.items || []).forEach(function(it, idx) {
         var isVeg = (it.tags || []).indexOf('Vegetarian') !== -1;
         var mediaHtml = '';
@@ -6058,18 +6351,9 @@
           '</div>';
         }
 
+        var isDishUnassigned = (!it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned');
         var subcatBadgeHtml = '';
-        var quickReassignHtml = '';
-        if (isTempCourse && otherCourses.length > 0) {
-          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
-          var quickOpts = otherCourses.map(function(c) {
-            var name = c.category || c.title || c.key;
-            return '<option value="' + name + '">' + name + '</option>';
-          }).join('');
-          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + it.id + '" data-cat="' + cat.key + '" title="Quick Assign Course">' +
-            '<option value="">Move to... ▼</option>' + quickOpts +
-          '</select>';
-        } else if (it.subCategory) {
+        if (it.subCategory && !isDishUnassigned) {
           subcatBadgeHtml = '<span class="subcat-badge">' + it.subCategory + '</span>';
         }
 
@@ -6082,11 +6366,11 @@
                 '<div class="card-subtitle-row">' +
                   subcatBadgeHtml +
                   getVegBadgeHtml(isVeg) +
+                  getAdminDishMetaBadge(it) +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
-              quickReassignHtml +
               (it.price ? '<span class="card-price-pill">LKR ' + it.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-ala" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Edit Dish & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -6141,7 +6425,7 @@
     }
 
     // 7. Render The Bar Tab
-    var currentBarKey = 'the-garden';
+    var currentBarKey = 'the-bar';
     function renderBarTab() {
       renderBarCategoryPills();
       var list = document.getElementById('barCardsList');
@@ -6176,29 +6460,6 @@
 
       var html = '';
 
-      // Banner for Temporary Holding Folder in The Bar
-      if (isTempBar && otherBarCats.length > 0) {
-        var opts = otherBarCats.map(function(c) {
-          var name = c.category || c.key;
-          return '<option value="' + name + '">' + name + '</option>';
-        }).join('');
-        html += '<div class="temporary-folder-banner">' +
-          '<div style="display:flex;align-items:center;gap:10px;">' +
-            '<span style="font-size:20px;">📁</span>' +
-            '<div>' +
-              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + (cat.items || []).length + ' ' + ((cat.items || []).length === 1 ? 'item' : 'items') + ')</div>' +
-              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Items moved here because their sub-category was deleted. You can reassign them below.</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<select class="input-field batch-move-bar-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
-              '<option value="">Move all items to...</option>' + opts +
-            '</select>' +
-            '<button type="button" class="btn-publish btn-apply-batch-bar" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
-          '</div>' +
-        '</div>';
-      }
-
       (cat.items || []).forEach(function(it, idx) {
         var isVeg = (it.tags || []).indexOf('Vegetarian') !== -1;
         var mediaHtml = '';
@@ -6218,18 +6479,9 @@
           '</div>';
         }
 
+        var isDishUnassigned = (!it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned');
         var subcatBadgeHtml = '';
-        var quickReassignHtml = '';
-        if (isTempBar && otherBarCats.length > 0) {
-          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
-          var quickOpts = otherBarCats.map(function(c) {
-            var name = c.category || c.key;
-            return '<option value="' + name + '">' + name + '</option>';
-          }).join('');
-          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + it.id + '" data-cat="' + cat.key + '" title="Quick Assign Section">' +
-            '<option value="">Move to... ▼</option>' + quickOpts +
-          '</select>';
-        } else if (it.subCategory) {
+        if (it.subCategory && !isDishUnassigned) {
           subcatBadgeHtml = '<span class="subcat-badge">' + it.subCategory + '</span>';
         }
 
@@ -6242,11 +6494,11 @@
                 '<div class="card-subtitle-row">' +
                   subcatBadgeHtml +
                   (isVeg ? getVegBadgeHtml(true) : '<span style="color:var(--gold-light);font-family:var(--font-mono);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;">Curated Craft</span>') +
+                  getAdminDishMetaBadge(it) +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
-              quickReassignHtml +
               (it.price ? '<span class="card-price-pill">LKR ' + it.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-bar" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Edit Item & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -6307,6 +6559,7 @@
         currentBarKey = p.getAttribute('data-barcat');
         renderBarTab();
         navigatePreview('thebar');
+        scrollActiveSubPillIntoView(document.getElementById('barCategoryPills'));
       });
     });
 
@@ -6372,8 +6625,10 @@
         currentTastingType = p.getAttribute('data-tasting');
         renderTastingTab();
         navigatePreview('tasting');
+        scrollActiveSubPillIntoView(document.getElementById('tastingPills'));
       });
     });
+    enableHorizontalWheelScroll('#tastingPills');
 
     // 9. Populate Venue Form
     function populateVenueForm() {
@@ -6416,6 +6671,73 @@
     var eventEditModal = document.getElementById('eventEditModal');
     var isEventVipChecked = false;
     var currentEventImageData = null;
+    var eventDatePickerInput = document.getElementById('eventDatePickerInput');
+    var DOW_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    var MONTH_NAMES = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+    function syncEventDateFromPicker(dateStr) {
+      if (!dateStr) return;
+      var parts = dateStr.split('-');
+      if (parts.length !== 3) return;
+      var y = parseInt(parts[0], 10);
+      var m = parseInt(parts[1], 10) - 1;
+      var d = parseInt(parts[2], 10);
+      var dateObj = new Date(y, m, d);
+      if (isNaN(dateObj.getTime())) return;
+
+      var dayInput = document.getElementById('eventDayInput');
+      var dowInput = document.getElementById('eventDowInput');
+      var monthInput = document.getElementById('eventMonthInput');
+
+      if (dayInput) dayInput.value = d;
+      if (dowInput) dowInput.value = DOW_NAMES[dateObj.getDay()] || '';
+      if (monthInput) monthInput.value = MONTH_NAMES[dateObj.getMonth()] || '';
+    }
+
+    function syncPickerFromManualFields() {
+      var dVal = parseInt(document.getElementById('eventDayInput').value, 10);
+      var mStr = (document.getElementById('eventMonthInput').value || '').trim().toUpperCase();
+      var mIdx = MONTH_NAMES.indexOf(mStr);
+      if (mIdx === -1 && mStr.length >= 3) {
+        mIdx = MONTH_NAMES.findIndex(function(m) { return mStr.indexOf(m) === 0; });
+      }
+      var now = new Date();
+      var y = now.getFullYear();
+      if (eventDatePickerInput && eventDatePickerInput.value) {
+        var existingY = parseInt(eventDatePickerInput.value.split('-')[0], 10);
+        if (!isNaN(existingY) && existingY > 2000) y = existingY;
+      }
+      if (!isNaN(dVal) && dVal >= 1 && dVal <= 31 && mIdx >= 0) {
+        var dateObj = new Date(y, mIdx, dVal);
+        if (!isNaN(dateObj.getTime())) {
+          var yyyy = dateObj.getFullYear();
+          var mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+          var dd = String(dateObj.getDate()).padStart(2, '0');
+          if (eventDatePickerInput) eventDatePickerInput.value = yyyy + '-' + mm + '-' + dd;
+          var dowInput = document.getElementById('eventDowInput');
+          if (dowInput) dowInput.value = DOW_NAMES[dateObj.getDay()] || '';
+        }
+      }
+    }
+
+    if (eventDatePickerInput) {
+      eventDatePickerInput.addEventListener('change', function() {
+        syncEventDateFromPicker(this.value);
+      });
+      eventDatePickerInput.addEventListener('input', function() {
+        syncEventDateFromPicker(this.value);
+      });
+      eventDatePickerInput.addEventListener('click', function() {
+        if (typeof this.showPicker === 'function') {
+          try { this.showPicker(); } catch (err) {}
+        }
+      });
+    }
+
+    var manualDayInput = document.getElementById('eventDayInput');
+    var manualMonthInput = document.getElementById('eventMonthInput');
+    if (manualDayInput) manualDayInput.addEventListener('input', syncPickerFromManualFields);
+    if (manualMonthInput) manualMonthInput.addEventListener('input', syncPickerFromManualFields);
 
     document.getElementById('btnAddEvent').addEventListener('click', function() {
       document.getElementById('eventModalTitle').textContent = 'ADD NEW EVENT';
@@ -6423,9 +6745,16 @@
       document.getElementById('eventTitleInput').value = '';
       document.getElementById('eventCatInput').value = 'dining';
       document.getElementById('eventCatLabelInput').value = 'DINING';
-      document.getElementById('eventDayInput').value = '25';
-      document.getElementById('eventDowInput').value = 'SAT';
-      document.getElementById('eventMonthInput').value = 'OCT';
+
+      // Default calendar picker to today's date and auto-fill day, dow, month
+      var today = new Date();
+      var tY = today.getFullYear();
+      var tM = String(today.getMonth() + 1).padStart(2, '0');
+      var tD = String(today.getDate()).padStart(2, '0');
+      var defaultDateStr = tY + '-' + tM + '-' + tD;
+      if (eventDatePickerInput) eventDatePickerInput.value = defaultDateStr;
+      syncEventDateFromPicker(defaultDateStr);
+
       document.getElementById('eventTimeInput').value = '7:00 PM – 11:00 PM';
       document.getElementById('eventVenueInput').value = 'The Courtyard';
       document.getElementById('eventDescInput').value = '';
@@ -6461,6 +6790,28 @@
       } else {
         document.getElementById('eventImgPreviewWrap').style.display = 'none';
       }
+
+      // Populate calendar date picker for existing event
+      if (ev.dateStr) {
+        if (eventDatePickerInput) eventDatePickerInput.value = ev.dateStr;
+      } else {
+        var now = new Date();
+        var year = now.getFullYear();
+        var mIdx = MONTH_NAMES.indexOf((ev.month || '').trim().toUpperCase());
+        var dNum = parseInt(ev.day, 10);
+        if (mIdx >= 0 && !isNaN(dNum)) {
+          var dObj = new Date(year, mIdx, dNum);
+          if (!isNaN(dObj.getTime())) {
+            var yyyy = dObj.getFullYear();
+            var mm = String(dObj.getMonth() + 1).padStart(2, '0');
+            var dd = String(dObj.getDate()).padStart(2, '0');
+            if (eventDatePickerInput) eventDatePickerInput.value = yyyy + '-' + mm + '-' + dd;
+          }
+        } else if (eventDatePickerInput) {
+          eventDatePickerInput.value = '';
+        }
+      }
+
       eventEditModal.classList.add('is-open');
     }
 
@@ -6515,6 +6866,7 @@
       var time = document.getElementById('eventTimeInput').value.trim();
       var venue = document.getElementById('eventVenueInput').value.trim();
       var desc = document.getElementById('eventDescInput').value.trim();
+      var datePickerVal = eventDatePickerInput ? eventDatePickerInput.value : '';
 
       if (!id) {
         // Create new
@@ -6526,6 +6878,7 @@
           day: day,
           dow: dow,
           month: month,
+          dateStr: datePickerVal,
           time: time,
           venue: venue,
           desc: desc,
@@ -6546,6 +6899,7 @@
           ev.day = day;
           ev.dow = dow;
           ev.month = month;
+          if (datePickerVal) ev.dateStr = datePickerVal;
           ev.time = time;
           ev.venue = venue;
           ev.desc = desc;
@@ -6686,14 +7040,48 @@
       reader.readAsDataURL(file);
     }
 
+    function syncDishMediaLive() {
+      var scope = document.getElementById('editItemScope').value;
+      var catKey = document.getElementById('editItemCategoryKey').value;
+      var id = document.getElementById('editItemId').value;
+      if (!id || !appData) return;
+
+      var targetItem = null;
+      if (scope === 'lunch') targetItem = (appData.lunchItems || []).find(function(x) { return x.id === id; });
+      else if (scope === 'alacarte') {
+        var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+        if (cat) targetItem = (cat.items || []).find(function(x) { return x.id === id; });
+      } else if (scope === 'thebar') {
+        var bcat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+        if (bcat) targetItem = (bcat.items || []).find(function(x) { return x.id === id; });
+      } else if (scope === 'custom') {
+        var ccat = (appData.menuCategories || []).find(function(c) { return c.id === catKey; });
+        if (ccat && ccat.items) targetItem = ccat.items.find(function(x) { return x.id === id; });
+      }
+
+      if (targetItem) {
+        if (currentDishMediaType === 'photo') {
+          targetItem.image = currentDishImageData || '';
+          targetItem.video = '';
+        } else if (currentDishMediaType === 'video') {
+          targetItem.video = currentDishVideoData || '';
+          targetItem.image = currentDishImageData || '';
+        } else {
+          targetItem.image = '';
+          targetItem.video = '';
+        }
+        sendLiveUpdate();
+      }
+    }
+
     function bindMediaStudioControls() {
       var btnPhoto = document.getElementById('btnMtypePhoto');
       var btnVideo = document.getElementById('btnMtypeVideo');
       var btnNone = document.getElementById('btnMtypeNone');
 
-      if (btnPhoto) btnPhoto.addEventListener('click', function() { setDishMediaType('photo'); });
-      if (btnVideo) btnVideo.addEventListener('click', function() { setDishMediaType('video'); });
-      if (btnNone) btnNone.addEventListener('click', function() { setDishMediaType('none'); });
+      if (btnPhoto) btnPhoto.addEventListener('click', function() { setDishMediaType('photo'); syncDishMediaLive(); });
+      if (btnVideo) btnVideo.addEventListener('click', function() { setDishMediaType('video'); syncDishMediaLive(); });
+      if (btnNone) btnNone.addEventListener('click', function() { setDishMediaType('none'); syncDishMediaLive(); });
 
       // Photo presets
       var presetImg = document.getElementById('itemPresetImgSelect');
@@ -6705,6 +7093,7 @@
             var customUrl = document.getElementById('itemCustomImgUrl');
             if (customUrl) customUrl.value = e.target.value;
             updateDishMediaPreview();
+            syncDishMediaLive();
           }
         });
       }
@@ -6722,6 +7111,7 @@
             var customUrl = document.getElementById('itemCustomImgUrl');
             if (customUrl) customUrl.value = '';
             updateDishMediaPreview();
+            syncDishMediaLive();
             showToast('Photo optimized & attached to dish!');
           });
         });
@@ -6736,6 +7126,7 @@
             currentDishImageData = val;
             setDishMediaType('photo');
             updateDishMediaPreview();
+            syncDishMediaLive();
           }
         });
       }
@@ -6750,6 +7141,7 @@
             var customVidUrl = document.getElementById('itemCustomVideoUrl');
             if (customVidUrl) customVidUrl.value = e.target.value;
             updateDishMediaPreview();
+            syncDishMediaLive();
           }
         });
       }
@@ -6772,6 +7164,7 @@
             var customVidUrl = document.getElementById('itemCustomVideoUrl');
             if (customVidUrl) customVidUrl.value = '';
             updateDishMediaPreview();
+            syncDishMediaLive();
             showToast('Video backdrop attached!');
           };
           reader.readAsDataURL(file);
@@ -6787,6 +7180,7 @@
             currentDishVideoData = val;
             setDishMediaType('video');
             updateDishMediaPreview();
+            syncDishMediaLive();
           }
         });
       }
@@ -6806,6 +7200,7 @@
           if (presetP) presetP.value = '';
           var presetV = document.getElementById('itemPresetVideoSelect');
           if (presetV) presetV.value = '';
+          syncDishMediaLive();
           showToast('Media backdrop removed.');
         });
       }
@@ -6885,6 +7280,278 @@
       closeContextDishEditor();
     }
 
+    /* ========================================================
+       ADD-ONS, SIDES & CUSTOM DISH FACTS ENGINE
+       ======================================================== */
+    var currentDishMetaOptions = [];
+
+    var META_PRESET_SUGGESTIONS = {
+      'addons': [
+        'Crispy Spiced Chicken (LKR 420)',
+        'Seared Prawns (LKR 550)',
+        'Grilled Octopus (LKR 600)',
+        'Double Patty (LKR 1,050)',
+        'Beef Bacon (LKR 250)',
+        'Sunny-Side-Up Egg (LKR 150)',
+        'Sautéed Mushrooms (LKR 140)',
+        'Charred Peppers (LKR 100)'
+      ],
+      'sides': [
+        'Choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt, or Fresh Side Salad',
+        'Truffle Parmesan Fries',
+        'Manioc Fries with Chilli Salt',
+        'Fresh Side Salad',
+        'Herb Pressed Focaccia',
+        'Silk Sweet Potato Purée',
+        'Sweet Corn Succotash'
+      ]
+    };
+
+    function escapeMetaAttr(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function initDishMetaOptions(item) {
+      currentDishMetaOptions = [
+        { id: 'addons', badge: 'ADD-ONS', isChecked: false, text: '', isCustom: false },
+        { id: 'sides', badge: 'SIDES', isChecked: false, text: '', isCustom: false }
+      ];
+
+      if (item) {
+        var existingMetas = [];
+        if (item.metaList && Array.isArray(item.metaList) && item.metaList.length > 0) {
+          existingMetas = item.metaList;
+        } else if (item.meta && Array.isArray(item.meta.items) && item.meta.items.length > 0) {
+          existingMetas = item.meta.items;
+        } else if (item.meta && item.meta.text) {
+          existingMetas = [item.meta];
+        }
+
+        existingMetas.forEach(function(m) {
+          var b = String(m.badge || 'ADD-ONS').toUpperCase().trim();
+          var t = m.text || '';
+          if (b === 'ADD-ONS') {
+            currentDishMetaOptions[0].isChecked = true;
+            currentDishMetaOptions[0].text = t;
+          } else if (b === 'SIDES') {
+            currentDishMetaOptions[1].isChecked = true;
+            currentDishMetaOptions[1].text = t;
+          } else {
+            currentDishMetaOptions.push({
+              id: 'custom-' + Date.now() + Math.floor(Math.random() * 1000),
+              badge: b,
+              isChecked: true,
+              text: t,
+              isCustom: true
+            });
+          }
+        });
+      }
+
+      renderDishMetaOptionsList();
+    }
+
+    function renderDishMetaOptionsList() {
+      var container = document.getElementById('metaOptionsContainer');
+      if (!container) return;
+
+      var html = '';
+      currentDishMetaOptions.forEach(function(opt) {
+        var isChecked = !!opt.isChecked;
+        var presets = META_PRESET_SUGGESTIONS[opt.id] || [];
+
+        var chipsHtml = '';
+        if (presets.length > 0 && isChecked) {
+          chipsHtml = '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;">' +
+            '<span style="font-size:9px;color:var(--text-dim);font-weight:700;letter-spacing:0.04em;">QUICK ADD:</span>' +
+            presets.map(function(chip) {
+              return '<button type="button" class="btn-meta-chip" data-opt-id="' + opt.id + '" data-chip="' + escapeMetaAttr(chip) + '" style="font-size:10px;padding:2px 7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:var(--text-muted);border-radius:3px;cursor:pointer;white-space:nowrap;font-family:inherit;">' +
+                '+ ' + escapeMetaAttr(chip) +
+              '</button>';
+            }).join('') +
+          '</div>';
+        }
+
+        var borderStyle = isChecked ? '1px solid rgba(52,211,153,0.4)' : '1px solid rgba(255,255,255,0.06)';
+        var bgStyle = isChecked ? 'rgba(52,211,153,0.04)' : 'rgba(255,255,255,0.015)';
+
+        html += '<div class="meta-option-row ' + (isChecked ? 'is-active' : '') + '" data-opt-id="' + opt.id + '" style="background:' + bgStyle + ';border:' + borderStyle + ';border-radius:6px;padding:10px 12px;transition:all 0.15s ease;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+            '<div class="meta-opt-header-toggle" data-opt-id="' + opt.id + '" style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;user-select:none;">' +
+              '<span class="meta-checkbox-icon" style="width:20px;height:20px;border-radius:4px;border:1.5px solid ' + (isChecked ? '#34d399' : 'rgba(255,255,255,0.3)') + ';background:' + (isChecked ? 'rgba(52,211,153,0.2)' : 'rgba(0,0,0,0.3)') + ';display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;">' +
+                (isChecked ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : '') +
+              '</span>' +
+              (opt.isCustom ? (
+                '<div style="display:flex;align-items:center;gap:6px;" onclick="event.stopPropagation();">' +
+                  '<span style="font-size:10px;color:var(--text-dim);font-weight:700;letter-spacing:0.04em;">OPTION:</span>' +
+                  '<input type="text" class="input-field meta-badge-input" data-opt-id="' + opt.id + '" value="' + escapeMetaAttr(opt.badge) + '" placeholder="e.g. FACTS, SAUCES, NOTES" style="height:26px;font-size:11px;padding:2px 8px;width:140px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:#141712;border:1px solid rgba(255,255,255,0.15);color:var(--gold-light);">' +
+                '</div>'
+              ) : (
+                '<span style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:' + (isChecked ? '#34d399' : 'var(--text-muted)') + ';text-transform:uppercase;">' +
+                  opt.badge +
+                '</span>'
+              )) +
+            '</div>' +
+            (opt.isCustom ? (
+              '<button type="button" class="btn-icon btn-del-meta-opt" data-opt-id="' + opt.id + '" title="Remove Custom Option" style="color:#ef4444;width:24px;height:24px;">' +
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+              '</button>'
+            ) : '') +
+          '</div>' +
+
+          (isChecked ? (
+            '<div style="margin-top:10px;">' +
+              '<label style="font-size:10px;color:var(--text-dim);margin-bottom:4px;display:block;letter-spacing:0.04em;">WRITE FACTS / OPTIONS FOR THIS ITEM:</label>' +
+              '<input type="text" class="input-field meta-text-input" data-opt-id="' + opt.id + '" value="' + escapeMetaAttr(opt.text) + '" placeholder="' + (opt.id === 'addons' ? 'e.g. Crispy Spiced Chicken (LKR 420) · Seared Prawns (LKR 550)' : (opt.id === 'sides' ? 'e.g. Choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt' : 'Write facts, notes, or details for this menu item...')) + '" style="width:100%;font-size:12px;height:34px;background:#141712;border:1px solid rgba(255,255,255,0.14);color:#fff;">' +
+              chipsHtml +
+            '</div>'
+          ) : '') +
+        '</div>';
+      });
+
+      container.innerHTML = html;
+
+      // Event: Click on header row to toggle checkbox
+      container.querySelectorAll('.meta-opt-header-toggle').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var optId = el.getAttribute('data-opt-id');
+          var opt = currentDishMetaOptions.find(function(o) { return o.id === optId; });
+          if (opt) {
+            opt.isChecked = !opt.isChecked;
+            renderDishMetaOptionsList();
+            syncMetaStateToItemLive();
+          }
+        });
+      });
+
+      // Event: Edit custom badge name
+      container.querySelectorAll('.meta-badge-input').forEach(function(inp) {
+        inp.addEventListener('input', function() {
+          var optId = inp.getAttribute('data-opt-id');
+          var opt = currentDishMetaOptions.find(function(o) { return o.id === optId; });
+          if (opt) {
+            opt.badge = inp.value.trim().toUpperCase() || 'FACTS';
+            syncMetaStateToItemLive();
+          }
+        });
+      });
+
+      // Event: Edit facts text
+      container.querySelectorAll('.meta-text-input').forEach(function(inp) {
+        inp.addEventListener('input', function() {
+          var optId = inp.getAttribute('data-opt-id');
+          var opt = currentDishMetaOptions.find(function(o) { return o.id === optId; });
+          if (opt) {
+            opt.text = inp.value;
+            syncMetaStateToItemLive();
+          }
+        });
+      });
+
+      // Event: Quick preset chip clicked
+      container.querySelectorAll('.btn-meta-chip').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var optId = btn.getAttribute('data-opt-id');
+          var chip = btn.getAttribute('data-chip');
+          var opt = currentDishMetaOptions.find(function(o) { return o.id === optId; });
+          if (opt && chip) {
+            if (!opt.text || !opt.text.trim()) {
+              opt.text = chip;
+            } else if (opt.text.indexOf(chip) === -1) {
+              opt.text = opt.text.trim() + ' · ' + chip;
+            }
+            renderDishMetaOptionsList();
+            syncMetaStateToItemLive();
+          }
+        });
+      });
+
+      // Event: Remove custom option
+      container.querySelectorAll('.btn-del-meta-opt').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var optId = btn.getAttribute('data-opt-id');
+          currentDishMetaOptions = currentDishMetaOptions.filter(function(o) { return o.id !== optId; });
+          renderDishMetaOptionsList();
+          syncMetaStateToItemLive();
+        });
+      });
+    }
+
+    function syncMetaStateToItemLive() {
+      var activeMetas = currentDishMetaOptions.filter(function(o) {
+        return o.isChecked && o.text && o.text.trim();
+      }).map(function(o) {
+        return {
+          badge: (o.badge || 'ADD-ONS').trim().toUpperCase(),
+          text: o.text.trim()
+        };
+      });
+
+      var hiddenMetaInput = document.getElementById('itemMetaInput');
+      if (hiddenMetaInput) {
+        hiddenMetaInput.value = activeMetas[0] ? activeMetas[0].text : '';
+      }
+
+      var finalMeta = null;
+      if (activeMetas.length === 1) {
+        finalMeta = { badge: activeMetas[0].badge, text: activeMetas[0].text };
+      } else if (activeMetas.length > 1) {
+        finalMeta = {
+          badge: activeMetas[0].badge,
+          text: activeMetas.map(function(m) { return m.badge + ': ' + m.text; }).join(' · '),
+          items: activeMetas
+        };
+      }
+
+      var scope = document.getElementById('editItemScope').value;
+      var catKey = document.getElementById('editItemCategoryKey').value;
+      var id = document.getElementById('editItemId').value;
+      if (!id || !appData) return;
+
+      var targetItem = null;
+      if (scope === 'lunch') targetItem = (appData.lunchItems || []).find(function(x) { return x.id === id; });
+      else if (scope === 'alacarte') {
+        var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+        if (cat) targetItem = (cat.items || []).find(function(x) { return x.id === id; });
+      } else if (scope === 'thebar') {
+        var bcat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+        if (bcat) targetItem = (bcat.items || []).find(function(x) { return x.id === id; });
+      } else if (scope === 'custom') {
+        var ccat = (appData.menuCategories || []).find(function(c) { return c.id === catKey; });
+        if (ccat && ccat.items) targetItem = ccat.items.find(function(x) { return x.id === id; });
+      }
+
+      if (targetItem) {
+        targetItem.meta = finalMeta;
+        targetItem.metaList = activeMetas;
+        sendLiveUpdate();
+      }
+    }
+
+    var btnAddCustomMeta = document.getElementById('btnAddCustomMetaOption');
+    if (btnAddCustomMeta) {
+      btnAddCustomMeta.addEventListener('click', function() {
+        currentDishMetaOptions.push({
+          id: 'custom-' + Date.now(),
+          badge: 'FACTS',
+          isChecked: true,
+          text: '',
+          isCustom: true
+        });
+        renderDishMetaOptionsList();
+        syncMetaStateToItemLive();
+        var container = document.getElementById('metaOptionsContainer');
+        if (container) {
+          var inputs = container.querySelectorAll('.meta-text-input');
+          if (inputs.length > 0) {
+            inputs[inputs.length - 1].focus();
+          }
+        }
+      });
+    }
+
     function openEditItemModal(scope, categoryKey, id) {
       // 1. Ensure Menu tab view is active
       var menuTabBtn = document.querySelector('.studio-tab-btn[data-tab="tab-menu"]');
@@ -6918,21 +7585,21 @@
         var cat = appData.aLaCarte.find(function(c) { return c.key === categoryKey; });
         scopeLabel = 'À LA CARTE: ' + (cat ? cat.title.toUpperCase() : 'COURSE');
         if (cat) item = (cat.items || []).find(function(x) { return x.id === id; });
-        document.getElementById('groupItemMeta').style.display = 'none';
+        document.getElementById('groupItemMeta').style.display = 'block';
         document.getElementById('groupPriceAlt').style.display = 'block';
         navigatePreview(categoryKey || 'lunch');
       } else if (scope === 'thebar') {
         var bcat = appData.theGardenAndBar.find(function(c) { return c.key === categoryKey; });
-        scopeLabel = 'THE BAR & BITES: ' + (bcat ? bcat.title.toUpperCase() : 'DRINKS');
+        scopeLabel = 'THE BAR: ' + (bcat && bcat.category ? bcat.category.toUpperCase() : 'MENU');
         if (bcat) item = (bcat.items || []).find(function(x) { return x.id === id; });
-        document.getElementById('groupItemMeta').style.display = 'none';
+        document.getElementById('groupItemMeta').style.display = 'block';
         document.getElementById('groupPriceAlt').style.display = 'none';
         navigatePreview('thebar');
       } else if (scope === 'custom') {
         var ccat = (appData.menuCategories || []).find(function(c) { return c.id === categoryKey; });
         scopeLabel = ccat ? ccat.name.toUpperCase() : 'CUSTOM MENU';
         if (ccat && ccat.items) item = ccat.items.find(function(x) { return x.id === id; });
-        document.getElementById('groupItemMeta').style.display = 'none';
+        document.getElementById('groupItemMeta').style.display = 'block';
         document.getElementById('groupPriceAlt').style.display = 'none';
         navigatePreview(categoryKey);
       }
@@ -6952,17 +7619,41 @@
       if (subcatSelect) {
         var scKey = (scope === 'custom') ? categoryKey : scope;
         var rawList = (appData.subCategories && appData.subCategories[scKey]) ? appData.subCategories[scKey] : [];
-        var list = rawList.filter(function(x) { return x !== 'No Sub-Category' && x !== 'Unassigned'; });
-        var sHtml = '<option value="">-- Choose Sub-Category --</option>';
-        if (item && (!item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned')) {
-          sHtml += '<option value="No Sub-Category" disabled selected>📁 No Sub-Category (Select destination below)</option>';
+        var list = rawList.filter(function(x) {
+          var s = String(x || '').trim().toLowerCase();
+          return s && s !== 'no sub-category' && s !== 'unassigned' && s.indexOf('no sub') === -1;
+        });
+        if (scope === 'alacarte' && appData.aLaCarte) {
+          appData.aLaCarte.forEach(function(c) {
+            var cName = c.category || c.title;
+            if (cName && list.indexOf(cName) === -1 && !c.isTemporaryFolder) {
+              list.push(cName);
+            }
+          });
         }
+        var sHtml = '<option value="">-- No Sub-Category / General --</option>';
         list.forEach(function(sc) {
           sHtml += '<option value="' + sc + '">' + sc + '</option>';
         });
         subcatSelect.innerHTML = sHtml;
-        if (item && item.subCategory && item.subCategory !== 'No Sub-Category' && item.subCategory !== 'Unassigned') {
-          subcatSelect.value = item.subCategory;
+        if (item && item.subCategory) {
+          var curSc = String(item.subCategory).trim();
+          if (curSc && curSc !== 'No Sub-Category' && curSc !== 'Unassigned' && curSc.toLowerCase().indexOf('no sub') === -1) {
+            subcatSelect.value = curSc;
+          } else {
+            subcatSelect.value = '';
+          }
+        } else if (scope === 'alacarte' && categoryKey && appData.aLaCarte) {
+          var matchCourse = appData.aLaCarte.find(function(c) {
+            return c.key === categoryKey || (c.category && c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === categoryKey);
+          });
+          if (matchCourse) {
+            subcatSelect.value = matchCourse.category || matchCourse.title || '';
+          } else {
+            subcatSelect.value = '';
+          }
+        } else {
+          subcatSelect.value = '';
         }
       }
       var groupInline = document.getElementById('groupNewSubcatInline');
@@ -7019,6 +7710,7 @@
       }
 
       updateItemVegToggleUI();
+      initDishMetaOptions(item);
 
       // Smooth scroll editor pane to top
       if (menuView) menuView.scrollTo({ top: 0, behavior: 'smooth' });
@@ -7056,10 +7748,29 @@
       }
     });
 
-    // Back & Cancel Button Listeners (In-context, no pop-up)
-    var btnBackDish = document.getElementById('btnBackToDishList');
-    if (btnBackDish) btnBackDish.addEventListener('click', cancelAndRevertDishEditor);
+    function commitAndSaveDishEditor() {
+      var form = document.getElementById('itemForm');
+      if (form) {
+        var nameInp = document.getElementById('itemNameInput');
+        if (nameInp && !nameInp.value.trim()) {
+          showToast('Please enter an item name before saving.');
+          nameInp.focus();
+          return;
+        }
+        if (typeof form.requestSubmit === 'function') {
+          form.requestSubmit();
+        } else {
+          form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      }
+    }
 
+    // Back & Cancel Button Listeners (In-context, no pop-up)
+    // "Back to Dishes" commits & saves edits so work is never lost!
+    var btnBackDish = document.getElementById('btnBackToDishList');
+    if (btnBackDish) btnBackDish.addEventListener('click', commitAndSaveDishEditor);
+
+    // "Discard & Back" explicitly discards changes and reverts to previous snapshot
     var btnCancelDish = document.getElementById('btnCancelItemModal');
     if (btnCancelDish) btnCancelDish.addEventListener('click', cancelAndRevertDishEditor);
 
@@ -7091,10 +7802,17 @@
           if (ccat && ccat.items) targetItem = ccat.items.find(function(x) { return x.id === id; });
         }
 
+        var subcatInp = document.getElementById('itemSubcatSelect');
+        var subcatVal = (subcatInp ? subcatInp.value : '').trim();
+        if (subcatVal === 'No Sub-Category' || subcatVal === 'Unassigned' || subcatVal.toLowerCase().indexOf('no sub') !== -1) {
+          subcatVal = '';
+        }
+
         if (targetItem) {
           if (nameVal) targetItem.name = nameVal;
           if (priceVal) targetItem.price = priceVal;
           if (descVal) targetItem.desc = descVal;
+          targetItem.subCategory = subcatVal;
           sendLiveUpdate();
         }
       }
@@ -7102,9 +7820,11 @@
       var nameInp = document.getElementById('itemNameInput');
       var priceInp = document.getElementById('itemPriceInput');
       var descInp = document.getElementById('itemDescInput');
+      var subcatInp = document.getElementById('itemSubcatSelect');
       if (nameInp) nameInp.addEventListener('input', syncDishFieldLive);
       if (priceInp) priceInp.addEventListener('input', syncDishFieldLive);
       if (descInp) descInp.addEventListener('input', syncDishFieldLive);
+      if (subcatInp) subcatInp.addEventListener('change', syncDishFieldLive);
     }
     setupLiveDishKeystrokeSync();
 
@@ -7128,9 +7848,35 @@
       var price = document.getElementById('itemPriceInput').value.trim();
       var price2 = document.getElementById('itemPriceAltInput').value.trim();
       var desc = document.getElementById('itemDescInput').value.trim();
-      var metaText = document.getElementById('itemMetaInput').value.trim();
 
-      var subCategory = document.getElementById('itemSubcatSelect').value.trim();
+      // Collect active meta options
+      var activeMetas = (currentDishMetaOptions || []).filter(function(o) {
+        return o.isChecked && o.text && o.text.trim();
+      }).map(function(o) {
+        return {
+          badge: (o.badge || 'ADD-ONS').trim().toUpperCase(),
+          text: o.text.trim()
+        };
+      });
+
+      var finalMeta = null;
+      if (activeMetas.length === 1) {
+        finalMeta = {
+          badge: activeMetas[0].badge,
+          text: activeMetas[0].text
+        };
+      } else if (activeMetas.length > 1) {
+        finalMeta = {
+          badge: activeMetas[0].badge,
+          text: activeMetas.map(function(m) { return m.badge + ': ' + m.text; }).join(' · '),
+          items: activeMetas
+        };
+      }
+
+      var subCategory = (document.getElementById('itemSubcatSelect').value || '').trim();
+      if (subCategory === 'No Sub-Category' || subCategory === 'Unassigned' || subCategory.toLowerCase().indexOf('no sub') !== -1) {
+        subCategory = '';
+      }
       var finalImage = '';
       var finalVideo = '';
       if (currentDishMediaType === 'photo') {
@@ -7151,7 +7897,8 @@
             desc: desc,
             image: finalImage,
             video: finalVideo,
-            meta: metaText ? { badge: 'ADD-ONS', text: metaText } : null
+            meta: finalMeta,
+            metaList: activeMetas
           };
           appData.lunchItems.push(newLunch);
         } else {
@@ -7164,7 +7911,8 @@
             it.desc = desc;
             it.image = finalImage;
             it.video = finalVideo;
-            it.meta = metaText ? { badge: 'ADD-ONS', text: metaText } : null;
+            it.meta = finalMeta;
+            it.metaList = activeMetas;
           }
         }
         renderLunchTab();
@@ -7187,7 +7935,9 @@
               price2: price2,
               desc: desc,
               image: finalImage,
-              video: finalVideo
+              video: finalVideo,
+              meta: finalMeta,
+              metaList: activeMetas
             };
             targetCat.items.push(newDish);
           } else {
@@ -7215,6 +7965,8 @@
               dish.desc = desc;
               dish.image = finalImage;
               dish.video = finalVideo;
+              dish.meta = finalMeta;
+              dish.metaList = activeMetas;
             }
           }
           currentAlacarteKey = targetCat.key;
@@ -7239,7 +7991,9 @@
               price: price,
               desc: desc,
               image: finalImage,
-              video: finalVideo
+              video: finalVideo,
+              meta: finalMeta,
+              metaList: activeMetas
             };
             targetBar.items.push(newBarItem);
           } else {
@@ -7266,6 +8020,8 @@
               bitem.desc = desc;
               bitem.image = finalImage;
               bitem.video = finalVideo;
+              bitem.meta = finalMeta;
+              bitem.metaList = activeMetas;
             }
           }
           currentBarKey = targetBar.key;
@@ -7287,7 +8043,9 @@
               price: price,
               desc: desc,
               image: finalImage,
-              video: finalVideo
+              video: finalVideo,
+              meta: finalMeta,
+              metaList: activeMetas
             };
             cCat.items.push(newCustomDish);
           } else {
@@ -7301,6 +8059,8 @@
               dish.desc = desc;
               dish.image = finalImage;
               dish.video = finalVideo;
+              dish.meta = finalMeta;
+              dish.metaList = activeMetas;
             }
           }
           renderCustomCategoryTab(catKey);
@@ -7391,7 +8151,7 @@
       }
     }
 
-        function pushToFirebaseCloud() {
+    function pushToFirebaseCloud(callback) {
       if (!appData) return;
       var url = "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content.json";
       fetch(url, {
@@ -7405,11 +8165,11 @@
       })
       .then(function(data) {
         console.log('[Firebase] Successfully published to Firebase Realtime Database!');
-        showToast('Live published to Google Firebase Cloud!');
+        if (typeof callback === 'function') callback(null, data);
       })
       .catch(function(err) {
         console.error('Firebase Cloud push error:', err);
-        showToast('Cloud notice: ' + err.message);
+        if (typeof callback === 'function') callback(err);
       });
     }
 
@@ -7417,9 +8177,20 @@
     initFirebaseCloud();
 
     document.getElementById('btnSavePublish').addEventListener('click', function() {
+      var dishEditor = document.getElementById('contextDishEditor');
+      if (dishEditor && dishEditor.style.display !== 'none') {
+        commitAndSaveDishEditor();
+      }
+
       sendLiveUpdate();
-      pushToFirebaseCloud();
-      showToast('All changes saved & published!');
+      showToast('Publishing live to Google Firebase Cloud...');
+      pushToFirebaseCloud(function(err) {
+        if (!err) {
+          showToast('All changes saved & published to Cloud & Guest app!');
+        } else {
+          showToast('Saved locally. Cloud notice: ' + err.message);
+        }
+      });
     });
 
     // 13. Export & Import JSON
@@ -7510,38 +8281,109 @@
       cloudModal.classList.remove('is-open');
     });
 
-    // 15. Device Switcher
-    function bindDeviceSwitchers() {
+    // 15. Device Switcher & Proportional Simulator Scale
+    var currentDeviceScale = 'fit';
+
+    function setSimulatorDevice(deviceKey) {
       var chassis = document.getElementById('phoneChassis');
+      if (!chassis) return;
+
+      var devices = {
+        'iphone15': { w: 393, h: 852, radius: 48, device: 'iphone15' },
+        'iphonese': { w: 375, h: 667, radius: 36, device: 'iphonese' },
+        'galaxys24': { w: 412, h: 915, radius: 40, device: 'galaxys24' }
+      };
+
+      var dev = devices[deviceKey] || devices['iphone15'];
+      chassis.setAttribute('data-device', dev.device);
+      chassis.setAttribute('data-screen-w', dev.w);
+      chassis.setAttribute('data-screen-h', dev.h);
+      chassis.style.width = dev.w + 'px';
+      chassis.style.height = dev.h + 'px';
+      chassis.style.borderRadius = dev.radius + 'px';
+
+      updatePhoneSimulatorScale();
+    }
+
+    function updatePhoneSimulatorScale(customScale) {
+      var chassis = document.getElementById('phoneChassis');
+      var wrapper = document.getElementById('phoneScaleWrapper');
+      if (!chassis || !wrapper) return;
+
+      if (customScale !== undefined) {
+        currentDeviceScale = customScale;
+      }
+
+      var w = parseFloat(chassis.getAttribute('data-screen-w') || 393);
+      var h = parseFloat(chassis.getAttribute('data-screen-h') || 852);
+      var bezel = 22; // 11px on each side
+      var totalW = w + bezel;
+      var totalH = h + bezel;
+
+      var scale = 1;
+      if (currentDeviceScale === 'fit') {
+        var subwayWall = document.querySelector('.subway-tile-wall');
+        var availH = subwayWall ? (subwayWall.clientHeight || (window.innerHeight - 250)) : (window.innerHeight - 250);
+        var availW = subwayWall ? (subwayWall.clientWidth - 28) : 440;
+        var maxScaleH = Math.max(0.55, Math.min(1, (availH - 20) / totalH));
+        var maxScaleW = Math.max(0.55, Math.min(1, availW / totalW));
+        scale = Math.min(maxScaleH, maxScaleW);
+        scale = Math.round(scale * 100) / 100;
+      } else {
+        scale = parseFloat(currentDeviceScale) || 1;
+      }
+
+      chassis.style.transform = 'scale(' + scale + ')';
+      wrapper.style.width = Math.round(totalW * scale) + 'px';
+      wrapper.style.height = Math.round(totalH * scale) + 'px';
+    }
+
+    function bindDeviceSwitchers() {
+      // Device Switcher buttons
       document.querySelectorAll('.device-pill-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           document.querySelectorAll('.device-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
           btn.classList.add('is-active');
-          var w = btn.getAttribute('data-width');
-          var h = btn.getAttribute('data-height');
-          chassis.style.width = w + 'px';
-          chassis.style.height = h + 'px';
+          var dev = btn.getAttribute('data-device') || 'iphone15';
+          setSimulatorDevice(dev);
         });
       });
 
+      // Scale Switcher buttons (Fit, 85%, 100%)
+      document.querySelectorAll('.scale-pill-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.scale-pill-btn').forEach(function(b) { b.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          var s = btn.getAttribute('data-scale') || 'fit';
+          updatePhoneSimulatorScale(s);
+        });
+      });
+
+      // Auto re-fit on window resize
+      window.addEventListener('resize', function() {
+        if (currentDeviceScale === 'fit') {
+          updatePhoneSimulatorScale('fit');
+        }
+      });
+
       document.getElementById('btnReloadPreview').addEventListener('click', function() {
-        var signaled = false;
+        sendLiveUpdate();
         if (previewIframe && previewIframe.contentWindow) {
           try {
             previewIframe.contentWindow.postMessage({ type: 'BELLE_RELOAD' }, '*');
-            signaled = true;
           } catch(e) {}
         }
-        if (!signaled) {
-          try {
-            previewIframe.src = 'index.html';
-          } catch(e) {}
-        }
-        showToast('Phone preview reloaded.');
+        showToast('Phone preview refreshed.');
       });
+
       document.getElementById('btnOpenNewTab').addEventListener('click', function() {
         window.open('index.html', '_blank');
       });
+
+      // Initial proportional fit
+      setTimeout(function() {
+        updatePhoneSimulatorScale('fit');
+      }, 150);
     }
 
     // 16. Toast Utility
