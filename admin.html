@@ -1351,95 +1351,66 @@
        STORAGE GAUGE WIDGET (Executive Cockpit Meter)
        ======================================================== */
     .storage-gauge-widget {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      padding: 6px 14px;
-      border-radius: 8px;
-      background: rgba(22, 28, 19, 0.94);
-      border: 1px solid rgba(181, 212, 113, 0.28);
+      justify-content: center;
       cursor: pointer;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      background: transparent;
+      border: none;
+      padding: 0;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
       user-select: none;
-      white-space: nowrap;
       flex-shrink: 0;
     }
     .storage-gauge-widget:hover {
-      background: rgba(28, 36, 23, 0.98);
-      border-color: var(--lime-primary);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 0 10px rgba(181, 212, 113, 0.15);
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.45));
+    }
+    .storage-gauge-widget:focus-visible {
+      outline: 2px solid #22c55e;
+      outline-offset: 4px;
+      border-radius: 50%;
     }
     .radial-gauge-wrap {
       position: relative;
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
     .radial-gauge-svg {
-      width: 36px;
-      height: 36px;
-      transform: rotate(-90deg);
+      width: 44px;
+      height: 44px;
+      display: block;
     }
     .radial-gauge-bg {
       fill: none;
-      stroke: rgba(255, 255, 255, 0.08);
-      stroke-width: 3.2;
+      stroke: rgba(255, 255, 255, 0.24);
+      stroke-width: 3.6;
     }
     .radial-gauge-fill {
       fill: none;
-      stroke: #4ade80;
-      stroke-width: 3.2;
-      stroke-linecap: round;
+      stroke: #22c55e;
+      stroke-width: 3.6;
+      stroke-linecap: butt;
       transition: stroke-dasharray 0.4s ease, stroke 0.4s ease;
-      filter: drop-shadow(0 0 3px rgba(74, 222, 128, 0.5));
     }
     .radial-gauge-text {
       position: absolute;
-      font-family: var(--font-mono);
-      font-size: 9px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 11.5px;
       font-weight: 800;
       color: #ffffff;
       letter-spacing: -0.02em;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-    }
-    .storage-gauge-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .storage-gauge-title-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #f1f4ed;
-    }
-    .storage-gauge-title-row svg {
-      color: var(--lime-primary);
-    }
-    .storage-quota-badge {
-      background: rgba(74, 222, 128, 0.14);
-      color: #4ade80;
-      padding: 1px 6px;
-      font-size: 8.5px;
-      font-weight: 700;
-      border: 1px solid rgba(74, 222, 128, 0.3);
-      border-radius: 4px;
-    }
-    .storage-gauge-sub {
-      font-family: var(--font-mono);
-      font-size: 9.5px;
-      color: var(--text-dim);
-      font-weight: 600;
+      line-height: 1;
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
     }
 
     /* Modal Sheet (Brutalist Popup Box) */
@@ -1517,23 +1488,28 @@
     .modal-radial-svg {
       width: 100px;
       height: 100px;
-      transform: rotate(-90deg);
+      display: block;
     }
     .modal-radial-text-stack {
       position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      pointer-events: none;
     }
     .modal-radial-pct {
-      font-family: var(--font-mono);
-      font-size: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 22px;
       font-weight: 700;
-      color: var(--lime-primary);
+      color: #22c55e;
+      letter-spacing: -0.02em;
     }
     .modal-radial-label {
-      font-family: var(--font-mono);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       font-size: 8px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1974,22 +1950,14 @@
         </div>
       </div>
 
-      <!-- 1 GB Database Storage Radial Percentage Widget -->
-      <div class="storage-gauge-widget" id="storageGaugeWidget" title="1.00 GB Cloud Database Quota (Free Tier) — Click to open Cloud Cockpit">
+      <!-- 1 GB Database Storage Radial Percentage Indicator -->
+      <div class="storage-gauge-widget" id="storageGaugeWidget" role="button" tabindex="0" title="Database Quota: 0.05 MB / 1,024 MB (Click to open Cloud Cockpit)">
         <div class="radial-gauge-wrap">
           <svg class="radial-gauge-svg" viewBox="0 0 36 36">
             <path class="radial-gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            <path class="radial-gauge-fill" id="radialGaugeFill" stroke-dasharray="2, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="radial-gauge-fill" id="radialGaugeFill" stroke-dasharray="3.2, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
           </svg>
           <div class="radial-gauge-text" id="radialGaugePercent">0.1%</div>
-        </div>
-        <div class="storage-gauge-meta">
-          <div class="storage-gauge-title-row">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-            <span>CLOUD DB</span>
-            <span class="storage-quota-badge">1 GB FREE</span>
-          </div>
-          <div class="storage-gauge-sub" id="storageGaugeSub">0.05 MB / 1,024 MB</div>
         </div>
       </div>
 
@@ -3086,13 +3054,17 @@
       var fillEl = document.getElementById('radialGaugeFill');
       var pctEl = document.getElementById('radialGaugePercent');
       var subEl = document.getElementById('storageGaugeSub');
+      var widget = document.getElementById('storageGaugeWidget');
       
-      var visualArc = Math.max(2.0, m.pct).toFixed(1);
+      var visualArc = Math.max(3.2, m.pct).toFixed(1);
       if (fillEl) fillEl.setAttribute('stroke-dasharray', visualArc + ', 100');
       if (pctEl) pctEl.textContent = m.pctDisplay + '%';
       if (subEl) subEl.textContent = m.usedMb + ' MB / 1,024 MB';
+      if (widget) {
+        widget.title = 'Database Storage: ' + m.usedMb + ' MB / 1,024 MB (' + m.pctDisplay + '% used) — Click to open Cloud Cockpit';
+      }
       
-      var strokeColor = m.pct > 90 ? '#ef4444' : (m.pct > 75 ? '#f59e0b' : '#4ade80');
+      var strokeColor = m.pct > 90 ? '#ef4444' : (m.pct > 75 ? '#f59e0b' : '#22c55e');
       if (fillEl) fillEl.style.stroke = strokeColor;
 
       // Update Media tab badge if function exists
@@ -3107,7 +3079,7 @@
       var modalHeadline = document.getElementById('modalStorageHeadline');
       
       if (modalFill) {
-        modalFill.setAttribute('stroke-dasharray', m.pct.toFixed(1) + ', 100');
+        modalFill.setAttribute('stroke-dasharray', Math.max(2.0, m.pct).toFixed(1) + ', 100');
         modalFill.style.stroke = strokeColor;
       }
       if (modalPct) modalPct.textContent = m.pctDisplay + '%';
@@ -3617,6 +3589,12 @@
         storageGaugeWidget.addEventListener('click', function() {
           updateStorageGauge();
           if (storageCockpitModal) storageCockpitModal.classList.add('is-open');
+        });
+        storageGaugeWidget.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            storageGaugeWidget.click();
+          }
         });
       }
       if (btnCloseStorageModal) {
