@@ -748,6 +748,89 @@
       border-color: #141712 !important;
       box-shadow: 3px 3px 0px #000;
     }
+    .subcat-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: inherit;
+      margin: 0 4px;
+      vertical-align: middle;
+      line-height: 1.2;
+    }
+    .sub-pill-btn.is-active .subcat-pill-badge {
+      background: rgba(0, 0, 0, 0.22);
+      color: #141712;
+    }
+    .sub-pill-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 4px;
+      opacity: 0.65;
+      transition: opacity 0.15s ease;
+    }
+    .sub-pill-btn:hover .sub-pill-actions,
+    .sub-pill-btn.is-active .sub-pill-actions {
+      opacity: 1;
+    }
+    .sub-pill-action-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      border-radius: 0px;
+      cursor: pointer;
+      color: inherit;
+      padding: 1px;
+      transition: all 0.15s ease;
+    }
+    .sub-pill-action-icon:hover {
+      background: rgba(0, 0, 0, 0.25);
+      transform: scale(1.15);
+    }
+    .sub-pill-btn.is-active .sub-pill-action-icon:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .sub-pill-action-icon.is-del:hover {
+      color: #ef4444 !important;
+      background: rgba(239, 68, 68, 0.3) !important;
+    }
+    .sub-pill-inline-input {
+      background: #0d110a;
+      border: 1.5px solid var(--lime-primary);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      height: 20px;
+      outline: none;
+      width: 110px;
+      border-radius: 0px;
+    }
+    .btn-sub-pill-inline-btn {
+      background: transparent;
+      border: none;
+      color: var(--lime-primary);
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .btn-sub-pill-inline-btn.is-del-confirm {
+      color: #ef4444;
+      font-weight: 900;
+    }
+    .btn-sub-pill-inline-btn.is-cancel {
+      color: var(--text-dim);
+    }
     .temporary-folder-banner {
       background: rgba(245, 158, 11, 0.08);
       border: 1.5px dashed #f59e0b;
@@ -3162,6 +3245,8 @@
     var activeSubcatManageSection = 'lunch';
     var activeSubcatRenameIndex = null;
     var activeSubcatDeleteConfirmIndex = null;
+    var activeInlineSubcatRename = null;
+    var activeInlineSubcatDelete = null;
 
     function initSubCategoriesState() {
       if (!appData) return;
@@ -3849,6 +3934,131 @@
       }
     }
 
+    function renderSubcatPillHtml(sectionKey, sc, count, isActive, filterAttr, filterVal) {
+      if (activeInlineSubcatRename && activeInlineSubcatRename.section === sectionKey && activeInlineSubcatRename.name === sc) {
+        return '<div class="sub-pill-btn is-active" style="padding:2px 6px;border-color:var(--lime-primary);background:#182014;display:inline-flex;align-items:center;gap:4px;">' +
+          '<input type="text" class="sub-pill-inline-input input-rename-subcat-pill" value="' + sc.replace(/"/g, '&quot;') + '" data-section="' + sectionKey + '" data-old="' + sc.replace(/"/g, '&quot;') + '" autofocus>' +
+          '<button type="button" class="btn-sub-pill-inline-btn btn-save-subcat-pill" data-section="' + sectionKey + '" data-old="' + sc.replace(/"/g, '&quot;') + '" title="Save (Enter)">✓</button>' +
+          '<button type="button" class="btn-sub-pill-inline-btn is-cancel btn-cancel-subcat-pill" data-section="' + sectionKey + '" title="Cancel (Esc)">✕</button>' +
+        '</div>';
+      }
+      if (activeInlineSubcatDelete && activeInlineSubcatDelete.section === sectionKey && activeInlineSubcatDelete.name === sc) {
+        return '<div class="sub-pill-btn" style="padding:3px 8px;border-color:#ef4444;background:rgba(239,68,68,0.18);display:inline-flex;align-items:center;gap:6px;">' +
+          '<span style="color:#fca5a5;font-size:9.5px;font-weight:700;">Del "' + sc + '"?</span>' +
+          '<button type="button" class="btn-sub-pill-inline-btn is-del-confirm btn-confirm-del-subcat-pill" data-section="' + sectionKey + '" data-name="' + sc.replace(/"/g, '&quot;') + '" title="Confirm delete">YES</button>' +
+          '<button type="button" class="btn-sub-pill-inline-btn is-cancel btn-cancel-del-subcat-pill" data-section="' + sectionKey + '" title="Cancel">NO</button>' +
+        '</div>';
+      }
+      return '<button type="button" class="sub-pill-btn ' + (isActive ? 'is-active' : '') + '" ' + filterAttr + '="' + filterVal + '" data-section="' + sectionKey + '" data-subcat-name="' + sc.replace(/"/g, '&quot;') + '" title="Click to filter / Double-click to rename">' +
+        '<span>' + sc + '</span>' +
+        '<span class="subcat-pill-badge">' + count + '</span>' +
+        '<span class="sub-pill-actions">' +
+          '<span class="sub-pill-action-icon btn-trigger-rename-pill" data-section="' + sectionKey + '" data-name="' + sc.replace(/"/g, '&quot;') + '" title="Rename \'' + sc.replace(/"/g, '&quot;') + '\'">' +
+            '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
+          '</span>' +
+          '<span class="sub-pill-action-icon is-del btn-trigger-del-pill" data-section="' + sectionKey + '" data-name="' + sc.replace(/"/g, '&quot;') + '" title="Delete \'' + sc.replace(/"/g, '&quot;') + '\'">' +
+            '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+          '</span>' +
+        '</span>' +
+      '</button>';
+    }
+
+    function bindSubcatPillEvents(container, sectionKey, onReRender) {
+      if (!container) return;
+
+      var inp = container.querySelector('.input-rename-subcat-pill[data-section="' + sectionKey + '"]');
+      if (inp) {
+        setTimeout(function() {
+          inp.focus();
+          inp.select();
+        }, 20);
+        inp.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            var oldN = inp.getAttribute('data-old');
+            var val = inp.value.trim();
+            if (val && val !== oldN) {
+              renameSubcat(sectionKey, oldN, val);
+            }
+            activeInlineSubcatRename = null;
+            onReRender();
+          } else if (e.key === 'Escape') {
+            activeInlineSubcatRename = null;
+            onReRender();
+          }
+        });
+      }
+
+      container.querySelectorAll('.btn-save-subcat-pill[data-section="' + sectionKey + '"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var oldN = btn.getAttribute('data-old');
+          var inputEl = container.querySelector('.input-rename-subcat-pill[data-section="' + sectionKey + '"]');
+          var val = inputEl ? inputEl.value.trim() : '';
+          if (val && val !== oldN) {
+            renameSubcat(sectionKey, oldN, val);
+          }
+          activeInlineSubcatRename = null;
+          onReRender();
+        });
+      });
+
+      container.querySelectorAll('.btn-cancel-subcat-pill[data-section="' + sectionKey + '"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          activeInlineSubcatRename = null;
+          onReRender();
+        });
+      });
+
+      container.querySelectorAll('.btn-trigger-rename-pill[data-section="' + sectionKey + '"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var name = btn.getAttribute('data-name');
+          activeInlineSubcatRename = { section: sectionKey, name: name };
+          activeInlineSubcatDelete = null;
+          onReRender();
+        });
+      });
+
+      container.querySelectorAll('.sub-pill-btn[data-subcat-name]').forEach(function(btn) {
+        btn.addEventListener('dblclick', function(e) {
+          e.stopPropagation();
+          var name = btn.getAttribute('data-subcat-name');
+          activeInlineSubcatRename = { section: sectionKey, name: name };
+          activeInlineSubcatDelete = null;
+          onReRender();
+        });
+      });
+
+      container.querySelectorAll('.btn-trigger-del-pill[data-section="' + sectionKey + '"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var name = btn.getAttribute('data-name');
+          activeInlineSubcatDelete = { section: sectionKey, name: name };
+          activeInlineSubcatRename = null;
+          onReRender();
+        });
+      });
+
+      container.querySelectorAll('.btn-confirm-del-subcat-pill[data-section="' + sectionKey + '"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var name = btn.getAttribute('data-name');
+          activeInlineSubcatDelete = null;
+          deleteSubcat(sectionKey, name);
+        });
+      });
+
+      container.querySelectorAll('.btn-cancel-del-subcat-pill[data-section="' + sectionKey + '"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          activeInlineSubcatDelete = null;
+          onReRender();
+        });
+      });
+    }
+
     // Dynamic À La Carte Course Pills
     function renderAlacarteCoursePills() {
       var container = document.getElementById('alacarteCoursePills');
@@ -3859,11 +4069,16 @@
         var count = (cat.items || []).length;
         var isActive = (currentAlacarteKey === cat.key);
         var isTemp = !!cat.isTemporaryFolder || cat.key === 'unassigned-alacarte';
-        var label = isTemp ? '📁 No Sub-Category' : (cat.category || cat.title || cat.key);
-        var badgeStyle = isTemp ? 'style="background:#f59e0b;color:#000;font-weight:700;"' : '';
-        html += '<button type="button" class="sub-pill-btn ' + (isTemp ? 'sub-pill-temporary ' : '') + (isActive ? 'is-active' : '') + '" data-course="' + cat.key + '" title="' + (isTemp ? 'Temporary folder with unassigned dishes' : '') + '">' +
-          label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
-        '</button>';
+        if (isTemp) {
+          var label = '📁 No Sub-Category';
+          var badgeStyle = 'style="background:#f59e0b;color:#000;font-weight:700;"';
+          html += '<button type="button" class="sub-pill-btn sub-pill-temporary ' + (isActive ? 'is-active' : '') + '" data-course="' + cat.key + '" title="Temporary folder with unassigned dishes">' +
+            label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
+          '</button>';
+        } else {
+          var scName = cat.category || cat.title || cat.key;
+          html += renderSubcatPillHtml('alacarte', scName, count, isActive, 'data-course', cat.key);
+        }
       });
 
       html += '<button type="button" class="sub-pill-btn" id="btnQuickAddAlacarteCourse" style="border-style:dashed;color:var(--lime-primary);" title="Manage & Add Courses / Sub-categories">+ Add / Organize</button>';
@@ -3871,12 +4086,18 @@
       container.innerHTML = html;
 
       container.querySelectorAll('.sub-pill-btn[data-course]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function(e) {
+          if (e.target.closest('.sub-pill-actions') || e.target.closest('.sub-pill-action-icon') || e.target.closest('.sub-pill-inline-input') || e.target.closest('.btn-sub-pill-inline-btn')) return;
           currentAlacarteKey = btn.getAttribute('data-course');
           renderAlacarteCoursePills();
           renderAlacarteTab();
           navigatePreview(currentAlacarteKey);
         });
+      });
+
+      bindSubcatPillEvents(container, 'alacarte', function() {
+        renderAlacarteCoursePills();
+        renderAlacarteTab();
       });
 
       var btnAdd = document.getElementById('btnQuickAddAlacarteCourse');
@@ -3897,11 +4118,16 @@
         var count = (cat.items || []).length;
         var isActive = (currentBarKey === cat.key);
         var isTemp = !!cat.isTemporaryFolder || cat.key === 'unassigned-bar';
-        var label = isTemp ? '📁 No Sub-Category' : (cat.category || cat.key);
-        var badgeStyle = isTemp ? 'style="background:#f59e0b;color:#000;font-weight:700;"' : '';
-        html += '<button type="button" class="sub-pill-btn ' + (isTemp ? 'sub-pill-temporary ' : '') + (isActive ? 'is-active' : '') + '" data-barcat="' + cat.key + '" title="' + (isTemp ? 'Temporary folder with unassigned dishes' : '') + '">' +
-          label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
-        '</button>';
+        if (isTemp) {
+          var label = '📁 No Sub-Category';
+          var badgeStyle = 'style="background:#f59e0b;color:#000;font-weight:700;"';
+          html += '<button type="button" class="sub-pill-btn ' + (isTemp ? 'sub-pill-temporary ' : '') + (isActive ? 'is-active' : '') + '" data-barcat="' + cat.key + '" title="Temporary folder with unassigned dishes">' +
+            label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
+          '</button>';
+        } else {
+          var scName = cat.category || cat.key;
+          html += renderSubcatPillHtml('thebar', scName, count, isActive, 'data-barcat', cat.key);
+        }
       });
 
       html += '<button type="button" class="sub-pill-btn" id="btnQuickAddBarSubcat" style="border-style:dashed;color:var(--lime-primary);" title="Manage Bar Sub-categories">+ Add / Organize</button>';
@@ -3909,12 +4135,18 @@
       container.innerHTML = html;
 
       container.querySelectorAll('.sub-pill-btn[data-barcat]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function(e) {
+          if (e.target.closest('.sub-pill-actions') || e.target.closest('.sub-pill-action-icon') || e.target.closest('.sub-pill-inline-input') || e.target.closest('.btn-sub-pill-inline-btn')) return;
           currentBarKey = btn.getAttribute('data-barcat');
           renderBarCategoryPills();
           renderBarTab();
           navigatePreview('thebar');
         });
+      });
+
+      bindSubcatPillEvents(container, 'thebar', function() {
+        renderBarCategoryPills();
+        renderBarTab();
       });
 
       var btnAdd = document.getElementById('btnQuickAddBarSubcat');
@@ -5102,9 +5334,7 @@
 
         subcats.forEach(function(sc) {
           var count = items.filter(function(it) { return it.subCategory === sc; }).length;
-          pillHtml += '<button type="button" class="sub-pill-btn ' + (currentCustomSubcatFilter === sc ? 'is-active' : '') + '" data-csub="' + sc + '">' +
-            sc + ' <span class="subcat-pill-badge">' + count + '</span>' +
-          '</button>';
+          pillHtml += renderSubcatPillHtml(catId, sc, count, currentCustomSubcatFilter === sc, 'data-csub', sc);
         });
 
         // Temporary holding folder pill only if we have more subcategories and unassigned dishes
@@ -5119,10 +5349,15 @@
         subcatBar.innerHTML = pillHtml;
 
         subcatBar.querySelectorAll('.sub-pill-btn[data-csub]').forEach(function(b) {
-          b.addEventListener('click', function() {
+          b.addEventListener('click', function(e) {
+            if (e.target.closest('.sub-pill-actions') || e.target.closest('.sub-pill-action-icon') || e.target.closest('.sub-pill-inline-input') || e.target.closest('.btn-sub-pill-inline-btn')) return;
             currentCustomSubcatFilter = b.getAttribute('data-csub');
             renderCustomCategoryTab(catId);
           });
+        });
+
+        bindSubcatPillEvents(subcatBar, catId, function() {
+          renderCustomCategoryTab(catId);
         });
 
         var addSubcatBtn = document.getElementById('btnQuickAddCustomSubcat');
@@ -5556,9 +5791,7 @@
       subcats.forEach(function(sc) {
         var count = (appData.lunchItems || []).filter(function(it) { return it.subCategory === sc; }).length;
         var isActive = currentLunchSubcatFilter === sc;
-        html += '<button type="button" class="sub-pill-btn ' + (isActive ? 'is-active' : '') + '" data-subcat="' + sc + '">' +
-          sc + ' <span class="subcat-pill-badge">' + count + '</span>' +
-          '</button>';
+        html += renderSubcatPillHtml('lunch', sc, count, isActive, 'data-subcat', sc);
       });
 
       // Temporary holding folder pill only if we have more subcategories and unassigned dishes
@@ -5574,11 +5807,14 @@
       bar.innerHTML = html;
 
       bar.querySelectorAll('.sub-pill-btn[data-subcat]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function(e) {
+          if (e.target.closest('.sub-pill-actions') || e.target.closest('.sub-pill-action-icon') || e.target.closest('.sub-pill-inline-input') || e.target.closest('.btn-sub-pill-inline-btn')) return;
           currentLunchSubcatFilter = btn.getAttribute('data-subcat');
           renderLunchTab();
         });
       });
+
+      bindSubcatPillEvents(bar, 'lunch', renderLunchTab);
 
       var addBtn = document.getElementById('btnQuickAddLunchSubcat');
       if (addBtn) {
