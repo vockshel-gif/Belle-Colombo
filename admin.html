@@ -732,6 +732,50 @@
       border-color: #141712;
       box-shadow: 3px 3px 0px #000;
     }
+    .sub-pill-btn.sub-pill-temporary {
+      border: 1.5px dashed #f59e0b !important;
+      color: #fbbf24 !important;
+      background: rgba(245, 158, 11, 0.08) !important;
+    }
+    .sub-pill-btn.sub-pill-temporary:hover {
+      background: rgba(245, 158, 11, 0.16) !important;
+      color: #fde047 !important;
+      border-color: #fbbf24 !important;
+    }
+    .sub-pill-btn.sub-pill-temporary.is-active {
+      background: #f59e0b !important;
+      color: #141712 !important;
+      border-color: #141712 !important;
+      box-shadow: 3px 3px 0px #000;
+    }
+    .temporary-folder-banner {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1.5px dashed #f59e0b;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      border-radius: 0px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .quick-reassign-card-select {
+      height: 26px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 1px 6px;
+      background: #141712;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .quick-reassign-card-select:hover, .quick-reassign-card-select:focus {
+      border-color: #fbbf24;
+      background: #1a1e16;
+    }
 
     /* Item Cards Grid */
     .item-cards-grid {
@@ -3161,12 +3205,177 @@
       if (modal) modal.classList.add('is-open');
     }
 
+    function getUnassignedDishesForSection(sectionKey) {
+      if (!appData) return [];
+      if (sectionKey === 'lunch') {
+        return (appData.lunchItems || []).filter(function(it) {
+          return !it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned';
+        });
+      }
+      if (sectionKey === 'alacarte') {
+        var tempCourse = (appData.aLaCarte || []).find(function(c) {
+          return c.isTemporaryFolder || c.key === 'unassigned-alacarte';
+        });
+        return tempCourse ? (tempCourse.items || []) : [];
+      }
+      if (sectionKey === 'thebar') {
+        var tempBar = (appData.theGardenAndBar || []).find(function(c) {
+          return c.isTemporaryFolder || c.key === 'unassigned-bar';
+        });
+        return tempBar ? (tempBar.items || []) : [];
+      }
+      var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
+      if (cCat && cCat.items) {
+        return cCat.items.filter(function(it) {
+          return !it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned';
+        });
+      }
+      return [];
+    }
+
+    function moveAllUnassignedDishes(sectionKey, targetSubcat) {
+      if (!targetSubcat || !appData) return;
+      var count = 0;
+      if (sectionKey === 'lunch' && appData.lunchItems) {
+        appData.lunchItems.forEach(function(it) {
+          if (!it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned') {
+            it.subCategory = targetSubcat;
+            count++;
+          }
+        });
+        currentLunchSubcatFilter = targetSubcat;
+        renderLunchTab();
+      } else if (sectionKey === 'alacarte' && appData.aLaCarte) {
+        var tempIdx = appData.aLaCarte.findIndex(function(c) { return c.isTemporaryFolder || c.key === 'unassigned-alacarte'; });
+        var targetCourse = appData.aLaCarte.find(function(c) {
+          return c.category === targetSubcat || c.title === targetSubcat.toUpperCase() || c.key === targetSubcat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        });
+        if (tempIdx !== -1 && targetCourse) {
+          var unassignedItems = appData.aLaCarte[tempIdx].items || [];
+          count = unassignedItems.length;
+          unassignedItems.forEach(function(it) {
+            it.subCategory = targetSubcat;
+            targetCourse.items.push(it);
+          });
+          appData.aLaCarte.splice(tempIdx, 1);
+          currentAlacarteKey = targetCourse.key;
+          renderAlacarteCoursePills();
+          renderAlacarteTab();
+        }
+      } else if (sectionKey === 'thebar' && appData.theGardenAndBar) {
+        var tempBarIdx = appData.theGardenAndBar.findIndex(function(c) { return c.isTemporaryFolder || c.key === 'unassigned-bar'; });
+        var targetBar = appData.theGardenAndBar.find(function(c) {
+          return c.category === targetSubcat || c.key === targetSubcat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        });
+        if (tempBarIdx !== -1 && targetBar) {
+          var unassignedBarItems = appData.theGardenAndBar[tempBarIdx].items || [];
+          count = unassignedBarItems.length;
+          unassignedBarItems.forEach(function(it) {
+            it.subCategory = targetSubcat;
+            targetBar.items.push(it);
+          });
+          appData.theGardenAndBar.splice(tempBarIdx, 1);
+          currentBarKey = targetBar.key;
+          renderBarCategoryPills();
+          renderBarTab();
+        }
+      } else {
+        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
+        if (cCat && cCat.items) {
+          cCat.items.forEach(function(it) {
+            if (!it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned') {
+              it.subCategory = targetSubcat;
+              count++;
+            }
+          });
+          currentCustomSubcatFilter = targetSubcat;
+          renderCustomCategoryTab(sectionKey);
+        }
+      }
+
+      renderSubcatManageList();
+      updateStorageGauge();
+      sendLiveUpdate();
+      pushToFirebaseCloud();
+      showToast('Moved ' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' to "' + targetSubcat + '".');
+    }
+
+    function moveSingleDishToSubcat(scope, catKey, dishId, targetSubcat) {
+      if (!targetSubcat || !appData) return;
+      if (scope === 'lunch' && appData.lunchItems) {
+        var it = appData.lunchItems.find(function(x) { return x.id === dishId; });
+        if (it) {
+          it.subCategory = targetSubcat;
+          showToast('Dish "' + it.name + '" moved to "' + targetSubcat + '".');
+          renderLunchTab();
+        }
+      } else if (scope === 'alacarte' && appData.aLaCarte) {
+        var fromCourse = appData.aLaCarte.find(function(c) { return c.key === catKey; });
+        var targetCourse = appData.aLaCarte.find(function(c) {
+          return c.category === targetSubcat || c.title === targetSubcat.toUpperCase() || c.key === targetSubcat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        });
+        if (fromCourse && targetCourse) {
+          var dishIdx = (fromCourse.items || []).findIndex(function(x) { return x.id === dishId; });
+          if (dishIdx !== -1) {
+            var dish = fromCourse.items.splice(dishIdx, 1)[0];
+            dish.subCategory = targetSubcat;
+            targetCourse.items.push(dish);
+            if (fromCourse.isTemporaryFolder && fromCourse.items.length === 0) {
+              appData.aLaCarte = appData.aLaCarte.filter(function(x) { return x !== fromCourse; });
+              currentAlacarteKey = targetCourse.key;
+            }
+            showToast('Dish "' + dish.name + '" moved to "' + targetSubcat + '".');
+            renderAlacarteCoursePills();
+            renderAlacarteTab();
+          }
+        }
+      } else if (scope === 'thebar' && appData.theGardenAndBar) {
+        var fromBar = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
+        var targetBar = appData.theGardenAndBar.find(function(c) {
+          return c.category === targetSubcat || c.key === targetSubcat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        });
+        if (fromBar && targetBar) {
+          var bIdx = (fromBar.items || []).findIndex(function(x) { return x.id === dishId; });
+          if (bIdx !== -1) {
+            var bDish = fromBar.items.splice(bIdx, 1)[0];
+            bDish.subCategory = targetSubcat;
+            targetBar.items.push(bDish);
+            if (fromBar.isTemporaryFolder && fromBar.items.length === 0) {
+              appData.theGardenAndBar = appData.theGardenAndBar.filter(function(x) { return x !== fromBar; });
+              currentBarKey = targetBar.key;
+            }
+            showToast('Dish "' + bDish.name + '" moved to "' + targetSubcat + '".');
+            renderBarCategoryPills();
+            renderBarTab();
+          }
+        }
+      } else {
+        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === catKey; });
+        if (cCat && cCat.items) {
+          var cDish = cCat.items.find(function(x) { return x.id === dishId; });
+          if (cDish) {
+            cDish.subCategory = targetSubcat;
+            showToast('Dish "' + cDish.name + '" moved to "' + targetSubcat + '".');
+            renderCustomCategoryTab(catKey);
+          }
+        }
+      }
+
+      renderSubcatManageList();
+      updateStorageGauge();
+      sendLiveUpdate();
+      pushToFirebaseCloud();
+    }
+
     function renderSubcatManageList() {
       var listEl = document.getElementById('subcatItemsList');
       if (!listEl || !appData || !appData.subCategories) return;
 
-      var subcats = appData.subCategories[activeSubcatManageSection] || [];
-      if (subcats.length === 0) {
+      var rawSubcats = appData.subCategories[activeSubcatManageSection] || [];
+      var subcats = rawSubcats.filter(function(x) { return x !== 'No Sub-Category' && x !== 'Unassigned'; });
+      var unassignedDishes = getUnassignedDishesForSection(activeSubcatManageSection);
+
+      if (subcats.length === 0 && unassignedDishes.length === 0) {
         listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-dim);font-size:12px;">No sub-categories defined yet. Add one above!</div>';
         return;
       }
@@ -3209,11 +3418,16 @@
             '</div>' +
           '</div>';
         } else if (activeSubcatDeleteConfirmIndex === idx) {
-          // Inline Delete Confirmation Mode (No browser confirm)
+          // Inline Delete Confirmation Mode (Explaining dishes move to temporary folder if other subcats exist)
+          var otherSubcats = subcats.filter(function(x) { return x !== sc; });
+          var msg = (otherSubcats.length > 0 && count > 0)
+            ? ' (' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' will move to temporary "No Sub-Category" folder)'
+            : (count > 0 ? ' (' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' unlinked)' : '');
+
           html += '<div class="subcat-manage-item" style="border-color:#ef4444;background:rgba(239,68,68,0.08);padding:8px 12px;">' +
             '<div style="font-family:var(--font-mono);font-size:11px;color:#fca5a5;">' +
               'Delete <strong>"' + sc + '"</strong>?' +
-              (count > 0 ? ' <span style="color:var(--text-dim);font-size:10px;">(' + count + ' ' + (count === 1 ? 'dish' : 'dishes') + ' unlinked)</span>' : '') +
+              '<span style="color:#fde047;font-size:10.5px;">' + msg + '</span>' +
             '</div>' +
             '<div style="display:flex;gap:6px;">' +
               '<button type="button" class="btn-publish btn-confirm-subcat-del" data-index="' + idx + '" style="background:#ef4444;border-color:#ef4444;color:#fff;padding:4px 10px;font-size:11px;white-space:nowrap;">Yes, Delete</button>' +
@@ -3238,6 +3452,26 @@
           '</div>';
         }
       });
+
+      // Temporary holding folder box inside modal if unassigned dishes exist and we have other subcategories
+      if (subcats.length > 0 && unassignedDishes.length > 0) {
+        var opts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
+        html += '<div class="subcat-temporary-notice" style="margin-top:12px;background:rgba(245,158,11,0.08);border:1.5px dashed #f59e0b;padding:10px 14px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<span style="font-size:16px;">📁</span>' +
+            '<div>' +
+              '<div style="font-size:11px;font-weight:700;color:#fbbf24;">TEMPORARY FOLDER: NO SUB-CATEGORY</div>' +
+              '<div style="font-size:10px;color:var(--text-muted);">' + unassignedDishes.length + ' ' + (unassignedDishes.length === 1 ? 'dish' : 'dishes') + ' awaiting sub-category assignment</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:6px;">' +
+            '<select class="input-field subcat-modal-move-select" style="height:28px;font-size:10px;padding:2px 8px;background:#141712;border:1px solid #f59e0b;color:#fff;">' +
+              '<option value="">Move all to...</option>' + opts +
+            '</select>' +
+            '<button type="button" class="btn-publish btn-subcat-modal-move-apply" style="padding:4px 10px;font-size:10px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;">Move All</button>' +
+          '</div>' +
+        '</div>';
+      }
 
       listEl.innerHTML = html;
 
@@ -3323,6 +3557,20 @@
           renderSubcatManageList();
         });
       });
+
+      // Bind modal batch move button
+      var btnBatchMoveModal = listEl.querySelector('.btn-subcat-modal-move-apply');
+      var selBatchMoveModal = listEl.querySelector('.subcat-modal-move-select');
+      if (btnBatchMoveModal && selBatchMoveModal) {
+        btnBatchMoveModal.addEventListener('click', function() {
+          var targetVal = selBatchMoveModal.value;
+          if (targetVal) {
+            moveAllUnassignedDishes(activeSubcatManageSection, targetVal);
+          } else {
+            showToast('Please choose a sub-category to move dishes into.');
+          }
+        });
+      }
     }
 
     function addSubcat(sectionKey, name) {
@@ -3360,6 +3608,13 @@
           }
         }
 
+        // If in Custom Category, sync cCat.subCategories
+        var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
+        if (cCat) {
+          if (!cCat.subCategories) cCat.subCategories = [];
+          if (cCat.subCategories.indexOf(name) === -1) cCat.subCategories.push(name);
+        }
+
         sendLiveUpdate();
         pushToFirebaseCloud();
         showToast('Sub-category "' + name + '" created!');
@@ -3368,8 +3623,8 @@
       activeSubcatDeleteConfirmIndex = null;
       renderSubcatManageList();
       if (sectionKey === 'lunch') renderLunchTab();
-      else if (sectionKey === 'alacarte') renderAlacarteTab();
-      else if (sectionKey === 'thebar') renderBarTab();
+      else if (sectionKey === 'alacarte') { renderAlacarteCoursePills(); renderAlacarteTab(); }
+      else if (sectionKey === 'thebar') { renderBarCategoryPills(); renderBarTab(); }
       else renderCustomCategoryTab(sectionKey);
     }
 
@@ -3438,8 +3693,8 @@
       activeSubcatDeleteConfirmIndex = null;
       renderSubcatManageList();
       if (sectionKey === 'lunch') renderLunchTab();
-      else if (sectionKey === 'alacarte') renderAlacarteTab();
-      else if (sectionKey === 'thebar') renderBarTab();
+      else if (sectionKey === 'alacarte') { renderAlacarteCoursePills(); renderAlacarteTab(); }
+      else if (sectionKey === 'thebar') { renderBarCategoryPills(); renderBarTab(); }
       else renderCustomCategoryTab(sectionKey);
 
       updateStorageGauge();
@@ -3449,62 +3704,149 @@
     }
 
     function deleteSubcat(sectionKey, name) {
-      if (!appData || !appData.subCategories || !appData.subCategories[sectionKey]) return;
-      appData.subCategories[sectionKey] = appData.subCategories[sectionKey].filter(function(x) { return x !== name; });
+      if (!appData || !appData.subCategories) return;
+      if (!appData.subCategories[sectionKey]) appData.subCategories[sectionKey] = [];
 
-      // Unassign dishes in Lunch so dishes remain safe
+      // Calculate remaining subcategories in this section (excluding the one being deleted)
+      var remainingSubcats = (appData.subCategories[sectionKey] || []).filter(function(x) { 
+        return x !== name && x !== 'No Sub-Category' && x !== 'Unassigned'; 
+      });
+      var hasMoreSubcats = remainingSubcats.length > 0;
+      var movedCount = 0;
+
+      // 1. Lunch Section
       if (sectionKey === 'lunch' && appData.lunchItems) {
         appData.lunchItems.forEach(function(it) {
-          if (it.subCategory === name) it.subCategory = '';
+          if (it.subCategory === name) {
+            it.subCategory = hasMoreSubcats ? 'No Sub-Category' : '';
+            movedCount++;
+          }
         });
+        if (hasMoreSubcats && movedCount > 0) {
+          currentLunchSubcatFilter = 'No Sub-Category';
+        } else if (currentLunchSubcatFilter === name) {
+          currentLunchSubcatFilter = 'all';
+        }
       }
 
-      // Unassign dishes in À La Carte
+      // 2. À La Carte Section
       if (sectionKey === 'alacarte' && appData.aLaCarte) {
-        appData.aLaCarte.forEach(function(cat) {
-          (cat.items || []).forEach(function(it) {
-            if (it.subCategory === name) it.subCategory = '';
-          });
+        var courseIdx = appData.aLaCarte.findIndex(function(c) {
+          return c.category === name || c.title === name.toUpperCase() || c.key === name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         });
+        if (courseIdx !== -1) {
+          var removedCourse = appData.aLaCarte[courseIdx];
+          var courseItems = removedCourse.items || [];
+          movedCount = courseItems.length;
+          appData.aLaCarte.splice(courseIdx, 1);
+
+          var remainingCourses = appData.aLaCarte.filter(function(c) { return !c.isTemporaryFolder && c.key !== 'unassigned-alacarte'; });
+          hasMoreSubcats = remainingCourses.length > 0;
+
+          if (hasMoreSubcats && courseItems.length > 0) {
+            var tempCourse = appData.aLaCarte.find(function(c) { return c.isTemporaryFolder || c.key === 'unassigned-alacarte'; });
+            if (!tempCourse) {
+              tempCourse = {
+                key: 'unassigned-alacarte',
+                category: 'No Sub-Category',
+                title: 'NO SUB-CATEGORY (TEMPORARY)',
+                subtitle: 'Dishes awaiting sub-category assignment',
+                isTemporaryFolder: true,
+                items: []
+              };
+              appData.aLaCarte.push(tempCourse);
+            }
+            courseItems.forEach(function(it) {
+              it.subCategory = 'No Sub-Category';
+              tempCourse.items.push(it);
+            });
+            currentAlacarteKey = tempCourse.key;
+          } else if (currentAlacarteKey === (removedCourse.key || '')) {
+            currentAlacarteKey = appData.aLaCarte[0] ? appData.aLaCarte[0].key : 'appetisers';
+          }
+        }
       }
 
-      // Unassign dishes in The Bar
+      // 3. The Bar Section
       if (sectionKey === 'thebar' && appData.theGardenAndBar) {
-        appData.theGardenAndBar.forEach(function(cat) {
-          (cat.items || []).forEach(function(it) {
-            if (it.subCategory === name) it.subCategory = '';
-          });
+        var barIdx = appData.theGardenAndBar.findIndex(function(c) {
+          return c.category === name || c.key === name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         });
+        if (barIdx !== -1) {
+          var removedBar = appData.theGardenAndBar[barIdx];
+          var barItems = removedBar.items || [];
+          movedCount = barItems.length;
+          appData.theGardenAndBar.splice(barIdx, 1);
+
+          var remainingBar = appData.theGardenAndBar.filter(function(c) { return !c.isTemporaryFolder && c.key !== 'unassigned-bar'; });
+          hasMoreSubcats = remainingBar.length > 0;
+
+          if (hasMoreSubcats && barItems.length > 0) {
+            var tempBar = appData.theGardenAndBar.find(function(c) { return c.isTemporaryFolder || c.key === 'unassigned-bar'; });
+            if (!tempBar) {
+              tempBar = {
+                key: 'unassigned-bar',
+                category: 'No Sub-Category',
+                subtitle: 'Dishes awaiting sub-category assignment',
+                isTemporaryFolder: true,
+                items: []
+              };
+              appData.theGardenAndBar.push(tempBar);
+            }
+            barItems.forEach(function(it) {
+              it.subCategory = 'No Sub-Category';
+              tempBar.items.push(it);
+            });
+            currentBarKey = tempBar.key;
+          } else if (currentBarKey === (removedBar.key || '')) {
+            currentBarKey = appData.theGardenAndBar[0] ? appData.theGardenAndBar[0].key : 'the-garden';
+          }
+        }
       }
 
-      // Unassign dishes in Custom Category
+      // 4. Custom Category Section
       var cCat = (appData.menuCategories || []).find(function(c) { return c.id === sectionKey; });
       if (cCat) {
+        if (cCat.subCategories) {
+          cCat.subCategories = cCat.subCategories.filter(function(x) { return x !== name && x !== 'No Sub-Category'; });
+          hasMoreSubcats = cCat.subCategories.length > 0;
+        }
         if (cCat.items) {
           cCat.items.forEach(function(it) {
-            if (it.subCategory === name) it.subCategory = '';
+            if (it.subCategory === name) {
+              it.subCategory = hasMoreSubcats ? 'No Sub-Category' : '';
+              movedCount++;
+            }
           });
         }
-        if (cCat.subCategories) {
-          cCat.subCategories = cCat.subCategories.filter(function(x) { return x !== name; });
+        if (hasMoreSubcats && movedCount > 0) {
+          currentCustomSubcatFilter = 'No Sub-Category';
+        } else if (currentCustomSubcatFilter === name) {
+          currentCustomSubcatFilter = 'all';
         }
       }
 
-      if (currentLunchSubcatFilter === name) currentLunchSubcatFilter = 'all';
-      if (currentCustomSubcatFilter === name) currentCustomSubcatFilter = 'all';
+      // Filter subCategories master map
+      appData.subCategories[sectionKey] = remainingSubcats;
 
       activeSubcatDeleteConfirmIndex = null;
       activeSubcatRenameIndex = null;
       renderSubcatManageList();
+
       if (sectionKey === 'lunch') renderLunchTab();
-      else if (sectionKey === 'alacarte') renderAlacarteTab();
-      else if (sectionKey === 'thebar') renderBarTab();
+      else if (sectionKey === 'alacarte') { renderAlacarteCoursePills(); renderAlacarteTab(); }
+      else if (sectionKey === 'thebar') { renderBarCategoryPills(); renderBarTab(); }
       else renderCustomCategoryTab(sectionKey);
 
       updateStorageGauge();
       sendLiveUpdate();
       pushToFirebaseCloud();
-      showToast('Sub-category "' + name + '" deleted.');
+
+      if (hasMoreSubcats && movedCount > 0) {
+        showToast('Sub-category "' + name + '" deleted. ' + movedCount + ' ' + (movedCount === 1 ? 'dish' : 'dishes') + ' moved to temporary "No Sub-Category" folder.');
+      } else {
+        showToast('Sub-category "' + name + '" deleted.');
+      }
     }
 
     // Dynamic À La Carte Course Pills
@@ -3516,8 +3858,11 @@
       appData.aLaCarte.forEach(function(cat) {
         var count = (cat.items || []).length;
         var isActive = (currentAlacarteKey === cat.key);
-        html += '<button type="button" class="sub-pill-btn ' + (isActive ? 'is-active' : '') + '" data-course="' + cat.key + '">' +
-          (cat.category || cat.title || cat.key) + ' <span class="subcat-pill-badge">' + count + '</span>' +
+        var isTemp = !!cat.isTemporaryFolder || cat.key === 'unassigned-alacarte';
+        var label = isTemp ? '📁 No Sub-Category' : (cat.category || cat.title || cat.key);
+        var badgeStyle = isTemp ? 'style="background:#f59e0b;color:#000;font-weight:700;"' : '';
+        html += '<button type="button" class="sub-pill-btn ' + (isTemp ? 'sub-pill-temporary ' : '') + (isActive ? 'is-active' : '') + '" data-course="' + cat.key + '" title="' + (isTemp ? 'Temporary folder with unassigned dishes' : '') + '">' +
+          label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
         '</button>';
       });
 
@@ -3551,8 +3896,11 @@
       appData.theGardenAndBar.forEach(function(cat) {
         var count = (cat.items || []).length;
         var isActive = (currentBarKey === cat.key);
-        html += '<button type="button" class="sub-pill-btn ' + (isActive ? 'is-active' : '') + '" data-barcat="' + cat.key + '">' +
-          (cat.category || cat.key) + ' <span class="subcat-pill-badge">' + count + '</span>' +
+        var isTemp = !!cat.isTemporaryFolder || cat.key === 'unassigned-bar';
+        var label = isTemp ? '📁 No Sub-Category' : (cat.category || cat.key);
+        var badgeStyle = isTemp ? 'style="background:#f59e0b;color:#000;font-weight:700;"' : '';
+        html += '<button type="button" class="sub-pill-btn ' + (isTemp ? 'sub-pill-temporary ' : '') + (isActive ? 'is-active' : '') + '" data-barcat="' + cat.key + '" title="' + (isTemp ? 'Temporary folder with unassigned dishes' : '') + '">' +
+          label + ' <span class="subcat-pill-badge" ' + badgeStyle + '>' + count + '</span>' +
         '</button>';
       });
 
@@ -4739,8 +5087,13 @@
 
       // Sub-category filter pills
       var subcatBar = document.getElementById('customSubcatFilterBar');
-      var subcats = (appData.subCategories && appData.subCategories[catId]) ? appData.subCategories[catId] : [];
+      var rawSubcats = (appData.subCategories && appData.subCategories[catId]) ? appData.subCategories[catId] : [];
+      var subcats = rawSubcats.filter(function(x) { return x !== 'No Sub-Category' && x !== 'Unassigned'; });
       var items = cat.items || [];
+      var unassignedDishes = items.filter(function(it) {
+        return !it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned';
+      });
+      var hasOtherSubcats = subcats.length > 0;
 
       if (subcatBar) {
         var pillHtml = '<button type="button" class="sub-pill-btn ' + (currentCustomSubcatFilter === 'all' ? 'is-active' : '') + '" data-csub="all">' +
@@ -4753,6 +5106,14 @@
             sc + ' <span class="subcat-pill-badge">' + count + '</span>' +
           '</button>';
         });
+
+        // Temporary holding folder pill only if we have more subcategories and unassigned dishes
+        if (hasOtherSubcats && unassignedDishes.length > 0) {
+          var isUnassignedActive = (currentCustomSubcatFilter === 'No Sub-Category');
+          pillHtml += '<button type="button" class="sub-pill-btn sub-pill-temporary ' + (isUnassignedActive ? 'is-active' : '') + '" data-csub="No Sub-Category" title="Temporary Folder: Dishes awaiting sub-category assignment">' +
+            '📁 No Sub-Category <span class="subcat-pill-badge" style="background:#f59e0b;color:#000;font-weight:700;">' + unassignedDishes.length + '</span>' +
+          '</button>';
+        }
 
         pillHtml += '<button type="button" class="sub-pill-btn" id="btnQuickAddCustomSubcat" style="border-style:dashed;color:var(--gold-primary);">+ Add Sub-cat</button>';
         subcatBar.innerHTML = pillHtml;
@@ -4773,7 +5134,11 @@
       }
 
       // Filtered items
+      var isUnassignedFilter = (currentCustomSubcatFilter === 'No Sub-Category');
       var filtered = items.filter(function(it) {
+        if (isUnassignedFilter) {
+          return !it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned';
+        }
         if (currentCustomSubcatFilter === 'all') return true;
         return it.subCategory === currentCustomSubcatFilter;
       });
@@ -4782,12 +5147,38 @@
       if (!list) return;
 
       if (filtered.length === 0) {
+        if (isUnassignedFilter) {
+          currentCustomSubcatFilter = 'all';
+          renderCustomCategoryTab(catId);
+          return;
+        }
         list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-dim);">' +
           'No dishes in this category yet. Click "+ Add Dish" above to create one.</div>';
         return;
       }
 
       var html = '';
+
+      // Banner for Temporary Holding Folder in Custom Category
+      if (isUnassignedFilter && hasOtherSubcats) {
+        var opts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
+        html += '<div class="temporary-folder-banner">' +
+          '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<span style="font-size:20px;">📁</span>' +
+            '<div>' +
+              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + filtered.length + ' ' + (filtered.length === 1 ? 'dish' : 'dishes') + ')</div>' +
+              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Dishes moved here because their sub-category was deleted. You can reassign them below.</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<select class="input-field batch-move-custom-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
+              '<option value="">Move all dishes to...</option>' + opts +
+            '</select>' +
+            '<button type="button" class="btn-publish btn-apply-batch-custom" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
+          '</div>' +
+        '</div>';
+      }
+
       filtered.forEach(function(item) {
         var isVeg = (item.isVeg || (item.tags && item.tags.indexOf('Vegetarian') !== -1));
         var mediaHtml = '';
@@ -4807,6 +5198,19 @@
           '</div>';
         }
 
+        var isDishUnassigned = (!item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned');
+        var subcatBadgeHtml = '';
+        var quickReassignHtml = '';
+        if (isDishUnassigned && hasOtherSubcats) {
+          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
+          var quickOpts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
+          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + item.id + '" data-cat="' + catId + '" title="Quick Assign Sub-Category">' +
+            '<option value="">Move to... ▼</option>' + quickOpts +
+          '</select>';
+        } else if (item.subCategory) {
+          subcatBadgeHtml = '<span class="subcat-badge">' + item.subCategory + '</span>';
+        }
+
         html += '<article class="editor-item-card" data-custom-id="' + item.id + '">' +
           '<div class="card-top-bar">' +
             '<div class="card-meta-left">' +
@@ -4814,12 +5218,13 @@
               '<div class="card-title-stack">' +
                 '<h4>' + item.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
-                  (item.subCategory ? '<span class="subcat-badge">' + item.subCategory + '</span>' : '') +
+                  subcatBadgeHtml +
                   getVegBadgeHtml(isVeg) +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
+              quickReassignHtml +
               (item.price ? '<span class="card-price-pill">LKR ' + item.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-custom-dish" data-cat="' + catId + '" data-id="' + item.id + '" title="Edit Dish & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -4834,6 +5239,32 @@
       });
 
       list.innerHTML = html;
+
+      // Bind quick reassign selects on cards
+      list.querySelectorAll('.quick-reassign-card-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+          var targetVal = sel.value;
+          var dishId = sel.getAttribute('data-id');
+          var catK = sel.getAttribute('data-cat');
+          if (targetVal && dishId) {
+            moveSingleDishToSubcat('custom', catK, dishId, targetVal);
+          }
+        });
+      });
+
+      // Bind batch move banner in custom category
+      var btnBatchCust = list.querySelector('.btn-apply-batch-custom');
+      var selBatchCust = list.querySelector('.batch-move-custom-select');
+      if (btnBatchCust && selBatchCust) {
+        btnBatchCust.addEventListener('click', function() {
+          var targetVal = selBatchCust.value;
+          if (targetVal) {
+            moveAllUnassignedDishes(catId, targetVal);
+          } else {
+            showToast('Please select a sub-category to move all dishes into.');
+          }
+        });
+      }
 
       list.querySelectorAll('.btn-edit-custom-dish').forEach(function(b) {
         b.addEventListener('click', function() {
@@ -5110,8 +5541,13 @@
     function renderLunchSubcatFilterBar() {
       var bar = document.getElementById('lunchSubcatFilterBar');
       if (!bar || !appData || !appData.subCategories) return;
-      var subcats = appData.subCategories.lunch || [];
+      var rawSubcats = appData.subCategories.lunch || [];
+      var subcats = rawSubcats.filter(function(x) { return x !== 'No Sub-Category' && x !== 'Unassigned'; });
       var totalCount = (appData.lunchItems || []).length;
+      var unassignedCount = (appData.lunchItems || []).filter(function(it) {
+        return !it.subCategory || it.subCategory === 'No Sub-Category' || it.subCategory === 'Unassigned';
+      }).length;
+      var hasOtherSubcats = subcats.length > 0;
       
       var html = '<button type="button" class="sub-pill-btn ' + (currentLunchSubcatFilter === 'all' ? 'is-active' : '') + '" data-subcat="all">' +
         'All Dishes <span class="subcat-pill-badge">' + totalCount + '</span>' +
@@ -5124,6 +5560,14 @@
           sc + ' <span class="subcat-pill-badge">' + count + '</span>' +
           '</button>';
       });
+
+      // Temporary holding folder pill only if we have more subcategories and unassigned dishes
+      if (hasOtherSubcats && unassignedCount > 0) {
+        var isUnassignedActive = (currentLunchSubcatFilter === 'No Sub-Category' || currentLunchSubcatFilter === 'unassigned');
+        html += '<button type="button" class="sub-pill-btn sub-pill-temporary ' + (isUnassignedActive ? 'is-active' : '') + '" data-subcat="No Sub-Category" title="Temporary Folder: Dishes awaiting sub-category assignment">' +
+          '📁 No Sub-Category <span class="subcat-pill-badge" style="background:#f59e0b;color:#000;font-weight:700;">' + unassignedCount + '</span>' +
+          '</button>';
+      }
 
       html += '<button type="button" class="sub-pill-btn" id="btnQuickAddLunchSubcat" style="border-style:dashed;color:var(--gold-primary);" title="Add New Sub-category">+ Add</button>';
 
@@ -5152,18 +5596,51 @@
       renderLunchSubcatFilterBar();
 
       if (badge) badge.textContent = appData.lunchItems.length;
+      var rawSubcats = appData.subCategories.lunch || [];
+      var subcats = rawSubcats.filter(function(x) { return x !== 'No Sub-Category' && x !== 'Unassigned'; });
+      var isUnassignedFilter = (currentLunchSubcatFilter === 'No Sub-Category' || currentLunchSubcatFilter === 'unassigned');
+
       var filtered = appData.lunchItems.filter(function(item) {
         if (currentLunchSubcatFilter === 'all') return true;
+        if (isUnassignedFilter) {
+          return !item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned';
+        }
         return item.subCategory === currentLunchSubcatFilter;
       });
 
       if (filtered.length === 0) {
+        if (isUnassignedFilter) {
+          currentLunchSubcatFilter = 'all';
+          renderLunchTab();
+          return;
+        }
         list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-dim);">' +
           'No dishes in "' + currentLunchSubcatFilter + '". Click "+ Add Lunch Item" to add a dish to this sub-category.</div>';
         return;
       }
 
       var html = '';
+
+      // Banner for Temporary Holding Folder
+      if (isUnassignedFilter && subcats.length > 0) {
+        var opts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
+        html += '<div class="temporary-folder-banner">' +
+          '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<span style="font-size:20px;">📁</span>' +
+            '<div>' +
+              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + filtered.length + ' ' + (filtered.length === 1 ? 'dish' : 'dishes') + ')</div>' +
+              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Dishes moved here because their sub-category was deleted. You can reassign them below.</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<select class="input-field batch-move-lunch-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
+              '<option value="">Move all dishes to...</option>' + opts +
+            '</select>' +
+            '<button type="button" class="btn-publish btn-apply-batch-lunch" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
+          '</div>' +
+        '</div>';
+      }
+
       filtered.forEach(function(item, idx) {
         var isVeg = !!item.isVeg;
         var mediaHtml = '';
@@ -5183,6 +5660,22 @@
           '</div>';
         }
 
+        var isDishUnassigned = (!item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned');
+        var subcatBadgeHtml = '';
+        if (isDishUnassigned && subcats.length > 0) {
+          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
+        } else if (item.subCategory) {
+          subcatBadgeHtml = '<span class="subcat-badge">' + item.subCategory + '</span>';
+        }
+
+        var quickReassignHtml = '';
+        if (isDishUnassigned && subcats.length > 0) {
+          var quickOpts = subcats.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('');
+          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + item.id + '" title="Quick Assign Sub-Category">' +
+            '<option value="">Move to... ▼</option>' + quickOpts +
+          '</select>';
+        }
+
         html += '<article class="editor-item-card" data-lunch-id="' + item.id + '">' +
           '<div class="card-top-bar">' +
             '<div class="card-meta-left">' +
@@ -5190,13 +5683,14 @@
               '<div class="card-title-stack">' +
                 '<h4>' + item.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
-                  (item.subCategory ? '<span class="subcat-badge">' + item.subCategory + '</span>' : '') +
+                  subcatBadgeHtml +
                   (isVeg ? getVegBadgeHtml() : '<span class="subcat-badge badge-nonveg">NON-VEG</span>') +
                   (item.meta ? '<span>•</span><span style="color:var(--gold-primary);">' + item.meta.badge + '</span>' : '') +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
+              quickReassignHtml +
               (item.price ? '<span class="card-price-pill">LKR ' + item.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-lunch" data-id="' + item.id + '" title="Edit Dish & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -5212,6 +5706,31 @@
       });
 
       list.innerHTML = html;
+
+      // Bind quick reassign selects on cards
+      list.querySelectorAll('.quick-reassign-card-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+          var targetVal = sel.value;
+          var dishId = sel.getAttribute('data-id');
+          if (targetVal && dishId) {
+            moveSingleDishToSubcat('lunch', null, dishId, targetVal);
+          }
+        });
+      });
+
+      // Bind batch move banner in lunch
+      var btnBatchLunch = list.querySelector('.btn-apply-batch-lunch');
+      var selBatchLunch = list.querySelector('.batch-move-lunch-select');
+      if (btnBatchLunch && selBatchLunch) {
+        btnBatchLunch.addEventListener('click', function() {
+          var targetVal = selBatchLunch.value;
+          if (targetVal) {
+            moveAllUnassignedDishes('lunch', targetVal);
+          } else {
+            showToast('Please select a sub-category to move all dishes into.');
+          }
+        });
+      }
 
       list.querySelectorAll('.btn-edit-lunch').forEach(function(b) {
         b.addEventListener('click', function() {
@@ -5236,6 +5755,12 @@
         return c.key === currentAlacarteKey || (c.category && c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentAlacarteKey);
       });
 
+      // If temporary course is empty, clean it up
+      if (cat && (cat.isTemporaryFolder || cat.key === 'unassigned-alacarte') && (!cat.items || cat.items.length === 0)) {
+        appData.aLaCarte = appData.aLaCarte.filter(function(c) { return c !== cat; });
+        cat = null;
+      }
+
       if (!cat) {
         if (appData.aLaCarte.length > 0) {
           currentAlacarteKey = appData.aLaCarte[0].key;
@@ -5248,7 +5773,36 @@
         return;
       }
 
+      var isTempCourse = !!cat.isTemporaryFolder || cat.key === 'unassigned-alacarte';
+      var otherCourses = appData.aLaCarte.filter(function(c) {
+        return !c.isTemporaryFolder && c.key !== 'unassigned-alacarte';
+      });
+
       var html = '';
+
+      // Banner for Temporary Holding Folder in À La Carte
+      if (isTempCourse && otherCourses.length > 0) {
+        var opts = otherCourses.map(function(c) {
+          var name = c.category || c.title || c.key;
+          return '<option value="' + name + '">' + name + '</option>';
+        }).join('');
+        html += '<div class="temporary-folder-banner">' +
+          '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<span style="font-size:20px;">📁</span>' +
+            '<div>' +
+              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + (cat.items || []).length + ' ' + ((cat.items || []).length === 1 ? 'dish' : 'dishes') + ')</div>' +
+              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Dishes moved here because their course was deleted. You can reassign them below.</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<select class="input-field batch-move-ala-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
+              '<option value="">Move all dishes to...</option>' + opts +
+            '</select>' +
+            '<button type="button" class="btn-publish btn-apply-batch-ala" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
+          '</div>' +
+        '</div>';
+      }
+
       (cat.items || []).forEach(function(it, idx) {
         var isVeg = (it.tags || []).indexOf('Vegetarian') !== -1;
         var mediaHtml = '';
@@ -5268,6 +5822,21 @@
           '</div>';
         }
 
+        var subcatBadgeHtml = '';
+        var quickReassignHtml = '';
+        if (isTempCourse && otherCourses.length > 0) {
+          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
+          var quickOpts = otherCourses.map(function(c) {
+            var name = c.category || c.title || c.key;
+            return '<option value="' + name + '">' + name + '</option>';
+          }).join('');
+          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + it.id + '" data-cat="' + cat.key + '" title="Quick Assign Course">' +
+            '<option value="">Move to... ▼</option>' + quickOpts +
+          '</select>';
+        } else if (it.subCategory) {
+          subcatBadgeHtml = '<span class="subcat-badge">' + it.subCategory + '</span>';
+        }
+
         html += '<article class="editor-item-card" data-ala-id="' + it.id + '">' +
           '<div class="card-top-bar">' +
             '<div class="card-meta-left">' +
@@ -5275,12 +5844,13 @@
               '<div class="card-title-stack">' +
                 '<h4>' + it.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
-                  (it.subCategory ? '<span class="subcat-badge">' + it.subCategory + '</span>' : '') +
+                  subcatBadgeHtml +
                   getVegBadgeHtml(isVeg) +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
+              quickReassignHtml +
               (it.price ? '<span class="card-price-pill">LKR ' + it.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-ala" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Edit Dish & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -5295,6 +5865,32 @@
       });
 
       list.innerHTML = html;
+
+      // Bind quick reassign selects on cards
+      list.querySelectorAll('.quick-reassign-card-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+          var targetVal = sel.value;
+          var dishId = sel.getAttribute('data-id');
+          var fromCat = sel.getAttribute('data-cat');
+          if (targetVal && dishId) {
+            moveSingleDishToSubcat('alacarte', fromCat, dishId, targetVal);
+          }
+        });
+      });
+
+      // Bind batch move banner in alacarte
+      var btnBatchAla = list.querySelector('.btn-apply-batch-ala');
+      var selBatchAla = list.querySelector('.batch-move-ala-select');
+      if (btnBatchAla && selBatchAla) {
+        btnBatchAla.addEventListener('click', function() {
+          var targetVal = selBatchAla.value;
+          if (targetVal) {
+            moveAllUnassignedDishes('alacarte', targetVal);
+          } else {
+            showToast('Please select a course to move all dishes into.');
+          }
+        });
+      }
 
       list.querySelectorAll('.btn-edit-ala').forEach(function(b) {
         b.addEventListener('click', function() {
@@ -5319,6 +5915,12 @@
         return c.key === currentBarKey || (c.category && c.category.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentBarKey);
       });
 
+      // If temporary bar category is empty, clean it up
+      if (cat && (cat.isTemporaryFolder || cat.key === 'unassigned-bar') && (!cat.items || cat.items.length === 0)) {
+        appData.theGardenAndBar = appData.theGardenAndBar.filter(function(c) { return c !== cat; });
+        cat = null;
+      }
+
       if (!cat) {
         if (appData.theGardenAndBar.length > 0) {
           currentBarKey = appData.theGardenAndBar[0].key;
@@ -5331,7 +5933,36 @@
         return;
       }
 
+      var isTempBar = !!cat.isTemporaryFolder || cat.key === 'unassigned-bar';
+      var otherBarCats = appData.theGardenAndBar.filter(function(c) {
+        return !c.isTemporaryFolder && c.key !== 'unassigned-bar';
+      });
+
       var html = '';
+
+      // Banner for Temporary Holding Folder in The Bar
+      if (isTempBar && otherBarCats.length > 0) {
+        var opts = otherBarCats.map(function(c) {
+          var name = c.category || c.key;
+          return '<option value="' + name + '">' + name + '</option>';
+        }).join('');
+        html += '<div class="temporary-folder-banner">' +
+          '<div style="display:flex;align-items:center;gap:10px;">' +
+            '<span style="font-size:20px;">📁</span>' +
+            '<div>' +
+              '<div style="font-weight:700;color:#fbbf24;font-size:12px;letter-spacing:0.02em;">TEMPORARY FOLDER: NO SUB-CATEGORY (' + (cat.items || []).length + ' ' + ((cat.items || []).length === 1 ? 'item' : 'items') + ')</div>' +
+              '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Items moved here because their sub-category was deleted. You can reassign them below.</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<select class="input-field batch-move-bar-select" style="height:30px;font-size:11px;padding:2px 8px;background:#181816;border:1px solid #f59e0b;color:#fff;">' +
+              '<option value="">Move all items to...</option>' + opts +
+            '</select>' +
+            '<button type="button" class="btn-publish btn-apply-batch-bar" style="padding:6px 12px;font-size:11px;background:#f59e0b;border-color:#f59e0b;color:#000;font-weight:700;white-space:nowrap;">Move All</button>' +
+          '</div>' +
+        '</div>';
+      }
+
       (cat.items || []).forEach(function(it, idx) {
         var isVeg = (it.tags || []).indexOf('Vegetarian') !== -1;
         var mediaHtml = '';
@@ -5351,6 +5982,21 @@
           '</div>';
         }
 
+        var subcatBadgeHtml = '';
+        var quickReassignHtml = '';
+        if (isTempBar && otherBarCats.length > 0) {
+          subcatBadgeHtml = '<span class="subcat-badge" style="background:rgba(245,158,11,0.2);border:1px dashed #f59e0b;color:#fbbf24;font-size:10px;">📁 No Sub-Category</span>';
+          var quickOpts = otherBarCats.map(function(c) {
+            var name = c.category || c.key;
+            return '<option value="' + name + '">' + name + '</option>';
+          }).join('');
+          quickReassignHtml = '<select class="quick-reassign-card-select" data-id="' + it.id + '" data-cat="' + cat.key + '" title="Quick Assign Section">' +
+            '<option value="">Move to... ▼</option>' + quickOpts +
+          '</select>';
+        } else if (it.subCategory) {
+          subcatBadgeHtml = '<span class="subcat-badge">' + it.subCategory + '</span>';
+        }
+
         html += '<article class="editor-item-card" data-bar-id="' + it.id + '">' +
           '<div class="card-top-bar">' +
             '<div class="card-meta-left">' +
@@ -5358,12 +6004,13 @@
               '<div class="card-title-stack">' +
                 '<h4>' + it.name + '</h4>' +
                 '<div class="card-subtitle-row">' +
-                  (it.subCategory ? '<span class="subcat-badge">' + it.subCategory + '</span>' : '') +
+                  subcatBadgeHtml +
                   (isVeg ? getVegBadgeHtml(true) : '<span style="color:var(--gold-light);font-family:var(--font-mono);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;">Curated Craft</span>') +
                 '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-controls-right">' +
+              quickReassignHtml +
               (it.price ? '<span class="card-price-pill">LKR ' + it.price + '</span>' : '') +
               '<button type="button" class="btn-icon btn-edit-bar" data-cat="' + cat.key + '" data-id="' + it.id + '" title="Edit Item & Media">' +
                 '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>' +
@@ -5378,6 +6025,32 @@
       });
 
       list.innerHTML = html;
+
+      // Bind quick reassign selects on cards
+      list.querySelectorAll('.quick-reassign-card-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+          var targetVal = sel.value;
+          var dishId = sel.getAttribute('data-id');
+          var fromCat = sel.getAttribute('data-cat');
+          if (targetVal && dishId) {
+            moveSingleDishToSubcat('thebar', fromCat, dishId, targetVal);
+          }
+        });
+      });
+
+      // Bind batch move banner in the bar
+      var btnBatchBar = list.querySelector('.btn-apply-batch-bar');
+      var selBatchBar = list.querySelector('.batch-move-bar-select');
+      if (btnBatchBar && selBatchBar) {
+        btnBatchBar.addEventListener('click', function() {
+          var targetVal = selBatchBar.value;
+          if (targetVal) {
+            moveAllUnassignedDishes('thebar', targetVal);
+          } else {
+            showToast('Please select a section to move all items into.');
+          }
+        });
+      }
 
       list.querySelectorAll('.btn-edit-bar').forEach(function(b) {
         b.addEventListener('click', function() {
@@ -6042,13 +6715,19 @@
       var subcatSelect = document.getElementById('itemSubcatSelect');
       if (subcatSelect) {
         var scKey = (scope === 'custom') ? categoryKey : scope;
-        var list = (appData.subCategories && appData.subCategories[scKey]) ? appData.subCategories[scKey] : [];
+        var rawList = (appData.subCategories && appData.subCategories[scKey]) ? appData.subCategories[scKey] : [];
+        var list = rawList.filter(function(x) { return x !== 'No Sub-Category' && x !== 'Unassigned'; });
         var sHtml = '<option value="">-- Choose Sub-Category --</option>';
+        if (item && (!item.subCategory || item.subCategory === 'No Sub-Category' || item.subCategory === 'Unassigned')) {
+          sHtml += '<option value="No Sub-Category" disabled selected>📁 No Sub-Category (Select destination below)</option>';
+        }
         list.forEach(function(sc) {
           sHtml += '<option value="' + sc + '">' + sc + '</option>';
         });
         subcatSelect.innerHTML = sHtml;
-        subcatSelect.value = (item && item.subCategory) ? item.subCategory : '';
+        if (item && item.subCategory && item.subCategory !== 'No Sub-Category' && item.subCategory !== 'Unassigned') {
+          subcatSelect.value = item.subCategory;
+        }
       }
       var groupInline = document.getElementById('groupNewSubcatInline');
       if (groupInline) groupInline.style.display = 'none';
@@ -6256,10 +6935,15 @@
         navigatePreview('lunch');
       } else if (scope === 'alacarte') {
         var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
-        if (cat) {
+        var targetCat = (subCategory && subCategory !== 'No Sub-Category')
+          ? appData.aLaCarte.find(function(c) {
+              return c.category === subCategory || c.title === subCategory.toUpperCase() || c.key === subCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            }) || cat
+          : cat;
+        if (targetCat) {
           if (!id) {
             var newDish = {
-              id: catKey + '-' + Date.now(),
+              id: targetCat.key + '-' + Date.now(),
               name: name,
               subCategory: subCategory,
               tags: isItemVegChecked ? ['Vegetarian'] : [],
@@ -6269,9 +6953,23 @@
               image: finalImage,
               video: finalVideo
             };
-            cat.items.push(newDish);
+            targetCat.items.push(newDish);
           } else {
-            var dish = cat.items.find(function(x) { return x.id === id; });
+            var dish = null;
+            if (cat) {
+              var dIdx = (cat.items || []).findIndex(function(x) { return x.id === id; });
+              if (dIdx !== -1) {
+                if (targetCat !== cat) {
+                  dish = cat.items.splice(dIdx, 1)[0];
+                  targetCat.items.push(dish);
+                  if (cat.isTemporaryFolder && cat.items.length === 0) {
+                    appData.aLaCarte = appData.aLaCarte.filter(function(x) { return x !== cat; });
+                  }
+                } else {
+                  dish = cat.items[dIdx];
+                }
+              }
+            }
             if (dish) {
               dish.name = name;
               dish.subCategory = subCategory;
@@ -6283,12 +6981,19 @@
               dish.video = finalVideo;
             }
           }
+          currentAlacarteKey = targetCat.key;
+          renderAlacarteCoursePills();
           renderAlacarteTab();
-          navigatePreview(catKey);
+          navigatePreview(targetCat.key);
         }
       } else if (scope === 'thebar') {
         var bcat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
-        if (bcat) {
+        var targetBar = (subCategory && subCategory !== 'No Sub-Category')
+          ? appData.theGardenAndBar.find(function(c) {
+              return c.category === subCategory || c.key === subCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            }) || bcat
+          : bcat;
+        if (targetBar) {
           if (!id) {
             var newBarItem = {
               id: 'bar-' + Date.now(),
@@ -6300,9 +7005,23 @@
               image: finalImage,
               video: finalVideo
             };
-            bcat.items.push(newBarItem);
+            targetBar.items.push(newBarItem);
           } else {
-            var bitem = bcat.items.find(function(x) { return x.id === id; });
+            var bitem = null;
+            if (bcat) {
+              var bIdx = (bcat.items || []).findIndex(function(x) { return x.id === id; });
+              if (bIdx !== -1) {
+                if (targetBar !== bcat) {
+                  bitem = bcat.items.splice(bIdx, 1)[0];
+                  targetBar.items.push(bitem);
+                  if (bcat.isTemporaryFolder && bcat.items.length === 0) {
+                    appData.theGardenAndBar = appData.theGardenAndBar.filter(function(x) { return x !== bcat; });
+                  }
+                } else {
+                  bitem = bcat.items[bIdx];
+                }
+              }
+            }
             if (bitem) {
               bitem.name = name;
               bitem.subCategory = subCategory;
@@ -6313,6 +7032,8 @@
               bitem.video = finalVideo;
             }
           }
+          currentBarKey = targetBar.key;
+          renderBarCategoryPills();
           renderBarTab();
           navigatePreview('thebar');
         }
@@ -6373,6 +7094,11 @@
         var cat = appData.aLaCarte.find(function(c) { return c.key === catKey; });
         if (cat) {
           cat.items = cat.items.filter(function(x) { return x.id !== id; });
+          if (cat.isTemporaryFolder && cat.items.length === 0) {
+            appData.aLaCarte = appData.aLaCarte.filter(function(x) { return x !== cat; });
+            if (appData.aLaCarte.length > 0) currentAlacarteKey = appData.aLaCarte[0].key;
+            renderAlacarteCoursePills();
+          }
           renderAlacarteTab();
           sendLiveUpdate();
           pushToFirebaseCloud();
@@ -6385,6 +7111,11 @@
         var cat = appData.theGardenAndBar.find(function(c) { return c.key === catKey; });
         if (cat) {
           cat.items = cat.items.filter(function(x) { return x.id !== id; });
+          if (cat.isTemporaryFolder && cat.items.length === 0) {
+            appData.theGardenAndBar = appData.theGardenAndBar.filter(function(x) { return x !== cat; });
+            if (appData.theGardenAndBar.length > 0) currentBarKey = appData.theGardenAndBar[0].key;
+            renderBarCategoryPills();
+          }
           renderBarTab();
           sendLiveUpdate();
           pushToFirebaseCloud();
