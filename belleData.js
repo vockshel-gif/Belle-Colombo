@@ -55,7 +55,7 @@
   "subCategories": {
     "lunch": ["Soups & Starters", "Artisan Salads", "Sharing Platters", "Burgers & Sandwiches"],
     "alacarte": ["Appetisers", "Entrées", "Mains", "From The Grill", "Desserts"],
-    "thebar": ["The Garden", "The Bar Bites"]
+    "thebar": []
   },
   "lunchItems": [
     {
@@ -559,9 +559,9 @@
   ],
   "theGardenAndBar": [
     {
-      "category": "The Garden",
-      "key": "the-garden",
-      "subtitle": "Daytime Gourmet Burgers & Sandwiches",
+      "category": "The Bar",
+      "key": "the-bar",
+      "subtitle": "Daily | 06:00 PM – 10:30 PM",
       "items": [
         {
           "id": "bar-the-garden-1",
@@ -636,14 +636,7 @@
           "price": "2,200",
           "priceLabel": "",
           "desc": "Tomatoes, goat's cheese, basil, greens and assorted herb base, passionfruit dressing, toasted pumpkin & sunflower seeds."
-        }
-      ]
-    },
-    {
-      "category": "The Bar Bites",
-      "key": "the-bar-bites",
-      "subtitle": "Daily | 06:00 PM – 10:30 PM",
-      "items": [
+        },
         {
           "id": "bar-the-bar-bites-1",
           "name": "The Classic Sliders (Two)",
