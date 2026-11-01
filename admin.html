@@ -50,6 +50,13 @@
       --font-mono: 'Space Mono', 'Courier New', monospace;
       --font-sans: 'Space Grotesk', -apple-system, sans-serif;
       --header-height: 58px;
+      --gold-primary: #bca685;
+      --gold-light: #d4c3a3;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     * {
@@ -2936,6 +2943,7 @@
                 <span>+ UPLOAD ASSET</span>
                 <span class="btn-arrow">→</span>
               </button>
+              <input type="file" id="mediaDirectUploadInput" accept="image/*,video/*" style="display:none;">
             </div>
           </div>
 
@@ -3048,6 +3056,8 @@
               <span>0ms INSTANT SYNC ACTIVE</span>
             </div>
           </div>
+
+        </div>
 
       </section>
 
@@ -3438,7 +3448,10 @@
       return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2v4a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V2"></path><path d="M12 9v13"></path><path d="M8 22h8"></path></svg>';
     }
 
-    function getVegBadgeHtml() {
+    function getVegBadgeHtml(isVeg) {
+      if (arguments.length > 0 && !isVeg) {
+        return '<span class="subcat-badge badge-nonveg">NON-VEG</span>';
+      }
       return '<span class="subcat-badge badge-veg"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 20A7 7 0 0 1 4 13c0-6 7-11 7-11s7 5 7 11a7 7 0 0 1-7 7Z"></path><path d="M11 20v-8"></path></svg> VEGETARIAN</span>';
     }
 
@@ -4748,8 +4761,17 @@
       });
 
       // 5. Custom Categories
+      var customCatSources = [];
       (appData.menuCategories || []).forEach(function(cat) {
-        if (!cat.isSystem && cat.items) {
+        if (!cat.isSystem) customCatSources.push(cat);
+      });
+      (appData.customCategories || []).forEach(function(cc) {
+        if (!customCatSources.some(function(c) { return c.id === cc.id; })) {
+          customCatSources.push(cc);
+        }
+      });
+      customCatSources.forEach(function(cat) {
+        if (cat.items) {
           cat.items.forEach(function(it) {
             if (it.video) {
               assets.push({
@@ -5019,6 +5041,14 @@
           if (cItem) {
             if (asset.mediaType === 'video') cItem.video = '';
             else if (asset.mediaType === 'photo') cItem.image = '';
+          }
+        }
+        var ccCat = (appData.customCategories || []).find(function(c) { return c.id === asset.categoryKey; });
+        if (ccCat && ccCat.items) {
+          var ccItem = ccCat.items.find(function(it) { return it.id === asset.itemId; });
+          if (ccItem) {
+            if (asset.mediaType === 'video') ccItem.video = '';
+            else if (asset.mediaType === 'photo') ccItem.image = '';
           }
         }
       } else if (asset.scope === 'event') {
@@ -5966,13 +5996,11 @@
     }
 
     function bindMenuCategoryControls() {
-      var btnAdd = document.getElementById('btnAddMenuCategory');
       var modal = document.getElementById('menuCategoryModal');
       var btnClose = document.getElementById('btnCloseMenuCategoryModal');
       var btnCancel = document.getElementById('btnCancelMenuCategoryModal');
       var form = document.getElementById('menuCategoryForm');
 
-      if (btnAdd) btnAdd.addEventListener('click', function() { openMenuCategoryModal(); });
       if (btnClose) btnClose.addEventListener('click', function() { if (modal) modal.classList.remove('is-open'); });
       if (btnCancel) btnCancel.addEventListener('click', function() { if (modal) modal.classList.remove('is-open'); });
 
@@ -6841,14 +6869,12 @@
     document.getElementById('eventCustomImgFile').addEventListener('change', function(e) {
       var file = e.target.files[0];
       if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(evt) {
-        currentEventImageData = evt.target.result;
+      optimizeAndReadImage(file, function(optUrl) {
+        currentEventImageData = optUrl;
         document.getElementById('eventModalImgPreview').src = currentEventImageData;
         document.getElementById('eventImgPreviewWrap').style.display = 'block';
         showToast('Image uploaded and optimized for event!');
-      };
-      reader.readAsDataURL(file);
+      });
     });
 
     document.getElementById('btnCloseEventModal').addEventListener('click', function() { eventEditModal.classList.remove('is-open'); });
@@ -6867,6 +6893,7 @@
       var venue = document.getElementById('eventVenueInput').value.trim();
       var desc = document.getElementById('eventDescInput').value.trim();
       var datePickerVal = eventDatePickerInput ? eventDatePickerInput.value : '';
+      var selectedPresetKey = document.getElementById('eventPresetImgSelect').value;
 
       if (!id) {
         // Create new
@@ -6884,7 +6911,7 @@
           desc: desc,
           isVip: isEventVipChecked,
           hasImage: !!currentEventImageData,
-          imageKey: document.getElementById('eventPresetImgSelect').value,
+          imageKey: selectedPresetKey,
           imageData: currentEventImageData
         };
         appData.events.push(newEv);
@@ -6904,7 +6931,9 @@
           ev.venue = venue;
           ev.desc = desc;
           ev.isVip = isEventVipChecked;
-          if (currentEventImageData) ev.imageData = currentEventImageData;
+          ev.imageData = currentEventImageData || null;
+          ev.hasImage = !!currentEventImageData;
+          ev.imageKey = selectedPresetKey || ev.imageKey || '';
           showToast('Event updated: ' + title);
         }
       }
@@ -7579,11 +7608,11 @@
         scopeLabel = 'EXPRESS LUNCH SELECTION';
         item = (appData.lunchItems || []).find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'block';
-        document.getElementById('groupPriceAlt').style.display = 'none';
+        document.getElementById('groupPriceAlt').style.display = 'block';
         navigatePreview('lunch');
       } else if (scope === 'alacarte') {
         var cat = appData.aLaCarte.find(function(c) { return c.key === categoryKey; });
-        scopeLabel = 'À LA CARTE: ' + (cat ? cat.title.toUpperCase() : 'COURSE');
+        scopeLabel = 'À LA CARTE: ' + (cat ? (cat.category || cat.title || 'COURSE').toUpperCase() : 'COURSE');
         if (cat) item = (cat.items || []).find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'block';
         document.getElementById('groupPriceAlt').style.display = 'block';
@@ -7593,14 +7622,14 @@
         scopeLabel = 'THE BAR: ' + (bcat && bcat.category ? bcat.category.toUpperCase() : 'MENU');
         if (bcat) item = (bcat.items || []).find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'block';
-        document.getElementById('groupPriceAlt').style.display = 'none';
+        document.getElementById('groupPriceAlt').style.display = 'block';
         navigatePreview('thebar');
       } else if (scope === 'custom') {
         var ccat = (appData.menuCategories || []).find(function(c) { return c.id === categoryKey; });
         scopeLabel = ccat ? ccat.name.toUpperCase() : 'CUSTOM MENU';
         if (ccat && ccat.items) item = ccat.items.find(function(x) { return x.id === id; });
         document.getElementById('groupItemMeta').style.display = 'block';
-        document.getElementById('groupPriceAlt').style.display = 'none';
+        document.getElementById('groupPriceAlt').style.display = 'block';
         navigatePreview(categoryKey);
       }
 
@@ -7742,7 +7771,8 @@
         }
         if (item) {
           if (scope === 'lunch' || scope === 'custom') item.isVeg = isItemVegChecked;
-          item.tags = isItemVegChecked ? ['Vegetarian'] : [];
+          var otherTags = (item.tags || []).filter(function(t) { return t !== 'Vegetarian'; });
+          item.tags = isItemVegChecked ? otherTags.concat(['Vegetarian']) : otherTags;
           sendLiveUpdate();
         }
       }
@@ -7787,6 +7817,8 @@
 
         var nameVal = document.getElementById('itemNameInput').value.trim();
         var priceVal = document.getElementById('itemPriceInput').value.trim();
+        var priceAltInp = document.getElementById('itemPriceAltInput');
+        var price2Val = priceAltInp ? priceAltInp.value.trim() : '';
         var descVal = document.getElementById('itemDescInput').value.trim();
 
         var targetItem = null;
@@ -7810,8 +7842,9 @@
 
         if (targetItem) {
           if (nameVal) targetItem.name = nameVal;
-          if (priceVal) targetItem.price = priceVal;
-          if (descVal) targetItem.desc = descVal;
+          targetItem.price = priceVal;
+          targetItem.price2 = price2Val;
+          targetItem.desc = descVal;
           targetItem.subCategory = subcatVal;
           sendLiveUpdate();
         }
@@ -7819,10 +7852,12 @@
 
       var nameInp = document.getElementById('itemNameInput');
       var priceInp = document.getElementById('itemPriceInput');
+      var priceAltInp = document.getElementById('itemPriceAltInput');
       var descInp = document.getElementById('itemDescInput');
       var subcatInp = document.getElementById('itemSubcatSelect');
       if (nameInp) nameInp.addEventListener('input', syncDishFieldLive);
       if (priceInp) priceInp.addEventListener('input', syncDishFieldLive);
+      if (priceAltInp) priceAltInp.addEventListener('input', syncDishFieldLive);
       if (descInp) descInp.addEventListener('input', syncDishFieldLive);
       if (subcatInp) subcatInp.addEventListener('change', syncDishFieldLive);
     }
@@ -7894,6 +7929,7 @@
             subCategory: subCategory,
             isVeg: isItemVegChecked,
             price: price,
+            price2: price2,
             desc: desc,
             image: finalImage,
             video: finalVideo,
@@ -7908,6 +7944,7 @@
             it.subCategory = subCategory;
             it.isVeg = isItemVegChecked;
             it.price = price;
+            it.price2 = price2;
             it.desc = desc;
             it.image = finalImage;
             it.video = finalVideo;
@@ -7959,7 +7996,8 @@
             if (dish) {
               dish.name = name;
               dish.subCategory = subCategory;
-              dish.tags = isItemVegChecked ? ['Vegetarian'] : [];
+              var otherAlaTags = (dish.tags || []).filter(function(t) { return t !== 'Vegetarian'; });
+              dish.tags = isItemVegChecked ? otherAlaTags.concat(['Vegetarian']) : otherAlaTags;
               dish.price = price;
               dish.price2 = price2;
               dish.desc = desc;
@@ -7989,6 +8027,7 @@
               subCategory: subCategory,
               tags: isItemVegChecked ? ['Vegetarian'] : [],
               price: price,
+              price2: price2,
               desc: desc,
               image: finalImage,
               video: finalVideo,
@@ -8015,8 +8054,10 @@
             if (bitem) {
               bitem.name = name;
               bitem.subCategory = subCategory;
-              bitem.tags = isItemVegChecked ? ['Vegetarian'] : [];
+              var otherBarTags = (bitem.tags || []).filter(function(t) { return t !== 'Vegetarian'; });
+              bitem.tags = isItemVegChecked ? otherBarTags.concat(['Vegetarian']) : otherBarTags;
               bitem.price = price;
+              bitem.price2 = price2;
               bitem.desc = desc;
               bitem.image = finalImage;
               bitem.video = finalVideo;
@@ -8041,6 +8082,7 @@
               tags: isItemVegChecked ? ['Vegetarian'] : [],
               isVeg: isItemVegChecked,
               price: price,
+              price2: price2,
               desc: desc,
               image: finalImage,
               video: finalVideo,
@@ -8053,9 +8095,11 @@
             if (dish) {
               dish.name = name;
               dish.subCategory = subCategory;
-              dish.tags = isItemVegChecked ? ['Vegetarian'] : [];
+              var otherCustTags = (dish.tags || []).filter(function(t) { return t !== 'Vegetarian'; });
+              dish.tags = isItemVegChecked ? otherCustTags.concat(['Vegetarian']) : otherCustTags;
               dish.isVeg = isItemVegChecked;
               dish.price = price;
+              dish.price2 = price2;
               dish.desc = desc;
               dish.image = finalImage;
               dish.video = finalVideo;
@@ -8240,13 +8284,21 @@
           var parsed = JSON.parse(evt.target.result);
           if (parsed && (parsed.lunchItems || parsed.events || parsed.venue)) {
             appData = parsed;
+            initSubCategoriesState();
+            initMenuCategoriesState();
+            renderMenuCategoriesMasterBar();
             renderEventsTab();
             renderLunchTab();
+            renderAlacarteCoursePills();
             renderAlacarteTab();
+            renderBarCategoryPills();
             renderBarTab();
             renderTastingTab();
             populateVenueForm();
+            renderMediaLibraryTab();
+            updateStorageGauge();
             sendLiveUpdate();
+            pushToFirebaseCloud();
             showToast('Backup restored successfully!');
           } else {
             alert('Invalid backup file format.');
@@ -8271,8 +8323,15 @@
         try {
           var cfg = JSON.parse(val);
           localStorage.setItem('belle_firebase_config', JSON.stringify(cfg));
-          initFirebase(cfg);
-          testFirebaseSync();
+          Object.assign(firebaseConfig, cfg);
+          initFirebaseCloud();
+          pushToFirebaseCloud(function(err) {
+            if (!err) {
+              showToast('Cloud configuration saved & synced!');
+            } else {
+              showToast('Cloud config saved locally. Sync notice: ' + err.message);
+            }
+          });
         } catch(e) {
           alert('Please enter valid JSON for Firebase config: ' + e.message);
           return;

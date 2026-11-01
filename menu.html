@@ -380,6 +380,11 @@
       color: #ffd88a;
       border-color: rgba(220, 180, 100, 0.35);
     }
+    .tag-std {
+      background: rgba(188, 166, 133, 0.1);
+      color: var(--gold);
+      border-color: rgba(188, 166, 133, 0.22);
+    }
     .item-price-wrap {
       text-align: right;
       flex-shrink: 0;
@@ -550,6 +555,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+    .price-box.featured-pairing {
+      padding-left: .25rem;
     }
     .price-label {
       font-size: .7rem;
@@ -2750,6 +2758,40 @@
           sec.classList.add('is-hidden');
         } else {
           sec.classList.remove('is-hidden');
+        }
+      });
+
+      // Also filter Tasting Menu options & courses
+      document.querySelectorAll('.course-opt').forEach(opt => {
+        const nameText = (opt.querySelector('.opt-name')?.textContent || '').toLowerCase();
+        const descText = (opt.querySelector('.opt-desc')?.textContent || '').toLowerCase();
+        const wineText = (opt.querySelector('.opt-wine')?.textContent || '').toLowerCase();
+        const isOptVeg = /\(v\)|vegetarian|mushroom|sorbet|cheese|cbp|biscoff|basque|coffee|tea/i.test(nameText) && !/beef|tuna|duck|chicken|brisket|lamb|modha|fish|poultry|meat/i.test(nameText + ' ' + (opt.querySelector('.opt-label')?.textContent || ''));
+        const matchesSearch = !q || nameText.includes(q) || descText.includes(q) || wineText.includes(q);
+        const matchesVeg = !vegOnly || isOptVeg;
+
+        if (matchesSearch && matchesVeg) {
+          opt.classList.remove('is-hidden');
+        } else {
+          opt.classList.add('is-hidden');
+        }
+      });
+
+      document.querySelectorAll('.course-node').forEach(node => {
+        const visibleOpts = node.querySelectorAll('.course-opt:not(.is-hidden)');
+        if (visibleOpts.length === 0 && (q || vegOnly)) {
+          node.classList.add('is-hidden');
+        } else {
+          node.classList.remove('is-hidden');
+        }
+      });
+
+      document.querySelectorAll('.tasting-card').forEach(card => {
+        const visibleNodes = card.querySelectorAll('.course-node:not(.is-hidden)');
+        if (visibleNodes.length === 0 && (q || vegOnly)) {
+          card.classList.add('is-hidden');
+        } else {
+          card.classList.remove('is-hidden');
         }
       });
     }
