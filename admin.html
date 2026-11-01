@@ -2517,6 +2517,500 @@
       color: var(--lime-primary);
     }
 
+    /* ========================================================
+       CALM, MODERN & EASY-TO-UNDERSTAND UI REDESIGN
+       ======================================================== */
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .top-header {
+      background: #131711;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 24px;
+    }
+    .brand-kicker {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: #ffffff;
+    }
+    .brand-status-sub {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      text-transform: none;
+      color: #9fa992;
+    }
+
+    /* Header Tools Dropdown */
+    .header-tools-dropdown-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+    .tools-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 260px;
+      background: #1a2017;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 999;
+    }
+    .tools-dropdown-menu.is-open {
+      display: flex;
+      animation: fadeIn 0.16s ease-out;
+    }
+    .tools-menu-section-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      padding: 6px 10px 2px;
+    }
+    .tools-menu-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 4px 0;
+    }
+    .tools-dropdown-menu .btn-secondary {
+      width: 100%;
+      justify-content: flex-start;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #e4e8de;
+    }
+    .tools-dropdown-menu .btn-secondary:hover {
+      background: rgba(181, 212, 113, 0.12);
+      color: var(--lime-primary);
+      transform: none;
+    }
+    .tools-storage-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .tools-storage-row:hover {
+      background: rgba(181, 212, 113, 0.12);
+    }
+
+    /* Collapsible Preview Mode */
+    body.is-preview-hidden .preview-pane {
+      display: none !important;
+    }
+    body.is-preview-hidden .studio-pane {
+      width: 100% !important;
+      border-right: none !important;
+    }
+    body.is-preview-hidden .studio-content-view {
+      max-width: 1040px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Friendly Main Navigation Tabs */
+    .studio-tabs {
+      background: #141812;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 24px;
+      gap: 8px;
+    }
+    .studio-tab-btn {
+      font-family: var(--font-display);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: none;
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.02);
+      color: #b4beaa;
+      box-shadow: none !important;
+    }
+    .studio-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+    }
+    .studio-tab-btn.is-active {
+      background: var(--lime-primary);
+      color: #11150e;
+      border-color: var(--lime-primary);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(181, 212, 113, 0.25) !important;
+    }
+    .tab-badge {
+      border-radius: 999px;
+      padding: 1px 7px;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: inherit;
+    }
+    .studio-tab-btn.is-active .tab-badge {
+      background: rgba(0, 0, 0, 0.2);
+      color: #11150e;
+    }
+
+    /* Friendly Step Guide & Quick Search Bar */
+    .friendly-guide-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(181, 212, 113, 0.07);
+      border: 1px solid rgba(181, 212, 113, 0.2);
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .friendly-guide-steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #d6dfd0;
+      flex-wrap: wrap;
+    }
+    .friendly-step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+    }
+    .friendly-step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--lime-primary);
+      color: #11150e;
+      font-size: 10.5px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .friendly-guide-search {
+      position: relative;
+      min-width: 220px;
+      flex: 1;
+      max-width: 280px;
+    }
+    .friendly-guide-search input {
+      width: 100%;
+      background: #11150f;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      padding: 7px 12px 7px 32px;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 12px;
+    }
+    .friendly-guide-search input:focus {
+      outline: none;
+      border-color: var(--lime-primary);
+      box-shadow: 0 0 0 2px rgba(181, 212, 113, 0.2);
+    }
+    .friendly-guide-search svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Soften Category Buttons & Hide Inline Edit/Delete Clutter Until Hover */
+    .menu-cat-master-bar {
+      gap: 8px;
+      margin-top: 4px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .menu-cat-master-btn {
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #1c2219;
+      padding: 9px 15px;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+    .menu-cat-master-btn .cat-btn-badge {
+      border-radius: 999px;
+      padding: 1px 7px;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #c5d1b8;
+    }
+    .menu-cat-master-btn.is-active {
+      background: rgba(181, 212, 113, 0.18);
+      color: var(--lime-primary);
+      border-color: var(--lime-primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transform: none;
+    }
+    .menu-cat-master-btn.is-active .cat-btn-badge {
+      background: var(--lime-primary);
+      color: #11150e;
+    }
+    /* Hide tiny edit/delete icons on category tabs unless hovered */
+    .menu-cat-master-btn .cat-actions-wrap {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      margin-left: 0;
+      transition: all 0.18s ease;
+    }
+    .menu-cat-master-btn:hover .cat-actions-wrap {
+      opacity: 0.85;
+      width: auto;
+      margin-left: 4px;
+    }
+    .btn-quick-add-category {
+      border-radius: 9px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: none;
+      padding: 9px 14px;
+      border: 1px dashed rgba(181, 212, 113, 0.45);
+    }
+
+    /* Clean Subheader & Sub-Category Filter Pills */
+    .content-subheader {
+      background: #1a2017;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 14px !important;
+      flex-wrap: wrap;
+    }
+    .subheader-title-group h3 {
+      font-size: 16px !important;
+      letter-spacing: 0.01em !important;
+      text-transform: none !important;
+      color: #ffffff !important;
+    }
+    .subheader-title-group p {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: #9fa992;
+      margin-top: 3px;
+    }
+    .btn-gold-outline {
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: none;
+      padding: 8px 14px;
+      box-shadow: none;
+      border: 1px solid rgba(181, 212, 113, 0.35);
+      background: rgba(181, 212, 113, 0.08);
+    }
+    /* Highlight primary "+ Add ..." buttons inside subheader-actions */
+    #btnAddLunch, #btnAddAlacarte, #btnAddBarItem, #btnAddCustomDish {
+      background: var(--lime-primary);
+      color: #11150e;
+      border-color: var(--lime-primary);
+      font-weight: 700;
+    }
+    #btnAddLunch:hover, #btnAddAlacarte:hover, #btnAddBarItem:hover, #btnAddCustomDish:hover {
+      background: #c8e686;
+      color: #11150e;
+    }
+
+    .sub-pill-btn {
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: none;
+      box-shadow: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sub-pill-btn.is-active {
+      box-shadow: 0 2px 8px rgba(181, 212, 113, 0.25);
+    }
+    /* Hide inline edit/delete icons inside sub-pills unless hovered */
+    .sub-pill-actions {
+      display: none;
+    }
+    .sub-pill-btn:hover .sub-pill-actions {
+      display: inline-flex;
+    }
+
+    /* Clean, Easy-to-Scan Dish & Event Cards */
+    .editor-item-card {
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #1b2118;
+      padding: 16px 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+    }
+    .editor-item-card:hover {
+      border-color: rgba(181, 212, 113, 0.5);
+      background: #20271c;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      transform: translateY(-1px);
+    }
+    .dish-thumb-wrap, .card-thumb-preview {
+      width: 54px;
+      height: 54px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .dish-thumb-badge {
+      border-radius: 4px;
+      font-family: var(--font-sans);
+      font-size: 8px;
+      padding: 1px 4px;
+    }
+    .card-title-stack h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .card-subtitle-row {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    .subcat-badge {
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      padding: 2px 8px;
+      background: rgba(181, 212, 113, 0.1);
+      border: 1px solid rgba(181, 212, 113, 0.25);
+    }
+    .card-price-pill {
+      background: rgba(188, 166, 133, 0.14);
+      border: 1px solid rgba(188, 166, 133, 0.35);
+      color: var(--gold-light);
+      border-radius: 8px;
+      padding: 5px 11px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: none;
+    }
+    .btn-icon {
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: none;
+    }
+    /* Make Edit buttons on cards show clear "Edit" label */
+    .btn-edit-lunch, .btn-edit-ala, .btn-edit-bar, .btn-edit-custom-dish, .btn-edit-event {
+      width: auto !important;
+      padding: 0 11px !important;
+      gap: 5px;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #e2e8dc;
+    }
+    .btn-edit-lunch::after, .btn-edit-ala::after, .btn-edit-bar::after, .btn-edit-custom-dish::after, .btn-edit-event::after {
+      content: "Edit";
+    }
+
+    /* Clean Form Inputs & Modals */
+    .form-group label {
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: none;
+      color: #c8d2c0;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+    .modal-box, .admin-auth-card {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+    }
+    .billboard-container {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+    .subway-road-divider {
+      display: none;
+    }
+    .neo-hero-section {
+      background: #1a2017;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 18px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .neo-kicker {
+      display: none;
+    }
+    .neo-hero-headline {
+      font-size: 20px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .neo-hero-headline br {
+      display: none;
+    }
+    .neo-hero-subtext {
+      font-size: 12.5px;
+      margin-bottom: 0;
+      max-width: 520px;
+    }
+
   </style>
   <!-- Google Firebase SDK (Free Tier) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -2570,57 +3064,80 @@
       <div class="header-brand">
         <img src="belle_logo_white.png" alt="Belle Colombo" class="header-restaurant-logo">
         <div class="brand-info">
-          <div class="brand-kicker">EXECUTIVE STUDIO &amp; CMS</div>
-          <div class="brand-status-sub"><span class="brand-pulse-dot"></span> LIVE SYSTEM · ONLINE</div>
+          <div class="brand-kicker">Belle Colombo · Admin Panel</div>
+          <div class="brand-status-sub"><span class="brand-pulse-dot"></span> Auto-syncing with Live Preview</div>
         </div>
       </div>
 
-      <!-- 1 GB Database Storage Radial Percentage Indicator -->
-      <div class="storage-gauge-widget" id="storageGaugeWidget" role="button" tabindex="0" title="Database Quota: 0.05 MB / 1,024 MB (Click to open Cloud Cockpit)">
-        <div class="radial-gauge-wrap">
-          <svg class="radial-gauge-svg" viewBox="0 0 36 36">
-            <path class="radial-gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            <path class="radial-gauge-fill" id="radialGaugeFill" stroke-dasharray="3.2, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-          </svg>
-          <div class="radial-gauge-text" id="radialGaugePercent">0.1%</div>
-        </div>
-      </div>
-
-      <!-- Header Actions (Executive Suite) -->
+      <!-- Clean, Uncluttered Header Actions -->
       <div class="header-actions">
-        <button type="button" class="btn-secondary" id="btnCloudSync" title="Google Firebase Realtime Database">
-          <span class="brand-pulse-dot" style="width:7px;height:7px;"></span>
-          <span>Cloud: Connected</span>
+        <button type="button" class="btn-secondary" id="btnTogglePreviewPane" title="Show or hide the phone preview on the right to get more editing space">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          <span id="labelTogglePreviewPane">Hide Phone Preview</span>
         </button>
 
-        <button type="button" class="btn-secondary" id="btnDownloadDataJs" title="Download production data.js file">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          <span>data.js</span>
-        </button>
+        <!-- Tools & Backup Dropdown Menu (Keeps technical buttons tidy) -->
+        <div class="header-tools-dropdown-wrap" id="headerToolsDropdownWrap">
+          <button type="button" class="btn-secondary" id="btnToggleToolsMenu" title="Cloud Sync, Backups, Storage & Password Settings">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Tools &amp; Settings</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
 
-        <button type="button" class="btn-secondary" id="btnExportJson" title="Export Backup JSON">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span>Export</span>
-        </button>
+          <div class="tools-dropdown-menu" id="toolsDropdownMenu">
+            <div class="tools-menu-section-label">Security &amp; Cloud</div>
+            <button type="button" class="btn-secondary" id="btnChangeAdminPass" title="Change Admin Studio Password">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+              <span>Change Admin Password</span>
+            </button>
 
-        <button type="button" class="btn-secondary" id="btnImportJson" title="Restore from Backup JSON">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-          <span>Import</span>
-        </button>
-        <input type="file" id="importFileInput" accept=".json" style="display:none;">
+            <button type="button" class="btn-secondary" id="btnCloudSync" title="Google Firebase Realtime Database">
+              <span class="brand-pulse-dot" style="width:7px;height:7px;"></span>
+              <span>Cloud Sync Settings</span>
+            </button>
 
-        <button type="button" class="btn-secondary" id="btnChangeAdminPass" title="Change Admin Studio Password">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-          <span>Password</span>
-        </button>
+            <div class="tools-storage-row storage-gauge-widget" id="storageGaugeWidget" role="button" tabindex="0" title="View Database Storage Quota">
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#e4e8de;font-weight:500;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--lime-primary)" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                <span>Storage Used</span>
+              </div>
+              <div class="radial-gauge-wrap" style="width:32px;height:32px;">
+                <svg class="radial-gauge-svg" viewBox="0 0 36 36" style="width:32px;height:32px;">
+                  <path class="radial-gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path class="radial-gauge-fill" id="radialGaugeFill" stroke-dasharray="3.2, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div class="radial-gauge-text" id="radialGaugePercent" style="font-size:9px;">0.1%</div>
+              </div>
+            </div>
 
-        <button type="button" class="btn-secondary" id="btnLockStudio" title="Lock Admin Studio">
+            <div class="tools-menu-divider"></div>
+            <div class="tools-menu-section-label">Backups &amp; Advanced</div>
+
+            <button type="button" class="btn-secondary" id="btnExportJson" title="Download a backup file of all menus & events">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Download Backup (.json)</span>
+            </button>
+
+            <button type="button" class="btn-secondary" id="btnImportJson" title="Restore menus & events from a backup file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>Restore from Backup (.json)</span>
+            </button>
+            <input type="file" id="importFileInput" accept=".json" style="display:none;">
+
+            <button type="button" class="btn-secondary" id="btnDownloadDataJs" title="Download production belleData.js file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>Export Developer File (data.js)</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-secondary" id="btnLockStudio" title="Lock Admin Panel">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
           <span>Lock</span>
         </button>
 
-        <button type="button" class="btn-publish" id="btnSavePublish" title="Save and synchronize all live updates">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        <button type="button" class="btn-publish" id="btnSavePublish" title="Save and publish all changes live">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
           <span>Save &amp; Publish</span>
         </button>
       </div>
@@ -2635,20 +3152,23 @@
         <!-- Tabs Bar -->
         <nav class="studio-tabs" aria-label="Editor Modules">
           <button type="button" class="studio-tab-btn is-active" data-tab="tab-menu">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            <span>Menu</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg>
+            <span>Food &amp; Drink Menus</span>
             <span class="tab-badge" id="badgeCountMenu">4</span>
           </button>
           <button type="button" class="studio-tab-btn" data-tab="tab-events">
-            <span>Upcoming Events</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>Events Calendar</span>
             <span class="tab-badge" id="badgeCountEvents">5</span>
           </button>
           <button type="button" class="studio-tab-btn" data-tab="tab-venue">
-            <span>Venue &amp; Socials</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Contact &amp; Hours</span>
           </button>
           <button type="button" class="studio-tab-btn" data-tab="tab-media">
-            <span>Media Library</span>
-            <span class="tab-badge" id="badgeCountMedia" style="background:rgba(188,166,133,0.2);color:var(--gold-light);">0</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>Photos &amp; Videos</span>
+            <span class="tab-badge" id="badgeCountMedia">0</span>
           </button>
         </nav>
 
@@ -2656,6 +3176,21 @@
              TAB 1: UNIFIED MENU SUITE
              ========================================== -->
         <div class="studio-content-view is-active" id="tab-menu">
+          <!-- Friendly Quick Guide & Instant Dish Search -->
+          <div class="friendly-guide-bar">
+            <div class="friendly-guide-steps">
+              <span class="friendly-step-pill"><span class="friendly-step-num">1</span> Pick a Menu below</span>
+              <span style="color:var(--text-dim);">→</span>
+              <span class="friendly-step-pill"><span class="friendly-step-num">2</span> Click any dish to edit</span>
+              <span style="color:var(--text-dim);">→</span>
+              <span class="friendly-step-pill"><span class="friendly-step-num">3</span> Click <strong>Save &amp; Publish</strong></span>
+            </div>
+            <div class="friendly-guide-search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="globalDishSearchInput" placeholder="Search dishes by name or ingredient..." autocomplete="off">
+            </div>
+          </div>
+
           <!-- Dynamic Master Category Selector Bar -->
           <div class="menu-cat-master-bar" id="menuCategoriesMasterBar">
             <!-- Dynamically populated: Lunch, À La Carte, The Bar, Tasting Menus, + Custom Categories -->
@@ -8863,6 +9398,7 @@
         if (newPassInput) newPassInput.value = '';
         if (confirmPassInput) confirmPassInput.value = '';
         passModal.classList.add('active');
+        passModal.classList.add('is-open');
         setTimeout(function() {
           if (currentPassInput) currentPassInput.focus();
         }, 60);
@@ -8871,6 +9407,7 @@
       function closeChangePassModal() {
         if (!passModal) return;
         passModal.classList.remove('active');
+        passModal.classList.remove('is-open');
         hideChangePassError();
       }
 
@@ -8932,10 +9469,84 @@
       }
     }
 
+    /* ========================================================
+       SIMPLIFIED UX CONTROLS (Tools Menu, Preview Toggle, Quick Search, Card Click)
+       ======================================================== */
+    function initSimplifiedUxControls() {
+      // 1. Tools & Settings Dropdown Menu
+      var toolsBtn = document.getElementById('btnToggleToolsMenu');
+      var toolsMenu = document.getElementById('toolsDropdownMenu');
+      var toolsWrap = document.getElementById('headerToolsDropdownWrap');
+
+      if (toolsBtn && toolsMenu) {
+        toolsBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toolsMenu.classList.toggle('is-open');
+        });
+        toolsMenu.addEventListener('click', function() {
+          setTimeout(function() { toolsMenu.classList.remove('is-open'); }, 120);
+        });
+        document.addEventListener('click', function(e) {
+          if (toolsWrap && !toolsWrap.contains(e.target)) {
+            toolsMenu.classList.remove('is-open');
+          }
+        });
+      }
+
+      // 2. Toggle Phone Preview Pane (Full-Width Editor Mode)
+      var togglePreviewBtn = document.getElementById('btnTogglePreviewPane');
+      var togglePreviewLabel = document.getElementById('labelTogglePreviewPane');
+      if (togglePreviewBtn) {
+        togglePreviewBtn.addEventListener('click', function() {
+          var isHidden = document.body.classList.toggle('is-preview-hidden');
+          if (togglePreviewLabel) {
+            togglePreviewLabel.textContent = isHidden ? 'Show Phone Preview' : 'Hide Phone Preview';
+          }
+          if (!isHidden) {
+            setTimeout(function() {
+              if (typeof updatePhoneSimulatorScale === 'function') {
+                updatePhoneSimulatorScale(typeof currentDeviceScale !== 'undefined' ? currentDeviceScale : 'fit');
+              }
+            }, 80);
+          }
+        });
+      }
+
+      // 3. Instant Dish Search Bar across active menu cards
+      var searchInput = document.getElementById('globalDishSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          var q = (searchInput.value || '').trim().toLowerCase();
+          var allCards = document.querySelectorAll('#menuCategoryWorkspaces .editor-item-card');
+          allCards.forEach(function(card) {
+            if (!q) {
+              card.style.display = '';
+              return;
+            }
+            var txt = (card.textContent || '').toLowerCase();
+            card.style.display = txt.indexOf(q) !== -1 ? '' : 'none';
+          });
+        });
+      }
+
+      // 4. Click anywhere on a dish or event card to open its Edit view
+      document.addEventListener('click', function(e) {
+        var card = e.target.closest('.editor-item-card');
+        if (!card) return;
+        // Ignore if user clicked a button, input, select, label, or textarea inside the card
+        if (e.target.closest('button, input, select, textarea, label, a')) return;
+        var editBtn = card.querySelector('.btn-edit-lunch, .btn-edit-ala, .btn-edit-bar, .btn-edit-custom-dish, .btn-edit-event');
+        if (editBtn) {
+          editBtn.click();
+        }
+      });
+    }
+
     // Launch
     window.addEventListener('DOMContentLoaded', function() {
       initAdminAuthGate();
       initStudio();
+      initSimplifiedUxControls();
     });
   </script>
 
