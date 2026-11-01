@@ -2381,6 +2381,142 @@
       }
     }
 
+    /* ========================================================
+       EXECUTIVE PASSWORD LOCK GATE
+       ======================================================== */
+    body:not(.is-authenticated) .app-shell {
+      display: none !important;
+    }
+    .admin-auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(181, 212, 113, 0.08), transparent 55%),
+        linear-gradient(180deg, #11140f 0%, #141712 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    body.is-authenticated .admin-auth-overlay {
+      display: none !important;
+    }
+    .admin-auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-card);
+      border: 2px solid var(--border-hard);
+      box-shadow: 10px 10px 0px #070906;
+      padding: 32px 28px 26px;
+      position: relative;
+    }
+    .admin-auth-card.is-shake {
+      animation: authShake 0.38s cubic-bezier(.36,.07,.19,.97) both;
+      border-color: var(--accent-red);
+    }
+    @keyframes authShake {
+      10%, 90% { transform: translate3d(-2px, 0, 0); }
+      20%, 80% { transform: translate3d(4px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+    .admin-auth-logo {
+      height: 36px;
+      width: auto;
+      display: block;
+      margin-bottom: 16px;
+    }
+    .admin-auth-kicker {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--lime-primary);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .admin-auth-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .admin-auth-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+    .admin-auth-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .admin-auth-input-wrap input {
+      width: 100%;
+      padding: 11px 40px 11px 13px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-hard);
+      color: var(--text-white);
+      letter-spacing: 0.06em;
+    }
+    .admin-auth-input-wrap input:focus {
+      outline: none;
+      border-color: var(--lime-primary);
+    }
+    .btn-toggle-pass-vis {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-toggle-pass-vis:hover {
+      color: var(--lime-primary);
+    }
+    .admin-auth-error {
+      display: none;
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .admin-auth-error.is-visible {
+      display: block;
+    }
+    .admin-auth-footer {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+    .admin-auth-footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .admin-auth-footer a:hover {
+      color: var(--lime-primary);
+    }
+
   </style>
   <!-- Google Firebase SDK (Free Tier) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -2388,6 +2524,44 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+
+  <!-- Executive Password Gate -->
+  <div class="admin-auth-overlay" id="adminAuthOverlay" role="dialog" aria-modal="true" aria-labelledby="adminAuthTitle">
+    <div class="admin-auth-card" id="adminAuthCard">
+      <img src="belle_logo_white.png" alt="Belle Colombo" class="admin-auth-logo">
+      <div class="admin-auth-kicker">■ BELLE COLOMBO · SECURITY GATE</div>
+      <h1 class="admin-auth-title" id="adminAuthTitle">Executive Studio Access</h1>
+      <p class="admin-auth-sub">Enter the administrator password to unlock live menu, event, and cloud publishing controls.</p>
+
+      <form id="adminAuthForm" autocomplete="off">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label for="adminAuthPassInput">Administrator Password</label>
+          <div class="admin-auth-input-wrap">
+            <input type="password" id="adminAuthPassInput" placeholder="Enter password..." required autofocus>
+            <button type="button" class="btn-toggle-pass-vis" id="btnToggleAuthPassVis" title="Show / Hide Password" aria-label="Show or Hide Password">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+          <div class="admin-auth-error" id="adminAuthError">Incorrect password. Please try again.</div>
+        </div>
+
+        <label style="display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);cursor:pointer;margin-bottom:16px;user-select:none;">
+          <input type="checkbox" id="adminAuthRemember" style="width:13px;height:13px;accent-color:var(--lime-primary);">
+          <span>Keep unlocked on this browser for 24 hours</span>
+        </label>
+
+        <button type="submit" class="btn-lime-primary" style="width:100%;justify-content:center;padding:12px 18px;font-size:12px;">
+          <span>UNLOCK STUDIO</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+
+      <div class="admin-auth-footer">
+        <span>PROTECTED COCKPIT</span>
+        <a href="index.html">← Back to Guest App</a>
+      </div>
+    </div>
+  </div>
 
   <div class="app-shell">
     
@@ -2434,6 +2608,16 @@
           <span>Import</span>
         </button>
         <input type="file" id="importFileInput" accept=".json" style="display:none;">
+
+        <button type="button" class="btn-secondary" id="btnChangeAdminPass" title="Change Admin Studio Password">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+          <span>Password</span>
+        </button>
+
+        <button type="button" class="btn-secondary" id="btnLockStudio" title="Lock Admin Studio">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Lock</span>
+        </button>
 
         <button type="button" class="btn-publish" id="btnSavePublish" title="Save and synchronize all live updates">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
@@ -3416,6 +3600,44 @@
         <div class="modal-footer" style="margin-top:8px;">
           <button type="button" class="btn-secondary" id="btnCancelMenuCategoryModal">Cancel</button>
           <button type="submit" class="btn-publish" id="btnSaveMenuCategory">Save Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Password Management Modal -->
+  <div class="modal-overlay" id="adminPassModal">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-head">
+        <h3>CHANGE ADMIN PASSWORD</h3>
+        <button type="button" class="btn-icon" id="btnCloseAdminPassModal" title="Close"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <p style="font-size:11px;color:var(--text-muted);line-height:1.5;">Update the password required to unlock the Belle Colombo Studio Admin Panel. Default password is <strong style="color:var(--lime-primary);">removed</strong>.</p>
+
+      <form id="adminPassForm" style="display:flex;flex-direction:column;gap:14px;margin-top:10px;">
+        <div class="form-group">
+          <label>Current Password *</label>
+          <input type="password" id="currentAdminPassInput" placeholder="Enter current password" required autocomplete="current-password">
+        </div>
+
+        <div class="form-group">
+          <label>New Password *</label>
+          <input type="password" id="newAdminPassInput" placeholder="At least 4 characters" required autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <label>Confirm New Password *</label>
+          <input type="password" id="confirmAdminPassInput" placeholder="Re-enter new password" required autocomplete="new-password">
+        </div>
+
+        <div id="changePassError" style="display:none;color:var(--danger);font-size:11px;font-weight:600;background:var(--danger-dim);border:1px solid rgba(239,68,68,0.28);padding:8px 12px;border-radius:8px;"></div>
+
+        <div class="modal-footer" style="margin-top:8px;justify-content:space-between;">
+          <button type="button" class="btn-secondary" id="btnResetDefaultAdminPass" title="Reset back to removed" style="font-size:11px;">Reset to Default</button>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="btn-secondary" id="btnCancelAdminPassModal">Cancel</button>
+            <button type="submit" class="btn-publish" id="btnSaveAdminPass">Update Password</button>
+          </div>
         </div>
       </form>
     </div>
@@ -8471,8 +8693,250 @@
       });
     }
 
+    /* ========================================================
+       ADMIN PASSWORD GATE & SESSION SECURITY
+       ======================================================== */
+    var DEFAULT_ADMIN_PASS = '';
+    var ADMIN_PASS_STORAGE_KEY = 'belle_admin_custom_pass';
+    var ADMIN_SESSION_KEY = 'belle_admin_auth_session';
+    var ADMIN_REMEMBER_KEY = 'belle_admin_auth_until';
+
+    function getActiveAdminPassword() {
+      try {
+        var customPass = localStorage.getItem(ADMIN_PASS_STORAGE_KEY);
+        if (customPass && customPass.trim().length > 0) {
+          return customPass;
+        }
+      } catch (e) {}
+      return DEFAULT_ADMIN_PASS;
+    }
+
+    function isAdminSessionValid() {
+      try {
+        if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
+          return true;
+        }
+        var rememberUntil = parseInt(localStorage.getItem(ADMIN_REMEMBER_KEY) || '0', 10);
+        if (rememberUntil && Date.now() < rememberUntil) {
+          sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function unlockAdminStudio(remember24h) {
+      try {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+        if (remember24h) {
+          localStorage.setItem(ADMIN_REMEMBER_KEY, String(Date.now() + 24 * 60 * 60 * 1000));
+        } else {
+          localStorage.removeItem(ADMIN_REMEMBER_KEY);
+        }
+      } catch (e) {}
+
+      document.body.classList.add('is-authenticated');
+      var overlay = document.getElementById('adminAuthOverlay');
+      if (overlay) overlay.classList.add('is-unlocked');
+
+      setTimeout(function() {
+        if (typeof updatePhoneSimulatorScale === 'function') {
+          updatePhoneSimulatorScale(typeof currentDeviceScale !== 'undefined' ? currentDeviceScale : 'fit');
+        }
+      }, 80);
+    }
+
+    function lockAdminStudio() {
+      try {
+        sessionStorage.removeItem(ADMIN_SESSION_KEY);
+        localStorage.removeItem(ADMIN_REMEMBER_KEY);
+      } catch (e) {}
+
+      document.body.classList.remove('is-authenticated');
+      var overlay = document.getElementById('adminAuthOverlay');
+      if (overlay) overlay.classList.remove('is-unlocked');
+
+      var passInput = document.getElementById('adminAuthPassInput');
+      var errEl = document.getElementById('adminAuthError');
+      if (errEl) errEl.classList.remove('is-visible');
+      if (passInput) {
+        passInput.value = '';
+        setTimeout(function() { passInput.focus(); }, 60);
+      }
+    }
+
+    function initAdminAuthGate() {
+      var authForm = document.getElementById('adminAuthForm');
+      var passInput = document.getElementById('adminAuthPassInput');
+      var rememberChk = document.getElementById('adminAuthRemember');
+      var errEl = document.getElementById('adminAuthError');
+      var authCard = document.getElementById('adminAuthCard');
+      var toggleVisBtn = document.getElementById('btnToggleAuthPassVis');
+      var lockBtn = document.getElementById('btnLockStudio');
+
+      // Check existing session on load
+      if (isAdminSessionValid()) {
+        unlockAdminStudio(true);
+      } else if (passInput) {
+        setTimeout(function() { passInput.focus(); }, 100);
+      }
+
+      // Toggle password visibility on login gate
+      if (toggleVisBtn && passInput) {
+        toggleVisBtn.addEventListener('click', function() {
+          var isPass = passInput.type === 'password';
+          passInput.type = isPass ? 'text' : 'password';
+          toggleVisBtn.title = isPass ? 'Hide Password' : 'Show Password';
+        });
+      }
+
+      // Clear error when typing
+      if (passInput && errEl) {
+        passInput.addEventListener('input', function() {
+          errEl.classList.remove('is-visible');
+        });
+      }
+
+      // Handle login submit
+      if (authForm) {
+        authForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var entered = passInput ? passInput.value : '';
+          var activePass = getActiveAdminPassword();
+
+          if (entered === activePass) {
+            if (errEl) errEl.classList.remove('is-visible');
+            if (passInput) passInput.value = '';
+            unlockAdminStudio(rememberChk ? rememberChk.checked : true);
+            showToast('Welcome to Belle Colombo Studio!');
+          } else {
+            if (errEl) errEl.classList.add('is-visible');
+            if (authCard) {
+              authCard.classList.remove('is-shake');
+              void authCard.offsetWidth;
+              authCard.classList.add('is-shake');
+            }
+            if (passInput) {
+              passInput.select();
+              passInput.focus();
+            }
+          }
+        });
+      }
+
+      // Lock button in header
+      if (lockBtn) {
+        lockBtn.addEventListener('click', function() {
+          lockAdminStudio();
+          showToast('Admin Studio locked.');
+        });
+      }
+
+      // Change Password modal controls
+      var passModal = document.getElementById('adminPassModal');
+      var openPassModalBtn = document.getElementById('btnChangeAdminPass');
+      var closePassModalBtn = document.getElementById('btnCloseAdminPassModal');
+      var cancelPassModalBtn = document.getElementById('btnCancelAdminPassModal');
+      var resetDefaultPassBtn = document.getElementById('btnResetDefaultAdminPass');
+      var passForm = document.getElementById('adminPassForm');
+      var currentPassInput = document.getElementById('currentAdminPassInput');
+      var newPassInput = document.getElementById('newAdminPassInput');
+      var confirmPassInput = document.getElementById('confirmAdminPassInput');
+      var changePassError = document.getElementById('changePassError');
+
+      function showChangePassError(msg) {
+        if (!changePassError) return;
+        changePassError.textContent = msg;
+        changePassError.style.display = 'block';
+      }
+
+      function hideChangePassError() {
+        if (!changePassError) return;
+        changePassError.textContent = '';
+        changePassError.style.display = 'none';
+      }
+
+      function openChangePassModal() {
+        if (!passModal) return;
+        hideChangePassError();
+        if (currentPassInput) currentPassInput.value = '';
+        if (newPassInput) newPassInput.value = '';
+        if (confirmPassInput) confirmPassInput.value = '';
+        passModal.classList.add('active');
+        setTimeout(function() {
+          if (currentPassInput) currentPassInput.focus();
+        }, 60);
+      }
+
+      function closeChangePassModal() {
+        if (!passModal) return;
+        passModal.classList.remove('active');
+        hideChangePassError();
+      }
+
+      if (openPassModalBtn) openPassModalBtn.addEventListener('click', openChangePassModal);
+      if (closePassModalBtn) closePassModalBtn.addEventListener('click', closeChangePassModal);
+      if (cancelPassModalBtn) cancelPassModalBtn.addEventListener('click', closeChangePassModal);
+
+      if (resetDefaultPassBtn) {
+        resetDefaultPassBtn.addEventListener('click', function() {
+          var enteredCurrent = currentPassInput ? currentPassInput.value : '';
+          if (enteredCurrent !== getActiveAdminPassword()) {
+            showChangePassError('Enter your current password first to reset to the default password.');
+            if (currentPassInput) currentPassInput.focus();
+            return;
+          }
+          try {
+            localStorage.removeItem(ADMIN_PASS_STORAGE_KEY);
+          } catch (e) {}
+          closeChangePassModal();
+          showToast('Admin password reset to default (removed).');
+        });
+      }
+
+      if (passForm) {
+        passForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          hideChangePassError();
+
+          var currentVal = currentPassInput ? currentPassInput.value : '';
+          var newVal = newPassInput ? newPassInput.value : '';
+          var confirmVal = confirmPassInput ? confirmPassInput.value : '';
+
+          if (currentVal !== getActiveAdminPassword()) {
+            showChangePassError('Current password is incorrect.');
+            if (currentPassInput) currentPassInput.focus();
+            return;
+          }
+          if (!newVal || newVal.trim().length < 4) {
+            showChangePassError('New password must be at least 4 characters long.');
+            if (newPassInput) newPassInput.focus();
+            return;
+          }
+          if (newVal !== confirmVal) {
+            showChangePassError('New password and confirmation do not match.');
+            if (confirmPassInput) confirmPassInput.focus();
+            return;
+          }
+
+          try {
+            localStorage.setItem(ADMIN_PASS_STORAGE_KEY, newVal);
+          } catch (err) {
+            showChangePassError('Unable to save password in browser storage.');
+            return;
+          }
+
+          closeChangePassModal();
+          showToast('Admin password updated successfully!');
+        });
+      }
+    }
+
     // Launch
-    window.addEventListener('DOMContentLoaded', initStudio);
+    window.addEventListener('DOMContentLoaded', function() {
+      initAdminAuthGate();
+      initStudio();
+    });
   </script>
 
 </body>
