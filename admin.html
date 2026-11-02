@@ -577,20 +577,42 @@
       box-shadow: var(--shadow);
       overflow: hidden;
     }
-    .media-preview { aspect-ratio: 4 / 3; background: var(--bg); }
+    .media-preview { position: relative; aspect-ratio: 4 / 3; background: var(--bg); }
     .media-preview img, .media-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .media-info { display: flex; flex-direction: column; gap: 8px; flex: 1; padding: 10px 12px 12px; font-size: 13px; }
     .media-uses { color: var(--text-2); line-height: 1.6; }
     .media-uses .btn-link { font-size: 13px; text-align: left; }
     .media-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+    .media-tag {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(27, 26, 24, 0.75);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+    }
     .media-heading h2 { font-size: 17px; }
     .media-heading p { font-size: 14px; color: var(--text-2); }
     .upload-preview { max-height: 170px; width: 100%; object-fit: cover; border-radius: 8px; display: block; }
 
-    /* ---------- Size meter ---------- */
-    .meter { height: 10px; border-radius: 999px; background: var(--bg); overflow: hidden; }
-    .meter span { display: block; height: 100%; background: var(--ok); }
-    .meter.is-high span { background: var(--warn); }
+    /* ---------- Free allowance rings ---------- */
+    .usage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+    .usage-item { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .ring { position: relative; flex: none; width: 104px; height: 104px; }
+    .ring svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring circle { fill: none; stroke-width: 9; }
+    .ring-track { stroke: var(--line); }
+    .ring-fill { stroke: var(--ok); stroke-linecap: round; }
+    .ring.is-warn .ring-fill { stroke: var(--warn); }
+    .ring.is-bad .ring-fill { stroke: var(--bad); }
+    .ring-value { position: absolute; inset: 0; display: grid; place-items: center; font-size: 18px; font-weight: 700; }
+    .usage-text { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; font-size: 13px; color: var(--text-2); }
+    .usage-text h3 { margin: 0; font-size: 15px; color: var(--text); }
+    .usage-text b { color: var(--text); }
+    .chip-bad { background: var(--bad-soft); color: var(--bad); }
 
     /* ---------- Phone preview ---------- */
     .preview {
@@ -628,6 +650,7 @@
     }
     dialog.is-wide { width: min(620px, calc(100vw - 32px)); }
     dialog::backdrop { background: rgba(27, 26, 24, 0.45); }
+    #busyBar { width: 100%; height: 10px; accent-color: var(--gold); }
     .dlg-form { padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; }
     .dlg-form h2 { font-size: 19px; }
     .dlg-text { color: var(--text-2); font-size: 15px; }
@@ -779,6 +802,14 @@
   </div>
 
   <dialog id="dialog"></dialog>
+  <dialog id="busyDialog" aria-labelledby="busyTitle">
+    <div class="dlg-form">
+      <h2 id="busyTitle"></h2>
+      <p class="dlg-text" id="busyText"></p>
+      <progress id="busyBar" max="100"></progress>
+      <div class="dlg-actions"><button type="button" class="btn" id="busyCancel">Cancel</button></div>
+    </div>
+  </dialog>
   <div class="toasts" id="toasts" aria-live="polite"></div>
   <div class="sr-only" id="moveNote" aria-live="polite"></div>
 
@@ -788,15 +819,28 @@
        ======================================================== */
     var FIREBASE_URL = 'https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content.json';
     var FIREBASE_VERSION_URL = 'https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content/publishedAt.json';
+    var FIREBASE_MEDIA_URL = 'https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_media';
+    var FIREBASE_USAGE_URL = 'https://console.firebase.google.com/project/bellecolombo-fea8d/database/bellecolombo-fea8d-default-rtdb/usage';
     var NETWORK_TIMEOUT_MS = 20000;
+    var UPLOAD_TIMEOUT_MS = 5 * 60 * 1000;
 
     // Photos travel inside the menu data, and every new visitor downloads all of it
     var DATA_SIZE_LIMIT_BYTES = 1024 * 1024;     // Above this, the panel warns
     var DATA_SIZE_MAX_BYTES = 2 * 1024 * 1024;   // Above this, uploads are refused
     var FREE_DOWNLOAD_BYTES = 10 * 1000 * 1000 * 1000; // Firebase free plan, per month
+    var FREE_STORAGE_BYTES = 1000 * 1000 * 1000; // Firebase free plan
+    var MONTHLY_GUESTS_ESTIMATE = 1000;          // Used for the download ring
     var VISIT_OVERHEAD_BYTES = 6 * 1024;         // Connection cost of one visit, from Firebase's billing docs
     var DISH_PHOTO_MAX_PX = 800;
     var EVENT_PHOTO_MAX_PX = 500;
+
+    // Dish videos play dimmed behind the card, so they can be small
+    var VIDEO_MAX_PX = 640;
+    var VIDEO_MAX_SECONDS = 15;
+    var VIDEO_BITRATE = 700000;
+    var VIDEO_POSTER_PX = 320;
+    var VIDEO_MAX_FILE_BYTES = 6 * 1024 * 1024;  // Firebase refuses text over 10 MB, and base64 adds a third
+    var VIDEO_FORMATS = ['video/mp4;codecs=avc1.42E01F', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
 
     var DRAFT_KEY = 'belle_admin_draft';
     var DRAFT_META_KEY = 'belle_admin_draft_meta';
@@ -1038,6 +1082,7 @@
       d.tastingMenus = d.tastingMenus || {};
       d.subCategories = d.subCategories || {};
       d.menuCategories = d.menuCategories || [];
+      d.mediaFiles = d.mediaFiles || {};
 
       if (!d.menuCategories.length) {
         d.menuCategories = [
@@ -1264,6 +1309,7 @@
 
       if (!sameContent(before.venue, after.venue)) add('Changed', 'Contact & Hours', 'Contact details');
       if (!sameContent(menuStructure(before), menuStructure(after))) add('Changed', 'Menus', 'Menu or section names or their order');
+      if (!changes.length && !sameContent(before.mediaFiles, after.mediaFiles)) add('Changed', 'Photos & Videos', 'Your uploaded videos');
       if (!changes.length && !sameContent(before, after)) add('Changed', 'Menus', 'The order of items');
       return changes;
     }
@@ -1503,6 +1549,7 @@
           return;
         }
         var stamp = Date.now();
+        var previous = liveData;
         var payload = clone(appData);
         payload.publishedAt = stamp;
         if (liveData) writeStore(LIVE_BACKUP_KEY, JSON.stringify({ savedAt: stamp, data: liveData }));
@@ -1521,6 +1568,7 @@
           renderSide();
           if (view.page === 'home' || view.page === 'settings') renderPage();
           toast('Published. New visitors see it now, and anyone on the site within 5 minutes.');
+          tidyVideoFiles(previous);
         });
       }).catch(function (err) {
         sync.state = 'pending';
@@ -1731,6 +1779,9 @@
       if (dataSize() > DATA_SIZE_LIMIT_BYTES) {
         issues.push({ text: '<b>Your uploaded photos are taking a lot of space.</b> Every new visitor downloads them. Delete the ones you can live without.', media: true });
       }
+      if (usageEstimate().monthly >= FREE_DOWNLOAD_BYTES * 0.6) {
+        issues.push({ text: '<b>Your videos could use up your free downloads.</b> If that happens, Firebase stops your menu until next month. Take off the ones you can live without.', media: true });
+      }
       return issues;
     }
 
@@ -1745,7 +1796,7 @@
         } else if (issue.events) {
           links = '<button type="button" class="btn btn-sm" data-action="go" data-page="events">Review events</button>';
         } else if (issue.media) {
-          links = '<button type="button" class="btn btn-sm" data-action="go" data-page="media">Review photos</button>';
+          links = '<button type="button" class="btn btn-sm" data-action="go" data-page="media">Review uploads</button>';
         }
         return '<div class="issue"><p>' + issue.text + '</p><div class="issue-actions">' + links + '</div></div>';
       }).join('') : '<p class="all-good">' + icon('check') + 'Nothing needs your attention.</p>';
@@ -2210,11 +2261,12 @@
           '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="dish" hidden /></label></div>';
       }
       if (type === 'video') {
-        var options = VIDEO_PRESETS.map(function (v) {
+        var options = videoChoices(item.video).map(function (v) {
           return '<option value="' + esc(v.src) + '"' + (item.video === v.src ? ' selected' : '') + '>' + esc(v.label) + '</option>';
         }).join('');
         return '<div class="field"><label for="dishVideo">Video</label><select id="dishVideo">' + options + '</select>' +
-          '<span class="field-hint">Videos can\'t be uploaded here because every new visitor would have to download them with the menu. To add one, put the file in the assets/video folder of the website.</span></div>';
+          '<span class="field-hint">Uploads are cut to ' + VIDEO_MAX_SECONDS + ' seconds with no sound. Each guest who reaches this dish downloads the video once, and that counts against your free Firebase downloads.</span></div>' +
+          '<div class="add-row"><label class="btn btn-sm">Upload a video<input type="file" accept="video/*" data-upload="dishvideo" hidden /></label></div>';
       }
       if (view.menuId === 'lunch') {
         return '<p class="field-hint">Lunch dishes always show a background, so the website will choose a photo for this dish.</p>';
@@ -2465,6 +2517,16 @@
       if (!file) return;
       var mode = t.dataset.upload;
       var target = t.dataset.i;
+      if (isVideoFile(file)) {
+        if (mode === 'dishvideo') prepareVideo(file, useVideoOnOpenDish);
+        else if (mode === 'media') chooseVideoTarget(file);
+        else toast('Please choose a photo here.');
+        return;
+      }
+      if (mode === 'dishvideo') {
+        toast('Please choose a video here.');
+        return;
+      }
       shrinkImage(file, mode === 'event' ? EVENT_PHOTO_MAX_PX : DISH_PHOTO_MAX_PX, function (url) {
         var media = mode === 'replace' ? view.mediaList[parseInt(target, 10)] : null;
         if (!hasRoomFor(url, media ? media.src.length : 0)) return;
@@ -2514,6 +2576,296 @@
     }
 
     /* ========================================================
+       VIDEO UPLOADS
+       A video never goes inside the menu, which every visitor
+       downloads. It goes straight to belle_media, because a draft
+       has no room for it, and guests fetch it only when they reach
+       that dish. The menu keeps its size and a small still image.
+       ======================================================== */
+    var CANCELLED = { cancelled: true };
+
+    function isVideoFile(file) {
+      return /^video\//.test(file.type) || /\.(mp4|m4v|mov|webm|mkv|avi)$/i.test(file.name);
+    }
+
+    function uploadedVideoId(src) {
+      var match = /^media:(.+)$/.exec(src || '');
+      return match ? match[1] : null;
+    }
+
+    function uploadedVideo(src) {
+      return appData.mediaFiles[uploadedVideoId(src)] || null;
+    }
+
+    // Each id starts with its upload time
+    function uploadTime(id) {
+      return parseInt(id.split('-')[1], 36);
+    }
+
+    function videoChoices(current) {
+      var choices = VIDEO_PRESETS.slice();
+      Object.keys(appData.mediaFiles).forEach(function (id) {
+        var day = new Date(uploadTime(id)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        choices.push({ src: 'media:' + id, label: 'Your upload from ' + day + ' (' + appData.mediaFiles[id].seconds + ' sec)' });
+      });
+      if (current && !choices.some(function (c) { return c.src === current; })) {
+        choices.unshift({ src: current, label: 'Current video' });
+      }
+      return choices;
+    }
+
+    function showBusy(onCancel) {
+      var dlg = $('busyDialog');
+      $('busyCancel').onclick = onCancel;
+      dlg.oncancel = function (e) {
+        e.preventDefault();
+        onCancel();
+      };
+      dlg.showModal();
+      return {
+        step: function (title, text) {
+          $('busyTitle').textContent = title;
+          $('busyText').textContent = text;
+          $('busyBar').removeAttribute('value');
+        },
+        progress: function (share) { $('busyBar').value = Math.round(share * 100); },
+        close: function () { dlg.close(); }
+      };
+    }
+
+    function openVideo(file) {
+      return new Promise(function (resolve, reject) {
+        var video = document.createElement('video');
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = 'auto';
+        // Safari only draws a video to a canvas when it is on the page
+        video.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none';
+        function unreadable() {
+          closeVideo(video);
+          reject({ text: 'This browser could not read that video. Try an MP4 file.' });
+        }
+        video.onloadedmetadata = function () {
+          if (video.videoWidth) resolve(video);
+          else unreadable();
+        };
+        video.onerror = unreadable;
+        video.src = URL.createObjectURL(file);
+        document.body.appendChild(video);
+      });
+    }
+
+    function closeVideo(video) {
+      URL.revokeObjectURL(video.src);
+      video.remove();
+    }
+
+    function posterFrom(canvas) {
+      var scale = Math.min(1, VIDEO_POSTER_PX / Math.max(canvas.width, canvas.height));
+      var small = document.createElement('canvas');
+      small.width = Math.round(canvas.width * scale);
+      small.height = Math.round(canvas.height * scale);
+      small.getContext('2d').drawImage(canvas, 0, 0, small.width, small.height);
+      return small.toDataURL('image/jpeg', 0.6);
+    }
+
+    // The browser plays the clip onto a small canvas and records that, so it takes as long as the clip
+    function recordVideo(video, job, onProgress) {
+      return new Promise(function (resolve, reject) {
+        var format = window.MediaRecorder && HTMLCanvasElement.prototype.captureStream
+          ? VIDEO_FORMATS.find(function (type) { return MediaRecorder.isTypeSupported(type); })
+          : null;
+        if (!format) {
+          reject({ text: 'This browser cannot prepare videos. Please use Chrome, Edge or Safari.' });
+          return;
+        }
+        var scale = Math.min(1, VIDEO_MAX_PX / Math.max(video.videoWidth, video.videoHeight));
+        var canvas = document.createElement('canvas');
+        // Video formats need even sizes
+        canvas.width = Math.round(video.videoWidth * scale / 2) * 2;
+        canvas.height = Math.round(video.videoHeight * scale / 2) * 2;
+        var ctx = canvas.getContext('2d');
+        var seconds = isFinite(video.duration) ? Math.min(video.duration, VIDEO_MAX_SECONDS) : VIDEO_MAX_SECONDS;
+        var stream = canvas.captureStream(24);
+        var recorder = new MediaRecorder(stream, { mimeType: format, videoBitsPerSecond: VIDEO_BITRATE });
+        var chunks = [];
+        var poster = '';
+        var stopped = false;
+
+        function finish() {
+          stopped = true;
+          document.removeEventListener('visibilitychange', onVisibility);
+          video.pause();
+          if (recorder.state !== 'inactive') recorder.stop();
+        }
+
+        // Browsers stop drawing in a hidden tab, so wait for the admin to come back
+        function onVisibility() {
+          if (document.hidden) {
+            video.pause();
+            if (recorder.state === 'recording') recorder.pause();
+          } else {
+            if (recorder.state === 'paused') recorder.resume();
+            video.play();
+          }
+        }
+
+        function drawFrame() {
+          if (stopped) return;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          // A little way in, because many clips fade up from black
+          if (!poster && video.currentTime >= Math.min(1, seconds / 2)) poster = posterFrom(canvas);
+          onProgress(Math.min(1, video.currentTime / seconds));
+          if (video.ended || video.currentTime >= seconds) finish();
+          else requestAnimationFrame(drawFrame);
+        }
+
+        recorder.ondataavailable = function (e) {
+          if (e.data.size) chunks.push(e.data);
+        };
+        recorder.onerror = function () {
+          finish();
+          reject({ text: 'This browser could not shrink that video. Try a shorter clip.' });
+        };
+        recorder.onstop = function () {
+          stream.getTracks().forEach(function (track) { track.stop(); });
+          if (job.cancelled) {
+            reject(CANCELLED);
+            return;
+          }
+          resolve({ blob: new Blob(chunks, { type: format.split(';')[0] }), poster: poster || posterFrom(canvas), seconds: seconds });
+        };
+        job.stop = finish;
+        document.addEventListener('visibilitychange', onVisibility);
+
+        video.play().then(function () {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          recorder.start(1000);
+          drawFrame();
+        }, function () {
+          finish();
+          reject({ text: 'This browser could not play that video. Try an MP4 file.' });
+        });
+      });
+    }
+
+    function readBase64(blob) {
+      return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onerror = function () { reject({ text: 'That video could not be read.' }); };
+        reader.onload = function () { resolve(reader.result.split(',')[1]); };
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function uploadVideoFile(id, mime, base64, job, onProgress) {
+      return getIdToken().then(function (token) {
+        return new Promise(function (resolve, reject) {
+          var xhr = new XMLHttpRequest();
+          xhr.open('PUT', FIREBASE_MEDIA_URL + '/' + id + '.json?print=silent&auth=' + encodeURIComponent(token));
+          xhr.timeout = UPLOAD_TIMEOUT_MS;
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.upload.onprogress = function (e) {
+            if (e.lengthComputable) onProgress(e.loaded / e.total);
+          };
+          xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) resolve();
+            else reject({ status: xhr.status });
+          };
+          xhr.onerror = xhr.ontimeout = function () {
+            reject({ text: 'The video did not reach Firebase. Check your internet connection and try again.' });
+          };
+          xhr.onabort = function () { reject(CANCELLED); };
+          job.stop = function () { xhr.abort(); };
+          xhr.send(JSON.stringify({ mime: mime, data: base64 }));
+        });
+      });
+    }
+
+    function videoErrorText(err) {
+      if (err.status === 401 || err.status === 403) {
+        return 'Firebase refused the video (error ' + err.status + '). Your database rules need the belle_media part from the README before videos can be saved. Nothing has changed.';
+      }
+      if (err.status) return 'Firebase returned error ' + err.status + ', so the video was not saved. Nothing has changed.';
+      return err.text || 'Something went wrong, so the video was not saved. Nothing has changed.';
+    }
+
+    function prepareVideo(file, done) {
+      var job = { cancelled: false, stop: null };
+      var id = 'v-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+      var video = null;
+      var shrunk = null;
+      var storedSize = 0;
+      var busy = showBusy(function () {
+        job.cancelled = true;
+        if (job.stop) job.stop();
+      });
+      busy.step('Getting your video ready', 'Reading the file…');
+
+      openVideo(file).then(function (opened) {
+        video = opened;
+        var trimmed = video.duration > VIDEO_MAX_SECONDS ? ' Guests will see the first ' + VIDEO_MAX_SECONDS + ' seconds.' : '';
+        busy.step('Getting your video ready', 'Shrinking it takes as long as the clip plays. Please keep this page open.' + trimmed);
+        return recordVideo(video, job, busy.progress);
+      }).then(function (result) {
+        shrunk = result;
+        if (shrunk.blob.size > VIDEO_MAX_FILE_BYTES) throw { text: 'That video is still too big after shrinking. Try a shorter or calmer clip.' };
+        return readBase64(shrunk.blob);
+      }).then(function (base64) {
+        if (job.cancelled) throw CANCELLED;
+        storedSize = base64.length;
+        if (usageEstimate().stored + storedSize > FREE_STORAGE_BYTES) {
+          throw { text: 'Your free Firebase storage is full. Delete a video you no longer need, then press Publish and try again.' };
+        }
+        busy.step('Uploading your video', 'Saving it to Firebase…');
+        return uploadVideoFile(id, shrunk.blob.type, base64, job, busy.progress);
+      }).then(function () {
+        appData.mediaFiles[id] = { size: storedSize, seconds: Math.ceil(shrunk.seconds), poster: shrunk.poster };
+        closeVideo(video);
+        busy.close();
+        done('media:' + id);
+      }).catch(function (err) {
+        if (video) closeVideo(video);
+        busy.close();
+        if (err === CANCELLED) return;
+        if (err && err.authCode) {
+          signOut('Your sign-in has ended, so that video was not saved. Sign in again and try once more.');
+          return;
+        }
+        openDialog({ title: 'That video was not added', text: videoErrorText(err || {}) });
+      });
+    }
+
+    function useVideoOnOpenDish(src) {
+      var found = editorDish();
+      if (!found) return;
+      found.item.video = src;
+      $('backgroundPart').innerHTML = backgroundPartHtml(found.item);
+      touch();
+      toast('Video added.');
+    }
+
+    // Firebase keeps a video until something deletes it. A file stays while this version or the
+    // one before uses it, so going back still works, and for a day after uploading, in case it
+    // belongs to a draft on another computer.
+    function tidyVideoFiles(previous) {
+      var keep = Object.assign({}, previous.mediaFiles, appData.mediaFiles);
+      var dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+      return getIdToken().then(function (token) {
+        var auth = 'auth=' + encodeURIComponent(token);
+        return firebaseRequest(null, FIREBASE_MEDIA_URL + '.json?shallow=true&' + auth).then(function (files) {
+          return Promise.all(Object.keys(files || {}).filter(function (id) {
+            return !keep[id] && uploadTime(id) < dayAgo;
+          }).map(function (id) {
+            return firebaseRequest({ method: 'DELETE' }, FIREBASE_MEDIA_URL + '/' + id + '.json?print=silent&' + auth);
+          }));
+        });
+      }).catch(function () {
+        // Only tidying up: the next publish tries again
+      });
+    }
+
+    /* ========================================================
        PHOTOS AND VIDEOS PAGE
        ======================================================== */
     function collectMedia() {
@@ -2521,7 +2873,7 @@
       var list = [];
       function entry(src, kind) {
         if (!bySrc[src]) {
-          bySrc[src] = { src: src, kind: kind, isUpload: src.indexOf('data:') === 0, uses: [] };
+          bySrc[src] = { src: src, kind: kind, isUpload: /^(data|media):/.test(src), uses: [] };
           list.push(bySrc[src]);
         }
         return bySrc[src];
@@ -2537,34 +2889,92 @@
       (appData.standaloneMedia || []).forEach(function (m) {
         if (m && m.url) entry(m.url, m.type === 'video' ? 'video' : 'photo');
       });
+      Object.keys(appData.mediaFiles).forEach(function (id) { entry('media:' + id, 'video'); });
       return list;
     }
 
     function formatSize(bytes) {
+      if (bytes >= 1000 * 1000 * 1000) return (bytes / (1000 * 1000 * 1000)).toFixed(1) + ' GB';
       return bytes < 1024 * 1024 ? Math.max(1, Math.round(bytes / 1024)) + ' KB' : (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
 
     function coveredVisitors(size) {
-      var visitors = FREE_DOWNLOAD_BYTES / (size + VISIT_OVERHEAD_BYTES);
+      var visitors = FREE_DOWNLOAD_BYTES / size;
       var step = visitors >= 100000 ? 10000 : (visitors >= 10000 ? 1000 : 100);
       return (Math.floor(visitors / step) * step).toLocaleString('en-US');
     }
 
+    // Only what the panel knows about. Firebase's Usage tab has the real figures.
+    function usageEstimate() {
+      var menu = dataSize();
+      var shown = {};
+      allDishes().forEach(function (d) {
+        var id = uploadedVideoId(d.item.video);
+        if (id) shown[id] = true;
+      });
+      var stored = menu;
+      var perGuest = menu + VISIT_OVERHEAD_BYTES;
+      Object.keys(appData.mediaFiles).forEach(function (id) {
+        var size = appData.mediaFiles[id].size || 0;
+        stored += size;
+        if (shown[id]) perGuest += size;
+      });
+      return { menu: menu, stored: stored, perGuest: perGuest, monthly: perGuest * MONTHLY_GUESTS_ESTIMATE };
+    }
+
+    function percentText(pct) {
+      if (pct > 0 && pct < 0.1) return '<0.1%';
+      return (pct < 10 ? Math.round(pct * 10) / 10 : Math.round(pct)) + '%';
+    }
+
+    function ringHtml(title, pct, amount, hint) {
+      var radius = 45;
+      var circle = 2 * Math.PI * radius;
+      var filled = Math.max(Math.min(pct, 100) / 100 * circle, 0.01);
+      var state = pct >= 90 ? { cls: 'is-bad', chip: 'chip-bad', word: 'Nearly full' }
+        : (pct >= 60 ? { cls: 'is-warn', chip: 'chip-warn', word: 'Getting full' } : { cls: '', chip: 'chip-ok', word: 'Plenty of room' });
+      return '<div class="usage-item">' +
+        '<div class="ring ' + state.cls + '" role="img" aria-label="' + esc(title + ': ' + percentText(pct) + ' used, ' + amount) + '">' +
+          '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+            '<circle class="ring-track" cx="50" cy="50" r="' + radius + '" />' +
+            '<circle class="ring-fill" cx="50" cy="50" r="' + radius + '" stroke-dasharray="' + filled.toFixed(2) + ' ' + circle.toFixed(2) + '" />' +
+          '</svg>' +
+          '<span class="ring-value">' + esc(percentText(pct)) + '</span>' +
+        '</div>' +
+        '<div class="usage-text">' +
+          '<h3>' + esc(title) + '</h3>' +
+          '<b>' + esc(amount) + '</b>' +
+          '<span>' + hint + '</span>' +
+          '<span class="chip ' + state.chip + '">' + state.word + '</span>' +
+        '</div>' +
+      '</div>';
+    }
+
     function dataUseHtml() {
-      var size = dataSize();
-      var pct = Math.min(100, Math.round((size / DATA_SIZE_MAX_BYTES) * 100));
+      var use = usageEstimate();
       return '<section class="card card-pad">' +
-        '<h2 class="card-title">How much guests download</h2>' +
-        '<p class="card-hint" style="margin-top:0">Every new visitor downloads ' + formatSize(size) + ' of menu data, including your uploads. Firebase\'s free 10 GB a month covers about <b>' + coveredVisitors(size) + ' new visitors</b>. People coming back use almost nothing, because their browser keeps a copy until you publish again.</p>' +
-        '<div class="meter' + (size > DATA_SIZE_LIMIT_BYTES ? ' is-high' : '') + '" role="img" aria-label="' + pct + ' percent of the 2 MB limit"><span style="width:' + Math.max(pct, 1) + '%"></span></div>' +
-        '<p class="field-hint">' + formatSize(size) + ' of the 2 MB limit. Uploads stop at the limit to protect your free allowance.</p>' +
+        '<h2 class="card-title">Your free Firebase allowance</h2>' +
+        '<div class="usage-grid">' +
+          ringHtml('Storage', use.stored / FREE_STORAGE_BYTES * 100, formatSize(use.stored) + ' of 1 GB', 'Your menu and every uploaded video.') +
+          ringHtml('Downloads a month', use.monthly / FREE_DOWNLOAD_BYTES * 100, 'About ' + formatSize(use.monthly) + ' of 10 GB',
+            'If ' + MONTHLY_GUESTS_ESTIMATE.toLocaleString('en-US') + ' new guests each see every video. The free allowance covers about <b>' + coveredVisitors(use.perGuest) + '</b> guests like that.') +
+        '</div>' +
+        '<p class="field-hint">If downloads run out, Firebase stops your menu until next month. People coming back use almost nothing, because their browser keeps a copy. Your menu and photos are ' + formatSize(use.menu) + ' of the 2 MB limit, and photo uploads stop there. These are estimates: <a href="' + FIREBASE_USAGE_URL + '" target="_blank" rel="noopener">see the real figures in Firebase</a>.</p>' +
       '</section>';
     }
 
     function mediaCardHtml(media, index) {
-      var preview = media.kind === 'video'
-        ? '<video src="' + esc(media.src) + '" muted playsinline preload="metadata" controls></video>'
-        : '<img src="' + esc(media.src) + '" alt="" loading="lazy" />';
+      var preview;
+      if (uploadedVideoId(media.src)) {
+        // The still image, because playing the real file here would use up downloads
+        var info = uploadedVideo(media.src) || {};
+        preview = (info.poster ? '<img src="' + esc(info.poster) + '" alt="" loading="lazy" />' : '') +
+          '<span class="media-tag">Video' + (info.seconds ? ', ' + info.seconds + ' sec' : '') + '</span>';
+      } else if (media.kind === 'video') {
+        preview = '<video src="' + esc(media.src) + '" muted playsinline preload="metadata" controls></video>';
+      } else {
+        preview = '<img src="' + esc(media.src) + '" alt="" loading="lazy" />';
+      }
       var shown = media.uses.slice(0, 3).map(function (use) {
         var action = use.type === 'dish'
           ? 'data-action="openDish" data-menu="' + esc(use.menuId) + '" data-id="' + esc(use.id) + '"'
@@ -2590,7 +3000,7 @@
       return '<article class="media-card" data-media="' + word + '">' +
         '<div class="media-preview">' + preview + '</div>' +
         '<div class="media-info">' +
-          (media.isUpload ? '<div><span class="chip">' + formatSize(media.src.length) + '</span></div>' : '') +
+          (media.isUpload ? '<div><span class="chip">' + formatSize(media.kind === 'video' ? (uploadedVideo(media.src) || {}).size || 0 : media.src.length) + '</span></div>' : '') +
           uses +
           '<div class="media-actions">' + actions + '</div>' +
         '</div>' +
@@ -2608,10 +3018,10 @@
       var uploads = cards(true);
       var builtIn = cards(false);
       return pageHead('Photos & Videos', 'See every photo and video on your website, and where it is used.',
-        '<label class="btn btn-primary">' + icon('plus', 16) + 'Upload a photo<input type="file" accept="image/*" data-upload="media" hidden /></label>') +
+        '<label class="btn btn-primary">' + icon('plus', 16) + 'Upload a photo or video<input type="file" accept="image/*,video/*" data-upload="media" hidden /></label>') +
         dataUseHtml() +
-        '<div class="media-heading"><h2>Your uploads</h2><p>Stored with your menu, so these use your free Firebase allowance. Deleting one removes it from every dish and event using it.</p></div>' +
-        (uploads ? '<div class="media-grid">' + uploads + '</div>' : '<div class="card"><p class="empty">You have not uploaded any photos yet.</p></div>') +
+        '<div class="media-heading"><h2>Your uploads</h2><p>Photos are stored with your menu. Videos are stored on their own, and a guest downloads one only on reaching that dish. Deleting an upload removes it from every dish and event using it.</p></div>' +
+        (uploads ? '<div class="media-grid">' + uploads + '</div>' : '<div class="card"><p class="empty">You have not uploaded any photos or videos yet.</p></div>') +
         '<div class="media-heading"><h2>Built into your website</h2><p>These files are part of the website, so they use none of your Firebase allowance. You can take one off a dish here, but the file itself stays.</p></div>' +
         (builtIn ? '<div class="media-grid">' + builtIn + '</div>' : '<div class="card"><p class="empty">None in use.</p></div>');
     }
@@ -2648,6 +3058,7 @@
         if (appData.standaloneMedia) {
           appData.standaloneMedia = appData.standaloneMedia.filter(function (m) { return !m || m.url !== media.src; });
         }
+        delete appData.mediaFiles[uploadedVideoId(media.src)];
         refreshAfterMediaChange();
         toast(media.isUpload ? 'Deleted. Press Publish to remove it from the live site.' : 'Removed. Press Publish to update the live site.');
       });
@@ -2673,13 +3084,13 @@
       toast('Photo replaced.');
     }
 
-    // Every upload belongs to something, so no unused photo costs guests a download
-    function chooseUploadTarget(url) {
-      var targets = allDishes().map(function (d) {
+    function dishTargets() {
+      return allDishes().map(function (d) {
         return { group: d.area, label: d.item.name || 'Unnamed', dish: d };
-      }).concat(appData.events.map(function (ev) {
-        return { group: 'Events', label: ev.title || 'Unnamed', event: ev };
-      }));
+      });
+    }
+
+    function askUploadTarget(word, where, previewHtml, targets) {
       var groups = {};
       targets.forEach(function (target, i) {
         (groups[target.group] = groups[target.group] || []).push('<option value="' + i + '">' + esc(target.label) + '</option>');
@@ -2687,18 +3098,27 @@
       var options = Object.keys(groups).map(function (name) {
         return '<optgroup label="' + esc(name) + '">' + groups[name].join('') + '</optgroup>';
       }).join('');
-      openDialog({
-        title: 'Where should this photo go?',
-        text: 'Choose the dish or event to show it on. You can use it on others from their own photo section.',
-        html: '<img class="upload-preview" src="' + esc(url) + '" alt="The photo you chose" />' +
+      return openDialog({
+        title: 'Where should this ' + word + ' go?',
+        text: 'Choose the ' + where + ' to show it on. You can use it on others from their own ' + word + ' section.',
+        html: previewHtml +
           '<div class="field"><label for="uploadTarget">Show it on</label><select id="uploadTarget" data-dlg-input>' + options + '</select></div>',
         actions: [
           { id: 'no', label: 'Cancel' },
-          { id: 'yes', label: 'Use this photo', style: 'primary' }
+          { id: 'yes', label: 'Use this ' + word, style: 'primary' }
         ]
       }).then(function (r) {
-        if (r.action !== 'yes') return;
-        var target = targets[parseInt(r.value, 10)];
+        return r.action === 'yes' ? targets[parseInt(r.value, 10)] : null;
+      });
+    }
+
+    // Every upload belongs to something, so no unused photo costs guests a download
+    function chooseUploadTarget(url) {
+      var targets = dishTargets().concat(appData.events.map(function (ev) {
+        return { group: 'Events', label: ev.title || 'Unnamed', event: ev };
+      }));
+      askUploadTarget('photo', 'dish or event', '<img class="upload-preview" src="' + esc(url) + '" alt="The photo you chose" />', targets).then(function (target) {
+        if (!target) return;
         if (target.dish) {
           target.dish.item.image = url;
           target.dish.item.video = '';
@@ -2709,6 +3129,21 @@
         }
         refreshAfterMediaChange();
         toast('Photo added to ' + target.label + '.');
+      });
+    }
+
+    function chooseVideoTarget(file) {
+      var address = URL.createObjectURL(file);
+      var preview = '<video class="upload-preview" src="' + esc(address) + '" muted autoplay loop playsinline></video>';
+      askUploadTarget('video', 'dish', preview, dishTargets()).then(function (target) {
+        $('dialog').innerHTML = '';
+        URL.revokeObjectURL(address);
+        if (!target) return;
+        prepareVideo(file, function (src) {
+          target.dish.item.video = src;
+          refreshAfterMediaChange();
+          toast('Video added to ' + target.label + '.');
+        });
       });
     }
 
@@ -3048,7 +3483,7 @@
         '</section>' +
         '<section class="card card-pad">' +
           '<h2 class="card-title">Backups</h2>' +
-          '<p class="card-hint" style="margin-top:0">A backup is a file with all your menus, events and contact details. Restoring one does not change the live site until you press Publish.</p>' +
+          '<p class="card-hint" style="margin-top:0">A backup is a file with all your menus, events and contact details. Uploaded videos stay in Firebase and are not in the file. Restoring one does not change the live site until you press Publish.</p>' +
           '<div class="add-row">' +
             '<button type="button" class="btn" data-action="downloadBackup">Download a backup</button>' +
             '<label class="btn">Restore from a backup<input type="file" accept=".json,application/json" id="restoreFile" hidden /></label>' +
