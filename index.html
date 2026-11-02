@@ -647,12 +647,12 @@
     .menu-cat-btn.cat-btn-thebar:hover { letter-spacing: .16em; color: var(--light); }
 
     .menu-cat-btn.cat-btn-custom {
-      font-size: clamp(1.8rem, 7.8vw, 2.9rem);
+      font-size: clamp(2rem, 8.5vw, 3.2rem);
       font-weight: 500;
-      letter-spacing: .1em;
+      letter-spacing: .12em;
       text-transform: uppercase;
     }
-    .menu-cat-btn.cat-btn-custom:hover { letter-spacing: .14em; color: var(--light); }
+    .menu-cat-btn.cat-btn-custom:hover { letter-spacing: .16em; color: var(--light); }
 
     .menu-cat-btn:focus-visible { outline: 2px solid var(--light); outline-offset: 2px; }
 
@@ -6662,7 +6662,7 @@ Choose your spread/rillette style:</p>
         if (['lunch', 'alacarte', 'tasting', 'thebar'].indexOf(cat.id) === -1) {
           catClass = 'cat-btn-custom';
           // Names cannot wrap in the hub, so long ones shrink to stay on screen
-          fitStyle = 'font-size:min(' + (106 / Math.max(1, String(cat.name || '').length)).toFixed(2) + 'vw, clamp(1.8rem, 7.8vw, 2.9rem));';
+          fitStyle = 'font-size:min(' + (106 / Math.max(1, String(cat.name || '').length)).toFixed(2) + 'vw, clamp(2rem, 8.5vw, 3.2rem));';
         }
         var btnDelay = (0.32 + idx * 0.16).toFixed(2) + 's';
         var divDelay = (0.42 + idx * 0.16).toFixed(2) + 's';

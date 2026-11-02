@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="belleData.js"></script>
+  <script src="belleData.js?v=2"></script>
   <style>
     :root {
       --bg: #f6f3ee;
@@ -1643,12 +1643,23 @@
           working.theGardenAndBar = clone(fileData.theGardenAndBar);
           working.barMenuVersion = fileData.barMenuVersion;
         }
+        // Dinner comes in the same way, once, so deleting it later keeps it deleted
+        var newDinnerMenu = (working.dinnerMenuVersion || 0) < (fileData.dinnerMenuVersion || 0);
+        if (newDinnerMenu) {
+          var dinner = clone(getMenu('dinner', fileData));
+          working.menuCategories = working.menuCategories.filter(function (c) { return c.id !== 'dinner'; });
+          var lunchAt = working.menuCategories.findIndex(function (c) { return c.id === 'lunch'; });
+          working.menuCategories.splice(lunchAt + 1, 0, dinner);
+          working.subCategories.dinner = dinner.subCategories.slice();
+          working.dinnerMenuVersion = fileData.dinnerMenuVersion;
+        }
         appData = working;
         commitDraft();
         render();
         showPreviewForPage();
         startBookings();
         if (newBarMenu) toast('The updated bar menu is in your draft. Check it, then press Publish.');
+        if (newDinnerMenu) toast('The Dinner menu is in your draft. Check it, then press Publish.');
       });
     }
 

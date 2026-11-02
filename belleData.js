@@ -27,6 +27,188 @@
       "isSystem": true
     },
     {
+      "id": "dinner",
+      "name": "DINNER",
+      "subtitle": "Daily · 11:00 to 22:30",
+      "icon": "alacarte",
+      "type": "custom",
+      "isSystem": false,
+      "subCategories": [
+        "Appetisers",
+        "Entrées",
+        "Mains",
+        "Sweets"
+      ],
+      "items": [
+        {
+          "id": "dinner-1",
+          "name": "Forest Mushroom & Truffle Soup",
+          "subCategory": "Appetisers",
+          "isVeg": true,
+          "price": "2,200",
+          "priceLabel": "",
+          "desc": "A velvety emulsion of roasted forest mushrooms and thyme, finished with black truffle oil and a crisp sourdough shard.",
+          "meta": null,
+          "image": "assets/images/chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-2",
+          "name": "Ceylonese Seafood Bouillabaisse",
+          "subCategory": "Appetisers",
+          "isVeg": false,
+          "price": "3,800",
+          "priceLabel": "",
+          "desc": "A saffron-infused broth slow-cooked with local prawns, cuttlefish, line-caught snapper and mussels, with garlic rouille and toasted sourdough.",
+          "meta": null,
+          "image": "assets/images/bg/slide_chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-3",
+          "name": "House Pâté, Rillette & Smoked Meat Platter",
+          "subCategory": "Appetisers",
+          "isVeg": false,
+          "price": "2,200",
+          "priceLabel": "For One",
+          "price2Label": "For Two",
+          "price2": "3,800",
+          "desc": "Served with house-cured and smoked meats, house pickles, sharp local mustard and toasted sourdough. Choose chicken liver pâté, slow-cooked duck rillettes with True Cinnamon and cardamom, or wild mushroom and miso pâté.",
+          "meta": null,
+          "image": "assets/images/bg/slide_glazed_ribs.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-4",
+          "name": "The Signature Caesar",
+          "subCategory": "Entrées",
+          "isVeg": false,
+          "price": "2,600",
+          "priceLabel": "",
+          "desc": "Crisp romaine in a wood-smoked Parmesan dressing with blistered cinnamon-infused cherry tomatoes and sourdough croûtons, a slow-poached quail egg and crisp chicken and duck skin crackling.",
+          "meta": {
+            "badge": "ADD-ONS",
+            "text": "Crispy Spiced Chicken (<strong>LKR 420</strong>) · Seared Prawns (<strong>LKR 550</strong>) · Grilled Octopus (<strong>LKR 600</strong>)"
+          },
+          "image": "assets/images/artisan_salad.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-5",
+          "name": "Wood-Charred Duck, Peach & Pickled Radish",
+          "subCategory": "Entrées",
+          "isVeg": false,
+          "price": "2,200",
+          "priceLabel": "",
+          "desc": "House-smoked duck breast with caramelised peaches, pickled radish, pickled mustard and grilled eggplant, finished with warm duck dashi and crisp duck skin.",
+          "meta": null,
+          "image": "assets/images/bg/slide_chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-6",
+          "name": "Yellowfin Tuna Carpaccio",
+          "subCategory": "Entrées",
+          "isVeg": false,
+          "price": "2,200",
+          "priceLabel": "",
+          "desc": "Paper-thin yellowfin with citrus-soy, extra virgin olive oil, crushed pink peppercorns and micro-greens.",
+          "meta": null,
+          "image": "assets/images/chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-7",
+          "name": "Savannah Beef Tartare",
+          "subCategory": "Entrées",
+          "isVeg": false,
+          "price": "2,400",
+          "priceLabel": "",
+          "desc": "Hand-minced beef tenderloin with black pepper, sea salt, cornichons and grain mustard, finished with a cured egg yolk and sourdough shards.",
+          "meta": null,
+          "image": "assets/images/bg/slide_chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-8",
+          "name": "Pan-Seared Catch of the Day",
+          "subCategory": "Mains",
+          "isVeg": false,
+          "price": "3,400",
+          "priceLabel": "",
+          "desc": "Fresh local catch with crisp skin over a lemongrass-infused yellow kirihodi, tempered baby potato, pickled wild okra and a crispy tempering.",
+          "meta": null,
+          "image": "assets/images/chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-9",
+          "name": "Cajun-Spiced Chicken",
+          "subCategory": "Mains",
+          "isVeg": false,
+          "price": "3,800",
+          "priceLabel": "",
+          "desc": "Quarter corn-fed chicken brined in sweet tea and lemongrass, rubbed in Cajun spices and charred over coals. Sweet corn succotash and a fresh Vietnamese herb salad.",
+          "meta": null,
+          "image": "assets/images/bg/slide_chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-10",
+          "name": "Miso-Kithul & Sansho Glazed Lamb Chops",
+          "subCategory": "Mains",
+          "isVeg": false,
+          "price": "16,000",
+          "priceLabel": "",
+          "desc": "Double-cut lamb chops French-trimmed and charred over Binchotan, finished with a reduction of white miso, kithul treacle and Japanese sansho pepper. Roasted garlic purée and charred spring onions.",
+          "meta": null,
+          "image": "assets/images/bg/slide_lamb_chops.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-11",
+          "name": "Smoked Kiri Ala Gnocchi",
+          "subCategory": "Mains",
+          "isVeg": true,
+          "price": "2,500",
+          "priceLabel": "Vegetarian",
+          "price2Label": "With Seafood",
+          "price2": "3,900",
+          "desc": "A wild green herb pesto base with blistered tomatoes, wood-smoked forest mushrooms, cured olives and a crunchy hazelnut dukkah.",
+          "meta": {
+            "badge": "WITH SEAFOOD",
+            "text": "Prawns, cuttlefish, snapper and mussels in a seafood reduction (<strong>LKR 3,900</strong>)"
+          },
+          "image": "assets/images/chef_plating.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-12",
+          "name": "Belle’s Signature Rocky Road",
+          "subCategory": "Sweets",
+          "isVeg": false,
+          "price": "1,300",
+          "priceLabel": "",
+          "desc": "Dark chocolate and house-made marshmallow slab with toasted cashews, salted kithul caramel popcorn and vanilla bean gelato.",
+          "meta": null,
+          "image": "assets/images/bg/slide_luxury_dessert.webp",
+          "video": ""
+        },
+        {
+          "id": "dinner-13",
+          "name": "Narang Meringue Pie",
+          "subCategory": "Sweets",
+          "isVeg": false,
+          "price": "1,400",
+          "priceLabel": "",
+          "desc": "Narang curd and vanilla mousse, spiced Biscoff and toasted coconut sablé crumble, torched Italian meringue and dark chocolate fudge drops.",
+          "meta": null,
+          "image": "assets/images/bg/slide_luxury_dessert.webp",
+          "video": ""
+        }
+      ]
+    },
+    {
       "id": "alacarte",
       "name": "À LA CARTE",
       "subtitle": "5-Course Gourmet Odyssey",
@@ -54,6 +236,7 @@
   "customCategories": [],
   "subCategories": {
     "lunch": ["Soups & Starters", "Artisan Salads", "Sharing Platters", "Burgers & Sandwiches"],
+    "dinner": ["Appetisers", "Entrées", "Mains", "Sweets"],
     "alacarte": ["Appetisers", "Entrées", "Mains", "From The Grill", "Desserts"],
     "thebar": []
   },
@@ -611,6 +794,7 @@
     }
   ],
   "barMenuVersion": 2,
+  "dinnerMenuVersion": 1,
   "theGardenAndBar": [
     {
       "category": "Bar Bites",
