@@ -1042,6 +1042,81 @@
       position: relative;
     }
 
+    /* Headings inside a menu, and the compact price lists under them */
+    .lunch-item-slot.has-heading,
+    .lunch-item-slot.is-price-list {
+      height: auto;
+    }
+    .lunch-item-slot.is-price-list,
+    .lunch-item-slot.is-note {
+      min-height: 0;
+    }
+    .menu-heading {
+      padding-top: 0.75rem;
+    }
+    .menu-heading h4 {
+      margin: 0;
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      line-height: 1.5;
+      color: #000000;
+    }
+    .menu-heading.is-section h4 {
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+    }
+    .menu-heading p {
+      margin: 0.2rem 0 0;
+      font-size: clamp(0.72rem, 2.6vw, 0.80rem);
+      line-height: 1.40;
+      font-weight: 480;
+      color: #1a1a1a;
+    }
+    .menu-heading b {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .lunch-card-tag {
+      margin-left: 0.15rem;
+      font-size: 0.56rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: #333333;
+      vertical-align: 0.35em;
+      white-space: nowrap;
+    }
+    .lunch-item-slot.is-price-list .lunch-slot-content {
+      flex: 0 0 auto;
+      padding-top: 0.2rem;
+    }
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .price-table th,
+    .price-table td {
+      padding: 0.3rem 0 0.3rem 0.65rem;
+      font-size: clamp(0.84rem, 3.2vw, 0.96rem);
+      font-weight: 600;
+      color: #000000;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .price-table thead th {
+      padding-top: 0;
+      padding-bottom: 0;
+      font-size: 0.54rem;
+      letter-spacing: 0.1em;
+      color: #333333;
+      text-transform: uppercase;
+    }
+    .price-table tbody th {
+      padding-left: 0;
+      text-align: left;
+      white-space: normal;
+    }
+
     /* Per-Item Dish Photo Attached to Element (Multi-Sided Silk Edge Fade & Luxury Aura) */
     .lunch-slot-bg {
       position: absolute;
@@ -5942,7 +6017,7 @@ Choose your spread/rillette style:</p>
     // Only sub-categories with dishes get a pill, so a guest can never land on an empty list
     function subcatOptionsFor(names, items) {
       return names.filter(function(name, index) {
-        return isRealSubcat(name) && names.indexOf(name) === index && items.some(function(it) { return it.subCategory === name; });
+        return isRealSubcat(name) && names.indexOf(name) === index && items.some(function(it) { return it.subCategory === name && !isHeadingRow(it); });
       }).map(function(name) {
         return { value: name, label: name };
       });
@@ -6158,6 +6233,127 @@ Choose your spread/rillette style:</p>
       return /^https?:\/\//i.test(String(url || '')) ? url : fallback;
     }
 
+    /* ========================================================
+       HEADINGS INSIDE A MENU
+       A row with type "heading" titles the dishes after it. Those
+       with nothing to show but a name and a price become a compact
+       price list, with their sizes as columns.
+       ======================================================== */
+    var PRICE_LIST_MAX_ROWS = 7;
+
+    function isHeadingRow(item) {
+      return !!item && item.type === 'heading';
+    }
+
+    function isDishRow(item) {
+      return !!item && !isHeadingRow(item);
+    }
+
+    function isPlainRow(item) {
+      var hasChoices = item.options && item.options.length;
+      var hasExtras = (item.metaList && item.metaList.length) || item.meta;
+      return !item.desc && !item.image && !item.video && !hasChoices && !hasExtras;
+    }
+
+    // One entry per slot on screen. With no headings, that is one slot for each dish.
+    function menuSlots(items) {
+      var slots = [];
+      var headings = [];
+      var priceList = null;
+      var underHeading = false;
+      items.forEach(function(item) {
+        if (isHeadingRow(item)) {
+          headings.push(item);
+          underHeading = underHeading || !item.isSection;
+          priceList = null;
+        } else if (underHeading && isPlainRow(item)) {
+          if (!priceList || priceList.rows.length >= PRICE_LIST_MAX_ROWS) {
+            priceList = { headings: headings, rows: [] };
+            headings = [];
+            slots.push(priceList);
+          }
+          priceList.rows.push(item);
+        } else {
+          priceList = null;
+          slots.push({ headings: headings, item: item });
+          headings = [];
+        }
+      });
+      if (headings.length) slots.push({ headings: headings, rows: [] });
+      return slots;
+    }
+
+    function menuHeadingsHtml(headings) {
+      return headings.map(function(heading) {
+        var note = escapeHtml(heading.desc || '');
+        if (heading.price) note += (note ? ' ' : '') + '<b>' + escapeHtml(heading.price) + ' each</b>';
+        return '<div class="menu-heading' + (heading.isSection ? ' is-section' : '') + '">' +
+          '<h4>' + escapeHtml(heading.name || '') + '</h4>' +
+          (note ? '<p>' + note + '</p>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    function menuSlotClass(slot) {
+      var name = 'lunch-item-slot';
+      if (slot.headings.length) name += ' has-heading';
+      if (slot.rows) name += slot.rows.length ? ' is-price-list' : ' is-note';
+      return name;
+    }
+
+    function dishTitleHtml(item) {
+      return escapeHtml(item.name || '') + (item.nameTag ? ' <span class="lunch-card-tag">' + escapeHtml(item.nameTag) + '</span>' : '');
+    }
+
+    function rowPrices(item) {
+      if (item.cuts && item.cuts.length) {
+        return item.cuts.map(function(c) { return { label: c.origin || '', price: c.price || '' }; });
+      }
+      var prices = [{ label: item.priceLabel || '', price: item.price || '' }];
+      if (item.price2) prices.push({ label: item.price2Label || '', price: item.price2 });
+      return prices;
+    }
+
+    function priceTableHtml(rows) {
+      var columns = [];
+      rows.forEach(function(item) {
+        rowPrices(item).forEach(function(p) {
+          if (p.label && columns.indexOf(p.label) === -1) columns.push(p.label);
+        });
+      });
+      var head = columns.length
+        ? '<thead><tr><td></td>' + columns.map(function(label) { return '<th scope="col">' + escapeHtml(label) + '</th>'; }).join('') + '</tr></thead>'
+        : '';
+      var body = rows.map(function(item) {
+        var isVeg = !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
+        var prices = rowPrices(item);
+        var cells = !prices[0].label
+          ? '<td colspan="' + Math.max(1, columns.length) + '">' + escapeHtml(prices[0].price) + '</td>'
+          : columns.map(function(label) {
+              var match = prices.filter(function(p) { return p.label === label; })[0];
+              return '<td>' + escapeHtml(match ? match.price : '') + '</td>';
+            }).join('');
+        return '<tr><th scope="row">' + dishTitleHtml(item) +
+          (isVeg ? ' <span class="badge-v badge-v-choice" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
+          '</th>' + cells + '</tr>';
+      }).join('');
+      return '<table class="price-table">' + head + '<tbody>' + body + '</tbody></table>';
+    }
+
+    // A slot with no single dish: a price list, or a heading with nothing under it
+    function plainSlotHtml(slot, idx) {
+      var label = slot.headings.map(function(heading) { return heading.name || ''; }).join(', ');
+      return '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(label) + '">' +
+        menuHeadingsHtml(slot.headings) +
+        (slot.rows.length ? '<div class="lunch-slot-content">' + priceTableHtml(slot.rows) + '</div>' : '') +
+        '<div class="lunch-mid-divider" aria-hidden="true">' +
+          '<span class="line"></span>' +
+          '<span class="circle"></span>' +
+          '<span class="line"></span>' +
+        '</div>' +
+      '</section>';
+    }
+
     function getDishMetaHtml(item) {
       if (!item) return '';
       var list = [];
@@ -6246,9 +6442,15 @@ Choose your spread/rillette style:</p>
       var validItems = (items || []).filter(function(it) {
         return it && !it.isTemporaryFolder && it.subCategory !== '__holding__';
       });
-      var total = validItems.length;
+      var slots = menuSlots(validItems);
+      var total = slots.length;
       var html = '';
-      validItems.forEach(function(item, idx) {
+      slots.forEach(function(slot, idx) {
+        if (!slot.item) {
+          html += plainSlotHtml(slot, idx);
+          return;
+        }
+        var item = slot.item;
         var isVeg = !!item.isVeg || (item.tags && item.tags.indexOf('Vegetarian') !== -1);
 
         var mediaBackdropHtml = '';
@@ -6265,13 +6467,14 @@ Choose your spread/rillette style:</p>
           '</div>';
         }
 
-        html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+          menuHeadingsHtml(slot.headings) +
           '<div class="lunch-slot-content">' +
             mediaBackdropHtml +
             '<article class="lunch-card">' +
               '<div class="lunch-card-head">' +
                 '<div class="lunch-card-title-wrap">' +
-                  '<h3 class="lunch-card-title">' + escapeHtml(item.name || '') + '</h3>' +
+                  '<h3 class="lunch-card-title">' + dishTitleHtml(item) + '</h3>' +
                 '</div>' +
                 getDishPriceHtml(item, isVeg) +
               '</div>' +
@@ -6431,7 +6634,8 @@ Choose your spread/rillette style:</p>
       var validItems = (items || []).filter(function(it) {
         return it && !it.isTemporaryFolder && it.subCategory !== '__holding__';
       });
-      var total = validItems.length;
+      var slots = menuSlots(validItems);
+      var total = slots.length;
       if (total === 0) {
         var rawIcon = (currentCustomCategoryData && currentCustomCategoryData.icon) || '✨';
         var displayIcon = (rawIcon === 'alacarte' || /^[a-z0-9_-]+$/i.test(rawIcon)) ? '🍽️' : rawIcon;
@@ -6447,7 +6651,12 @@ Choose your spread/rillette style:</p>
       }
 
       var html = '';
-      validItems.forEach(function(item, idx) {
+      slots.forEach(function(slot, idx) {
+        if (!slot.item) {
+          html += plainSlotHtml(slot, idx);
+          return;
+        }
+        var item = slot.item;
         var isVeg = !!item.isVeg || (item.tags && item.tags.indexOf('Vegetarian') !== -1);
 
         var mediaBackdropHtml = '';
@@ -6464,13 +6673,14 @@ Choose your spread/rillette style:</p>
           '</div>';
         }
 
-        html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+          menuHeadingsHtml(slot.headings) +
           '<div class="lunch-slot-content">' +
             mediaBackdropHtml +
             '<article class="lunch-card">' +
               '<div class="lunch-card-head">' +
                 '<div class="lunch-card-title-wrap">' +
-                  '<h3 class="lunch-card-title">' + escapeHtml(item.name || '') + '</h3>' +
+                  '<h3 class="lunch-card-title">' + dishTitleHtml(item) + '</h3>' +
                 '</div>' +
                 getDishPriceHtml(item, isVeg) +
               '</div>' +
@@ -6544,7 +6754,7 @@ Choose your spread/rillette style:</p>
         var validItems = (cat.items || []).filter(function(it) {
           return it && !it.isTemporaryFolder && it.subCategory !== '__holding__';
         });
-        var total = validItems.length;
+        var total = menuSlots(validItems).length;
 
         if (!aLaCarteMeta[key]) {
           aLaCarteMeta[key] = {
@@ -6576,7 +6786,8 @@ Choose your spread/rillette style:</p>
         var items = (cat.items || []).filter(function(it) {
           return it && !it.isTemporaryFolder && it.subCategory !== '__holding__';
         });
-        var total = items.length;
+        var slots = menuSlots(items);
+        var total = slots.length;
         var nextKey = aLaCarteMeta[key] ? aLaCarteMeta[key].nextKey : null;
         var nextTitleRaw = nextKey ? (aLaCarteMeta[nextKey] ? aLaCarteMeta[nextKey].title : nextKey) : '';
         var nextExploreText = nextTitleRaw
@@ -6593,7 +6804,12 @@ Choose your spread/rillette style:</p>
             '</div>' +
           '</section>';
         } else {
-          items.forEach(function(item, idx) {
+          slots.forEach(function(slot, idx) {
+            if (!slot.item) {
+              html += plainSlotHtml(slot, idx);
+              return;
+            }
+            var item = slot.item;
             var isVeg = !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
 
             var mediaBackdrop = '';
@@ -6609,13 +6825,14 @@ Choose your spread/rillette style:</p>
               '</div>';
             }
 
-            html += '<section class="lunch-item-slot" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+            html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+              menuHeadingsHtml(slot.headings) +
               '<div class="lunch-slot-content">' +
                 mediaBackdrop +
                 '<article class="lunch-card">' +
                   '<div class="lunch-card-head">' +
                     '<div class="lunch-card-title-wrap">' +
-                      '<h3 class="lunch-card-title">' + escapeHtml(item.name || '') + '</h3>' +
+                      '<h3 class="lunch-card-title">' + dishTitleHtml(item) + '</h3>' +
                     '</div>' +
                     getDishPriceHtml(item, isVeg) +
                   '</div>' +
@@ -6678,7 +6895,7 @@ Choose your spread/rillette style:</p>
 
     function renderBarSubcatNav(categories) {
       var options = categories.filter(function(cat) {
-        return cat && !cat.isTemporaryFolder && cat.key !== '__holding__' && (cat.items || []).length > 0;
+        return cat && !cat.isTemporaryFolder && cat.key !== '__holding__' && (cat.items || []).some(isDishRow);
       }).map(function(cat) {
         return { value: cat.key || cat.category, label: cat.category || cat.key };
       });
@@ -6696,55 +6913,68 @@ Choose your spread/rillette style:</p>
       renderBarSubcatNav(categories);
       var savedScrollTop = barVerticalScroll.scrollTop;
       var savedIdx = currentBarItemIndex || 0;
-      var total = 0;
       var html = '';
       if (categories[0] && categories[0].subtitle) {
         var barTimeEl = document.querySelector('#panel-thebar .panel-top-time');
         if (barTimeEl) barTimeEl.textContent = categories[0].subtitle;
       }
+      var showSectionNames = currentBarFilter === 'all' && document.querySelectorAll('#barSubcatNav .lunch-subcat-pill').length > 0;
+      var slots = [];
       (categories || []).forEach(function(cat) {
         if (!cat || cat.isTemporaryFolder || cat.key === '__holding__') return;
         if (currentBarFilter !== 'all' && (cat.key || cat.category) !== currentBarFilter) return;
-        (cat.items || []).forEach(function(item) {
-          if (!item || item.isTemporaryFolder || item.subCategory === '__holding__') return;
-          var isVeg = !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
-          var mediaBackdrop = '';
-          if (item.video) {
-            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-              dishVideoHtml(item.video) +
-              '<div class="lunch-slot-bg-scrim"></div>' +
-            '</div>';
-          } else if (item.image) {
-            mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(item.image) + '\');"></div>' +
-              '<div class="lunch-slot-bg-scrim"></div>' +
-            '</div>';
-          }
-
-          html += '<section class="lunch-item-slot" data-index="' + total + '" aria-label="' + escapeHtml(item.name || '') + '">' +
-            '<div class="lunch-slot-content">' +
-              mediaBackdrop +
-              '<article class="lunch-card">' +
-                '<div class="lunch-card-head">' +
-                  '<div class="lunch-card-title-wrap">' +
-                    '<h3 class="lunch-card-title">' + escapeHtml(item.name || '') + '</h3>' +
-                  '</div>' +
-                  getDishPriceHtml(item, isVeg) +
-                '</div>' +
-                (item.desc ? '<p class="lunch-card-desc">' + escapeHtml(item.desc) + '</p>' : '') +
-                getDishChoicesHtml(item) +
-                getDishMetaHtml(item) +
-              '</article>' +
-            '</div>' +
-            '<div class="lunch-mid-divider" aria-hidden="true">' +
-              '<span class="line"></span>' +
-              '<span class="circle"></span>' +
-              '<span class="line"></span>' +
-            '</div>' +
-          '</section>';
-          total++;
+        var rows = (cat.items || []).filter(function(item) {
+          return item && !item.isTemporaryFolder && item.subCategory !== '__holding__';
         });
+        if (!rows.some(isDishRow)) return;
+        // The pills name the section until a guest is looking at all of them at once
+        if (showSectionNames) rows = [{ type: 'heading', name: cat.category || cat.key, isSection: true }].concat(rows);
+        slots = slots.concat(menuSlots(rows));
       });
+      slots.forEach(function(slot, idx) {
+        if (!slot.item) {
+          html += plainSlotHtml(slot, idx);
+          return;
+        }
+        var item = slot.item;
+        var isVeg = !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
+        var mediaBackdrop = '';
+        if (item.video) {
+          mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+            dishVideoHtml(item.video) +
+            '<div class="lunch-slot-bg-scrim"></div>' +
+          '</div>';
+        } else if (item.image) {
+          mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
+            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(item.image) + '\');"></div>' +
+            '<div class="lunch-slot-bg-scrim"></div>' +
+          '</div>';
+        }
+
+        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+          menuHeadingsHtml(slot.headings) +
+          '<div class="lunch-slot-content">' +
+            mediaBackdrop +
+            '<article class="lunch-card">' +
+              '<div class="lunch-card-head">' +
+                '<div class="lunch-card-title-wrap">' +
+                  '<h3 class="lunch-card-title">' + dishTitleHtml(item) + '</h3>' +
+                '</div>' +
+                getDishPriceHtml(item, isVeg) +
+              '</div>' +
+              (item.desc ? '<p class="lunch-card-desc">' + escapeHtml(item.desc) + '</p>' : '') +
+              getDishChoicesHtml(item) +
+              getDishMetaHtml(item) +
+            '</article>' +
+          '</div>' +
+          '<div class="lunch-mid-divider" aria-hidden="true">' +
+            '<span class="line"></span>' +
+            '<span class="circle"></span>' +
+            '<span class="line"></span>' +
+          '</div>' +
+        '</section>';
+      });
+      var total = slots.length;
       barVerticalScroll.innerHTML = html;
       totalBarItems = total;
       maxBarIndex = Math.max(0, total - visibleBarItems);

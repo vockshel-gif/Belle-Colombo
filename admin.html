@@ -360,6 +360,9 @@
       cursor: pointer;
     }
     .row-main:first-child, .is-filtered .row-main { padding-left: 16px; }
+    .row-heading, .row-heading:hover { background: var(--gold-soft); }
+    .row-heading .row-name { font-size: 13px; letter-spacing: 0.04em; }
+    .row-add { flex: none; align-self: center; padding: 0 14px; font-size: 13px; }
 
     /* ---------- Drag to rearrange ---------- */
     .drag-handle {
@@ -1177,12 +1180,13 @@
     function countDishes(menuId, data) {
       if (menuId === 'tasting') return 2;
       if (isGroupMenu(menuId)) {
-        return menuGroups(menuId, data).reduce(function (sum, g) { return sum + (g.items || []).length; }, 0);
+        return menuGroups(menuId, data).reduce(function (sum, g) { return sum + dishesIn(g.items).length; }, 0);
       }
-      return menuList(menuId, data).length;
+      return dishesIn(menuList(menuId, data)).length;
     }
 
-    function allDishes(data) {
+    // Every row on every menu, headings included
+    function allRows(data) {
       var d = data || appData;
       var out = [];
       (d.menuCategories || []).forEach(function (menu) {
@@ -1199,6 +1203,10 @@
       return out;
     }
 
+    function allDishes(data) {
+      return allRows(data).filter(function (d) { return !isHeading(d.item); });
+    }
+
     function findDish(menuId, dishId) {
       var lists = isGroupMenu(menuId)
         ? menuGroups(menuId).map(function (g) { return { list: g.items, group: g }; })
@@ -1213,6 +1221,25 @@
     }
 
     function hasCuts(item) { return Array.isArray(item.cuts) && item.cuts.length > 0; }
+
+    // A row with type "heading" titles the dishes after it, instead of being a dish itself
+    function isHeading(item) { return !!item && item.type === 'heading'; }
+
+    function dishesIn(list) {
+      return (list || []).filter(function (item) { return !isHeading(item); });
+    }
+
+    // The dishes a heading titles: those after it, up to the next heading in its section
+    function rowsUnderHeading(found) {
+      var rows = [];
+      found.list.slice(found.index + 1).some(function (row) {
+        if (!found.group && row.subCategory !== found.item.subCategory) return false;
+        if (isHeading(row)) return true;
+        rows.push(row);
+        return false;
+      });
+      return rows;
+    }
 
     function isVegDish(item) {
       return !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
@@ -1266,8 +1293,8 @@
 
       var oldDishes = {};
       var newDishes = {};
-      allDishes(before).forEach(function (d) { oldDishes[d.item.id] = d; });
-      allDishes(after).forEach(function (d) { newDishes[d.item.id] = d; });
+      allRows(before).forEach(function (d) { oldDishes[d.item.id] = d; });
+      allRows(after).forEach(function (d) { newDishes[d.item.id] = d; });
       Object.keys(newDishes).forEach(function (id) {
         var now = newDishes[id];
         if (!oldDishes[id]) add('Added', now.area, now.item.name);
@@ -1298,7 +1325,7 @@
 
       after.menuCategories.forEach(function (menu) {
         function dishIdsOf(data) {
-          return allDishes(data).filter(function (d) { return d.menuId === menu.id; }).map(function (d) { return d.item.id; });
+          return allRows(data).filter(function (d) { return d.menuId === menu.id; }).map(function (d) { return d.item.id; });
         }
         var oldIds = dishIdsOf(before);
         var newIds = dishIdsOf(after);
@@ -1437,10 +1464,17 @@
         var local = readJson(DRAFT_KEY) || readJson(LEGACY_DRAFT_KEY);
         return local ? normalizeData(stripPublishInfo(local)) : fileData;
       }).then(function (working) {
+        // belleData.js is only the fallback, so a newer bar menu there has to be brought in once
+        var newBarMenu = (working.barMenuVersion || 0) < (fileData.barMenuVersion || 0);
+        if (newBarMenu) {
+          working.theGardenAndBar = clone(fileData.theGardenAndBar);
+          working.barMenuVersion = fileData.barMenuVersion;
+        }
         appData = working;
         commitDraft();
         render();
         showPreviewForPage();
+        if (newBarMenu) toast('The updated bar menu is in your draft. Check it, then press Publish.');
       });
     }
 
@@ -1467,8 +1501,8 @@
       var problems = [];
       if (!isMenuData(appData)) problems.push('The menu data is incomplete.');
       if (allDishes().length === 0) problems.push('There are no dishes in any menu.');
-      allDishes().forEach(function (d) {
-        if (!String(d.item.name || '').trim()) problems.push('A dish on ' + d.area + ' has no name.');
+      allRows().forEach(function (d) {
+        if (!String(d.item.name || '').trim()) problems.push('A ' + (isHeading(d.item) ? 'heading' : 'dish') + ' on ' + d.area + ' has no name.');
       });
       appData.events.forEach(function (ev) {
         if (!String(ev.title || '').trim()) problems.push('An event has no title.');
@@ -1819,7 +1853,23 @@
     /* ========================================================
        MENU PAGE
        ======================================================== */
-    function dishRowHtml(menuId, item) {
+    function headingRowHtml(menuId, item, sectionKey) {
+      var search = esc(String((item.name || '') + ' ' + (item.desc || '')).toLowerCase());
+      return '<div class="row row-heading" data-sort-item="' + esc(item.id) + '" data-search="' + search + '">' +
+        dragHandleHtml(item.name || 'this heading') +
+        '<button type="button" class="row-main" data-action="openDish" data-menu="' + esc(menuId) + '" data-id="' + esc(item.id) + '">' +
+          '<span class="row-text">' +
+            '<span class="row-name">' + esc(item.name || 'Unnamed heading') + '<span class="chip">Heading</span></span>' +
+            (item.desc ? '<span class="row-sub">' + esc(item.desc) + '</span>' : '') +
+          '</span>' +
+          (item.price ? '<span class="row-price">' + esc(item.price) + ' each</span>' : '') +
+        '</button>' +
+        '<button type="button" class="btn-link row-add" data-action="addDish" data-section="' + esc(sectionKey) + '" data-after="' + esc(item.id) + '">Add here</button>' +
+      '</div>';
+    }
+
+    function dishRowHtml(menuId, item, sectionKey) {
+      if (isHeading(item)) return headingRowHtml(menuId, item, sectionKey);
       var thumb = item.image
         ? '<span class="thumb"><img src="' + esc(item.image) + '" alt="" loading="lazy" /></span>'
         : '<span class="thumb">' + icon('plate') + '</span>';
@@ -1835,7 +1885,7 @@
         '<button type="button" class="row-main" data-action="openDish" data-menu="' + esc(menuId) + '" data-id="' + esc(item.id) + '">' +
           thumb +
           '<span class="row-text">' +
-            '<span class="row-name">' + esc(item.name || 'Unnamed dish') + chips + '</span>' +
+            '<span class="row-name">' + esc(item.name || 'Unnamed dish') + (item.nameTag ? ' <span class="chip">' + esc(item.nameTag) + '</span>' : '') + chips + '</span>' +
             '<span class="row-sub">' + esc(item.desc || '') + '</span>' +
           '</span>' +
           '<span class="row-price' + (price ? '' : ' is-missing') + '">' + esc(price || 'No price') + '</span>' +
@@ -1879,22 +1929,23 @@
       // Pills only appear when there is more than one section to choose between
       var pills = sections.length > 1
         ? '<div class="section-pills" role="group" aria-label="Show one section">' + pillHtml('All', total, null) +
-            sections.map(function (s) { return pillHtml(s.name, s.items.length, s.key); }).join('') +
+            sections.map(function (s) { return pillHtml(s.name, dishesIn(s.items).length, s.key); }).join('') +
           '</div>'
         : '';
 
       var sectionsHtml = sections.map(function (section) {
-        var tools = '<button type="button" class="btn-link" data-action="addDish" data-section="' + esc(section.key) + '">Add here</button>';
+        var tools = '<button type="button" class="btn-link" data-action="addDish" data-section="' + esc(section.key) + '">Add here</button>' +
+          '<button type="button" class="btn-link" data-action="addHeading" data-section="' + esc(section.key) + '">Add a heading</button>';
         if (section.canEdit) {
           tools += '<button type="button" class="btn-link" data-action="renameSection" data-section="' + esc(section.key) + '">Rename</button>' +
             '<button type="button" class="btn-link danger" data-action="deleteSection" data-section="' + esc(section.key) + '">Delete</button>';
         }
         var handle = section.canEdit && canMoveSections ? dragHandleHtml(section.name + ' section') : '';
         return '<section class="card menu-section" data-section-key="' + esc(section.key) + '" ' + (section.canEdit ? 'data-sort-item="' + esc(section.key) + '"' : 'data-sort-tail') + '>' +
-          '<div class="section-head"><div class="section-title">' + handle + '<div><h2>' + esc(section.name) + '</h2><span>' + dishCountText(section.items.length) + '</span></div></div><div class="section-tools">' + tools + '</div></div>' +
+          '<div class="section-head"><div class="section-title">' + handle + '<div><h2>' + esc(section.name) + '</h2><span>' + dishCountText(dishesIn(section.items).length) + '</span></div></div><div class="section-tools">' + tools + '</div></div>' +
           '<div class="sort-list" data-sort-list="' + esc(section.key) + '" data-sort-group="dishes">' +
             (section.items.length
-              ? section.items.map(function (item) { return dishRowHtml(menuId, item); }).join('')
+              ? section.items.map(function (item) { return dishRowHtml(menuId, item, section.key); }).join('')
               : '<p class="empty">No dishes here yet.</p>') +
           '</div>' +
         '</section>';
@@ -2036,7 +2087,7 @@
       var key = el.getAttribute('data-section');
       var section = getSections(menuId).find(function (s) { return s.key === key; });
       var isGroup = isGroupMenu(menuId);
-      var count = section.items.length;
+      var count = dishesIn(section.items).length;
       var others = isGroup ? menuGroups(menuId).filter(function (g) { return g.key !== key; }) : [];
       if (isGroup && !others.length) {
         toast('A menu needs at least one section.');
@@ -2130,6 +2181,7 @@
         snapshot: clone(found.item),
         originList: found.list,
         originIndex: found.index,
+        pricesBefore: isHeading(found.item) ? rowsUnderHeading(found).map(function (row) { return { row: row, price: row.price }; }) : [],
         priceType: priceTypeOf(found.item),
         extras: extrasOf(found.item),
         background: found.item.video ? 'video' : (found.item.image ? 'photo' : 'none')
@@ -2138,36 +2190,78 @@
       showPreviewForPage();
     }
 
+    // Puts a new row at the end of a section and returns the list it went into
+    function addRowToSection(menuId, sectionKey, item) {
+      if (isGroupMenu(menuId)) {
+        var groups = menuGroups(menuId);
+        var group = groups.find(function (g) { return g.key === sectionKey; }) || groups[0];
+        item.subCategory = group.category || '';
+        group.items.push(item);
+        return group.items;
+      }
+      item.subCategory = sectionKey || sectionNames(menuId)[0] || '';
+      menuList(menuId).push(item);
+      return menuList(menuId);
+    }
+
+    // A new drink starts with the price of its heading, or the sizes of the drink above it
+    function fillFromHeading(menuId, item, list) {
+      var neighbour = null;
+      for (var i = list.indexOf(item) - 1; i >= 0; i--) {
+        var row = list[i];
+        if (!isGroupMenu(menuId) && row.subCategory !== item.subCategory) continue;
+        if (isHeading(row)) {
+          if (neighbour && hasCuts(neighbour)) {
+            item.cuts = neighbour.cuts.map(function (c) { return { origin: c.origin, price: '' }; });
+          } else if (row.price) {
+            item.price = row.price;
+          }
+          return;
+        }
+        neighbour = neighbour || row;
+      }
+    }
+
+    function openNewRow(menuId, item, list) {
+      view.page = 'dish';
+      view.menuId = menuId;
+      view.editor = {
+        kind: 'dish', menuId: menuId, id: item.id, isNew: true, snapshot: null, originList: list,
+        originIndex: list.indexOf(item), priceType: priceTypeOf(item), extras: [], background: 'none'
+      };
+      render();
+      showPreviewForPage();
+      $('dishName').focus();
+    }
+
     function addDish(el) {
       var menuId = view.menuId;
       var sectionKey = el.getAttribute('data-section') || chosenSection(menuId) || '';
+      var afterHeading = el.getAttribute('data-after');
       closeEditor();
       var item = {
         id: (menuId === 'lunch' ? 'lunch-' : 'dish-') + Date.now(),
         name: '', desc: '', price: '', priceLabel: '', price2: '', price2Label: '', image: '', video: '', meta: null, metaList: []
       };
-      var list;
-      if (isGroupMenu(menuId)) {
-        var groups = menuGroups(menuId);
-        var group = groups.find(function (g) { return g.key === sectionKey; }) || groups[0];
-        item.tags = [];
-        item.subCategory = group.category || '';
-        list = group.items;
-      } else {
-        item.isVeg = false;
-        item.subCategory = sectionKey || sectionNames(menuId)[0] || '';
-        list = menuList(menuId);
+      if (isGroupMenu(menuId)) item.tags = [];
+      else item.isVeg = false;
+      var list = addRowToSection(menuId, sectionKey, item);
+      var heading = afterHeading ? findDish(menuId, afterHeading) : null;
+      if (heading) {
+        list.pop();
+        var under = rowsUnderHeading(heading);
+        list.splice(list.indexOf(under.length ? under[under.length - 1] : heading.item) + 1, 0, item);
       }
-      list.push(item);
-      view.page = 'dish';
-      view.menuId = menuId;
-      view.editor = {
-        kind: 'dish', menuId: menuId, id: item.id, isNew: true, snapshot: null, originList: list,
-        originIndex: list.length - 1, priceType: 'one', extras: [], background: 'none'
-      };
-      render();
-      showPreviewForPage();
-      $('dishName').focus();
+      fillFromHeading(menuId, item, list);
+      openNewRow(menuId, item, list);
+    }
+
+    function addHeading(el) {
+      var menuId = view.menuId;
+      var sectionKey = el.getAttribute('data-section') || '';
+      closeEditor();
+      var item = { id: 'heading-' + Date.now(), type: 'heading', name: '', desc: '', price: '' };
+      openNewRow(menuId, item, addRowToSection(menuId, sectionKey, item));
     }
 
     function editorDish() {
@@ -2201,7 +2295,7 @@
       }
       var rows = (item.cuts || []).map(function (cut, i) {
         return '<div class="repeat-row repeat-price">' +
-          '<input type="text" aria-label="Option name" data-cut="origin" data-i="' + i + '" value="' + esc(cut.origin) + '" placeholder="AUSTRALIA · Grain-Fed Angus" />' +
+          '<input type="text" aria-label="Option name" data-cut="origin" data-i="' + i + '" value="' + esc(cut.origin) + '" placeholder="50ml, or AUSTRALIA · Grain-Fed Angus" />' +
           '<input type="text" aria-label="Price" inputmode="numeric" data-cut="price" data-price data-i="' + i + '" value="' + esc(cut.price) + '" placeholder="14,500" />' +
           '<label class="check"><input type="checkbox" data-cut="premium" data-i="' + i + '"' + (cut.premium ? ' checked' : '') + ' /><span>Premium</span></label>' +
           '<button type="button" class="btn-link danger" data-action="removeCut" data-i="' + i + '">Remove</button>' +
@@ -2274,13 +2368,39 @@
       return '';
     }
 
+    function headingHtml(found) {
+      var ed = view.editor;
+      var item = found.item;
+      return '<button type="button" class="back-link" data-action="saveDish">' + icon('back', 16) + 'Back to ' + esc(menuLabel(ed.menuId)) + '</button>' +
+        pageHead(ed.isNew ? 'Add a heading' : 'Edit heading', 'A heading sits above the dishes after it. Drag the dots on the menu page to move it.') +
+        '<section class="card card-pad">' +
+          '<div class="field"><label for="dishName">Heading</label>' +
+            '<input type="text" id="dishName" data-dish="name" value="' + esc(item.name) + '" placeholder="CHAPTER I · THE AWAKENING" /></div>' +
+          '<div class="field"><label for="dishDesc">Note under the heading (optional)</label>' +
+            '<textarea id="dishDesc" data-dish="desc" rows="3" placeholder="Acid and botanical. Clarification, emulsification and fermentation.">' + esc(item.desc) + '</textarea></div>' +
+          '<div class="field"><label for="headingPrice">Price for everything under it (optional)</label>' +
+            '<input type="text" id="headingPrice" inputmode="numeric" data-dish="price" data-price value="' + esc(item.price) + '" placeholder="2,600" />' +
+            '<span class="field-hint">Guests see this as "2,600 each". Changing it changes the price of every single-priced dish under this heading.</span></div>' +
+          '<div class="field"><label for="dishSection">Section on the menu</label>' +
+            '<select id="dishSection">' + sectionOptionsHtml(ed.menuId, found) + '</select></div>' +
+          '<p class="field-hint">Under a heading, anything with no description or photo becomes a compact price list. If those items have a list of sizes, like 25ml, 50ml and Bottle, the sizes become columns.</p>' +
+        '</section>' +
+        '<div class="sticky-actions">' +
+          '<button type="button" class="btn btn-primary" data-action="saveDish">Save heading</button>' +
+          '<button type="button" class="btn" data-action="cancelDish">Cancel</button>' +
+          '<span class="spacer"></span>' +
+          (ed.isNew ? '' : '<button type="button" class="btn btn-danger" data-action="deleteDish">Delete heading</button>') +
+        '</div>';
+    }
+
     function dishHtml() {
       var ed = view.editor;
       var found = editorDish();
       if (!found) return pageHead('This dish no longer exists');
+      if (isHeading(found.item)) return headingHtml(found);
       var item = found.item;
       var menuName = menuLabel(ed.menuId);
-      var priceChoices = [['one', 'One price'], ['two', 'Two sizes'], ['list', 'List of prices']].map(function (c) {
+      var priceChoices = [['one', 'One price'], ['two', 'Two sizes'], ['list', 'List of prices or sizes']].map(function (c) {
         return '<label><input type="radio" name="priceType" value="' + c[0] + '"' + (ed.priceType === c[0] ? ' checked' : '') + ' />' + c[1] + '</label>';
       }).join('');
       var bgChoices = [['none', 'No background'], ['photo', 'Photo'], ['video', 'Video']].map(function (c) {
@@ -2292,6 +2412,8 @@
         '<section class="card card-pad">' +
           '<div class="field"><label for="dishName">Dish name</label>' +
             '<input type="text" id="dishName" data-dish="name" value="' + esc(item.name) + '" placeholder="The Classic Burger" /></div>' +
+          '<div class="field"><label for="dishTag">Small label beside the name (optional)</label>' +
+            '<input type="text" id="dishTag" data-dish="nameTag" value="' + esc(item.nameTag) + '" placeholder="GIN" /></div>' +
           '<div class="field"><label for="dishDesc">Description</label>' +
             '<textarea id="dishDesc" data-dish="desc" rows="3" placeholder="What is in the dish">' + esc(item.desc) + '</textarea></div>' +
           '<div class="field"><label for="dishSection">Section on the menu</label>' +
@@ -2423,7 +2545,14 @@
       if (t.id === 'dishSection') moveDishToSection(t.value, t);
       else if (t.id === 'dishVeg') setVegetarian(item, t.checked);
       else if (t.id === 'dishVideo') item.video = t.value;
-      else if (d.dish) item[d.dish] = t.value;
+      else if (d.dish) {
+        item[d.dish] = t.value;
+        if (d.dish === 'price' && isHeading(item) && t.value.trim()) {
+          rowsUnderHeading(found).forEach(function (row) {
+            if (!hasCuts(row) && !row.price2) row.price = formatPrice(t.value);
+          });
+        }
+      }
       else if (d.cut === 'premium') {
         if (t.checked) item.cuts[i].premium = true;
         else delete item.cuts[i].premium;
@@ -2443,7 +2572,7 @@
       var found = editorDish();
       if (!found) return go('menu', view.menuId);
       if (!String(found.item.name || '').trim()) {
-        toast('Please give the dish a name first.');
+        toast('Please give the ' + (isHeading(found.item) ? 'heading' : 'dish') + ' a name first.');
         $('dishName').focus();
         return;
       }
@@ -2463,6 +2592,7 @@
         found.list.splice(found.index, 1);
         if (!ed.isNew) ed.originList.splice(ed.originIndex, 0, ed.snapshot);
       }
+      (ed.pricesBefore || []).forEach(function (before) { before.row.price = before.price; });
       view.editor = null;
       go('menu', ed.menuId);
     }
@@ -2470,7 +2600,9 @@
     function deleteDish() {
       var ed = view.editor;
       var found = editorDish();
-      askConfirm('Delete ' + (ed.snapshot.name || 'this dish') + '?', 'It will be removed from the menu when you next publish.', 'Delete dish', true).then(function (yes) {
+      var word = isHeading(found.item) ? 'heading' : 'dish';
+      var text = (word === 'heading' ? 'The dishes under it stay on the menu. ' : '') + 'It will be removed from the menu when you next publish.';
+      askConfirm('Delete ' + (ed.snapshot.name || 'this ' + word) + '?', text, 'Delete ' + word, true).then(function (yes) {
         if (!yes) return;
         found.list.splice(found.index, 1);
         view.editor = null;
@@ -3859,7 +3991,7 @@
       dishes: function (lists, key) {
         var menuId = view.menuId;
         var byId = {};
-        allDishes().forEach(function (d) {
+        allRows().forEach(function (d) {
           if (d.menuId === menuId) byId[d.item.id] = d.item;
         });
         if (isGroupMenu(menuId)) {
@@ -4174,6 +4306,7 @@
       },
       pickPhoto: pickPhoto,
       deleteMedia: deleteMedia,
+      addHeading: addHeading,
 
       tastingTab: function (el) {
         view.tastingKey = el.getAttribute('data-key');

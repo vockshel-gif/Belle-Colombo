@@ -610,181 +610,699 @@
       ]
     }
   ],
+  "barMenuVersion": 2,
   "theGardenAndBar": [
     {
-      "category": "The Bar",
-      "key": "the-bar",
+      "category": "Bar Bites",
+      "key": "bar-bites",
       "subtitle": "Daily | 06:00 PM – 10:30 PM",
       "items": [
         {
-          "id": "bar-the-garden-1",
-          "name": "The Smoked Club",
-          "tags": [
-            "Sandwich"
-          ],
-          "price": "2,800",
-          "priceLabel": "",
-          "desc": "House-smoked chicken breast, crispy beef bacon, avocado, lettuce, tomato, Nai Miris aioli, toasted multi-grain bread."
+          "id": "bar-bites-1",
+          "type": "heading",
+          "name": "DAILY · 18:00 TO 22:30",
+          "desc": "For sharing over cocktails at the bar, or as a prelude to the table.",
+          "price": "",
+          "subCategory": "Bar Bites"
         },
         {
-          "id": "bar-the-garden-2",
-          "name": "The Classic Rye",
-          "tags": [
-            "Sandwich"
-          ],
-          "price": "1,800",
-          "priceLabel": "Single",
-          "price2": "2,800",
-          "price2Label": "Double",
-          "desc": "Slow-simmered corned beef or house-cured pastrami, melted Swiss cheese, dills, sharp local mustard on toasted rye."
-        },
-        {
-          "id": "bar-the-garden-3",
-          "name": "The Classic Burger",
-          "tags": [
-            "Burger"
-          ],
-          "price": "3,100",
-          "priceLabel": "",
-          "desc": "120g premium beef patty, melted cheddar, crisp lettuce, tomato, red onion, dills, house secret sauce on a toasted sesame bun."
-        },
-        {
-          "id": "bar-the-garden-4",
-          "name": "The Shogun Burger",
-          "tags": [
-            "Vegetarian",
-            "Burger"
-          ],
-          "price": "1,800",
-          "priceLabel": "",
-          "desc": "Crispy-fried king oyster mushroom 'steak' (120g), house-togarashi, tangy Tonkatsu sauce, Japanese mayo, tempura gotu kola, shredded cabbage on a toasted potato bun."
-        },
-        {
-          "id": "bar-the-garden-5",
-          "name": "The Signature Steak Sandwich",
-          "tags": [
-            "Steak",
-            "Sandwich"
-          ],
-          "price": "3,900",
-          "priceLabel": "",
-          "desc": "Grilled beef tenderloin, melted provolone cheese, caramelized onions, mustard-horseradish cream on a crusty baguette."
-        },
-        {
-          "id": "bar-the-garden-6",
-          "name": "Roasted Tomato & Chipotle Soup",
-          "tags": [
-            "Vegetarian",
-            "Soup"
-          ],
-          "price": "1,900",
-          "priceLabel": "",
-          "desc": "Fire-roasted tomatoes, smoky chipotle chillies, roasted garlic, toasted cumin, lime-avocado crema, fresh coriander oil, herb-pressed focaccia."
-        },
-        {
-          "id": "bar-the-garden-7",
-          "name": "Heirloom Tomato, Goat’s Cheese & Basil Salad",
-          "tags": [
-            "Vegetarian",
-            "Salad"
-          ],
-          "price": "2,200",
-          "priceLabel": "",
-          "desc": "Tomatoes, goat's cheese, basil, greens and assorted herb base, passionfruit dressing, toasted pumpkin & sunflower seeds."
-        },
-        {
-          "id": "bar-the-bar-bites-1",
-          "name": "The Classic Sliders (Two)",
-          "tags": [
-            "Sharing",
-            "Bar Bite"
-          ],
-          "price": "4,000",
-          "priceLabel": "",
-          "options": [
-            { "label": "Classic Beef: Melted aged cheddar, lettuce, tomato, pickles" },
-            { "label": "Chicken Karaage: Ginger-garlic fried chicken, pickled cucumber ribbons, sriracha aioli" }
-          ],
-          "desc": "Two mini sliders served on soft, toasted brioche buns. Choice of Classic Beef (melted aged cheddar, lettuce, tomato, pickles) or Chicken Karaage (ginger-garlic fried chicken, pickled cucumber ribbons, sriracha aioli)."
-        },
-        {
-          "id": "bar-the-bar-bites-2",
-          "name": "Smoked Duck Tacos",
-          "tags": [
-            "Bar Bite"
-          ],
-          "price": "2,200",
-          "priceLabel": "",
-          "desc": "Tortillas, shredded duck leg, red cabbage, ginger-lime slaw, sweet hoisin-kithul glaze, fresh coriander."
-        },
-        {
-          "id": "bar-the-bar-bites-3",
-          "name": "Crispy Chicken Karaage Bao",
-          "tags": [
-            "Bar Bite"
-          ],
-          "price": "1,800",
-          "priceLabel": "",
-          "desc": "Steamed bao buns, crisp Japanese fried chicken, pickled cucumber ribbons, curry-leaf aioli."
-        },
-        {
-          "id": "bar-the-bar-bites-4",
-          "name": "Thai-Style Crispy Oyster Omelet",
-          "tags": [
-            "Seafood",
-            "Bar Bite"
-          ],
-          "price": "2,200",
-          "priceLabel": "",
-          "desc": "Pan-fried oysters in lacy egg and tapioca starch batter, wok-tossed bean sprouts, coriander, spring scallions, sweet-chili-lime sriracha drizzle."
-        },
-        {
-          "id": "bar-the-bar-bites-5",
-          "name": "Vietnamese-Style Rice Paper Summer Rolls with Scallops",
-          "tags": [
-            "Seafood",
-            "Fresh"
-          ],
-          "price": "2,800",
-          "priceLabel": "",
-          "desc": "Translucent rice paper, seared scallops, local fresh herbs (mint, coriander, gotu kola), crisp cucumber, peanut-tamarind dipping sauce."
-        },
-        {
-          "id": "bar-the-bar-bites-6",
+          "id": "bar-bites-2",
           "name": "Corn Succotash Fritters",
           "tags": [
-            "Vegetarian",
-            "Bar Bite"
+            "Vegetarian"
           ],
           "price": "1,400",
           "priceLabel": "",
-          "desc": "Sweet corn succotash fritters, zesty citrus cream, pickled onion slivers, coriander oil, fresh picked leaves."
+          "desc": "Golden-fried sweet corn fritters with zesty citrus cream, pickled onion slivers, hand-pressed coriander oil and fresh picked leaves.",
+          "subCategory": "Bar Bites"
         },
         {
-          "id": "bar-the-bar-bites-7",
-          "name": "Mushroom Tempura Nest",
+          "id": "bar-bites-3",
+          "name": "Rice Paper Summer Rolls with Scallops",
+          "tags": [],
+          "price": "2,400",
+          "priceLabel": "",
+          "desc": "Translucent rice paper rolled with butter-seared diver scallops, local herbs, julienne of carrot, cabbage and cucumber and dressed vermicelli, with a peanut-tamarind dipping sauce.",
+          "subCategory": "Bar Bites"
+        },
+        {
+          "id": "bar-bites-4",
+          "name": "Seasonal Vegetable Tempura",
           "tags": [
-            "Vegetarian",
-            "Bar Bite"
+            "Vegetarian"
           ],
           "price": "1,600",
           "priceLabel": "",
-          "desc": "Crisp local oyster & button mushroom tempura nest, rich truffle-miso dipping sauce."
+          "desc": "A crisp cluster of the farmer’s choice of vegetables, served with a rich Japanese mayo.",
+          "subCategory": "Bar Bites"
         },
         {
-          "id": "bar-the-bar-bites-8",
-          "name": "Artisanal Cheese Platter (For Two)",
-          "tags": [
-            "Sharing",
-            "Cheese"
-          ],
-          "price": "3,800",
+          "id": "bar-bites-5",
+          "name": "Crispy Chicken Karaage Bao",
+          "tags": [],
+          "price": "1,800",
           "priceLabel": "",
-          "meta": {
-            "badge": "FOR TWO",
-            "text": "3 Cave-Aged Cheeses · Wild Honey & Preserves"
-          },
-          "desc": "A curated selection of three premium cave-aged cheeses served with wild honey, roasted nuts, seasonal fruit preserves, and toasted sourdough."
+          "desc": "Two steamed bao stuffed with ginger-garlic fried chicken, quick-pickled cucumber ribbons, a fresh herb mix and a local curry-leaf aioli.",
+          "subCategory": "Bar Bites"
+        },
+        {
+          "id": "bar-bites-6",
+          "name": "Thai-Style Crispy Oyster Omelet",
+          "tags": [],
+          "price": "1,900",
+          "priceLabel": "",
+          "desc": "Lagoon oysters in a lacy egg and tapioca batter over wok-tossed bean sprouts, with coriander, scallions and a sweet chilli-lime sriracha drizzle.",
+          "subCategory": "Bar Bites"
+        },
+        {
+          "id": "bar-bites-7",
+          "name": "Smoked Duck Tacos",
+          "tags": [],
+          "price": "2,200",
+          "priceLabel": "",
+          "desc": "Three warm tortillas with slow-smoked shredded duck leg, a crunchy cabbage and ginger-lime slaw, hoisin-kithul glaze and fresh coriander.",
+          "subCategory": "Bar Bites"
+        },
+        {
+          "id": "bar-bites-8",
+          "name": "The Classic Sliders",
+          "tags": [],
+          "price": "2,800",
+          "priceLabel": "",
+          "options": [
+            {
+              "label": "Classic Beef with aged cheddar, lettuce, tomato, pickles and house secret sauce"
+            },
+            {
+              "label": "Chicken Karaage with pickled cucumber and sriracha aioli"
+            }
+          ],
+          "desc": "Two sliders on soft toasted brioche.",
+          "subCategory": "Bar Bites"
+        },
+        {
+          "id": "bar-bites-9",
+          "name": "Cheese Platter",
+          "tags": [],
+          "price": "4,000",
+          "priceLabel": "",
+          "desc": "Three premium cave-aged cheeses with wild honey, roasted nuts, seasonal fruit preserves and toasted sourdough. Serves two.",
+          "subCategory": "Bar Bites"
+        }
+      ]
+    },
+    {
+      "category": "Signatures",
+      "key": "signatures",
+      "items": [
+        {
+          "id": "bar-signature-1",
+          "type": "heading",
+          "name": "INDIGENOUS ROOTS · GLOBAL SPIRITS · LOCAL SOUL",
+          "desc": "",
+          "price": "",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-2",
+          "type": "heading",
+          "name": "CHAPTER I · THE AWAKENING",
+          "desc": "Acid and botanical. Clarification, emulsification and fermentation.",
+          "price": "2,600",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-3",
+          "name": "Bulath",
+          "nameTag": "GIN",
+          "tags": [],
+          "price": "2,600",
+          "priceLabel": "",
+          "desc": "Dry gin added to our bulath and cucumber tonic foundation, finished with a mist of betel leaf oil. A peppery, green awakening that clears the noise of the city.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-4",
+          "name": "Narang",
+          "nameTag": "VODKA",
+          "tags": [],
+          "price": "2,600",
+          "priceLabel": "",
+          "desc": "Vodka added to our narang and Thai basil cream soda foundation, emulsified with egg white for a silky, sun-warmed citrus profile.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-5",
+          "name": "Ginger",
+          "nameTag": "WHITE RUM",
+          "tags": [],
+          "price": "2,600",
+          "priceLabel": "",
+          "desc": "White rum added to our island ginger beer foundation. A sharp, bracing spirit finished with house-made sushi gari.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-6",
+          "type": "heading",
+          "name": "CHAPTER II · THE UNDERTONE",
+          "desc": "Smoke and texture. Fat-washing, siphon espumas and wood smoke.",
+          "price": "2,700",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-7",
+          "name": "Coconut",
+          "nameTag": "ARRACK",
+          "tags": [],
+          "price": "2,700",
+          "priceLabel": "",
+          "desc": "Coconut oil fat-washed arrack added to our spiced pineapple tepache foundation, topped with a siphon-charged coconut espuma for a velvety, tropical depth.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-8",
+          "name": "Goraka",
+          "nameTag": "TEQUILA",
+          "tags": [],
+          "price": "2,700",
+          "priceLabel": "",
+          "desc": "Silver tequila added to our smoky goraka and lime sour soda foundation. Served over rocks with a dehydrated goraka salt rim and finished with cinnamon wood smoke.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-9",
+          "name": "Turmeric",
+          "nameTag": "RED RUM",
+          "tags": [],
+          "price": "2,700",
+          "priceLabel": "",
+          "desc": "Red rum added to our golden root beer foundation, infused with smoked vanilla and finished with finger lime caviar pearls.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-10",
+          "type": "heading",
+          "name": "CHAPTER III · THE CONTEMPLATION",
+          "desc": "Depth and finish. Milk clarification, layering and ice craft.",
+          "price": "2,500",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-11",
+          "name": "Caffeine Addiction",
+          "nameTag": "COFFEE",
+          "tags": [],
+          "price": "2,500",
+          "priceLabel": "",
+          "desc": "Red rum, cold brew espresso and kithul treacle. A roasted, rich obsession layered with a tart chocolate espuma.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-12",
+          "name": "Caramel Corn",
+          "nameTag": "WHISKEY",
+          "tags": [],
+          "price": "2,500",
+          "priceLabel": "",
+          "desc": "Charred corn-infused bourbon added to our signature charred corn cola foundation. A crystal-clear milk punch clarification with a roasted, buttery soul.",
+          "subCategory": "Signatures"
+        },
+        {
+          "id": "bar-signature-13",
+          "name": "The Pause",
+          "nameTag": "SEASONAL",
+          "tags": [],
+          "price": "2,500",
+          "priceLabel": "",
+          "desc": "A seasonal spirit infusion served over hand-cut ice branded with the Belle element brass stamp. A final, silent vow to remain in the moment.",
+          "subCategory": "Signatures"
+        }
+      ]
+    },
+    {
+      "category": "Zero-Proof",
+      "key": "zero-proof",
+      "items": [
+        {
+          "id": "bar-zero-1",
+          "type": "heading",
+          "name": "HOME-MADE SODAS & MOCKTAILS",
+          "desc": "Crafted in The Lab and served over hand-cut ice with soda, or as a finished mocktail. These same technical bases build our signature cocktails.",
+          "price": "1,500",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-2",
+          "name": "Bulath & Clarified Cucumber Tonic",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "A house-crafted tonic made with clarified cucumber essence and a mist of peppery betel leaf oil, balanced with a sharp botanical bitterness.",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-3",
+          "name": "Narang & Thai Basil Cream Soda",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "Fresh roadside narang juice emulsified with bruised Thai basil and a hint of vanilla, topped with soda for a silky, botanical fizz.",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-4",
+          "name": "The Island Ginger Beer",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "Our house-fermented ginger shrub balanced with lime and sparkling water. A bold, fiery island classic.",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-5",
+          "name": "Spiced Pineapple Tepache",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "A three-day natural ferment of pineapple skins, ginger, star anise and a hint of nai miris.",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-6",
+          "name": "Smoky Goraka & Lime Sour Soda",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "A sharp, botanical sour soda using the deep, smoky acidity of charred goraka balanced with fresh lime and a touch of salt.",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-7",
+          "name": "Golden Root",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "Turmeric and narang root beer. Earthy turmeric shrub and local narang juice brewed with smoked vanilla and wintergreen for a deep, medicinal fizz.",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-8",
+          "name": "Signature Charred Corn Cola",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "The roasted, savoury notes of charred corn shrub and salted caramel blended with warm island spices for a darker fizz.",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-9",
+          "type": "heading",
+          "name": "ESSENTIALS",
+          "desc": "",
+          "price": "",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-10",
+          "name": "Soft Drinks & Water",
+          "tags": [],
+          "price": "450",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-11",
+          "name": "Fresh Juices · Seasonal",
+          "tags": [],
+          "price": "850",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "Zero-Proof"
+        },
+        {
+          "id": "bar-zero-12",
+          "type": "heading",
+          "name": "Indigenous roots · Botanical clarity · Alcohol-free",
+          "desc": "",
+          "price": "",
+          "subCategory": "Zero-Proof"
+        }
+      ]
+    },
+    {
+      "category": "The Bar",
+      "key": "the-bar",
+      "items": [
+        {
+          "id": "bar-list-1",
+          "type": "heading",
+          "name": "BEER, SPIRITS & COFFEE",
+          "desc": "",
+          "price": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-2",
+          "type": "heading",
+          "name": "BEER",
+          "desc": "",
+          "price": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-3",
+          "name": "Lion Lager",
+          "tags": [],
+          "price": "900",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-4",
+          "name": "Carlsberg Pilsner",
+          "tags": [],
+          "price": "1,000",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-5",
+          "type": "heading",
+          "name": "WHISKEY & BOURBON",
+          "desc": "",
+          "price": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-6",
+          "name": "JW Black Label",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "1,800"
+            },
+            {
+              "origin": "50ml",
+              "price": "3,400"
+            },
+            {
+              "origin": "Bottle",
+              "price": "48,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-7",
+          "name": "Glenfiddich 12yr",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "2,600"
+            },
+            {
+              "origin": "50ml",
+              "price": "4,800"
+            },
+            {
+              "origin": "Bottle",
+              "price": "68,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-8",
+          "name": "Jack Daniel’s No. 7",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "1,600"
+            },
+            {
+              "origin": "50ml",
+              "price": "3,000"
+            },
+            {
+              "origin": "Bottle",
+              "price": "42,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-9",
+          "name": "Macallan 12yr",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "4,800"
+            },
+            {
+              "origin": "50ml",
+              "price": "9,000"
+            },
+            {
+              "origin": "Bottle",
+              "price": "125,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-10",
+          "name": "JW Blue Label",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "8,500"
+            },
+            {
+              "origin": "50ml",
+              "price": "16,000"
+            },
+            {
+              "origin": "Bottle",
+              "price": "220,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-11",
+          "type": "heading",
+          "name": "GIN, VODKA & TEQUILA",
+          "desc": "",
+          "price": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-12",
+          "name": "Colombo No. 7 Gin",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "1,400"
+            },
+            {
+              "origin": "50ml",
+              "price": "2,600"
+            },
+            {
+              "origin": "Bottle",
+              "price": "36,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-13",
+          "name": "Hendrick’s Gin",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "2,400"
+            },
+            {
+              "origin": "50ml",
+              "price": "4,500"
+            },
+            {
+              "origin": "Bottle",
+              "price": "62,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-14",
+          "name": "Grey Goose Vodka",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "2,200"
+            },
+            {
+              "origin": "50ml",
+              "price": "4,000"
+            },
+            {
+              "origin": "Bottle",
+              "price": "58,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-15",
+          "name": "Patron Silver Tequila",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "3,200"
+            },
+            {
+              "origin": "50ml",
+              "price": "6,000"
+            },
+            {
+              "origin": "Bottle",
+              "price": "85,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-16",
+          "name": "Don Julio Reposado",
+          "tags": [],
+          "price": "",
+          "priceLabel": "",
+          "cuts": [
+            {
+              "origin": "25ml",
+              "price": "4,500"
+            },
+            {
+              "origin": "50ml",
+              "price": "8,500"
+            },
+            {
+              "origin": "Bottle",
+              "price": "115,000"
+            }
+          ],
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-17",
+          "type": "heading",
+          "name": "LOCAL SPIRITS & LIQUEURS",
+          "desc": "",
+          "price": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-18",
+          "name": "Ceylon Arrack · 50ml",
+          "tags": [],
+          "price": "1,400",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-19",
+          "name": "Halmilla · 50ml",
+          "tags": [],
+          "price": "1,400",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-20",
+          "name": "Bailey’s Irish Cream · 25ml",
+          "tags": [],
+          "price": "1,500",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-21",
+          "type": "heading",
+          "name": "COFFEE",
+          "desc": "",
+          "price": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-22",
+          "name": "Espresso · Single",
+          "tags": [],
+          "price": "600",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-23",
+          "name": "Espresso · Double",
+          "tags": [],
+          "price": "900",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
+        },
+        {
+          "id": "bar-list-24",
+          "name": "Cappuccino, Latte or Americano",
+          "tags": [],
+          "price": "800",
+          "priceLabel": "",
+          "desc": "",
+          "subCategory": "The Bar"
         }
       ]
     }
