@@ -14,3 +14,35 @@ desktop.ini
 *.cr2
 *.nef
 
+# Kept on this computer only, GitHub Pages publishes everything else
+_backup/
+.claude/
+/README.md
+/start_server.bat
+*.pdf
+*.ai
+/Belle CMB (Presentation) (2).png
+
+# Photos and videos the site does not use
+/assets/images/Copy of AAA06651.jpg
+/assets/images/Copy of DSC09602.jpg
+/assets/images/Copy of IMG_3497.PNG
+/assets/images/Copy of IMG_3500.PNG
+/assets/images/Copy of NC-27.jpg
+/assets/images/Copy of NC-29.jpg
+/assets/images/Copy of NC-31.jpg
+/assets/images/Copy of RNC03285.jpg
+/assets/images/WhatsApp Image 2026-06-29 at 13.31.45 (9).jpeg
+/assets/images/cocktail_smoked.jpg
+/assets/images/gourmet_pasta.jpg
+/assets/images/seafood_delight.jpg
+/assets/images/signature_cocktail.jpg
+/assets/images/wine_sommelier.jpg
+/assets/video/cocktail_bar.mp4
+/assets/video/cocktail_vertical.mp4
+/assets/video/frame_bar.jpg
+/assets/video/frame_chef.jpg
+/assets/video/frame_cocktail.jpg
+/assets/video/frame_dining.jpg
+/assets/video/frame_vertical.jpg
+
