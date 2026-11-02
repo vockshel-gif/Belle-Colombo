@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#000000" />
   <title>Belle Colombo</title>
   <meta name="description" content="Belle Colombo — Food, Menu, Events & Contacts." />
+  <link rel="icon" href="Logo/logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
@@ -2484,10 +2485,6 @@
 
   </style>
   <script src="belleData.js"></script>
-  <!-- Google Firebase SDK (Free Tier) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -3309,6 +3306,17 @@ Choose your spread/rillette style:</p>
           <text x="190" y="36" class="watermark-lunch" id="barWatermark" style="font-size: 64px; letter-spacing: 0.16em;">THE BAR</text>
           <text x="190" y="38" class="center-lunch" id="barTitle" style="font-size: 30px; letter-spacing: 0.16em;">THE BAR</text>
         </svg>
+      </div>
+
+      <!-- Dynamic Sub-category Nav Bar with Scroll Indicator Wrapper -->
+      <div class="subcat-scroll-track-wrapper" id="barSubcatWrapper" style="display: none;">
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-left" id="barScrollLeft" aria-label="Scroll sub-categories left">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <nav class="lunch-subcat-nav" id="barSubcatNav" aria-label="Bar Sub-categories"></nav>
+        <button type="button" class="pills-scroll-indicator-btn pills-scroll-right" id="barScrollRight" aria-label="Scroll sub-categories right">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
       </div>
 
       <!-- Top Slider Track -->
@@ -4167,7 +4175,7 @@ Choose your spread/rillette style:</p>
         <button type="button" class="events-month-nav" id="prevMonthBtn" aria-label="Previous month">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <span class="events-month-title" id="eventsMonthTitle">OCTOBER 2025</span>
+        <span class="events-month-title" id="eventsMonthTitle"></span>
         <button type="button" class="events-month-nav" id="nextMonthBtn" aria-label="Next month">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
@@ -4180,67 +4188,7 @@ Choose your spread/rillette style:</p>
         <div class="events-weekday-row">
           <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
         </div>
-        <div class="events-days-grid" id="eventsDaysGrid">
-          <!-- Row 1 -->
-          <div class="cal-day-cell is-muted"><span class="cal-day-num">28</span></div>
-          <div class="cal-day-cell is-muted"><span class="cal-day-num">29</span></div>
-          <div class="cal-day-cell is-muted"><span class="cal-day-num">30</span></div>
-          <div class="cal-day-cell" data-day="1"><span class="cal-day-num">1</span></div>
-          <div class="cal-day-cell" data-day="2"><span class="cal-day-num">2</span></div>
-          <div class="cal-day-cell" data-day="3"><span class="cal-day-num">3</span></div>
-          <div class="cal-day-cell" data-day="4"><span class="cal-day-num">4</span></div>
-
-          <!-- Row 2 (8 is selected) -->
-          <div class="cal-day-cell" data-day="5"><span class="cal-day-num">5</span></div>
-          <div class="cal-day-cell" data-day="6"><span class="cal-day-num">6</span></div>
-          <div class="cal-day-cell" data-day="7"><span class="cal-day-num">7</span></div>
-          <div class="cal-day-cell is-selected" data-day="8">
-            <span class="cal-day-num">8</span>
-            <span class="cal-day-dot"></span>
-          </div>
-          <div class="cal-day-cell" data-day="9"><span class="cal-day-num">9</span></div>
-          <div class="cal-day-cell" data-day="10"><span class="cal-day-num">10</span></div>
-          <div class="cal-day-cell" data-day="11"><span class="cal-day-num">11</span></div>
-
-          <!-- Row 3 (12, 16 have dots) -->
-          <div class="cal-day-cell" data-day="12">
-            <span class="cal-day-num">12</span>
-            <span class="cal-day-dot"></span>
-          </div>
-          <div class="cal-day-cell" data-day="13"><span class="cal-day-num">13</span></div>
-          <div class="cal-day-cell" data-day="14"><span class="cal-day-num">14</span></div>
-          <div class="cal-day-cell" data-day="15"><span class="cal-day-num">15</span></div>
-          <div class="cal-day-cell" data-day="16">
-            <span class="cal-day-num">16</span>
-            <span class="cal-day-dot"></span>
-          </div>
-          <div class="cal-day-cell" data-day="17"><span class="cal-day-num">17</span></div>
-          <div class="cal-day-cell" data-day="18"><span class="cal-day-num">18</span></div>
-
-          <!-- Row 4 (20, 24 have dots) -->
-          <div class="cal-day-cell" data-day="19"><span class="cal-day-num">19</span></div>
-          <div class="cal-day-cell" data-day="20">
-            <span class="cal-day-num">20</span>
-            <span class="cal-day-dot"></span>
-          </div>
-          <div class="cal-day-cell" data-day="21"><span class="cal-day-num">21</span></div>
-          <div class="cal-day-cell" data-day="22"><span class="cal-day-num">22</span></div>
-          <div class="cal-day-cell" data-day="23"><span class="cal-day-num">23</span></div>
-          <div class="cal-day-cell" data-day="24">
-            <span class="cal-day-num">24</span>
-            <span class="cal-day-dot"></span>
-          </div>
-          <div class="cal-day-cell" data-day="25"><span class="cal-day-num">25</span></div>
-
-          <!-- Row 5 -->
-          <div class="cal-day-cell" data-day="26"><span class="cal-day-num">26</span></div>
-          <div class="cal-day-cell" data-day="27"><span class="cal-day-num">27</span></div>
-          <div class="cal-day-cell" data-day="28"><span class="cal-day-num">28</span></div>
-          <div class="cal-day-cell" data-day="29"><span class="cal-day-num">29</span></div>
-          <div class="cal-day-cell" data-day="30"><span class="cal-day-num">30</span></div>
-          <div class="cal-day-cell" data-day="31"><span class="cal-day-num">31</span></div>
-          <div class="cal-day-cell is-muted"><span class="cal-day-num">1</span></div>
-        </div>
+        <div class="events-days-grid" id="eventsDaysGrid"></div>
       </div>
 
       <!-- Upcoming Events Header -->
@@ -4759,7 +4707,7 @@ Choose your spread/rillette style:</p>
     var backFromEvents = document.getElementById('backFromEvents');
     var eventFilterPills = document.querySelectorAll('.event-filter-pill');
     var eventCards = document.querySelectorAll('.event-card');
-    var calDayCells = document.querySelectorAll('.cal-day-cell:not(.is-muted)');
+    var eventsDaysGrid = document.getElementById('eventsDaysGrid');
     var eventsViewAllBtn = document.getElementById('eventsViewAllBtn');
     var prevMonthBtn = document.getElementById('prevMonthBtn');
     var nextMonthBtn = document.getElementById('nextMonthBtn');
@@ -4818,15 +4766,18 @@ Choose your spread/rillette style:</p>
       }, { passive: false });
     }
 
-    // Calendar Day Click Selection
-    calDayCells.forEach(function (cell) {
-      cell.addEventListener('click', function () {
+    // Calendar Day Click Selection (delegated because the grid is rebuilt for each month)
+    if (eventsDaysGrid) {
+      eventsDaysGrid.addEventListener('click', function (e) {
+        var cell = e.target.closest('.cal-day-cell:not(.is-muted)');
+        if (!cell) return;
         var day = cell.getAttribute('data-day');
-        calDayCells.forEach(function (c) { c.classList.remove('is-selected'); });
+        clearCalendarSelection();
         cell.classList.add('is-selected');
 
-        // Scroll to matching card if exists
-        var targetCard = document.querySelector('.event-card[data-day="' + day + '"]');
+        // Scroll to matching card if exists (events without a year match any year)
+        var cardSelector = '.event-card[data-day="' + day + '"][data-month="' + calendarMonth + '"]';
+        var targetCard = document.querySelector(cardSelector + '[data-year="' + calendarYear + '"], ' + cardSelector + '[data-year=""]');
         if (targetCard) {
           filterEvents('all');
           targetCard.classList.remove('is-hidden');
@@ -4837,12 +4788,12 @@ Choose your spread/rillette style:</p>
           }, 1500);
         }
       });
-    });
+    }
 
     if (eventsViewAllBtn) {
       eventsViewAllBtn.addEventListener('click', function () {
         filterEvents('all');
-        calDayCells.forEach(function (c) { c.classList.remove('is-selected'); });
+        clearCalendarSelection();
       });
     }
 
@@ -4858,22 +4809,86 @@ Choose your spread/rillette style:</p>
       });
     });
 
-    var months = ['SEPTEMBER 2025', 'OCTOBER 2025', 'NOVEMBER 2025', 'DECEMBER 2025'];
-    var currentMonthIndex = 1;
-    if (prevMonthBtn && nextMonthBtn && eventsMonthTitle) {
-      prevMonthBtn.addEventListener('click', function () {
-        if (currentMonthIndex > 0) {
-          currentMonthIndex--;
-          eventsMonthTitle.textContent = months[currentMonthIndex];
-        }
-      });
-      nextMonthBtn.addEventListener('click', function () {
-        if (currentMonthIndex < months.length - 1) {
-          currentMonthIndex++;
-          eventsMonthTitle.textContent = months[currentMonthIndex];
-        }
-      });
+    var EVENT_MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    var EVENT_WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    var calendarEvents = [];
+    var calendarYear = new Date().getFullYear();
+    var calendarMonth = new Date().getMonth();
+
+    // Events saved with the date picker have dateStr; older ones only have day + month, so year is null
+    function getEventDate(ev) {
+      var parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ev.dateStr || ''));
+      if (parts) {
+        return { year: parseInt(parts[1], 10), month: parseInt(parts[2], 10) - 1, day: parseInt(parts[3], 10) };
+      }
+      return {
+        year: null,
+        month: EVENT_MONTHS.indexOf(String(ev.month || '').trim().toUpperCase().slice(0, 3)),
+        day: parseInt(ev.day, 10)
+      };
     }
+
+    function getEventWeekday(ev, eventDate) {
+      if (eventDate.year !== null) {
+        return EVENT_WEEKDAYS[new Date(eventDate.year, eventDate.month, eventDate.day).getDay()];
+      }
+      return String(ev.dow || '').toUpperCase();
+    }
+
+    function clearCalendarSelection() {
+      if (!eventsDaysGrid) return;
+      eventsDaysGrid.querySelectorAll('.is-selected').forEach(function (c) { c.classList.remove('is-selected'); });
+    }
+
+    function renderEventsCalendar() {
+      if (!eventsDaysGrid) return;
+      var eventDays = {};
+      calendarEvents.forEach(function (ev) {
+        var eventDate = getEventDate(ev);
+        if (eventDate.month === calendarMonth && (eventDate.year === null || eventDate.year === calendarYear)) {
+          eventDays[eventDate.day] = true;
+        }
+      });
+
+      var firstWeekday = new Date(calendarYear, calendarMonth, 1).getDay();
+      var daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+      var daysInPrevMonth = new Date(calendarYear, calendarMonth, 0).getDate();
+      var trailingDays = (7 - ((firstWeekday + daysInMonth) % 7)) % 7;
+      var html = '';
+      var i;
+      for (i = firstWeekday - 1; i >= 0; i--) {
+        html += '<div class="cal-day-cell is-muted"><span class="cal-day-num">' + (daysInPrevMonth - i) + '</span></div>';
+      }
+      for (i = 1; i <= daysInMonth; i++) {
+        html += '<div class="cal-day-cell" data-day="' + i + '"><span class="cal-day-num">' + i + '</span>' +
+          (eventDays[i] ? '<span class="cal-day-dot"></span>' : '') +
+        '</div>';
+      }
+      for (i = 1; i <= trailingDays; i++) {
+        html += '<div class="cal-day-cell is-muted"><span class="cal-day-num">' + i + '</span></div>';
+      }
+      eventsDaysGrid.innerHTML = html;
+
+      if (eventsMonthTitle) {
+        var monthName = new Date(calendarYear, calendarMonth, 1).toLocaleString('en-US', { month: 'long' });
+        eventsMonthTitle.textContent = monthName.toUpperCase() + ' ' + calendarYear;
+      }
+    }
+
+    function changeCalendarMonth(delta) {
+      var target = new Date(calendarYear, calendarMonth + delta, 1);
+      calendarYear = target.getFullYear();
+      calendarMonth = target.getMonth();
+      renderEventsCalendar();
+    }
+
+    if (prevMonthBtn) {
+      prevMonthBtn.addEventListener('click', function () { changeCalendarMonth(-1); });
+    }
+    if (nextMonthBtn) {
+      nextMonthBtn.addEventListener('click', function () { changeCalendarMonth(1); });
+    }
+    renderEventsCalendar();
 
     // Lunch Single-Item Snapping with Dynamic Swipe Speed
     var lunchVerticalScroll = document.getElementById('lunchVerticalScroll');
@@ -5725,6 +5740,8 @@ Choose your spread/rillette style:</p>
     bindAlacarteNextButtons();
 
     // Direct hash routing support
+    var unresolvedDeepLinkHash = null;
+
     function handleHash() {
       var h = window.location.hash;
       if (h === '#menu' || h === '#menu-hub') {
@@ -5782,18 +5799,26 @@ Choose your spread/rillette style:</p>
         if (match || isCourseMatch) {
           document.body.classList.add('is-ready', 'is-menu-active');
           openPanel(catId);
-        } else if (document.body.classList.contains('is-ready')) {
-          returnToHome();
+        } else {
+          unresolvedDeepLinkHash = h;
+          if (document.body.classList.contains('is-ready')) returnToHome();
         }
       } else if (document.body.classList.contains('is-ready')) {
         returnToHome();
       }
     }
     window.addEventListener('hashchange', handleHash);
-    if (window.location.hash) {
-      handleHash();
+
+    // A custom category may only exist in cloud data, so retry a direct link once after sync
+    function retryUnresolvedDeepLink() {
+      var hash = unresolvedDeepLinkHash;
+      unresolvedDeepLinkHash = null;
+      if (hash && hash === window.location.hash && !document.body.classList.contains('is-menu-active')) {
+        handleHash();
+        unresolvedDeepLinkHash = null;
+      }
     }
-  
+
     /* ========================================================
        BELLE COLOMBO REAL-TIME DATA & LIVE PREVIEW ENGINE
        ======================================================== */
@@ -5811,17 +5836,16 @@ Choose your spread/rillette style:</p>
       existingCards.forEach(function(c) { c.remove(); });
 
       var viewAllWrap = scrollContainer.querySelector('.events-all-wrap');
-      var eventDaysSet = {};
 
       (events || []).forEach(function(ev) {
         var isVip = !!ev.isVip;
         var cat = ev.category || 'dining';
         var catLabel = ev.categoryLabel || (cat === 'music' ? 'LIVE MUSIC' : cat === 'tasting' ? 'TASTING' : cat === 'lounge' ? 'LOUNGE' : cat === 'vip' ? 'SPECIAL' : cat.toUpperCase());
+        var eventDate = getEventDate(ev);
         var dayNum = parseInt(ev.day, 10);
-        if (!isNaN(dayNum)) eventDaysSet[String(dayNum)] = true;
         var dayStr = (!isNaN(dayNum) ? String(dayNum) : String(ev.day || ''));
-        var monthStr = (ev.month || 'OCT').toUpperCase();
-        var dowStr = (ev.dow || 'THU').toUpperCase();
+        var monthStr = String(ev.month || EVENT_MONTHS[eventDate.month] || '').toUpperCase();
+        var dowStr = getEventWeekday(ev, eventDate);
         var imgSrc = ev.imageData || '';
         var venue = ev.venue || 'Main Dining Hall';
         var time = ev.time || '7:00 PM – 10:00 PM';
@@ -5831,32 +5855,34 @@ Choose your spread/rillette style:</p>
         var card = document.createElement('article');
         card.className = 'event-card';
         card.setAttribute('data-category', cat);
-        card.setAttribute('data-day', dayStr);
+        card.setAttribute('data-day', String(eventDate.day));
+        card.setAttribute('data-month', String(eventDate.month));
+        card.setAttribute('data-year', eventDate.year === null ? '' : String(eventDate.year));
         card.style.cursor = 'pointer';
         card.setAttribute('title', 'Tap to reserve via WhatsApp');
 
-        var thumbHtml = imgSrc ? '<div class="event-thumb"><img src="' + imgSrc + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy"></div>' : '';
-        var badgeHtml = isVip ? '<span class="event-badge" style="background:#bca685;color:#0b0b0e;">SPECIAL</span>' : '<span class="event-badge">' + catLabel + '</span>';
+        var thumbHtml = imgSrc ? '<div class="event-thumb"><img src="' + escapeHtml(imgSrc) + '" alt="' + escapeHtml(title) + '" loading="lazy"></div>' : '';
+        var badgeHtml = isVip ? '<span class="event-badge" style="background:#bca685;color:#0b0b0e;">SPECIAL</span>' : '<span class="event-badge">' + escapeHtml(catLabel) + '</span>';
 
-        card.innerHTML = thumbHtml + 
+        card.innerHTML = thumbHtml +
           '<div class="event-date-block">' +
-            '<span class="event-date-month">' + monthStr + '</span>' +
-            '<span class="event-date-day">' + dayStr + '</span>' +
-            '<span class="event-date-dow">' + dowStr + '</span>' +
+            '<span class="event-date-month">' + escapeHtml(monthStr) + '</span>' +
+            '<span class="event-date-day">' + escapeHtml(dayStr) + '</span>' +
+            '<span class="event-date-dow">' + escapeHtml(dowStr) + '</span>' +
           '</div>' +
           '<div class="event-details">' +
             '<div class="event-details-top">' +
-              '<h4 class="event-title">' + title + '</h4>' +
+              '<h4 class="event-title">' + escapeHtml(title) + '</h4>' +
               badgeHtml +
             '</div>' +
-            '<p class="event-desc">' + desc + '</p>' +
+            '<p class="event-desc">' + escapeHtml(desc) + '</p>' +
             '<div class="event-details-bottom">' +
               '<div class="event-loc">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>' +
-                '<span>' + venue + '</span>' +
+                '<span>' + escapeHtml(venue) + '</span>' +
               '</div>' +
               '<div class="event-time-row">' +
-                '<span class="event-time">' + time + '</span>' +
+                '<span class="event-time">' + escapeHtml(time) + '</span>' +
                 '<span class="event-arrow">' +
                   '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' +
                 '</span>' +
@@ -5884,20 +5910,8 @@ Choose your spread/rillette style:</p>
       });
 
       // Sync calendar dots with current events
-      var gridCells = document.querySelectorAll('#eventsDaysGrid .cal-day-cell:not(.is-muted)');
-      gridCells.forEach(function(cell) {
-        var d = cell.getAttribute('data-day');
-        var dot = cell.querySelector('.cal-day-dot');
-        if (d && eventDaysSet[d]) {
-          if (!dot) {
-            var newDot = document.createElement('span');
-            newDot.className = 'cal-day-dot';
-            cell.appendChild(newDot);
-          }
-        } else if (dot) {
-          dot.remove();
-        }
-      });
+      calendarEvents = events || [];
+      renderEventsCalendar();
 
       eventCards = scrollContainer.querySelectorAll('.event-card');
       filterEvents(activeFilter);
@@ -5920,6 +5934,71 @@ Choose your spread/rillette style:</p>
     var currentLunchItemsRaw = [];
     var currentLunchFilterSubcat = 'all';
 
+    function isRealSubcat(name) {
+      var s = String(name || '').trim().toLowerCase();
+      return s && s !== 'no sub-category' && s !== 'unassigned' && s !== '__holding__' && s.indexOf('no sub') === -1;
+    }
+
+    // Only sub-categories with dishes get a pill, so a guest can never land on an empty list
+    function subcatOptionsFor(names, items) {
+      return names.filter(function(name, index) {
+        return isRealSubcat(name) && names.indexOf(name) === index && items.some(function(it) { return it.subCategory === name; });
+      }).map(function(name) {
+        return { value: name, label: name };
+      });
+    }
+
+    function keepSubcatFilter(options, current) {
+      var stillThere = options.some(function(option) { return option.value === current; });
+      return options.length > 1 && stillThere ? current : 'all';
+    }
+
+    // The pill row only shows when there is more than one sub-category to choose between
+    function renderSubcatPills(navId, leftId, rightId, options, current, onSelect) {
+      var nav = document.getElementById(navId);
+      if (!nav) return;
+      if (options.length < 2) {
+        nav.innerHTML = '';
+        nav.parentNode.style.display = 'none';
+        return;
+      }
+      nav.parentNode.style.display = '';
+      var html = '<button type="button" class="lunch-subcat-pill ' + (current === 'all' ? 'is-active' : '') + '" data-subcat="all">ALL</button>';
+      options.forEach(function(option) {
+        html += '<button type="button" class="lunch-subcat-pill ' + (current === option.value ? 'is-active' : '') + '" data-subcat="' + escapeHtml(option.value) + '">' + escapeHtml(option.label) + '</button>';
+      });
+      nav.innerHTML = html;
+
+      nav.querySelectorAll('.lunch-subcat-pill').forEach(function(pill) {
+        pill.addEventListener('click', function(e) {
+          e.stopPropagation();
+          nav.querySelectorAll('.lunch-subcat-pill').forEach(function(p) { p.classList.remove('is-active'); });
+          pill.classList.add('is-active');
+          scrollActivePillIntoView(nav);
+          onSelect(pill.getAttribute('data-subcat'));
+        });
+      });
+
+      setupHorizontalScrollControls(navId, leftId, rightId);
+      scrollActivePillIntoView(nav);
+    }
+
+    // Admin Studio picks a pill in the phone preview to match its own
+    function selectPreviewSubcat(target, value) {
+      if (target === 'lunch') {
+        currentLunchFilterSubcat = value;
+        renderLunchList(currentLunchItemsRaw);
+      } else if (target === 'thebar') {
+        currentBarFilter = value;
+        renderBarList(currentBarCategoriesRaw);
+        goToBarItem(0, false);
+      } else if (currentCustomCategoryData && currentCustomCategoryData.id === target) {
+        currentCustomFilterSubcat = value;
+        renderCustomSubcatNav();
+        renderCustomListFiltered();
+      }
+    }
+
     function renderLunchSubcatNav(items) {
       var nav = document.getElementById('lunchSubcatNav');
       if (!nav) return;
@@ -5933,34 +6012,12 @@ Choose your spread/rillette style:</p>
           }
         });
       }
-      subcats = subcats.filter(function(sc) {
-        var s = String(sc || '').trim().toLowerCase();
-        return s && s !== 'no sub-category' && s !== 'unassigned' && s.indexOf('no sub') === -1;
+      var options = subcatOptionsFor(subcats, items || []);
+      currentLunchFilterSubcat = keepSubcatFilter(options, currentLunchFilterSubcat);
+      renderSubcatPills('lunchSubcatNav', 'lunchScrollLeft', 'lunchScrollRight', options, currentLunchFilterSubcat, function(value) {
+        currentLunchFilterSubcat = value;
+        renderLunchListFiltered();
       });
-      if (subcats.length === 0) {
-        nav.style.display = 'none';
-        return;
-      }
-      nav.style.display = 'flex';
-      var html = '<button type="button" class="lunch-subcat-pill ' + (currentLunchFilterSubcat === 'all' ? 'is-active' : '') + '" data-subcat="all">ALL</button>';
-      subcats.forEach(function(sc) {
-        html += '<button type="button" class="lunch-subcat-pill ' + (currentLunchFilterSubcat === sc ? 'is-active' : '') + '" data-subcat="' + sc + '">' + sc + '</button>';
-      });
-      nav.innerHTML = html;
-
-      nav.querySelectorAll('.lunch-subcat-pill').forEach(function(pill) {
-        pill.addEventListener('click', function(e) {
-          e.stopPropagation();
-          currentLunchFilterSubcat = pill.getAttribute('data-subcat');
-          nav.querySelectorAll('.lunch-subcat-pill').forEach(function(p) { p.classList.remove('is-active'); });
-          pill.classList.add('is-active');
-          scrollActivePillIntoView(nav);
-          renderLunchListFiltered();
-        });
-      });
-
-      setupHorizontalScrollControls('lunchSubcatNav', 'lunchScrollLeft', 'lunchScrollRight');
-      scrollActivePillIntoView(nav);
     }
 
     function renderLunchListFiltered() {
@@ -5978,7 +6035,22 @@ Choose your spread/rillette style:</p>
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // For url('...') inside a style attribute
+    function escapeCssUrl(url) {
+      return escapeHtml(String(url == null ? '' : url).replace(/[\\']/g, '\\$&'));
+    }
+
+    // Add-on text uses <strong> around prices; every other tag stays plain text
+    function formatMetaText(text) {
+      return escapeHtml(text).replace(/&lt;(\/?)strong&gt;/g, '<$1strong>');
+    }
+
+    function safeHttpUrl(url, fallback) {
+      return /^https?:\/\//i.test(String(url || '')) ? url : fallback;
     }
 
     function getDishMetaHtml(item) {
@@ -5997,7 +6069,7 @@ Choose your spread/rillette style:</p>
         var isOutline = String(badge).toUpperCase() === 'SIDES';
         return '<div class="lunch-meta-row">' +
           '<span class="meta-pill' + (isOutline ? ' is-outline' : '') + '">' + escapeHtml(badge) + '</span>' +
-          '<span class="meta-content">' + (m.text || '') + '</span>' +
+          '<span class="meta-content">' + formatMetaText(m.text) + '</span>' +
         '</div>';
       }).join('');
     }
@@ -6053,7 +6125,7 @@ Choose your spread/rillette style:</p>
             return '<div class="choice-row">' +
               '<div class="choice-label">' +
                 '<span class="choice-dot">•</span>' +
-                '<span class="choice-text">' + escapeHtml(opt.text || '') + ' ' +
+                '<span class="choice-text">' + escapeHtml(opt.label || '') + ' ' +
                   (optVeg ? '<span class="badge-v badge-v-choice" aria-label="Vegetarian" title="Vegetarian">V</span>' : '') +
                 '</span>' +
               '</div>' +
@@ -6077,13 +6149,13 @@ Choose your spread/rillette style:</p>
         var mediaBackdropHtml = '';
         if (item.video) {
           mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+            '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + escapeHtml(item.video) + '"></video>' +
             '<div class="lunch-slot-bg-scrim"></div>' +
           '</div>';
         } else {
           var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
           mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + itemImg + '\');"></div>' +
+            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(itemImg) + '\');"></div>' +
             '<div class="lunch-slot-bg-scrim"></div>' +
           '</div>';
         }
@@ -6153,19 +6225,22 @@ Choose your spread/rillette style:</p>
 
       // Filter out stale test breakfast category
       cats = cats.filter(function(c) {
-        return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+        return c.id !== 'cat-breakfast';
       });
 
       var html = '';
       cats.forEach(function(cat, idx) {
         var catClass = 'cat-btn-' + (cat.id || 'custom');
+        var fitStyle = '';
         if (['lunch', 'alacarte', 'tasting', 'thebar'].indexOf(cat.id) === -1) {
           catClass = 'cat-btn-custom';
+          // Names cannot wrap in the hub, so long ones shrink to stay on screen
+          fitStyle = 'font-size:min(' + (106 / Math.max(1, String(cat.name || '').length)).toFixed(2) + 'vw, clamp(1.8rem, 7.8vw, 2.9rem));';
         }
         var btnDelay = (0.32 + idx * 0.16).toFixed(2) + 's';
         var divDelay = (0.42 + idx * 0.16).toFixed(2) + 's';
 
-        html += '<button type="button" class="menu-cat-btn ' + catClass + '" data-target="' + (cat.id || '') + '" style="--stagger-delay:' + btnDelay + ';">' + (cat.name || 'MENU') + '</button>';
+        html += '<button type="button" class="menu-cat-btn ' + catClass + '" data-target="' + escapeHtml(cat.id || '') + '" style="--stagger-delay:' + btnDelay + ';' + fitStyle + '">' + escapeHtml(cat.name || 'MENU') + '</button>';
 
         if (idx < cats.length - 1) {
           html += '<div class="menu-divider menu-hub-div menu-hub-div-' + (idx + 1) + '" style="--t:0s;--stagger-delay:' + divDelay + ';" aria-hidden="true">' +
@@ -6188,6 +6263,7 @@ Choose your spread/rillette style:</p>
 
     function renderCustomCategory(cat) {
       if (!cat) return;
+      if (!currentCustomCategoryData || currentCustomCategoryData.id !== cat.id) currentCustomFilterSubcat = 'all';
       currentCustomCategoryData = cat;
 
       var wText = document.getElementById('customCatWatermark');
@@ -6204,7 +6280,6 @@ Choose your spread/rillette style:</p>
       currentCustomItemsRaw = (items || []).filter(function(it) {
         return it && !it.isTemporaryFolder && it.subCategory !== '__holding__';
       });
-      currentCustomFilterSubcat = 'all';
 
       renderCustomSubcatNav();
       renderCustomListFiltered();
@@ -6228,35 +6303,12 @@ Choose your spread/rillette style:</p>
         });
       }
 
-      subcats = subcats.filter(function(sc) {
-        var s = String(sc || '').trim().toLowerCase();
-        return s && s !== 'no sub-category' && s !== 'unassigned' && s !== '__holding__' && s.indexOf('no sub') === -1;
+      var options = subcatOptionsFor(subcats, currentCustomItemsRaw || []);
+      currentCustomFilterSubcat = keepSubcatFilter(options, currentCustomFilterSubcat);
+      renderSubcatPills('customSubcatNav', 'customScrollLeft', 'customScrollRight', options, currentCustomFilterSubcat, function(value) {
+        currentCustomFilterSubcat = value;
+        renderCustomListFiltered();
       });
-
-      if (subcats.length === 0) {
-        nav.style.display = 'none';
-        return;
-      }
-      nav.style.display = 'flex';
-      var html = '<button type="button" class="lunch-subcat-pill ' + (currentCustomFilterSubcat === 'all' ? 'is-active' : '') + '" data-subcat="all">ALL</button>';
-      subcats.forEach(function(sc) {
-        html += '<button type="button" class="lunch-subcat-pill ' + (currentCustomFilterSubcat === sc ? 'is-active' : '') + '" data-subcat="' + sc + '">' + sc + '</button>';
-      });
-      nav.innerHTML = html;
-
-      nav.querySelectorAll('.lunch-subcat-pill').forEach(function(pill) {
-        pill.addEventListener('click', function(e) {
-          e.stopPropagation();
-          currentCustomFilterSubcat = pill.getAttribute('data-subcat');
-          nav.querySelectorAll('.lunch-subcat-pill').forEach(function(p) { p.classList.remove('is-active'); });
-          pill.classList.add('is-active');
-          scrollActivePillIntoView(nav);
-          renderCustomListFiltered();
-        });
-      });
-
-      setupHorizontalScrollControls('customSubcatNav', 'customScrollLeft', 'customScrollRight');
-      scrollActivePillIntoView(nav);
     }
 
     function renderCustomListFiltered() {
@@ -6279,7 +6331,7 @@ Choose your spread/rillette style:</p>
         var rawIcon = (currentCustomCategoryData && currentCustomCategoryData.icon) || '✨';
         var displayIcon = (rawIcon === 'alacarte' || /^[a-z0-9_-]+$/i.test(rawIcon)) ? '🍽️' : rawIcon;
         customVerticalScroll.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:280px;text-align:center;padding:2.5rem 1.5rem;color:rgba(17,17,17,0.75);">' +
-          '<div style="font-size:2.4rem;margin-bottom:0.75rem;">' + displayIcon + '</div>' +
+          '<div style="font-size:2.4rem;margin-bottom:0.75rem;">' + escapeHtml(displayIcon) + '</div>' +
           '<h4 style="font-family:\'Cinzel\',serif;font-size:1.15rem;letter-spacing:0.12em;margin-bottom:0.4rem;color:#111111;">CULINARY PREPARATIONS</h4>' +
           '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.8rem;letter-spacing:0.04em;color:rgba(17,17,17,0.6);">Dishes for this category will be available shortly.</p>' +
         '</div>';
@@ -6296,13 +6348,13 @@ Choose your spread/rillette style:</p>
         var mediaBackdropHtml = '';
         if (item.video) {
           mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+            '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + escapeHtml(item.video) + '"></video>' +
             '<div class="lunch-slot-bg-scrim"></div>' +
           '</div>';
         } else {
           var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
           mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + itemImg + '\');"></div>' +
+            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(itemImg) + '\');"></div>' +
             '<div class="lunch-slot-bg-scrim"></div>' +
           '</div>';
         }
@@ -6355,9 +6407,10 @@ Choose your spread/rillette style:</p>
           (currentAlacarteCourseKey === 'entr-es' && key === 'entrees') ||
           (currentAlacarteCourseKey === 'grill' && key === 'from-the-grill') ||
           (currentAlacarteCourseKey === 'from-the-grill' && key === 'grill');
-        html += '<button type="button" class="course-pill ' + (isActive ? 'is-active' : '') + '" data-course="' + key + '">' + title + '</button>';
+        html += '<button type="button" class="course-pill ' + (isActive ? 'is-active' : '') + '" data-course="' + escapeHtml(key) + '">' + escapeHtml(title) + '</button>';
       });
       nav.innerHTML = html;
+      nav.parentNode.style.display = categories.length > 1 ? '' : 'none';
 
       nav.querySelectorAll('.course-pill').forEach(function(pill) {
         pill.addEventListener('click', function() {
@@ -6441,12 +6494,12 @@ Choose your spread/rillette style:</p>
             var mediaBackdrop = '';
             if (item.video) {
               mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-                '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+                '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + escapeHtml(item.video) + '"></video>' +
                 '<div class="lunch-slot-bg-scrim"></div>' +
               '</div>';
             } else if (item.image) {
               mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-                '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + item.image + '\');"></div>' +
+                '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(item.image) + '\');"></div>' +
                 '<div class="lunch-slot-bg-scrim"></div>' +
               '</div>';
             }
@@ -6477,7 +6530,7 @@ Choose your spread/rillette style:</p>
 
         if (nextKey) {
           html += '<div class="course-next-slot">' +
-            '<button type="button" class="btn-next-course" data-next-course="' + nextKey + '">' +
+            '<button type="button" class="btn-next-course" data-next-course="' + escapeHtml(nextKey) + '">' +
               '<span>' + escapeHtml(nextExploreText || ('Explore ' + nextKey)) + '</span>' +
               '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>' +
             '</button>' +
@@ -6515,8 +6568,27 @@ Choose your spread/rillette style:</p>
       }
     }
 
+    var currentBarCategoriesRaw = [];
+    var currentBarFilter = 'all';
+
+    function renderBarSubcatNav(categories) {
+      var options = categories.filter(function(cat) {
+        return cat && !cat.isTemporaryFolder && cat.key !== '__holding__' && (cat.items || []).length > 0;
+      }).map(function(cat) {
+        return { value: cat.key || cat.category, label: cat.category || cat.key };
+      });
+      currentBarFilter = keepSubcatFilter(options, currentBarFilter);
+      renderSubcatPills('barSubcatNav', 'barScrollLeft', 'barScrollRight', options, currentBarFilter, function(value) {
+        currentBarFilter = value;
+        renderBarList(currentBarCategoriesRaw);
+        goToBarItem(0, false);
+      });
+    }
+
     function renderBarList(categories) {
       if (!categories || !barVerticalScroll) return;
+      currentBarCategoriesRaw = categories;
+      renderBarSubcatNav(categories);
       var savedScrollTop = barVerticalScroll.scrollTop;
       var savedIdx = currentBarItemIndex || 0;
       var total = 0;
@@ -6527,18 +6599,19 @@ Choose your spread/rillette style:</p>
       }
       (categories || []).forEach(function(cat) {
         if (!cat || cat.isTemporaryFolder || cat.key === '__holding__') return;
+        if (currentBarFilter !== 'all' && (cat.key || cat.category) !== currentBarFilter) return;
         (cat.items || []).forEach(function(item) {
           if (!item || item.isTemporaryFolder || item.subCategory === '__holding__') return;
           var isVeg = !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
           var mediaBackdrop = '';
           if (item.video) {
             mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-              '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + item.video + '"></video>' +
+              '<video class="lunch-slot-bg-photo lunch-slot-bg-video" autoplay muted loop playsinline src="' + escapeHtml(item.video) + '"></video>' +
               '<div class="lunch-slot-bg-scrim"></div>' +
             '</div>';
           } else if (item.image) {
             mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + item.image + '\');"></div>' +
+              '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(item.image) + '\');"></div>' +
               '<div class="lunch-slot-bg-scrim"></div>' +
             '</div>';
           }
@@ -6581,20 +6654,21 @@ Choose your spread/rillette style:</p>
     function buildTastingCoursesHtml(courses) {
       if (!courses || !Array.isArray(courses)) return '';
       return courses.map(function(course) {
-        var cNum = course.courseNum || '';
-        var cTitle = course.courseTitle || '';
-        var optionsHtml = (course.options || []).map(function(opt) {
-          var badgeHtml = opt.badge ? '<span class="tasting-dish-badge">' + escapeHtml(opt.badge) + '</span>' : '';
-          var wineHtml = opt.wine
+        var rawNum = String(course.courseNumber || '');
+        var cNum = /^\d+$/.test(rawNum) ? 'COURSE ' + ('0' + rawNum).slice(-2) : rawNum;
+        var cTitle = course.courseName || '';
+        var dishesHtml = (course.dishes || []).map(function(dish) {
+          var badgeHtml = dish.label ? '<span class="tasting-dish-badge">' + escapeHtml(dish.label) + '</span>' : '';
+          var wineHtml = dish.wine
             ? '<div class="tasting-wine-box">' +
                 '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M17 3H7c0 5 3 9 5 9s5-4 5-9z"/></svg>' +
-                '<span class="tasting-wine-text">Pairing: ' + escapeHtml(opt.wine) + '</span>' +
+                '<span class="tasting-wine-text">Pairing: ' + escapeHtml(dish.wine) + '</span>' +
               '</div>'
             : '';
           return '<div class="tasting-dish-card">' +
             badgeHtml +
-            '<h4 class="tasting-dish-name">' + escapeHtml(opt.name || '') + '</h4>' +
-            (opt.desc ? '<p class="tasting-dish-desc">' + escapeHtml(opt.desc) + '</p>' : '') +
+            '<h4 class="tasting-dish-name">' + escapeHtml(dish.name || '') + '</h4>' +
+            (dish.desc ? '<p class="tasting-dish-desc">' + escapeHtml(dish.desc) + '</p>' : '') +
             wineHtml +
           '</div>';
         }).join('');
@@ -6604,7 +6678,7 @@ Choose your spread/rillette style:</p>
             '<h3 class="tasting-course-title">' + escapeHtml(cTitle) + '</h3>' +
           '</div>' +
           '<div class="tasting-dish-group">' +
-            optionsHtml +
+            dishesHtml +
           '</div>' +
         '</article>';
       }).join('');
@@ -6654,9 +6728,9 @@ Choose your spread/rillette style:</p>
       if (!venue) return;
       var phone = venue.phone || '+94 77 031 5589';
       var waNum = venue.whatsappNumber || '94770315589';
-      var igUrl = venue.instagramUrl || 'https://www.instagram.com/belle.colombo/';
-      var fbUrl = venue.facebookUrl || 'https://www.facebook.com/belle.colombo/';
-      var mapsUrl = venue.googleMapsUrl || 'https://www.google.com/maps/search/?api=1&query=Belle+Colombo,+58A+Horton+Place,+Colombo+00700';
+      var igUrl = safeHttpUrl(venue.instagramUrl, 'https://www.instagram.com/belle.colombo/');
+      var fbUrl = safeHttpUrl(venue.facebookUrl, 'https://www.facebook.com/belle.colombo/');
+      var mapsUrl = safeHttpUrl(venue.googleMapsUrl, 'https://www.google.com/maps/search/?api=1&query=Belle+Colombo,+58A+Horton+Place,+Colombo+00700');
       var hours = venue.hours || 'Daily | 11:00 AM – 10:30 PM';
 
       // Update WhatsApp links
@@ -6717,12 +6791,12 @@ Choose your spread/rillette style:</p>
       lastAppliedDataJson = newJson;
       if (data.menuCategories) {
         data.menuCategories = data.menuCategories.filter(function(c) {
-          return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+          return c.id !== 'cat-breakfast';
         });
       }
       if (data.customCategories) {
         data.customCategories = data.customCategories.filter(function(c) {
-          return c.id !== 'cat-breakfast' && (c.name || '').toLowerCase().indexOf('breakfast') === -1;
+          return c.id !== 'cat-breakfast';
         });
       }
       // Sanitize any stray "No Sub-Category" or unassigned values from incoming data
@@ -6810,51 +6884,7 @@ Choose your spread/rillette style:</p>
       console.log('⚡ Belle Colombo Live Data Applied Successfully (0ms)');
     }
 
-    // Check localStorage on load, fallback to default production data
-    try {
-      var saved = localStorage.getItem('belle_data');
-      if (saved) {
-        if (saved.indexOf('Breakfast') !== -1 || saved.indexOf('cat-breakfast') !== -1) {
-          localStorage.removeItem('belle_data');
-          saved = null;
-        }
-      }
-      if (saved) {
-        applyBelleData(JSON.parse(saved));
-      } else if (window.BELLE_DEFAULT_DATA) {
-        applyBelleData(window.BELLE_DEFAULT_DATA);
-      }
-    } catch(e) {}
-
-    // Ensure menu hub categories are rendered on load
-    if (window.belleCurrentData && window.belleCurrentData.menuCategories) {
-      renderMenuHubCategories(window.belleCurrentData.menuCategories);
-    } else if (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) {
-      renderMenuHubCategories(window.BELLE_DEFAULT_DATA.menuCategories);
-    }
-
-    /* ========================================================
-       GOOGLE FIREBASE REAL-TIME CLOUD SYNC (Customer Live Link)
-       ======================================================== */
-    var fbCloudUrl = "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content.json";
-
-    function syncFromFirebaseCloud() {
-      fetch(fbCloudUrl)
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
-        .then(function(cloudData) {
-          if (cloudData && typeof cloudData === 'object') {
-            applyBelleData(cloudData);
-          }
-        })
-        .catch(function(err) {
-          // Silent fallback on offline/restricted network
-        });
-    }
-
-    // Only run automatic background cloud polling if NOT embedded inside Admin Studio iframe!
+    // Only sync with the cloud or use the saved menu if NOT embedded inside Admin Studio iframe!
     var isInsideAdminIframe = false;
     try {
       if (window.location.search && window.location.search.indexOf('preview=1') !== -1) {
@@ -6866,21 +6896,110 @@ Choose your spread/rillette style:</p>
       isInsideAdminIframe = true;
     }
 
+    var CLOUD_CACHE_KEY = 'belle_cloud_cache';
+    var cloudVersion = null; // Version of the cloud menu on screen; 0 means it has no version number
+
+    function readCloudCache() {
+      try {
+        var cached = JSON.parse(localStorage.getItem(CLOUD_CACHE_KEY));
+        return cached && cached.data ? cached : null;
+      } catch(e) {
+        return null;
+      }
+    }
+
+    function saveCloudCache(version, data) {
+      try {
+        localStorage.setItem(CLOUD_CACHE_KEY, JSON.stringify({ version: version, data: data }));
+      } catch(e) {}
+    }
+
+    // Show the saved copy of the published menu straight away, or the built-in one on a first visit
+    try {
+      var cachedMenu = isInsideAdminIframe ? null : readCloudCache();
+      if (cachedMenu) {
+        cloudVersion = cachedMenu.version;
+        applyBelleData(cachedMenu.data);
+      } else if (window.BELLE_DEFAULT_DATA) {
+        applyBelleData(window.BELLE_DEFAULT_DATA);
+      }
+    } catch(e) {
+      cloudVersion = null;
+    }
+
+    // Ensure menu hub categories are rendered on load
+    if (window.belleCurrentData && window.belleCurrentData.menuCategories) {
+      renderMenuHubCategories(window.belleCurrentData.menuCategories);
+    } else if (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) {
+      renderMenuHubCategories(window.BELLE_DEFAULT_DATA.menuCategories);
+    }
+
+    // Open any direct link now that the data is in place
+    if (window.location.hash) {
+      handleHash();
+    }
+
+    /* ========================================================
+       GOOGLE FIREBASE CLOUD SYNC (Customer Live Link)
+       The free plan allows 10 GB of downloads a month and stops the
+       database for the month if that runs out. Firebase sends the menu
+       uncompressed, so guests ask for a tiny version number first and
+       only download the menu when that number has changed.
+       ======================================================== */
+    var fbCloudUrl = "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content.json";
+    var fbVersionUrl = "https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_content/publishedAt.json";
+    var CLOUD_CHECK_EVERY_MS = 5 * 60 * 1000;
+    var lastCloudCheck = 0;
+
+    function fetchCloudJson(url) {
+      return fetch(url).then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      });
+    }
+
+    function downloadCloudMenu() {
+      return fetchCloudJson(fbCloudUrl).then(function(cloudData) {
+        if (cloudData && typeof cloudData === 'object') {
+          cloudVersion = cloudData.publishedAt || 0;
+          // A menu with no version can't be checked later, so it isn't kept
+          if (cloudData.publishedAt) saveCloudCache(cloudData.publishedAt, cloudData);
+          applyBelleData(cloudData);
+          retryUnresolvedDeepLink();
+        }
+      });
+    }
+
+    function syncFromFirebaseCloud() {
+      lastCloudCheck = Date.now();
+      fetchCloudJson(fbVersionUrl)
+        .then(function(version) {
+          if ((version || 0) !== cloudVersion) return downloadCloudMenu();
+        })
+        .catch(function(err) {
+          // Silent fallback on offline/restricted network
+        });
+    }
+
     if (!isInsideAdminIframe) {
       // Initial background sync check on load for guests
       syncFromFirebaseCloud();
 
-      // Background sync check every 30s for live customer visitors
-      setInterval(syncFromFirebaseCloud, 30000);
-
-      // Also re-check when user returns to this browser tab
-      window.addEventListener('visibilitychange', function() {
+      // Check again now and then, but never from a tab nobody is looking at
+      setInterval(function() {
         if (!document.hidden) syncFromFirebaseCloud();
+      }, CLOUD_CHECK_EVERY_MS);
+
+      // Also re-check when user returns to this browser tab after a while
+      window.addEventListener('visibilitychange', function() {
+        if (!document.hidden && Date.now() - lastCloudCheck >= CLOUD_CHECK_EVERY_MS) syncFromFirebaseCloud();
       });
     }
 
-    // Listen to iframe postMessage from Admin Studio
+    // Listen to iframe postMessage from Admin Studio (same site only)
+    // A page opened from disk has no comparable origin: messages say "null" while it calls itself "file://"
     window.addEventListener('message', function(ev) {
+      if (window.location.protocol !== 'file:' && ev.origin !== window.location.origin) return;
       if (!ev.data || typeof ev.data !== 'object') return;
       if (ev.data.type === 'BELLE_DATA_UPDATE') {
         applyBelleData(ev.data.payload);
@@ -6891,8 +7010,10 @@ Choose your spread/rillette style:</p>
           returnToHome();
         } else if (target === 'menu-hub') {
           openMenuHub();
+          returnToMenuHub();
         } else {
           openPanel(target);
+          if (ev.data.subcat) selectPreviewSubcat(target, ev.data.subcat);
         }
       } else if (ev.data.type === 'BELLE_RELOAD') {
         applyBelleData(window.belleCurrentData || window.BELLE_DEFAULT_DATA, true);

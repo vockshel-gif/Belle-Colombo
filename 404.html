@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Page not found | Belle Colombo</title>
+  <script>
+    // GitHub Pages serves the admin panel at /admin, so send /admin/ there too
+    if (/\/admin\/$/.test(window.location.pathname)) {
+      window.location.replace(window.location.pathname.replace(/\/$/, ''));
+    }
+  </script>
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      box-sizing: border-box;
+      background: #000000;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      text-align: center;
+    }
+    h1 { font-size: 22px; font-weight: 500; margin: 0 0 16px; }
+    a { color: #dfcfb7; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>This page could not be found.</h1>
+    <a id="homeLink" href="/">Back to Belle Colombo</a>
+  </main>
+  <script>
+    // On github.io the site lives in a folder named after the repository
+    if (/\.github\.io$/.test(window.location.hostname)) {
+      document.getElementById('homeLink').href = '/' + window.location.pathname.split('/')[1] + '/';
+    }
+  </script>
+</body>
+</html>
