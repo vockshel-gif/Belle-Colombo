@@ -601,6 +601,26 @@
     .media-heading p { font-size: 14px; color: var(--text-2); }
     .upload-preview { max-height: 170px; width: 100%; object-fit: cover; border-radius: 8px; display: block; }
 
+    /* ---------- Backgrounds ---------- */
+    .stage-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .stage-head .card-hint { margin-top: 2px; }
+    .stage-part-title { margin: 4px 0 0; font-size: 14px; font-weight: 600; }
+    .video-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .video-pick {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg);
+      cursor: pointer;
+    }
+    .video-pick.is-picked { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-soft); }
+    .video-pick img, .video-pick video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .stage-slides { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .stage-slides .row-main { cursor: default; }
+
     /* ---------- Free allowance rings ---------- */
     .usage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
     .usage-item { display: flex; align-items: center; gap: 14px; min-width: 0; }
@@ -835,13 +855,15 @@
     var MONTHLY_GUESTS_ESTIMATE = 1000;          // Used for the download ring
     var VISIT_OVERHEAD_BYTES = 6 * 1024;         // Connection cost of one visit, from Firebase's billing docs
     var DISH_PHOTO_MAX_PX = 800;
-    var EVENT_PHOTO_MAX_PX = 500;
+    var EVENT_PHOTO_MAX_PX = 900;
+    var STAGE_PHOTO_MAX_PX = 1600;
 
     // Dish videos play dimmed behind the card, so they can be small
     var VIDEO_MAX_PX = 640;
     var VIDEO_MAX_SECONDS = 15;
     var VIDEO_BITRATE = 700000;
     var VIDEO_POSTER_PX = 320;
+    var STAGE_VIDEO = { maxPx: 1280, bitrate: 1000000, seconds: 12 };  // Shown full screen, so larger
     var VIDEO_MAX_FILE_BYTES = 6 * 1024 * 1024;  // Firebase refuses text over 10 MB, and base64 adds a third
     var VIDEO_FORMATS = ['video/mp4;codecs=avc1.42E01F', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
 
@@ -885,9 +907,28 @@
       { id: 'private-events', label: 'Private Events', badge: 'PRIVATE EVENTS' }
     ];
     var VIDEO_PRESETS = [
-      { src: 'assets/video/bg_hero_landscape.mp4', label: 'Restaurant ambience' },
-      { src: 'assets/video/bg_hero_vertical.mp4', label: 'Restaurant ambience (vertical)' }
+      { src: 'assets/video/bg_hero_landscape.mp4', label: 'Wine pouring' },
+      { src: 'assets/video/bg_hero_vertical.mp4', label: 'Restaurant ambience (vertical)' },
+      { src: 'assets/video/chef_prep.mp4', label: 'Chef at work' }
     ];
+    var BACKGROUND_PHOTOS = [
+      { src: 'assets/images/bg/slide_lamb_chops.webp', label: 'Lamb chops' },
+      { src: 'assets/images/bg/slide_bar_counter.webp', label: 'Bar counter' },
+      { src: 'assets/images/bg/slide_tacos_kitchen.webp', label: 'Tacos' },
+      { src: 'assets/images/bg/slide_cocktail_smoke.webp', label: 'Smoked cocktail' },
+      { src: 'assets/images/bg/slide_glazed_ribs.webp', label: 'Glazed ribs' },
+      { src: 'assets/images/bg/slide_chef_plating.webp', label: 'Chef plating' },
+      { src: 'assets/images/bg/slide_crispy_tempura.webp', label: 'Tempura' },
+      { src: 'assets/images/bg/slide_luxury_dessert.webp', label: 'Dessert' },
+      { src: 'assets/images/bg/slide_vip_lounge.webp', label: 'Lounge' },
+      { src: 'assets/images/bg/slide_guest_dining.webp', label: 'Guests dining' },
+      { src: 'assets/images/bg/slide_steak_grill.webp', label: 'Steak' },
+      { src: 'assets/images/bg/slide_gourmet_meatballs.webp', label: 'Meatballs' }
+    ];
+    var BACKGROUND_STAGES = {
+      landing: { title: 'Landing page', hint: 'The first thing guests see, behind MENU and EVENTS.', previewTarget: 'home' },
+      menu: { title: 'Our Menu page', hint: 'Behind your list of menus. It also shows faintly behind each menu and Events.', previewTarget: 'menu-hub' }
+    };
     var STANDARD_SIDES = 'Choice of Truffle Parmesan Fries, Manioc Fries with Chilli Salt, or Fresh Side Salad';
     var MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     var WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -900,7 +941,7 @@
     var liveData = null;     // What guests see right now (null when it could not be read)
     var liveRevision = 0;    // Publish time of liveData; 0 means it was published before this version
     var sync = { state: 'checking', changes: [] };
-    var view = { page: 'home', menuId: null, tastingKey: 'fiveCourse', editor: null, sectionFilter: {} };
+    var view = { page: 'home', menuId: null, tastingKey: 'fiveCourse', editor: null, sectionFilter: {}, stage: 'landing' };
     var saveTimer = null;
     var previewTimer = null;
     var storageFailed = false;
@@ -971,6 +1012,7 @@
       pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
       sliders: '<path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
       plus: '<path d="M12 5v14M5 12h14"/>',
+      screen: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
       lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
       search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
       back: '<path d="M15 18l-6-6 6-6"/>',
@@ -1075,6 +1117,12 @@
     /* ========================================================
        MENU DATA
        ======================================================== */
+    function defaultStage(key) {
+      return key === 'landing'
+        ? { type: 'video', video: VIDEO_PRESETS[0].src, photos: [] }
+        : { type: 'photos', video: '', photos: BACKGROUND_PHOTOS.map(function (p) { return p.src; }) };
+    }
+
     function normalizeData(data) {
       var d = data || {};
       d.lunchItems = d.lunchItems || [];
@@ -1086,6 +1134,10 @@
       d.subCategories = d.subCategories || {};
       d.menuCategories = d.menuCategories || [];
       d.mediaFiles = d.mediaFiles || {};
+      d.backgrounds = d.backgrounds || {};
+      Object.keys(BACKGROUND_STAGES).forEach(function (key) {
+        d.backgrounds[key] = Object.assign(defaultStage(key), d.backgrounds[key]);
+      });
 
       if (!d.menuCategories.length) {
         d.menuCategories = [
@@ -1335,6 +1387,9 @@
       });
 
       if (!sameContent(before.venue, after.venue)) add('Changed', 'Contact & Hours', 'Contact details');
+      Object.keys(BACKGROUND_STAGES).forEach(function (key) {
+        if (!sameContent(before.backgrounds[key], after.backgrounds[key])) add('Changed', 'Backgrounds', BACKGROUND_STAGES[key].title);
+      });
       if (!sameContent(menuStructure(before), menuStructure(after))) add('Changed', 'Menus', 'Menu or section names or their order');
       if (!changes.length && !sameContent(before.mediaFiles, after.mediaFiles)) add('Changed', 'Photos & Videos', 'Your uploaded videos');
       if (!changes.length && !sameContent(before, after)) add('Changed', 'Menus', 'The order of items');
@@ -1633,6 +1688,7 @@
     }
 
     function previewPageTarget() {
+      if (view.page === 'backgrounds') return BACKGROUND_STAGES[view.stage].previewTarget;
       if (view.page === 'events' || view.page === 'event') return 'events';
       if (view.page === 'tasting') return 'tasting';
       if (view.page === 'menu' || view.page === 'dish') {
@@ -1725,6 +1781,7 @@
       html += '<button type="button" class="nav-item is-add" data-action="addMenu">' + icon('plus', 16) + '<span class="nav-name">Add a menu</span></button>';
       html += '<div class="side-label">Restaurant</div>';
       html += navItemHtml('Events', 'calendar', 'events', null, appData.events.length);
+      html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
       html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
       html += navItemHtml('Contact & Hours', 'pin', 'contact');
       html += '<div class="side-label">Admin</div>';
@@ -1745,7 +1802,7 @@
     function renderPage() {
       var pages = {
         home: homeHtml, menu: menuHtml, dish: dishHtml, tasting: tastingHtml,
-        events: eventsHtml, event: eventHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml
+        events: eventsHtml, event: eventHtml, backgrounds: backgroundsHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml
       };
       var notice = storageFailed
         ? '<div class="note is-bad">This computer ran out of storage, so your latest changes may be lost if you close this page. Publish now, or remove some uploaded photos.</div>'
@@ -2334,7 +2391,7 @@
     }
 
     function photoGridHtml(current, presets) {
-      var uploads = collectMedia().filter(function (m) { return m.isUpload && m.kind === 'photo'; }).map(function (m) { return m.src; });
+      var uploads = collectMedia().filter(function (m) { return m.kind === 'photo' && m.src.indexOf('data:') === 0; }).map(function (m) { return m.src; });
       var isOther = current && uploads.indexOf(current) === -1 && !presets.some(function (p) { return p.src === current; });
       if (isOther) uploads.unshift(current);
       var html = uploads.map(function (src) {
@@ -2649,6 +2706,10 @@
       if (!file) return;
       var mode = t.dataset.upload;
       var target = t.dataset.i;
+      if (mode === 'stagevideo' || mode === 'stagephoto') {
+        onStageUpload(t, file);
+        return;
+      }
       if (isVideoFile(file)) {
         if (mode === 'dishvideo') prepareVideo(file, useVideoOnOpenDish);
         else if (mode === 'media') chooseVideoTarget(file);
@@ -2713,6 +2774,7 @@
        downloads. It goes straight to belle_media, because a draft
        has no room for it, and guests fetch it only when they reach
        that dish. The menu keeps its size and a small still image.
+       Background photos travel the same way.
        ======================================================== */
     var CANCELLED = { cancelled: true };
 
@@ -2734,11 +2796,15 @@
       return parseInt(id.split('-')[1], 36);
     }
 
+    function uploadDay(id) {
+      return new Date(uploadTime(id)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+
     function videoChoices(current) {
       var choices = VIDEO_PRESETS.slice();
       Object.keys(appData.mediaFiles).forEach(function (id) {
-        var day = new Date(uploadTime(id)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        choices.push({ src: 'media:' + id, label: 'Your upload from ' + day + ' (' + appData.mediaFiles[id].seconds + ' sec)' });
+        if (appData.mediaFiles[id].kind === 'photo') return;
+        choices.push({ src: 'media:' + id, label: 'Your upload from ' + uploadDay(id) + ' (' + appData.mediaFiles[id].seconds + ' sec)' });
       });
       if (current && !choices.some(function (c) { return c.src === current; })) {
         choices.unshift({ src: current, label: 'Current video' });
@@ -2802,7 +2868,7 @@
     }
 
     // The browser plays the clip onto a small canvas and records that, so it takes as long as the clip
-    function recordVideo(video, job, onProgress) {
+    function recordVideo(video, job, onProgress, limits) {
       return new Promise(function (resolve, reject) {
         var format = window.MediaRecorder && HTMLCanvasElement.prototype.captureStream
           ? VIDEO_FORMATS.find(function (type) { return MediaRecorder.isTypeSupported(type); })
@@ -2811,15 +2877,15 @@
           reject({ text: 'This browser cannot prepare videos. Please use Chrome, Edge or Safari.' });
           return;
         }
-        var scale = Math.min(1, VIDEO_MAX_PX / Math.max(video.videoWidth, video.videoHeight));
+        var scale = Math.min(1, limits.maxPx / Math.max(video.videoWidth, video.videoHeight));
         var canvas = document.createElement('canvas');
         // Video formats need even sizes
         canvas.width = Math.round(video.videoWidth * scale / 2) * 2;
         canvas.height = Math.round(video.videoHeight * scale / 2) * 2;
         var ctx = canvas.getContext('2d');
-        var seconds = isFinite(video.duration) ? Math.min(video.duration, VIDEO_MAX_SECONDS) : VIDEO_MAX_SECONDS;
+        var seconds = isFinite(video.duration) ? Math.min(video.duration, limits.seconds) : limits.seconds;
         var stream = canvas.captureStream(24);
-        var recorder = new MediaRecorder(stream, { mimeType: format, videoBitsPerSecond: VIDEO_BITRATE });
+        var recorder = new MediaRecorder(stream, { mimeType: format, videoBitsPerSecond: limits.bitrate });
         var chunks = [];
         var poster = '';
         var stopped = false;
@@ -2890,7 +2956,7 @@
       });
     }
 
-    function uploadVideoFile(id, mime, base64, job, onProgress) {
+    function uploadMediaFile(id, mime, base64, job, onProgress) {
       return getIdToken().then(function (token) {
         return new Promise(function (resolve, reject) {
           var xhr = new XMLHttpRequest();
@@ -2914,15 +2980,25 @@
       });
     }
 
-    function videoErrorText(err) {
+    function mediaErrorText(err, word) {
       if (err.status === 401 || err.status === 403) {
-        return 'Firebase refused the video (error ' + err.status + '). Your database rules need the belle_media part from the README before videos can be saved. Nothing has changed.';
+        return 'Firebase refused the ' + word + ' (error ' + err.status + '). Your database rules need the belle_media part from the README before uploads can be saved. Nothing has changed.';
       }
-      if (err.status) return 'Firebase returned error ' + err.status + ', so the video was not saved. Nothing has changed.';
-      return err.text || 'Something went wrong, so the video was not saved. Nothing has changed.';
+      if (err.status) return 'Firebase returned error ' + err.status + ', so the ' + word + ' was not saved. Nothing has changed.';
+      return err.text || 'Something went wrong, so the ' + word + ' was not saved. Nothing has changed.';
     }
 
-    function prepareVideo(file, done) {
+    function showMediaFailure(err, word) {
+      if (err === CANCELLED) return;
+      if (err && err.authCode) {
+        signOut('Your sign-in has ended, so that ' + word + ' was not saved. Sign in again and try once more.');
+        return;
+      }
+      openDialog({ title: 'That ' + word + ' was not added', text: mediaErrorText(err || {}, word) });
+    }
+
+    function prepareVideo(file, done, stageLimits) {
+      var limits = stageLimits || { maxPx: VIDEO_MAX_PX, bitrate: VIDEO_BITRATE, seconds: VIDEO_MAX_SECONDS };
       var job = { cancelled: false, stop: null };
       var id = 'v-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
       var video = null;
@@ -2936,9 +3012,9 @@
 
       openVideo(file).then(function (opened) {
         video = opened;
-        var trimmed = video.duration > VIDEO_MAX_SECONDS ? ' Guests will see the first ' + VIDEO_MAX_SECONDS + ' seconds.' : '';
+        var trimmed = video.duration > limits.seconds ? ' Guests will see the first ' + limits.seconds + ' seconds.' : '';
         busy.step('Getting your video ready', 'Shrinking it takes as long as the clip plays. Please keep this page open.' + trimmed);
-        return recordVideo(video, job, busy.progress);
+        return recordVideo(video, job, busy.progress, limits);
       }).then(function (result) {
         shrunk = result;
         if (shrunk.blob.size > VIDEO_MAX_FILE_BYTES) throw { text: 'That video is still too big after shrinking. Try a shorter or calmer clip.' };
@@ -2950,7 +3026,7 @@
           throw { text: 'Your free Firebase storage is full. Delete a video you no longer need, then press Publish and try again.' };
         }
         busy.step('Uploading your video', 'Saving it to Firebase…');
-        return uploadVideoFile(id, shrunk.blob.type, base64, job, busy.progress);
+        return uploadMediaFile(id, shrunk.blob.type, base64, job, busy.progress);
       }).then(function () {
         appData.mediaFiles[id] = { size: storedSize, seconds: Math.ceil(shrunk.seconds), poster: shrunk.poster };
         closeVideo(video);
@@ -2959,12 +3035,46 @@
       }).catch(function (err) {
         if (video) closeVideo(video);
         busy.close();
-        if (err === CANCELLED) return;
-        if (err && err.authCode) {
-          signOut('Your sign-in has ended, so that video was not saved. Sign in again and try once more.');
-          return;
+        showMediaFailure(err, 'video');
+      });
+    }
+
+    function prepareStagePhoto(file, key) {
+      var job = { cancelled: false, stop: null };
+      var id = 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+      var busy = showBusy(function () {
+        job.cancelled = true;
+        if (job.stop) job.stop();
+      });
+      function shrink(maxSize) {
+        return new Promise(function (resolve, reject) {
+          shrinkImage(file, maxSize, resolve, function () {
+            reject({ text: 'That file could not be read as a photo. Try a JPG or PNG.' });
+          });
+        });
+      }
+      var poster = '';
+      var storedSize = 0;
+      busy.step('Getting your photo ready', 'Shrinking it to suit a full screen…');
+      Promise.all([shrink(STAGE_PHOTO_MAX_PX), shrink(VIDEO_POSTER_PX)]).then(function (urls) {
+        if (job.cancelled) throw CANCELLED;
+        var parts = /^data:([^;]+);base64,(.+)$/.exec(urls[0]);
+        poster = urls[1];
+        storedSize = parts[2].length;
+        if (usageEstimate().stored + storedSize > FREE_STORAGE_BYTES) {
+          throw { text: 'Your free Firebase storage is full. Delete something you no longer need, then press Publish and try again.' };
         }
-        openDialog({ title: 'That video was not added', text: videoErrorText(err || {}) });
+        busy.step('Uploading your photo', 'Saving it to Firebase…');
+        return uploadMediaFile(id, parts[1], parts[2], job, busy.progress);
+      }).then(function () {
+        appData.mediaFiles[id] = { kind: 'photo', size: storedSize, poster: poster };
+        appData.backgrounds[key].photos.push('media:' + id);
+        busy.close();
+        showStage(key);
+        toast('Photo added.');
+      }).catch(function (err) {
+        busy.close();
+        showMediaFailure(err, 'photo');
       });
     }
 
@@ -2998,6 +3108,139 @@
     }
 
     /* ========================================================
+       BACKGROUNDS PAGE
+       ======================================================== */
+    function stageSources(stage) {
+      return stage.type === 'video' ? [stage.video].filter(Boolean) : stage.photos;
+    }
+
+    function photoLabel(src) {
+      var preset = BACKGROUND_PHOTOS.concat(PHOTO_PRESETS).find(function (p) { return p.src === src; });
+      if (preset) return preset.label;
+      var id = uploadedVideoId(src);
+      return id ? 'Your upload from ' + uploadDay(id) : 'Photo';
+    }
+
+    function photoThumb(src) {
+      var info = uploadedVideo(src);
+      return uploadedVideoId(src) ? (info && info.poster) || '' : src;
+    }
+
+    function uploadedStagePhotos() {
+      return Object.keys(appData.mediaFiles).filter(function (id) {
+        return appData.mediaFiles[id].kind === 'photo';
+      }).map(function (id) { return 'media:' + id; });
+    }
+
+    function stageVideoPickHtml(key, stage, src, label) {
+      var picked = stage.video === src;
+      var info = uploadedVideo(src);
+      var preview = uploadedVideoId(src)
+        ? (info && info.poster ? '<img src="' + esc(info.poster) + '" alt="" />' : '')
+        : '<video src="' + esc(src) + '" muted playsinline preload="metadata"></video>';
+      return '<button type="button" class="video-pick' + (picked ? ' is-picked' : '') + '" data-action="pickStageVideo" data-stage="' + key + '" data-src="' + esc(src) + '" aria-pressed="' + picked + '">' +
+        preview + '<span class="media-tag">' + esc(label) + '</span></button>';
+    }
+
+    function stageVideoHtml(key, stage) {
+      var picks = VIDEO_PRESETS.map(function (v) { return stageVideoPickHtml(key, stage, v.src, v.label); }).join('') +
+        videoChoices().filter(function (v) { return uploadedVideoId(v.src); }).map(function (v) {
+          return stageVideoPickHtml(key, stage, v.src, v.label);
+        }).join('');
+      return '<div class="video-picks">' + picks + '</div>' +
+        '<div class="add-row"><label class="btn btn-sm">Upload a video<input type="file" accept="video/*" data-upload="stagevideo" data-stage="' + key + '" hidden /></label></div>' +
+        '<p class="field-hint">Videos built into the website cost nothing. An upload here is cut to ' + STAGE_VIDEO.seconds + ' seconds with no sound, and every new visitor downloads it, which counts against your free Firebase downloads.</p>';
+    }
+
+    function stagePhotosHtml(key, stage) {
+      var rows = stage.photos.map(function (src) {
+        var label = photoLabel(src);
+        return '<div class="row" data-sort-item="' + esc(src) + '">' +
+          dragHandleHtml(label) +
+          '<div class="row-main"><span class="thumb"><img src="' + esc(photoThumb(src)) + '" alt="" loading="lazy" /></span>' +
+            '<span class="row-text"><span class="row-name">' + esc(label) + '</span></span></div>' +
+          '<button type="button" class="btn-link danger row-add" data-action="removeStagePhoto" data-stage="' + key + '" data-src="' + esc(src) + '">Remove</button>' +
+        '</div>';
+      }).join('');
+      var spare = BACKGROUND_PHOTOS.map(function (p) { return p.src; }).concat(uploadedStagePhotos()).filter(function (src) {
+        return stage.photos.indexOf(src) === -1;
+      }).map(function (src) {
+        var label = photoLabel(src);
+        return '<button type="button" class="photo-pick" data-action="addStagePhoto" data-stage="' + key + '" data-src="' + esc(src) + '" title="Add ' + esc(label) + '"><img src="' + esc(photoThumb(src)) + '" alt="Add ' + esc(label) + '" loading="lazy" /></button>';
+      }).join('');
+      return '<div class="stage-slides sort-list" data-sort-list="' + key + '" data-sort-group="stage-' + key + '">' + rows + '</div>' +
+        '<p class="field-hint">' + (stage.photos.length > 1 ? 'They fade from one to the next every 5 seconds. Drag the dots to change the order.' : 'One photo stays on screen. Add more to make a slideshow.') + '</p>' +
+        (spare ? '<h3 class="stage-part-title">Add a photo</h3><div class="photo-grid">' + spare + '</div>' : '') +
+        '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="stagephoto" data-stage="' + key + '" hidden /></label></div>';
+    }
+
+    function stageCardHtml(key) {
+      var info = BACKGROUND_STAGES[key];
+      var stage = appData.backgrounds[key];
+      var types = [['video', 'Video'], ['photos', 'Photos']].map(function (c) {
+        return '<label><input type="radio" name="stageType-' + key + '" data-stage-type="' + key + '" value="' + c[0] + '"' + (stage.type === c[0] ? ' checked' : '') + ' />' + c[1] + '</label>';
+      }).join('');
+      return '<section class="card card-pad" data-stage-card="' + key + '">' +
+        '<div class="stage-head"><div><h2 class="card-title">' + esc(info.title) + '</h2><p class="card-hint">' + esc(info.hint) + '</p></div>' +
+          '<button type="button" class="btn btn-sm" data-action="previewStage" data-stage="' + key + '">Show in preview</button></div>' +
+        '<div class="choice-group" role="radiogroup" aria-label="' + esc(info.title) + ' background">' + types + '</div>' +
+        (stage.type === 'video' ? stageVideoHtml(key, stage) : stagePhotosHtml(key, stage)) +
+        (sameContent(stage, defaultStage(key)) ? '' : '<div><button type="button" class="btn-link" data-action="resetStage" data-stage="' + key + '">Go back to the original</button></div>') +
+      '</section>';
+    }
+
+    function backgroundsHtml() {
+      return pageHead('Backgrounds', 'Choose the video or photos behind your website. Your changes show in the phone preview, and guests see them after you press Publish.') +
+        stageCardHtml('landing') + stageCardHtml('menu');
+    }
+
+    function showStage(key) {
+      view.stage = key;
+      touch();
+      renderSide();
+      keepScroll(renderPage);
+      showPreviewForPage();
+    }
+
+    function onBackgroundInput(t) {
+      var key = t.dataset.stageType;
+      if (!key) return;
+      var stage = appData.backgrounds[key];
+      stage.type = t.value;
+      if (t.value === 'video' && !stage.video) stage.video = VIDEO_PRESETS[0].src;
+      if (t.value === 'photos' && !stage.photos.length) stage.photos = [BACKGROUND_PHOTOS[0].src];
+      showStage(key);
+    }
+
+    function onStageUpload(t, file) {
+      var key = t.dataset.stage;
+      var wantsVideo = t.dataset.upload === 'stagevideo';
+      if (isVideoFile(file) !== wantsVideo) {
+        toast(wantsVideo ? 'Please choose a video here.' : 'Please choose a photo here.');
+        return;
+      }
+      if (!wantsVideo) {
+        prepareStagePhoto(file, key);
+        return;
+      }
+      prepareVideo(file, function (src) {
+        appData.backgrounds[key].video = src;
+        showStage(key);
+        toast('Video added.');
+      }, STAGE_VIDEO);
+    }
+
+    // Something deleted from the library comes off the backgrounds too
+    function removeFromStages(src) {
+      Object.keys(BACKGROUND_STAGES).forEach(function (key) {
+        var stage = appData.backgrounds[key];
+        stage.photos = stage.photos.filter(function (photo) { return photo !== src; });
+        if (stage.video === src) stage.video = '';
+        if (!stageSources(stage).length) appData.backgrounds[key] = defaultStage(key);
+      });
+    }
+
+    /* ========================================================
        PHOTOS AND VIDEOS PAGE
        ======================================================== */
     function collectMedia() {
@@ -3021,7 +3264,15 @@
       (appData.standaloneMedia || []).forEach(function (m) {
         if (m && m.url) entry(m.url, m.type === 'video' ? 'video' : 'photo');
       });
-      Object.keys(appData.mediaFiles).forEach(function (id) { entry('media:' + id, 'video'); });
+      Object.keys(BACKGROUND_STAGES).forEach(function (key) {
+        var stage = appData.backgrounds[key];
+        stageSources(stage).forEach(function (src) {
+          entry(src, stage.type === 'video' ? 'video' : 'photo').uses.push({ type: 'background', label: BACKGROUND_STAGES[key].title, area: 'Backgrounds' });
+        });
+      });
+      Object.keys(appData.mediaFiles).forEach(function (id) {
+        entry('media:' + id, appData.mediaFiles[id].kind === 'photo' ? 'photo' : 'video');
+      });
       return list;
     }
 
@@ -3043,6 +3294,12 @@
       allDishes().forEach(function (d) {
         var id = uploadedVideoId(d.item.video);
         if (id) shown[id] = true;
+      });
+      Object.keys(BACKGROUND_STAGES).forEach(function (key) {
+        stageSources(appData.backgrounds[key]).forEach(function (src) {
+          var id = uploadedVideoId(src);
+          if (id) shown[id] = true;
+        });
       });
       var stored = menu;
       var perGuest = menu + VISIT_OVERHEAD_BYTES;
@@ -3101,16 +3358,16 @@
         // The still image, because playing the real file here would use up downloads
         var info = uploadedVideo(media.src) || {};
         preview = (info.poster ? '<img src="' + esc(info.poster) + '" alt="" loading="lazy" />' : '') +
-          '<span class="media-tag">Video' + (info.seconds ? ', ' + info.seconds + ' sec' : '') + '</span>';
+          '<span class="media-tag">' + (media.kind === 'photo' ? 'Background photo' : 'Video' + (info.seconds ? ', ' + info.seconds + ' sec' : '')) + '</span>';
       } else if (media.kind === 'video') {
         preview = '<video src="' + esc(media.src) + '" muted playsinline preload="metadata" controls></video>';
       } else {
         preview = '<img src="' + esc(media.src) + '" alt="" loading="lazy" />';
       }
       var shown = media.uses.slice(0, 3).map(function (use) {
-        var action = use.type === 'dish'
-          ? 'data-action="openDish" data-menu="' + esc(use.menuId) + '" data-id="' + esc(use.id) + '"'
-          : 'data-action="openEvent" data-id="' + esc(use.id) + '"';
+        var action = 'data-action="openEvent" data-id="' + esc(use.id) + '"';
+        if (use.type === 'dish') action = 'data-action="openDish" data-menu="' + esc(use.menuId) + '" data-id="' + esc(use.id) + '"';
+        if (use.type === 'background') action = 'data-action="go" data-page="backgrounds"';
         return '<button type="button" class="btn-link" ' + action + '>' + esc(use.label || 'Unnamed') + '</button> <span>(' + esc(use.area) + ')</span>';
       }).join('<br />');
       var more = media.uses.length > 3 ? '<br /><span>and ' + (media.uses.length - 3) + ' more</span>' : '';
@@ -3120,7 +3377,7 @@
       var word = media.kind === 'video' ? 'video' : 'photo';
       var actions;
       if (media.isUpload) {
-        actions = (media.kind === 'photo'
+        actions = (media.kind === 'photo' && !uploadedVideoId(media.src)
           ? '<label class="btn btn-sm">Replace<input type="file" accept="image/*" data-upload="replace" data-i="' + index + '" hidden /></label>'
           : '') +
           '<button type="button" class="btn btn-sm btn-danger" data-action="deleteMedia" data-i="' + index + '">Delete</button>';
@@ -3132,7 +3389,7 @@
       return '<article class="media-card" data-media="' + word + '">' +
         '<div class="media-preview">' + preview + '</div>' +
         '<div class="media-info">' +
-          (media.isUpload ? '<div><span class="chip">' + formatSize(media.kind === 'video' ? (uploadedVideo(media.src) || {}).size || 0 : media.src.length) + '</span></div>' : '') +
+          (media.isUpload ? '<div><span class="chip">' + formatSize(uploadedVideoId(media.src) ? (uploadedVideo(media.src) || {}).size || 0 : media.src.length) + '</span></div>' : '') +
           uses +
           '<div class="media-actions">' + actions + '</div>' +
         '</div>' +
@@ -3191,6 +3448,7 @@
           appData.standaloneMedia = appData.standaloneMedia.filter(function (m) { return !m || m.url !== media.src; });
         }
         delete appData.mediaFiles[uploadedVideoId(media.src)];
+        removeFromStages(media.src);
         refreshAfterMediaChange();
         toast(media.isUpload ? 'Deleted. Press Publish to remove it from the live site.' : 'Removed. Press Publish to update the live site.');
       });
@@ -3615,7 +3873,7 @@
         '</section>' +
         '<section class="card card-pad">' +
           '<h2 class="card-title">Backups</h2>' +
-          '<p class="card-hint" style="margin-top:0">A backup is a file with all your menus, events and contact details. Uploaded videos stay in Firebase and are not in the file. Restoring one does not change the live site until you press Publish.</p>' +
+          '<p class="card-hint" style="margin-top:0">A backup is a file with all your menus, events and contact details. Uploaded videos and background photos stay in Firebase and are not in the file. Restoring one does not change the live site until you press Publish.</p>' +
           '<div class="add-row">' +
             '<button type="button" class="btn" data-action="downloadBackup">Download a backup</button>' +
             '<label class="btn">Restore from a backup<input type="file" accept=".json,application/json" id="restoreFile" hidden /></label>' +
@@ -3963,7 +4221,14 @@
     function currentTasting() { return appData.tastingMenus[view.tastingKey]; }
 
     // Each one applies the new on-screen order to the data and returns the moved item's key
+    function sortStagePhotos(lists, key) {
+      appData.backgrounds[lists[0].key].photos = lists[0].items;
+      return key;
+    }
+
     var sortHandlers = {
+      'stage-landing': sortStagePhotos,
+      'stage-menu': sortStagePhotos,
       menus: function (lists, key) {
         appData.menuCategories = lists[0].items.map(function (id) { return getMenu(id); });
         return key;
@@ -4308,6 +4573,36 @@
       deleteMedia: deleteMedia,
       addHeading: addHeading,
 
+      previewStage: function (el) {
+        view.stage = el.getAttribute('data-stage');
+        showPreviewForPage();
+      },
+      pickStageVideo: function (el) {
+        var key = el.getAttribute('data-stage');
+        appData.backgrounds[key].video = el.getAttribute('data-src');
+        showStage(key);
+      },
+      addStagePhoto: function (el) {
+        var key = el.getAttribute('data-stage');
+        appData.backgrounds[key].photos.push(el.getAttribute('data-src'));
+        showStage(key);
+      },
+      removeStagePhoto: function (el) {
+        var key = el.getAttribute('data-stage');
+        var stage = appData.backgrounds[key];
+        if (stage.photos.length === 1) {
+          toast('Keep at least one photo, or choose Video instead.');
+          return;
+        }
+        stage.photos = stage.photos.filter(function (src) { return src !== el.getAttribute('data-src'); });
+        showStage(key);
+      },
+      resetStage: function (el) {
+        var key = el.getAttribute('data-stage');
+        appData.backgrounds[key] = defaultStage(key);
+        showStage(key);
+      },
+
       tastingTab: function (el) {
         view.tastingKey = el.getAttribute('data-key');
         renderPage();
@@ -4394,6 +4689,7 @@
         else if (view.page === 'tasting') onTastingInput(t);
         else if (view.page === 'event') onEventInput(t);
         else if (view.page === 'contact') onContactInput(t);
+        else if (view.page === 'backgrounds') onBackgroundInput(t);
       });
 
       page.addEventListener('change', function (e) {

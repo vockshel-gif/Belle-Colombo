@@ -220,7 +220,7 @@
     /* ---------- Ambient Background System (Wine Video & Slideshow) ---------- */
     :root {
       --ambient-video-opacity: 0.52;
-      --ambient-slideshow-opacity: 0.44;
+      --ambient-slideshow-opacity: 0.56;
     }
 
     .ambient-bg-system {
@@ -307,7 +307,7 @@
     .ambient-slideshow-scrim {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.65) 75%, rgba(0, 0, 0, 0.88) 100%);
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.34) 0%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0.84) 100%);
       pointer-events: none;
     }
 
@@ -449,9 +449,6 @@
       margin-inline: auto;
       padding: max(1rem, env(safe-area-inset-top)) 1.25rem max(1.2rem, env(safe-area-inset-bottom));
       box-sizing: border-box;
-      background: rgba(0, 0, 0, 0.52);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
       z-index: 50;
     }
     .is-menu-active .view-menu-hub {
@@ -2094,13 +2091,18 @@
     }
 
     /* ========================================================
-       EVENT CALENDAR VIEW (Matching media_1791182288111.png)
+       EVENTS
        ======================================================== */
     #panel-events {
-      background: rgba(251, 251, 249, 0.88);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      color: #111111;
+      --ev-ink: #f5f0e8;
+      --ev-soft: rgba(245, 240, 232, 0.68);
+      --ev-gold: #d9c4a1;
+      --ev-line: rgba(217, 196, 161, 0.22);
+      --ev-card: rgba(255, 255, 255, 0.05);
+      background: rgba(7, 7, 9, 0.84);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      color: var(--ev-ink);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -2109,80 +2111,214 @@
       min-width: 0;
       box-sizing: border-box;
     }
+    #panel-events [hidden] {
+      display: none !important;
+    }
+    #panel-events .btn-lunch-back {
+      background: #ffffff;
+      color: #000000;
+    }
+    #panel-events .lunch-sm-btn {
+      background: #ffffff;
+      color: #000000;
+    }
+    #panel-events .lunch-dock-line {
+      background: var(--ev-line);
+    }
     .events-view-scroll {
       flex: 1 1 auto;
       width: 100%;
-      max-width: 480px;
+      max-width: 1040px;
       min-width: 0;
       margin: 0 auto;
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      padding-bottom: 28px;
+      padding: 0 clamp(16px, 4.5vw, 28px) 24px;
       box-sizing: border-box;
     }
     .events-view-scroll::-webkit-scrollbar { display: none; }
 
-    /* Header Region */
     .events-header {
-      position: relative;
-      padding-top: clamp(28px, 5vh, 40px);
-      padding-bottom: 6px;
+      padding: clamp(18px, 3.5vh, 30px) 0 18px;
       text-align: center;
-      overflow: hidden;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-    }
-    .events-watermark-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 72px;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-    }
-    .events-watermark {
-      position: absolute;
-      font-size: clamp(48px, 14vw, 68px);
-      font-weight: 800;
-      letter-spacing: 0.16em;
-      color: rgba(220, 204, 190, 0.28);
-      user-select: none;
-      pointer-events: none;
-      text-transform: uppercase;
-      transform: translateY(-4px);
-      white-space: nowrap;
     }
     .events-title {
-      position: relative;
-      font-size: clamp(17px, 4.4vw, 21px);
-      font-weight: 600;
-      letter-spacing: 0.22em;
-      color: #111111;
+      margin: 0;
+      font-size: clamp(20px, 5vw, 26px);
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-indent: 0.3em;
       text-transform: uppercase;
-      z-index: 1;
-      white-space: nowrap;
+      color: var(--ev-ink);
     }
 
-    /* Category Filter Pills */
-    .events-filter-bar {
+    .events-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 20px;
+    }
+    .events-main {
+      min-width: 0;
+    }
+
+    /* The next event, shown large */
+    .event-feature {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      min-height: min(66vh, 520px);
+      margin-bottom: 20px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #16151a;
+      isolation: isolate;
+    }
+    .event-feature > img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .event-feature::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(to top, rgba(7, 7, 9, 0.96) 10%, rgba(7, 7, 9, 0.62) 44%, rgba(7, 7, 9, 0.04) 76%);
+    }
+    .event-feature-body {
+      width: 100%;
+      padding: 22px 20px 20px;
+      box-sizing: border-box;
+    }
+    .event-feature-title {
+      margin: 6px 0 8px;
+      font-size: clamp(25px, 7vw, 36px);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+    }
+    .event-feature .event-desc {
+      max-width: 48ch;
+      margin: 10px 0 16px;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .event-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ev-gold);
+    }
+    .event-when {
+      font-size: 13.5px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--ev-ink);
+    }
+    .event-place {
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-top: 2px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--ev-soft);
+    }
+    .event-place svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+    .event-desc {
+      margin: 8px 0 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ev-soft);
+    }
+    .event-reserve {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 20px;
+      border: 1px solid var(--ev-gold);
+      border-radius: 999px;
+      box-sizing: border-box;
+      background: var(--ev-gold);
+      color: #0b0b0e;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      transition: transform 0.15s, background-color 0.2s, color 0.2s;
+    }
+    .event-reserve:active {
+      transform: scale(0.97);
+    }
+    .event-card .event-reserve {
+      align-self: flex-start;
+      margin-top: auto;
+      background: transparent;
+      color: var(--ev-gold);
+    }
+    .event-card .event-reserve:hover {
+      background: var(--ev-gold);
+      color: #0b0b0e;
+    }
+
+    .event-date {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 54px;
+      padding: 7px 8px 6px;
+      border: 1px solid var(--ev-line);
+      border-radius: 12px;
+      box-sizing: border-box;
+      background: rgba(7, 7, 9, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      line-height: 1.1;
+      text-align: center;
+    }
+    .event-date-month,
+    .event-date-dow {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ev-gold);
+    }
+    .event-date-day {
+      margin: 1px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    /* Category filters */
+    .events-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 calc(-1 * clamp(16px, 4.5vw, 28px)) 16px;
+      padding: 2px clamp(16px, 4.5vw, 28px);
       overflow-x: auto;
       overflow-y: hidden;
-      padding: 6px 14px 10px;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
@@ -2192,43 +2328,126 @@
       width: 0;
     }
     .event-filter-pill {
-      border-radius: 999px;
-      padding: 5px 11px;
-      font-size: 9.5px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      background: #ffffff;
-      color: #222222;
-      border: 1px solid rgba(0, 0, 0, 0.14);
-      cursor: pointer;
       flex-shrink: 0;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      min-height: 38px;
+      padding: 0 15px;
+      border: 1px solid var(--ev-line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ev-soft);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     }
     .event-filter-pill.is-active {
-      background: #1f1f1f;
-      color: #ffffff;
-      border-color: #1f1f1f;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-    }
-    .event-filter-pill:hover:not(.is-active) {
-      background: #f4f2ee;
-      border-color: rgba(0, 0, 0, 0.25);
+      background: var(--ev-gold);
+      border-color: var(--ev-gold);
+      color: #0b0b0e;
     }
 
-    /* Month Selector Bar */
+    /* Event list */
+    .events-upcoming-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 32px;
+      margin-bottom: 10px;
+    }
+    .events-upcoming-title {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ev-ink);
+    }
+    .events-view-all {
+      padding: 6px 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ev-gold);
+      cursor: pointer;
+    }
+    .events-list {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+    .event-card {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--ev-card);
+    }
+    .event-card.is-hidden {
+      display: none !important;
+    }
+    .event-photo {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: #16151a;
+    }
+    .event-photo img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .event-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 14px 16px 16px;
+    }
+    .event-card-title {
+      margin: 5px 0 6px;
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: #ffffff;
+    }
+    .event-card.no-photo .event-photo {
+      aspect-ratio: auto;
+      height: 72px;
+    }
+    .events-empty {
+      margin: 0;
+      padding: 28px 16px;
+      border: 1px dashed var(--ev-line);
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+      color: var(--ev-soft);
+    }
+
+    /* Calendar */
+    .events-calendar {
+      align-self: start;
+      padding: 12px 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: var(--ev-card);
+    }
     .events-month-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 18px 8px;
-      width: 100%;
-      box-sizing: border-box;
+      margin-bottom: 6px;
     }
     .events-month-nav {
-      padding: 6px;
-      color: #333333;
+      width: 40px;
+      height: 40px;
+      color: var(--ev-ink);
       display: grid;
       place-items: center;
       cursor: pointer;
@@ -2240,322 +2459,87 @@
     .events-month-title {
       font-size: 12.5px;
       font-weight: 600;
-      letter-spacing: 0.22em;
-      color: #222222;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-    }
-
-    /* Thin Separator */
-    .events-hairline {
-      height: 1px;
-      background: #eae5df;
-      margin: 0 16px 14px;
-      box-sizing: border-box;
-    }
-
-    /* Calendar Grid */
-    .events-calendar-wrap {
-      padding: 0 14px 16px;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
+      color: var(--ev-ink);
     }
     .events-weekday-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      font-size: 9.5px;
+      margin-bottom: 6px;
+      font-size: 10.5px;
       font-weight: 600;
-      letter-spacing: 0.1em;
-      color: #999999;
-      margin-bottom: 12px;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-    }
-    .events-weekday-row span {
-      min-width: 0;
+      letter-spacing: 0.06em;
       text-align: center;
+      color: var(--ev-soft);
     }
     .events-days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      row-gap: 12px;
-      text-align: center;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
+      row-gap: 2px;
     }
     .cal-day-cell {
-      min-width: 0;
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      height: 36px;
-      position: relative;
-      cursor: pointer;
+      height: 44px;
+      padding: 3px 0 0;
+      font: inherit;
+      color: inherit;
+      min-width: 0;
     }
     .cal-day-num {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      font-size: 11.5px;
+      font-size: 13px;
       font-weight: 500;
-      color: #2b2b2b;
-      transition: all 0.2s;
+      color: var(--ev-soft);
+      transition: background-color 0.2s, color 0.2s;
     }
     .cal-day-cell.is-muted .cal-day-num {
-      color: #bab5ae;
+      color: rgba(245, 240, 232, 0.24);
+    }
+    .cal-day-cell.is-today .cal-day-num {
+      box-shadow: inset 0 0 0 1px var(--ev-line);
+    }
+    .cal-day-cell.has-event {
+      cursor: pointer;
+    }
+    .cal-day-cell.has-event .cal-day-num {
+      color: #ffffff;
+      font-weight: 700;
     }
     .cal-day-cell.is-selected .cal-day-num {
-      background: #333333;
-      color: #ffffff;
-      font-weight: 600;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      background: var(--ev-gold);
+      color: #0b0b0e;
     }
     .cal-day-dot {
-      width: 3.5px;
-      height: 3.5px;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
-      background: #2b2b2b;
+      background: var(--ev-gold);
       margin-top: 2px;
     }
 
-    /* Upcoming Events Header */
-    .events-upcoming-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px 8px;
-      width: 100%;
-      box-sizing: border-box;
+    @media (min-width: 720px) {
+      .events-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
-    .events-upcoming-title {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      color: #222222;
-      text-transform: uppercase;
-    }
-    .events-view-all {
-      font-size: 9.5px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      color: #555555;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .events-view-all:hover {
-      color: #000000;
-    }
-
-    /* Events List - Elegant Menu-Item Aligned Layout */
-    .events-list {
-      display: flex;
-      flex-direction: column;
-      padding: 0 clamp(16px, 4.8vw, 24px);
-      gap: 12px;
-      margin-bottom: 24px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .event-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 3px 0 13px 0;
-      border-bottom: 1px solid #eee9e3;
-      cursor: pointer;
-      box-sizing: border-box;
-      width: 100%;
-      transition: background-color 0.2s, transform 0.15s;
-    }
-    .event-card:last-child {
-      border-bottom: none;
-      padding-bottom: 4px;
-    }
-    .event-card:hover {
-      background-color: rgba(220, 204, 190, 0.08);
-      border-radius: 8px;
-    }
-    .event-card:active {
-      transform: scale(0.99);
-    }
-    .event-card.is-hidden {
-      display: none !important;
-    }
-    .event-card.is-highlighted {
-      background: rgba(220, 204, 190, 0.18);
-      border-radius: 8px;
-      padding: 6px 8px 13px;
-    }
-    .event-thumb {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      overflow: hidden;
-      flex-shrink: 0;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-      background: #eae5df;
-    }
-    .event-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .event-date-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      flex-shrink: 0;
-      line-height: 1;
-      text-align: center;
-      padding-top: 1px;
-      border-right: 1px solid #f0ebe4;
-      padding-right: 6px;
-    }
-    .event-date-month {
-      font-size: 7.5px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      color: #666666;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-    .event-date-day {
-      font-size: 22px;
-      font-weight: 300;
-      color: #000000;
-      line-height: 1;
-      letter-spacing: -0.03em;
-    }
-    .event-date-dow {
-      font-size: 7.5px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: #888888;
-      text-transform: uppercase;
-      margin-top: 3px;
-    }
-    .event-details {
-      flex: 1 1 auto;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 64px;
-      box-sizing: border-box;
-      padding: 0 0 1px 0;
-    }
-    .event-details-top {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 6px;
-    }
-    .event-title {
-      font-size: clamp(12.5px, 3.4vw, 13.5px);
-      font-weight: 600;
-      color: #000000;
-      line-height: 1.20;
-      letter-spacing: -0.01em;
-      margin: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .event-badge {
-      background: #ece6de;
-      color: #222222;
-      font-size: 7.5px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      padding: 2.5px 6.5px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      white-space: nowrap;
-      flex-shrink: 0;
-      line-height: 1;
-    }
-    .event-desc {
-      font-size: clamp(8.8px, 2.4vw, 9.5px);
-      color: #555555;
-      line-height: 1.34;
-      margin: 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .event-details-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: clamp(8px, 2.3vw, 9px);
-      color: #666666;
-      line-height: 1;
-    }
-    .event-loc {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #666666;
-    }
-    .event-loc svg {
-      width: 9.5px;
-      height: 9.5px;
-      flex-shrink: 0;
-    }
-    .event-time-row {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      color: #666666;
-    }
-    .event-time {
-      font-size: inherit;
-      color: inherit;
-    }
-    .event-arrow {
-      color: #666666;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .event-arrow svg {
-      width: 10px;
-      height: 10px;
-    }
-
-    @media (max-width: 400px) {
-      .events-list { padding: 0 12px; }
-      .event-card { gap: 8px; }
-      .event-thumb { width: 58px; height: 58px; }
-      .event-details { height: 58px; }
-      .event-date-block { width: 30px; padding-right: 4px; }
-      .event-date-day { font-size: 19px; }
-      .event-title { font-size: 12px; }
-      .event-desc { font-size: 8.8px; line-height: 1.25; }
+    @media (min-width: 980px) {
+      .events-layout {
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 24px;
+      }
+      .events-calendar {
+        position: sticky;
+        top: 0;
+      }
     }
 
   </style>
@@ -2581,8 +2565,8 @@
   <!-- ========================================================
        BELLE AMBIENT BACKGROUND SYSTEM
        Strictly non-element: 100% decoupled from layout.
-       Landing Page: Red Wine Pouring Video.
-       Menu Items & Beyond: Atmospheric Restaurant Slideshow.
+       Each page shows a video or a slideshow, chosen in the admin
+       panel. These are the original choices, used until then.
        Reduced transparency preserves complete readability.
        ======================================================== -->
   <div id="ambientBgSystem" class="ambient-bg-system" aria-hidden="true">
@@ -2596,7 +2580,7 @@
 
     <!-- Menu Items & Beyond Animated Slideshow Background -->
     <div class="ambient-slideshow-layer" id="ambientSlideshowLayer">
-      <div class="ambient-slide is-active" style="background-image: url('assets/images/bg/slide_lamb_chops.webp');"></div>
+      <div class="ambient-slide is-active" data-bg="assets/images/bg/slide_lamb_chops.webp" style="background-image: url('assets/images/bg/slide_lamb_chops.webp');"></div>
       <div class="ambient-slide" data-bg="assets/images/bg/slide_bar_counter.webp"></div>
       <div class="ambient-slide" data-bg="assets/images/bg/slide_tacos_kitchen.webp"></div>
       <div class="ambient-slide" data-bg="assets/images/bg/slide_cocktail_smoke.webp"></div>
@@ -4214,9 +4198,9 @@ Choose your spread/rillette style:</p>
 
   </div>
 
-  <!-- EVENT CALENDAR VIEW (Exact Match to media_1791182288111.png) -->
-  <div class="view-food-panel lunch-theme" id="panel-events" role="dialog" aria-label="Event Calendar" aria-modal="true">
-    
+  <!-- EVENTS -->
+  <div class="view-food-panel" id="panel-events" role="dialog" aria-label="Events" aria-modal="true">
+
     <!-- Top-Left Back Button -->
     <button type="button" class="btn-lunch-back" id="backFromEvents" aria-label="Back to Home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -4228,205 +4212,46 @@ Choose your spread/rillette style:</p>
     <!-- Scrollable Page Container -->
     <div class="events-view-scroll" id="eventsViewScroll">
 
-      <!-- Header Region: Watermark + Foreground Title -->
       <header class="events-header">
-        <div class="events-watermark-wrap">
-          <span class="events-watermark">EVENTS</span>
-          <h2 class="events-title">EVENT CALENDAR</h2>
-        </div>
+        <h2 class="events-title">Events</h2>
       </header>
 
-      <!-- Category Filter Pills -->
-      <nav class="events-filter-bar" aria-label="Event category filters">
-        <button type="button" class="event-filter-pill is-active" data-filter="all">ALL EVENTS</button>
-        <button type="button" class="event-filter-pill" data-filter="dining">DINING</button>
-        <button type="button" class="event-filter-pill" data-filter="live-music">LIVE MUSIC</button>
-        <button type="button" class="event-filter-pill" data-filter="specials">SPECIALS</button>
-        <button type="button" class="event-filter-pill" data-filter="private-events">PRIVATE EVENTS</button>
-      </nav>
+      <div class="events-layout">
+        <div class="events-main">
+          <!-- The next event, filled in from the live data -->
+          <div id="eventsFeature"></div>
 
-      <!-- Month Bar with Nav Chevrons -->
-      <div class="events-month-bar">
-        <button type="button" class="events-month-nav" id="prevMonthBtn" aria-label="Previous month">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-        <span class="events-month-title" id="eventsMonthTitle"></span>
-        <button type="button" class="events-month-nav" id="nextMonthBtn" aria-label="Next month">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </button>
-      </div>
+          <nav class="events-filter-bar" aria-label="Event category filters">
+            <button type="button" class="event-filter-pill is-active" data-filter="all">All events</button>
+            <button type="button" class="event-filter-pill" data-filter="dining">Dining</button>
+            <button type="button" class="event-filter-pill" data-filter="live-music">Live music</button>
+            <button type="button" class="event-filter-pill" data-filter="specials">Specials</button>
+            <button type="button" class="event-filter-pill" data-filter="private-events">Private events</button>
+          </nav>
 
-      <div class="events-hairline"></div>
+          <div class="events-upcoming-header" id="eventsListHeader">
+            <h3 class="events-upcoming-title" id="eventsListTitle">Coming up</h3>
+            <button type="button" class="events-view-all" id="eventsViewAllBtn" hidden>View all</button>
+          </div>
+          <div class="events-list" id="eventsList"></div>
+          <p class="events-empty" id="eventsEmpty" hidden>Nothing planned here just yet. Please check back soon.</p>
+        </div>
 
-      <!-- Calendar 7-Day Grid -->
-      <div class="events-calendar-wrap">
-        <div class="events-weekday-row">
-          <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
-        </div>
-        <div class="events-days-grid" id="eventsDaysGrid"></div>
-      </div>
-
-      <!-- Upcoming Events Header -->
-      <div class="events-upcoming-header">
-        <h3 class="events-upcoming-title">UPCOMING EVENTS</h3>
-        <button type="button" class="events-view-all" id="eventsViewAllBtn">
-          <span>VIEW ALL</span>
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </button>
-      </div>
-      <div class="events-hairline" style="margin-top: 4px; margin-bottom: 8px;"></div>
-
-      <!-- Event Cards List -->
-      <div class="events-list" id="eventsList">
-      <article class="event-card" data-category="dining" data-day="8">
-        <div class="event-thumb">
-          <img src="assets/events/event_wine_dine.jpg" alt="Wine & Dine Evening">
-        </div>
-        <div class="event-date-block">
-          <span class="event-date-month">OCT</span>
-          <span class="event-date-day">8</span>
-          <span class="event-date-dow">WED</span>
-        </div>
-        <div class="event-details">
-          <div class="event-details-top">
-            <h4 class="event-title">Wine & Dine Evening</h4>
-            <span class="event-badge">DINING</span>
+        <section class="events-calendar" aria-label="Calendar">
+          <div class="events-month-bar">
+            <button type="button" class="events-month-nav" id="prevMonthBtn" aria-label="Previous month">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <span class="events-month-title" id="eventsMonthTitle"></span>
+            <button type="button" class="events-month-nav" id="nextMonthBtn" aria-label="Next month">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
           </div>
-          <p class="event-desc">A curated 5-course menu paired with fine wines. An unforgettable night of flavour and atmosphere.</p>
-          <div class="event-details-bottom">
-            <div class="event-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-              <span>Main Dining Hall</span>
-            </div>
-            <div class="event-time-row">
-              <span class="event-time">7:00 PM – 10:00 PM</span>
-              <span class="event-arrow">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </span>
-            </div>
+          <div class="events-weekday-row">
+            <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
           </div>
-        </div>
-      </article>
-
-      <article class="event-card" data-category="live-music" data-day="12">
-        <div class="event-thumb">
-          <img src="assets/events/event_acoustic_night.jpg" alt="Live Acoustic Night">
-        </div>
-        <div class="event-date-block">
-          <span class="event-date-month">OCT</span>
-          <span class="event-date-day">12</span>
-          <span class="event-date-dow">SUN</span>
-        </div>
-        <div class="event-details">
-          <div class="event-details-top">
-            <h4 class="event-title">Live Acoustic Night</h4>
-            <span class="event-badge">LIVE MUSIC</span>
-          </div>
-          <p class="event-desc">Local artists. Good vibes. Great food. Join us for an evening of live acoustic music by the lake.</p>
-          <div class="event-details-bottom">
-            <div class="event-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-              <span>Outdoor Terrace</span>
-            </div>
-            <div class="event-time-row">
-              <span class="event-time">6:30 PM – 9:30 PM</span>
-              <span class="event-arrow">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="event-card" data-category="specials" data-day="16">
-        <div class="event-thumb">
-          <img src="assets/events/event_chefs_tasting.jpg" alt="Chef's Tasting Menu">
-        </div>
-        <div class="event-date-block">
-          <span class="event-date-month">OCT</span>
-          <span class="event-date-day">16</span>
-          <span class="event-date-dow">THU</span>
-        </div>
-        <div class="event-details">
-          <div class="event-details-top">
-            <h4 class="event-title">Chef's Tasting Menu</h4>
-            <span class="event-badge">SPECIALS</span>
-          </div>
-          <p class="event-desc">A special evening featuring our seasonal tasting menu, crafted for true food lovers.</p>
-          <div class="event-details-bottom">
-            <div class="event-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-              <span>Main Dining Hall</span>
-            </div>
-            <div class="event-time-row">
-              <span class="event-time">7:00 PM – 11:00 PM</span>
-              <span class="event-arrow">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="event-card" data-category="dining" data-day="20">
-        <div class="event-thumb">
-          <img src="assets/events/event_sunset_terrace.jpg" alt="Sunset Terrace">
-        </div>
-        <div class="event-date-block">
-          <span class="event-date-month">OCT</span>
-          <span class="event-date-day">20</span>
-          <span class="event-date-dow">MON</span>
-        </div>
-        <div class="event-details">
-          <div class="event-details-top">
-            <h4 class="event-title">Sunset Terrace</h4>
-            <span class="event-badge">DINING</span>
-          </div>
-          <p class="event-desc">Relax with signature cocktails, great music and a stunning view.</p>
-          <div class="event-details-bottom">
-            <div class="event-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-              <span>Rooftop Terrace</span>
-            </div>
-            <div class="event-time-row">
-              <span class="event-time">5:00 PM – 10:00 PM</span>
-              <span class="event-arrow">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="event-card" data-category="private-events" data-day="24">
-        <div class="event-thumb">
-          <img src="assets/events/event_private_event.jpg" alt="Private Event">
-        </div>
-        <div class="event-date-block">
-          <span class="event-date-month">OCT</span>
-          <span class="event-date-day">24</span>
-          <span class="event-date-dow">FRI</span>
-        </div>
-        <div class="event-details">
-          <div class="event-details-top">
-            <h4 class="event-title">Private Event</h4>
-            <span class="event-badge">PRIVATE EVENTS</span>
-          </div>
-          <p class="event-desc">An exclusive evening for our valued guests in our premier salon.</p>
-          <div class="event-details-bottom">
-            <div class="event-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-              <span>Main Dining Hall</span>
-            </div>
-            <div class="event-time-row">
-              <span class="event-time">7:00 PM – 11:00 PM</span>
-              <span class="event-arrow">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-      </article>
+          <div class="events-days-grid" id="eventsDaysGrid"></div>
+        </section>
       </div>
 
       <!-- Bottom Social Media Dock -->
@@ -4491,35 +4316,56 @@ Choose your spread/rillette style:</p>
        100% decoupled from the UI layout and elements.
        ======================================================== */
     (function initAmbientBackground() {
-      var video = document.getElementById('heroWineVideo');
-      var slideshowLayer = document.getElementById('ambientSlideshowLayer');
-      var slides = slideshowLayer ? Array.prototype.slice.call(slideshowLayer.querySelectorAll('.ambient-slide')) : [];
-      
-      var currentSlideIdx = 0;
-      var slideTimer = null;
       var SLIDE_INTERVAL = 5000;
+      var heroVideo = document.getElementById('heroWineVideo');
+      var slideshowLayer = document.getElementById('ambientSlideshowLayer');
+      var firstSlides = slideshowLayer ? Array.prototype.slice.call(slideshowLayer.querySelectorAll('.ambient-slide')) : [];
 
-      function ensureSlideLoaded(idx) {
-        if (!slides[idx]) return;
-        var el = slides[idx];
-        if (el.dataset && el.dataset.bg && (!el.style.backgroundImage || el.style.backgroundImage === 'none')) {
-          el.style.backgroundImage = "url('" + el.dataset.bg + "')";
+      // A stage is one background: the landing page, or the menus and everything beyond them
+      var stages = {
+        home: {
+          layer: document.getElementById('ambientVideoLayer'), video: heroVideo, slides: [], current: 0, load: null,
+          signature: 'video|assets/video/bg_hero_landscape.mp4'
+        },
+        menu: {
+          layer: slideshowLayer, video: null, slides: firstSlides, current: 0, load: null,
+          signature: 'photos|' + firstSlides.map(function(el) { return el.dataset.bg; }).join()
+        }
+      };
+      var activeStage = stages.home;
+      var slideTimer = null;
+
+      function ensureSlideLoaded(stage, idx) {
+        var el = stage.slides[idx];
+        if (!el || el.isLoaded) return;
+        el.isLoaded = true;
+        var id = mediaIdOf(el.dataset.bg);
+        if (!id) {
+          el.style.backgroundImage = "url('" + escapeCssUrl(el.dataset.bg) + "')";
+        } else if (!isSavingData()) {
+          mediaAddress(id).then(function(address) {
+            el.style.backgroundImage = "url('" + address + "')";
+          }, function() {
+            // The small still image stays
+          });
         }
       }
 
-      function nextSlide() {
-        if (!slides.length) return;
-        var nextIdx = (currentSlideIdx + 1) % slides.length;
-        ensureSlideLoaded(nextIdx);
-        ensureSlideLoaded((nextIdx + 1) % slides.length);
-        slides[currentSlideIdx].classList.remove('is-active');
-        currentSlideIdx = nextIdx;
-        slides[currentSlideIdx].classList.add('is-active');
+      function showSlide(stage, idx) {
+        ensureSlideLoaded(stage, idx);
+        ensureSlideLoaded(stage, (idx + 1) % stage.slides.length);
+        if (idx === stage.current) return;
+        stage.slides[stage.current].classList.remove('is-active');
+        stage.current = idx;
+        stage.slides[stage.current].classList.add('is-active');
       }
 
-      function startSlideshow() {
-        if (slideTimer) clearInterval(slideTimer);
-        slideTimer = setInterval(nextSlide, SLIDE_INTERVAL);
+      function startSlideshow(stage) {
+        stopSlideshow();
+        if (stage.slides.length < 2) return;
+        slideTimer = setInterval(function() {
+          showSlide(stage, (stage.current + 1) % stage.slides.length);
+        }, SLIDE_INTERVAL);
       }
 
       function stopSlideshow() {
@@ -4529,7 +4375,7 @@ Choose your spread/rillette style:</p>
         }
       }
 
-      function playVideo() {
+      function playVideo(video) {
         if (video) {
           video.muted = true;
           video.defaultMuted = true;
@@ -4543,10 +4389,92 @@ Choose your spread/rillette style:</p>
         }
       }
 
-      function pauseVideo() {
+      function pauseVideo(video) {
         if (video && !video.paused) {
           video.pause();
         }
+      }
+
+      function enterStage(stage) {
+        if (activeStage !== stage) pauseVideo(activeStage.video);
+        activeStage = stage;
+        stopSlideshow();
+        if (stage.load) {
+          var load = stage.load;
+          stage.load = null;
+          load();
+        } else {
+          playVideo(stage.video);
+        }
+        if (stage.slides.length) {
+          showSlide(stage, stage.current);
+          startSlideshow(stage);
+        }
+      }
+
+      function clearStage(stage) {
+        stopSlideshow();
+        stage.slides.forEach(function(el) { el.remove(); });
+        stage.slides = [];
+        stage.current = 0;
+        stage.load = null;
+        if (stage.video) {
+          stage.video.pause();
+          stage.video.remove();
+          stage.video = null;
+        }
+      }
+
+      function addStageVideo(stage, src) {
+        var id = mediaIdOf(src);
+        var video = document.createElement('video');
+        video.className = 'ambient-video';
+        video.muted = true;
+        video.loop = true;
+        video.preload = 'auto';
+        video.setAttribute('playsinline', '');
+        if (id && mediaFileOf(id).poster) video.poster = mediaFileOf(id).poster;
+        stage.layer.insertBefore(video, stage.layer.lastElementChild);
+        stage.video = video;
+        stage.load = function() {
+          if (!id) {
+            video.src = src;
+            playVideo(video);
+          } else if (!isSavingData()) {
+            mediaAddress(id).then(function(address) {
+              video.src = address;
+              if (activeStage === stage) playVideo(video);
+            }, function() {
+              // The small still image stays
+            });
+          }
+        };
+      }
+
+      function addStagePhotos(stage, photos) {
+        photos.forEach(function(src, idx) {
+          var el = document.createElement('div');
+          el.className = 'ambient-slide' + (idx === 0 ? ' is-active' : '');
+          el.dataset.bg = src;
+          var id = mediaIdOf(src);
+          if (id && mediaFileOf(id).poster) el.style.backgroundImage = "url('" + escapeCssUrl(mediaFileOf(id).poster) + "')";
+          stage.layer.insertBefore(el, stage.layer.lastElementChild);
+          stage.slides.push(el);
+        });
+      }
+
+      function buildStage(stage, config) {
+        if (!config) return;
+        var photos = (config.photos || []).filter(Boolean);
+        var useVideo = config.type === 'video' && !!config.video;
+        if (!useVideo && !photos.length) return;
+        var signature = useVideo ? 'video|' + config.video : 'photos|' + photos.join();
+        if (signature === stage.signature) return;
+        stage.signature = signature;
+        clearStage(stage);
+        if (useVideo) addStageVideo(stage, config.video);
+        else addStagePhotos(stage, photos);
+        if (activeStage === stage) enterStage(stage);
       }
 
       // Context-aware slide focus when opening menu sections
@@ -4567,19 +4495,12 @@ Choose your spread/rillette style:</p>
       };
 
       function focusCategorySlide(catKey) {
-        if (!slides.length) return;
         var targetImg = categorySlideMap[catKey];
         if (!targetImg) return;
-        for (var i = 0; i < slides.length; i++) {
-          var bgAttr = (slides[i].dataset && slides[i].dataset.bg ? slides[i].dataset.bg : '') + ' ' + (slides[i].style.backgroundImage || '');
-          if (bgAttr.indexOf(targetImg) !== -1) {
-            ensureSlideLoaded(i);
-            ensureSlideLoaded((i + 1) % slides.length);
-            if (i !== currentSlideIdx) {
-              slides[currentSlideIdx].classList.remove('is-active');
-              currentSlideIdx = i;
-              slides[currentSlideIdx].classList.add('is-active');
-            }
+        var stage = stages.menu;
+        for (var i = 0; i < stage.slides.length; i++) {
+          if ((stage.slides[i].dataset.bg || '').indexOf(targetImg) !== -1) {
+            showSlide(stage, i);
             break;
           }
         }
@@ -4587,17 +4508,17 @@ Choose your spread/rillette style:</p>
 
       window.ambientBg = {
         onEnterMenu: function() {
-          pauseVideo();
-          ensureSlideLoaded(currentSlideIdx);
-          ensureSlideLoaded((currentSlideIdx + 1) % slides.length);
-          startSlideshow();
+          enterStage(stages.menu);
         },
         onEnterHome: function() {
-          stopSlideshow();
-          playVideo();
+          enterStage(stages.home);
         },
         onOpenCategory: function(catKey) {
           focusCategorySlide(catKey);
+        },
+        apply: function(backgrounds) {
+          buildStage(stages.home, backgrounds.landing);
+          buildStage(stages.menu, backgrounds.menu);
         }
       };
 
@@ -4622,10 +4543,10 @@ Choose your spread/rillette style:</p>
       }, { once: true });
 
       // Autoplay activation and user interaction listeners
-      playVideo();
+      playVideo(heroVideo);
       var resumeVideoOnce = function() {
         if (!document.body.classList.contains('is-menu-active')) {
-          playVideo();
+          playVideo(activeStage.video);
         }
       };
       window.addEventListener('touchstart', resumeVideoOnce, { passive: true, once: true });
@@ -4781,12 +4702,17 @@ Choose your spread/rillette style:</p>
     var eventsTriggers = document.querySelectorAll('.events-trigger');
     var backFromEvents = document.getElementById('backFromEvents');
     var eventFilterPills = document.querySelectorAll('.event-filter-pill');
-    var eventCards = document.querySelectorAll('.event-card');
+    var eventCards = [];
     var eventsDaysGrid = document.getElementById('eventsDaysGrid');
     var eventsViewAllBtn = document.getElementById('eventsViewAllBtn');
     var prevMonthBtn = document.getElementById('prevMonthBtn');
     var nextMonthBtn = document.getElementById('nextMonthBtn');
     var eventsMonthTitle = document.getElementById('eventsMonthTitle');
+    var eventsFeature = document.getElementById('eventsFeature');
+    var eventsListHeader = document.getElementById('eventsListHeader');
+    var eventsListTitle = document.getElementById('eventsListTitle');
+    var eventsEmpty = document.getElementById('eventsEmpty');
+    var eventsView = { category: 'all', day: null };
 
     eventsTriggers.forEach(function (btn) {
       btn.addEventListener('click', function (e) {
@@ -4802,32 +4728,42 @@ Choose your spread/rillette style:</p>
       });
     }
 
-    // Category Filtering
-    function filterEvents(category) {
-      eventFilterPills.forEach(function (pill) {
-        if (pill.getAttribute('data-filter') === category) {
-          pill.classList.add('is-active');
-        } else {
-          pill.classList.remove('is-active');
-        }
-      });
-
+    // The next event sits on top until a guest narrows the list down
+    function applyEventFilters() {
+      var narrowed = eventsView.category !== 'all' || eventsView.day !== null;
+      var shown = 0;
       eventCards.forEach(function (card) {
-        var cardCat = card.getAttribute('data-category');
-        if (category === 'all' || cardCat === category) {
-          card.classList.remove('is-hidden');
-        } else {
-          card.classList.add('is-hidden');
-        }
+        var show = eventsView.category === 'all' || card.getAttribute('data-category') === eventsView.category;
+        if (eventsView.day !== null) show = show && card.getAttribute('data-key') === eventsView.day;
+        if (!narrowed && card.hasAttribute('data-feature')) show = false;
+        card.classList.toggle('is-hidden', !show);
+        if (show) shown++;
       });
+      if (eventsFeature) eventsFeature.hidden = narrowed;
+      if (eventsEmpty) eventsEmpty.hidden = shown > 0 || (!narrowed && eventCards.length > 0);
+      if (eventsListHeader) eventsListHeader.hidden = shown === 0 && !narrowed;
+      if (eventsViewAllBtn) eventsViewAllBtn.hidden = !narrowed;
+      if (eventsListTitle) {
+        var pill = document.querySelector('.event-filter-pill.is-active');
+        eventsListTitle.textContent = eventsView.day !== null ? 'On this day' : (narrowed && pill ? pill.textContent : 'Coming up');
+      }
+    }
+
+    function filterEvents(category) {
+      eventsView.category = category;
+      eventFilterPills.forEach(function (pill) {
+        pill.classList.toggle('is-active', pill.getAttribute('data-filter') === category);
+      });
+      applyEventFilters();
       var efb = document.querySelector('.events-filter-bar');
       if (efb) scrollActivePillIntoView(efb);
     }
 
     eventFilterPills.forEach(function (pill) {
       pill.addEventListener('click', function () {
-        var cat = pill.getAttribute('data-filter');
-        filterEvents(cat);
+        eventsView.day = null;
+        clearCalendarSelection();
+        filterEvents(pill.getAttribute('data-filter'));
       });
     });
 
@@ -4841,48 +4777,28 @@ Choose your spread/rillette style:</p>
       }, { passive: false });
     }
 
-    // Calendar Day Click Selection (delegated because the grid is rebuilt for each month)
+    // Tapping a day with an event shows just that day (delegated because the grid is rebuilt for each month)
     if (eventsDaysGrid) {
       eventsDaysGrid.addEventListener('click', function (e) {
-        var cell = e.target.closest('.cal-day-cell:not(.is-muted)');
+        var cell = e.target.closest('.cal-day-cell.has-event');
         if (!cell) return;
-        var day = cell.getAttribute('data-day');
         clearCalendarSelection();
         cell.classList.add('is-selected');
-
-        // Scroll to matching card if exists (events without a year match any year)
-        var cardSelector = '.event-card[data-day="' + day + '"][data-month="' + calendarMonth + '"]';
-        var targetCard = document.querySelector(cardSelector + '[data-year="' + calendarYear + '"], ' + cardSelector + '[data-year=""]');
-        if (targetCard) {
-          filterEvents('all');
-          targetCard.classList.remove('is-hidden');
-          targetCard.classList.add('is-highlighted');
-          targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          setTimeout(function () {
-            targetCard.classList.remove('is-highlighted');
-          }, 1500);
-        }
+        cell.setAttribute('aria-pressed', 'true');
+        eventsView.day = calendarMonth + '-' + cell.getAttribute('data-day');
+        filterEvents('all');
+        var main = document.querySelector('.events-main');
+        if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
 
     if (eventsViewAllBtn) {
       eventsViewAllBtn.addEventListener('click', function () {
-        filterEvents('all');
+        eventsView.day = null;
         clearCalendarSelection();
+        filterEvents('all');
       });
     }
-
-    eventCards.forEach(function (card) {
-      card.style.cursor = 'pointer';
-      card.setAttribute('title', 'Tap to reserve via WhatsApp');
-      card.addEventListener('click', function () {
-        var titleEl = card.querySelector('.event-title');
-        var day = card.getAttribute('data-day') || '';
-        var title = titleEl ? titleEl.textContent.trim() : 'Event';
-        var text = encodeURIComponent('Hi Belle Colombo, I would like to inquire about reserving for ' + title + ' (Oct ' + day + ').');
-        window.open('https://wa.me/94770315589?text=' + text, '_blank', 'noopener,noreferrer');
-      });
-    });
 
     var EVENT_MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     var EVENT_WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -4912,7 +4828,10 @@ Choose your spread/rillette style:</p>
 
     function clearCalendarSelection() {
       if (!eventsDaysGrid) return;
-      eventsDaysGrid.querySelectorAll('.is-selected').forEach(function (c) { c.classList.remove('is-selected'); });
+      eventsDaysGrid.querySelectorAll('.is-selected').forEach(function (c) {
+        c.classList.remove('is-selected');
+        c.setAttribute('aria-pressed', 'false');
+      });
     }
 
     function renderEventsCalendar() {
@@ -4931,13 +4850,16 @@ Choose your spread/rillette style:</p>
       var trailingDays = (7 - ((firstWeekday + daysInMonth) % 7)) % 7;
       var html = '';
       var i;
+      var now = new Date();
+      var thisMonth = now.getFullYear() === calendarYear && now.getMonth() === calendarMonth;
       for (i = firstWeekday - 1; i >= 0; i--) {
         html += '<div class="cal-day-cell is-muted"><span class="cal-day-num">' + (daysInPrevMonth - i) + '</span></div>';
       }
       for (i = 1; i <= daysInMonth; i++) {
-        html += '<div class="cal-day-cell" data-day="' + i + '"><span class="cal-day-num">' + i + '</span>' +
-          (eventDays[i] ? '<span class="cal-day-dot"></span>' : '') +
-        '</div>';
+        var todayClass = thisMonth && now.getDate() === i ? ' is-today' : '';
+        html += eventDays[i]
+          ? '<button type="button" class="cal-day-cell has-event' + todayClass + '" data-day="' + i + '" aria-pressed="false" aria-label="Events on ' + i + '"><span class="cal-day-num">' + i + '</span><span class="cal-day-dot"></span></button>'
+          : '<div class="cal-day-cell' + todayClass + '"><span class="cal-day-num">' + i + '</span></div>';
       }
       for (i = 1; i <= trailingDays; i++) {
         html += '<div class="cal-day-cell is-muted"><span class="cal-day-num">' + i + '</span></div>';
@@ -4954,7 +4876,9 @@ Choose your spread/rillette style:</p>
       var target = new Date(calendarYear, calendarMonth + delta, 1);
       calendarYear = target.getFullYear();
       calendarMonth = target.getMonth();
+      eventsView.day = null;
       renderEventsCalendar();
+      filterEvents(eventsView.category);
     }
 
     if (prevMonthBtn) {
@@ -5899,97 +5823,110 @@ Choose your spread/rillette style:</p>
        ======================================================== */
     window.belleCurrentData = window.BELLE_DEFAULT_DATA || null;
 
+    // An event with no year counts as its next time round
+    function eventTimeOf(eventDate) {
+      var now = new Date();
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      if (eventDate.year !== null) return new Date(eventDate.year, eventDate.month, eventDate.day).getTime();
+      var thisYear = new Date(now.getFullYear(), eventDate.month, eventDate.day).getTime();
+      return thisYear < today ? new Date(now.getFullYear() + 1, eventDate.month, eventDate.day).getTime() : thisYear;
+    }
+
+    function eventReserveHref(view) {
+      var venue = (window.belleCurrentData && window.belleCurrentData.venue) || {};
+      var phone = String(venue.whatsappNumber || '94770315589').replace(/\D/g, '');
+      var text = encodeURIComponent('Hi Belle Colombo, I would like to reserve for ' + view.title + ' on ' + view.day + ' ' + view.month + '.');
+      return 'https://wa.me/' + phone + '?text=' + text;
+    }
+
+    function eventView(ev) {
+      var cat = ev.category || 'dining';
+      var eventDate = getEventDate(ev);
+      var dayNum = parseInt(ev.day, 10);
+      return {
+        category: cat,
+        tag: ev.isVip ? 'Special' : (ev.categoryLabel || cat.replace(/-/g, ' ')),
+        date: eventDate,
+        time: eventTimeOf(eventDate),
+        day: eventDate.day || (!isNaN(dayNum) ? String(dayNum) : String(ev.day || '')),
+        month: String(EVENT_MONTHS[eventDate.month] || ev.month || '').toUpperCase(),
+        dow: getEventWeekday(ev, eventDate),
+        image: ev.imageData || '',
+        place: ev.venue || 'Main Dining Hall',
+        hours: ev.time || '7:00 PM – 10:00 PM',
+        title: ev.title || 'Belle Event',
+        desc: ev.desc || ''
+      };
+    }
+
+    function eventDateHtml(view) {
+      return '<div class="event-date">' +
+        '<span class="event-date-month">' + escapeHtml(view.month) + '</span>' +
+        '<span class="event-date-day">' + escapeHtml(view.day) + '</span>' +
+        '<span class="event-date-dow">' + escapeHtml(view.dow) + '</span>' +
+      '</div>';
+    }
+
+    function eventDetailsHtml(view) {
+      return '<div class="event-when">' + escapeHtml(view.hours) + '</div>' +
+        '<div class="event-place">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>' +
+          '<span>' + escapeHtml(view.place) + '</span>' +
+        '</div>' +
+        (view.desc ? '<p class="event-desc">' + escapeHtml(view.desc) + '</p>' : '') +
+        '<a class="event-reserve" href="' + escapeHtml(eventReserveHref(view)) + '" target="_blank" rel="noopener noreferrer">Reserve on WhatsApp</a>';
+    }
+
+    function eventFeatureHtml(view) {
+      return '<article class="event-feature">' +
+        (view.image ? '<img src="' + escapeHtml(view.image) + '" alt="' + escapeHtml(view.title) + '">' : '') +
+        eventDateHtml(view) +
+        '<div class="event-feature-body">' +
+          '<div class="event-tag">Next event</div>' +
+          '<h3 class="event-feature-title">' + escapeHtml(view.title) + '</h3>' +
+          eventDetailsHtml(view) +
+        '</div>' +
+      '</article>';
+    }
+
+    function eventCardHtml(view, isFeature) {
+      return '<article class="event-card' + (view.image ? '' : ' no-photo') + '" data-category="' + escapeHtml(view.category) + '" data-key="' + view.date.month + '-' + view.date.day + '"' + (isFeature ? ' data-feature' : '') + '>' +
+        '<div class="event-photo">' +
+          (view.image ? '<img src="' + escapeHtml(view.image) + '" alt="' + escapeHtml(view.title) + '" loading="lazy">' : '') +
+          eventDateHtml(view) +
+        '</div>' +
+        '<div class="event-body">' +
+          '<div class="event-tag">' + escapeHtml(view.tag) + '</div>' +
+          '<h4 class="event-card-title">' + escapeHtml(view.title) + '</h4>' +
+          eventDetailsHtml(view) +
+        '</div>' +
+      '</article>';
+    }
+
     function renderEventsList(events) {
       var scrollContainer = document.getElementById('eventsViewScroll');
-      if (!scrollContainer) return;
       var eventsListEl = document.getElementById('eventsList');
+      if (!scrollContainer || !eventsListEl) return;
       var savedScrollTop = scrollContainer.scrollTop;
-      var activePill = document.querySelector('.event-filter-pill.is-active');
-      var activeFilter = activePill ? (activePill.getAttribute('data-filter') || 'all') : 'all';
+      var now = new Date();
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
-      var existingCards = scrollContainer.querySelectorAll('.event-card');
-      existingCards.forEach(function(c) { c.remove(); });
-
-      var viewAllWrap = scrollContainer.querySelector('.events-all-wrap');
-
-      (events || []).forEach(function(ev) {
-        var isVip = !!ev.isVip;
-        var cat = ev.category || 'dining';
-        var catLabel = ev.categoryLabel || (cat === 'music' ? 'LIVE MUSIC' : cat === 'tasting' ? 'TASTING' : cat === 'lounge' ? 'LOUNGE' : cat === 'vip' ? 'SPECIAL' : cat.toUpperCase());
-        var eventDate = getEventDate(ev);
-        var dayNum = parseInt(ev.day, 10);
-        var dayStr = (!isNaN(dayNum) ? String(dayNum) : String(ev.day || ''));
-        var monthStr = String(ev.month || EVENT_MONTHS[eventDate.month] || '').toUpperCase();
-        var dowStr = getEventWeekday(ev, eventDate);
-        var imgSrc = ev.imageData || '';
-        var venue = ev.venue || 'Main Dining Hall';
-        var time = ev.time || '7:00 PM – 10:00 PM';
-        var title = ev.title || 'Belle Event';
-        var desc = ev.desc || '';
-        
-        var card = document.createElement('article');
-        card.className = 'event-card';
-        card.setAttribute('data-category', cat);
-        card.setAttribute('data-day', String(eventDate.day));
-        card.setAttribute('data-month', String(eventDate.month));
-        card.setAttribute('data-year', eventDate.year === null ? '' : String(eventDate.year));
-        card.style.cursor = 'pointer';
-        card.setAttribute('title', 'Tap to reserve via WhatsApp');
-
-        var thumbHtml = imgSrc ? '<div class="event-thumb"><img src="' + escapeHtml(imgSrc) + '" alt="' + escapeHtml(title) + '" loading="lazy"></div>' : '';
-        var badgeHtml = isVip ? '<span class="event-badge" style="background:#bca685;color:#0b0b0e;">SPECIAL</span>' : '<span class="event-badge">' + escapeHtml(catLabel) + '</span>';
-
-        card.innerHTML = thumbHtml +
-          '<div class="event-date-block">' +
-            '<span class="event-date-month">' + escapeHtml(monthStr) + '</span>' +
-            '<span class="event-date-day">' + escapeHtml(dayStr) + '</span>' +
-            '<span class="event-date-dow">' + escapeHtml(dowStr) + '</span>' +
-          '</div>' +
-          '<div class="event-details">' +
-            '<div class="event-details-top">' +
-              '<h4 class="event-title">' + escapeHtml(title) + '</h4>' +
-              badgeHtml +
-            '</div>' +
-            '<p class="event-desc">' + escapeHtml(desc) + '</p>' +
-            '<div class="event-details-bottom">' +
-              '<div class="event-loc">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg>' +
-                '<span>' + escapeHtml(venue) + '</span>' +
-              '</div>' +
-              '<div class="event-time-row">' +
-                '<span class="event-time">' + escapeHtml(time) + '</span>' +
-                '<span class="event-arrow">' +
-                  '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>' +
-                '</span>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
-
-        card.addEventListener('click', function() {
-          var phone = (window.belleCurrentData && window.belleCurrentData.venue && window.belleCurrentData.venue.whatsappNumber) || '94770315589';
-          var text = encodeURIComponent('Hi Belle Colombo, I would like to RSVP for ' + title + ' on ' + dayStr + ' ' + monthStr + '.');
-          window.open('https://wa.me/' + phone + '?text=' + text, '_blank', 'noopener,noreferrer');
-        });
-
-        if (eventsListEl) {
-          if (viewAllWrap && viewAllWrap.parentNode === eventsListEl) {
-            eventsListEl.insertBefore(card, viewAllWrap);
-          } else {
-            eventsListEl.appendChild(card);
-          }
-        } else if (viewAllWrap) {
-          scrollContainer.insertBefore(card, viewAllWrap);
-        } else {
-          scrollContainer.appendChild(card);
-        }
+      // Dated events that have finished drop off; soonest first, and any with an unclear date last
+      var views = (events || []).map(eventView).filter(function(view) {
+        return view.date.year === null || !(view.time < today);
+      }).sort(function(a, b) {
+        return (isFinite(a.time) ? a.time : Infinity) - (isFinite(b.time) ? b.time : Infinity);
       });
+
+      if (eventsFeature) eventsFeature.innerHTML = views.length ? eventFeatureHtml(views[0]) : '';
+      eventsListEl.innerHTML = views.map(function(view, idx) { return eventCardHtml(view, idx === 0); }).join('');
+      eventCards = eventsListEl.querySelectorAll('.event-card');
 
       // Sync calendar dots with current events
       calendarEvents = events || [];
       renderEventsCalendar();
-
-      eventCards = scrollContainer.querySelectorAll('.event-card');
-      filterEvents(activeFilter);
+      eventsView.day = null;
+      filterEvents(eventsView.category);
       scrollContainer.scrollTop = savedScrollTop;
     }
 
@@ -6129,12 +6066,20 @@ Choose your spread/rillette style:</p>
       return match ? match[1] : null;
     }
 
+    function mediaFileOf(id) {
+      var files = (window.belleCurrentData && window.belleCurrentData.mediaFiles) || {};
+      return files[id] || {};
+    }
+
+    function isSavingData() {
+      return !!(navigator.connection && navigator.connection.saveData);
+    }
+
     function dishVideoHtml(src) {
       var shared = 'class="lunch-slot-bg-photo lunch-slot-bg-video" muted loop playsinline';
       var id = mediaIdOf(src);
       if (!id) return '<video ' + shared + ' autoplay src="' + escapeHtml(src) + '"></video>';
-      var files = (window.belleCurrentData && window.belleCurrentData.mediaFiles) || {};
-      var poster = files[id] && files[id].poster;
+      var poster = mediaFileOf(id).poster;
       return '<video ' + shared + ' data-media="' + id + '"' + (poster ? ' poster="' + escapeHtml(poster) + '"' : '') + '></video>';
     }
 
@@ -6186,7 +6131,7 @@ Choose your spread/rillette style:</p>
 
     function playSeenMediaVideos() {
       if (!mediaVideoWatcher) return;
-      var savingData = navigator.connection && navigator.connection.saveData;
+      var savingData = isSavingData();
       document.querySelectorAll('video[data-media]').forEach(function(video) {
         if (!video.isWatched) {
           video.isWatched = true;
@@ -7189,6 +7134,7 @@ Choose your spread/rillette style:</p>
       }
 
       window.belleCurrentData = data;
+      if (data.backgrounds && window.ambientBg) window.ambientBg.apply(data.backgrounds);
       if (data.events) renderEventsList(data.events);
       if (data.menuCategories) {
         renderMenuHubCategories(data.menuCategories);
