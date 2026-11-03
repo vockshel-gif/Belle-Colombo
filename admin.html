@@ -527,6 +527,10 @@
     }
     .photo-pick img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .photo-pick.is-picked { border-color: var(--text); box-shadow: 0 0 0 2px var(--text); }
+    .frame-sliders { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .frame-slider { display: grid; grid-template-columns: 110px minmax(0, 1fr) 76px; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .frame-slider input { width: 100%; min-height: 32px; margin: 0; accent-color: var(--text); cursor: pointer; }
+    .frame-slider output { font-size: 13px; color: var(--text-2); text-align: right; font-variant-numeric: tabular-nums; }
     .sticky-actions {
       position: sticky;
       bottom: -72px;
@@ -1857,7 +1861,9 @@
     function showPreviewForPage() {
       if (!appData) return;
       sendPreview();
-      postToPreview({ type: 'BELLE_NAVIGATE', target: previewPageTarget(), subcat: previewSubcat() });
+      // An open dish or event is scrolled into view, so its photo can be adjusted while watching
+      var focus = view.editor && (view.page === 'dish' || view.page === 'event') ? view.editor.id : null;
+      postToPreview({ type: 'BELLE_NAVIGATE', target: previewPageTarget(), subcat: previewSubcat(), focus: focus });
     }
 
     function fitPhone() {
@@ -2553,11 +2559,91 @@
       return '<div class="photo-grid">' + html + '</div>';
     }
 
+    // Sliders for the size and position of a dish's or event's photo or video, kept in its mediaFrame
+    var FRAME_SLIDERS = [
+      { key: 'zoom', label: 'Size', min: 50, max: 300, step: 5, start: 100 },
+      { key: 'x', label: 'Left or right', min: -100, max: 100, step: 1, start: 0, words: ['left', 'right'] },
+      { key: 'y', label: 'Up or down', min: -100, max: 100, step: 1, start: 0, words: ['up', 'down'] }
+    ];
+
+    function frameValueText(slider, value) {
+      if (!slider.words) return value + '%';
+      if (!value) return 'Middle';
+      return Math.abs(value) + ' ' + slider.words[value > 0 ? 1 : 0];
+    }
+
+    function frameValue(frame, slider) {
+      var value = frame ? Number(frame[slider.key]) : NaN;
+      return isFinite(value) ? value : slider.start;
+    }
+
+    function frameSlidersHtml(target, minZoom, hint) {
+      var rows = FRAME_SLIDERS.map(function (s) {
+        var min = s.key === 'zoom' ? minZoom : s.min;
+        var value = Math.max(min, frameValue(target.mediaFrame, s));
+        return '<label class="frame-slider"><span>' + s.label + '</span>' +
+          '<input type="range" data-frame="' + s.key + '" min="' + min + '" max="' + s.max + '" step="' + s.step + '" value="' + value + '" />' +
+          '<output>' + frameValueText(s, value) + '</output></label>';
+      }).join('');
+      return '<div class="frame-sliders" id="frameSliders">' +
+        '<div class="field-label">Size and position</div>' +
+        rows +
+        '<span class="field-hint">' + hint + '</span>' +
+        '<div class="add-row"><button type="button" class="btn btn-sm" data-action="resetFrame">Back to the start</button></div>' +
+      '</div>';
+    }
+
+    function dishFrameHtml(item) {
+      return frameSlidersHtml(item, 50, 'Watch the phone preview as you slide. The faded edges stay where they are, so move the photo into the clear part.');
+    }
+
+    function eventFrameHtml(ev) {
+      return frameSlidersHtml(ev, 100, 'Choose which part of the photo fills the card. Watch the phone preview as you slide.');
+    }
+
+    function frameTarget() {
+      if (view.page === 'event') return editorEvent();
+      var found = view.page === 'dish' ? editorDish() : null;
+      return found ? found.item : null;
+    }
+
+    // Keeps all three values once one moves, and drops them all when they are back at the start
+    function setFrame(target, input) {
+      var frame = {};
+      FRAME_SLIDERS.forEach(function (s) { frame[s.key] = frameValue(target.mediaFrame, s); });
+      frame[input.dataset.frame] = Number(input.value);
+      var atStart = FRAME_SLIDERS.every(function (s) { return frame[s.key] === s.start; });
+      if (atStart) delete target.mediaFrame;
+      else target.mediaFrame = frame;
+      var slider = FRAME_SLIDERS.find(function (s) { return s.key === input.dataset.frame; });
+      input.nextElementSibling.textContent = frameValueText(slider, Number(input.value));
+      // Straight to the phone, so the photo follows the slider instead of waiting for the redraw
+      postToPreview({ type: 'BELLE_MEDIA_FRAME', id: target.id, frame: target.mediaFrame || null });
+      touch();
+    }
+
+    function resetFrame() {
+      var target = frameTarget();
+      if (!target) return;
+      delete target.mediaFrame;
+      $('frameSliders').outerHTML = view.page === 'event' ? eventFrameHtml(target) : dishFrameHtml(target);
+      postToPreview({ type: 'BELLE_MEDIA_FRAME', id: target.id, frame: null });
+      touch();
+    }
+
+    function eventPhotoPartHtml(ev) {
+      return photoGridHtml(ev.imageData, EVENT_PHOTOS) +
+        '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="event" hidden /></label>' +
+        '<button type="button" class="btn btn-sm" data-action="clearEventPhoto">No photo</button></div>' +
+        (ev.imageData ? eventFrameHtml(ev) : '');
+    }
+
     function backgroundPartHtml(item) {
       var type = view.editor.background;
       if (type === 'photo') {
         return photoGridHtml(item.image, PHOTO_PRESETS) +
-          '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="dish" hidden /></label></div>';
+          '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="dish" hidden /></label></div>' +
+          (item.image ? dishFrameHtml(item) : '');
       }
       if (type === 'video') {
         var options = videoChoices(item.video).map(function (v) {
@@ -2565,7 +2651,8 @@
         }).join('');
         return '<div class="field"><label for="dishVideo">Video</label><select id="dishVideo">' + options + '</select>' +
           '<span class="field-hint">Uploads are cut to ' + VIDEO_MAX_SECONDS + ' seconds with no sound. Each guest who reaches this dish downloads the video once, and that counts against your free Firebase downloads.</span></div>' +
-          '<div class="add-row"><label class="btn btn-sm">Upload a video<input type="file" accept="video/*" data-upload="dishvideo" hidden /></label></div>';
+          '<div class="add-row"><label class="btn btn-sm">Upload a video<input type="file" accept="video/*" data-upload="dishvideo" hidden /></label></div>' +
+          (item.video ? dishFrameHtml(item) : '');
       }
       if (view.menuId === 'lunch') {
         return '<p class="field-hint">Lunch dishes always show a background, so the website will choose a photo for this dish.</p>';
@@ -2747,6 +2834,7 @@
 
       if (t.name === 'priceType') return setPriceType(t.value);
       if (t.name === 'bgType') return setBackgroundType(t.value);
+      if (d.frame) return setFrame(item, t);
       if (t.id === 'dishSection') moveDishToSection(t.value, t);
       else if (t.id === 'dishVeg') setVegetarian(item, t.checked);
       else if (t.id === 'dishVideo') item.video = t.value;
@@ -2883,7 +2971,7 @@
           ev.imageData = url;
           ev.imageKey = '';
           ev.hasImage = true;
-          $('eventPhotos').innerHTML = photoGridHtml(ev.imageData, EVENT_PHOTOS);
+          $('eventPhotos').innerHTML = eventPhotoPartHtml(ev);
         } else if (mode === 'replace') {
           replaceMedia(media, url);
           return;
@@ -2911,7 +2999,7 @@
         ev.imageData = src;
         ev.imageKey = preset ? preset.key : '';
         ev.hasImage = true;
-        $('eventPhotos').innerHTML = photoGridHtml(ev.imageData, EVENT_PHOTOS);
+        $('eventPhotos').innerHTML = eventPhotoPartHtml(ev);
       }
       touch();
     }
@@ -3857,9 +3945,7 @@
         '</section>' +
         '<section class="card card-pad">' +
           '<h2 class="card-title">Photo</h2>' +
-          '<div id="eventPhotos">' + photoGridHtml(ev.imageData, EVENT_PHOTOS) + '</div>' +
-          '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="event" hidden /></label>' +
-          '<button type="button" class="btn btn-sm" data-action="clearEventPhoto">No photo</button></div>' +
+          '<div id="eventPhotos">' + eventPhotoPartHtml(ev) + '</div>' +
         '</section>' +
         '<div class="sticky-actions">' +
           '<button type="button" class="btn btn-primary" data-action="saveEvent">Save event</button>' +
@@ -3882,6 +3968,7 @@
     function onEventInput(t) {
       var ev = editorEvent();
       if (!ev) return;
+      if (t.dataset.frame) return setFrame(ev, t);
       if (t.dataset.ev) ev[t.dataset.ev] = t.value;
       else if (t.id === 'eventDate') {
         setEventDate(ev, t.value);
@@ -5528,12 +5615,13 @@
       saveEvent: saveEvent,
       cancelEvent: cancelEvent,
       deleteEvent: deleteEvent,
+      resetFrame: resetFrame,
       clearEventPhoto: function () {
         var ev = editorEvent();
         ev.imageData = '';
         ev.imageKey = '';
         ev.hasImage = false;
-        $('eventPhotos').innerHTML = photoGridHtml('', EVENT_PHOTOS);
+        $('eventPhotos').innerHTML = eventPhotoPartHtml(ev);
         touch();
       },
 

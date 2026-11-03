@@ -737,16 +737,16 @@
     .menu-hub-sm-btn:active { transform: scale(.95); }
 
     /* ---------- STATE 3: FULL SCREEN FOOD PANELS ---------- */
-    /* White by default. Dark pages are listed further down. */
+    /* Dark by default. White pages are listed further down. */
     .view-food-panel {
-      --paper: rgba(var(--light-rgb), 0.9);
-      --paper-solid: var(--light);
-      --ink: var(--dark);
-      --ink-soft: rgba(var(--dark-rgb), 0.72);
-      --rule: rgba(var(--dark-rgb), 0.16);
-      --accent: var(--dark);
-      --on-accent: var(--light);
-      --halo: rgba(var(--light-rgb), 0.92);
+      --paper: rgba(var(--dark-rgb), 0.9);
+      --paper-solid: var(--dark);
+      --ink: var(--light);
+      --ink-soft: rgba(var(--light-rgb), 0.72);
+      --rule: rgba(var(--light-rgb), 0.22);
+      --accent: var(--light);
+      --on-accent: var(--dark);
+      --halo: rgba(var(--dark-rgb), 0.9);
       position: fixed;
       inset: 0;
       z-index: 50;
@@ -769,18 +769,16 @@
       z-index: 60;
     }
 
-    /* Dark pages */
-    #panel-thebar,
-    #panel-tasting,
-    #panel-events {
-      --paper: rgba(var(--dark-rgb), 0.9);
-      --paper-solid: var(--dark);
-      --ink: var(--light);
-      --ink-soft: rgba(var(--light-rgb), 0.72);
-      --rule: rgba(var(--light-rgb), 0.22);
-      --accent: var(--light);
-      --on-accent: var(--dark);
-      --halo: rgba(var(--dark-rgb), 0.9);
+    /* White pages */
+    #panel-reserve {
+      --paper: rgba(var(--light-rgb), 0.9);
+      --paper-solid: var(--light);
+      --ink: var(--dark);
+      --ink-soft: rgba(var(--dark-rgb), 0.72);
+      --rule: rgba(var(--dark-rgb), 0.16);
+      --accent: var(--dark);
+      --on-accent: var(--light);
+      --halo: rgba(var(--light-rgb), 0.92);
     }
 
     /* ---------- MENU VIEW (Vertical Snappy Item View) ---------- */
@@ -1103,6 +1101,17 @@
       pointer-events: none;
       z-index: 0;
       overflow: hidden;
+
+      /* Multi-directional silk edge fade: smooth dissolve on left, right, top, and bottom edges.
+         It stays put while the admin moves or resizes the photo underneath. */
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, transparent 18%, rgba(0,0,0,0.12) 32%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.85) 78%, rgba(0,0,0,0.18) 90%, transparent 96%),
+        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,1) 28%, rgba(0,0,0,1) 72%, rgba(0,0,0,0.7) 88%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, transparent 0%, transparent 18%, rgba(0,0,0,0.12) 32%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.85) 78%, rgba(0,0,0,0.18) 90%, transparent 96%),
+        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,1) 28%, rgba(0,0,0,1) 72%, rgba(0,0,0,0.7) 88%, transparent 100%);
+      mask-composite: intersect;
     }
 
     .lunch-slot-bg-photo {
@@ -1114,17 +1123,18 @@
       opacity: 0.32;
       filter: saturate(1.24) contrast(1.08) brightness(1.02);
 
-      /* Multi-directional silk edge fade: smooth dissolve on left, right, top, and bottom edges */
+      /* Soft edges of its own, so a photo made smaller or moved aside never shows a hard line */
       -webkit-mask-image:
-        linear-gradient(to right, transparent 0%, transparent 18%, rgba(0,0,0,0.12) 32%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.85) 78%, rgba(0,0,0,0.18) 90%, transparent 96%),
-        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,1) 28%, rgba(0,0,0,1) 72%, rgba(0,0,0,0.7) 88%, transparent 100%);
+        linear-gradient(to right, transparent, #000 10%, #000 90%, transparent),
+        linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
       -webkit-mask-composite: source-in;
       mask-image:
-        linear-gradient(to right, transparent 0%, transparent 18%, rgba(0,0,0,0.12) 32%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.85) 78%, rgba(0,0,0,0.18) 90%, transparent 96%),
-        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,1) 28%, rgba(0,0,0,1) 72%, rgba(0,0,0,0.7) 88%, transparent 100%);
+        linear-gradient(to right, transparent, #000 10%, #000 90%, transparent),
+        linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
       mask-composite: intersect;
 
-      transform: scale(1.03);
+      /* Size and position from the admin panel's sliders */
+      transform: translate(var(--media-x, 0%), var(--media-y, 0%)) scale(calc(1.03 * var(--media-zoom, 1)));
       transition: transform 0.6s var(--ease-out), opacity 0.4s ease;
     }
 
@@ -2148,6 +2158,7 @@
     .event-photo {
       position: relative;
       aspect-ratio: 16 / 10;
+      overflow: hidden;
       background: rgba(var(--light-rgb), 0.06);
     }
     .event-photo img {
@@ -2157,6 +2168,14 @@
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+    /* Size and position from the admin panel's sliders. An event photo never shrinks
+       below its frame, so the sliders choose which part of it fills the card. */
+    .event-feature > img,
+    .event-photo img {
+      object-position: calc(50% - var(--media-x, 0%) / 2) calc(50% - var(--media-y, 0%) / 2);
+      transform-origin: calc(50% - var(--media-x, 0%) / 2) calc(50% - var(--media-y, 0%) / 2);
+      transform: scale(max(1, var(--media-zoom, 1)));
     }
     .event-body {
       display: flex;
@@ -2174,6 +2193,7 @@
     .event-card.no-photo .event-photo {
       aspect-ratio: auto;
       height: 72px;
+      overflow: visible;
     }
     .events-empty {
       margin: 0;
@@ -6019,6 +6039,7 @@ Choose your spread/rillette style:</p>
         month: String(EVENT_MONTHS[eventDate.month] || ev.month || '').toUpperCase(),
         dow: getEventWeekday(ev, eventDate),
         image: ev.imageData || '',
+        frameOf: 'data-frame-of="' + escapeHtml(ev.id || '') + '" style="' + mediaFrameStyle(ev.mediaFrame) + '"',
         place: ev.venue || 'Main Dining Hall',
         hours: ev.time || '7:00 PM – 10:00 PM',
         title: ev.title || 'Belle Event',
@@ -6052,7 +6073,7 @@ Choose your spread/rillette style:</p>
     }
 
     function eventFeatureHtml(view) {
-      return '<article class="event-feature">' +
+      return '<article class="event-feature" ' + view.frameOf + '>' +
         (view.image ? '<img src="' + escapeHtml(view.image) + '" alt="' + escapeHtml(view.title) + '">' : '') +
         eventDateHtml(view) +
         '<div class="event-feature-body">' +
@@ -6065,7 +6086,7 @@ Choose your spread/rillette style:</p>
 
     function eventCardHtml(view, isFeature) {
       return '<article class="event-card' + (view.image ? '' : ' no-photo') + '" data-category="' + escapeHtml(view.category) + '" data-key="' + view.date.month + '-' + view.date.day + '"' + (isFeature ? ' data-feature' : '') + '>' +
-        '<div class="event-photo">' +
+        '<div class="event-photo" ' + view.frameOf + '>' +
           (view.image ? '<img src="' + escapeHtml(view.image) + '" alt="' + escapeHtml(view.title) + '" loading="lazy">' : '') +
           eventDateHtml(view) +
         '</div>' +
@@ -6255,6 +6276,71 @@ Choose your spread/rillette style:</p>
       if (!id) return '<video ' + shared + ' autoplay src="' + escapeHtml(src) + '"></video>';
       var poster = mediaFileOf(id).poster;
       return '<video ' + shared + ' data-media="' + id + '"' + (poster ? ' poster="' + escapeHtml(poster) + '"' : '') + '></video>';
+    }
+
+    // The size and position the admin panel's sliders gave a photo or video, as CSS variables
+    function mediaFrameStyle(frame) {
+      if (!frame) return '';
+      function clamp(value, min, max) {
+        var n = Number(value);
+        return isFinite(n) ? Math.max(min, Math.min(max, n)) : null;
+      }
+      var zoom = clamp(frame.zoom, 50, 300);
+      var x = clamp(frame.x, -100, 100);
+      var y = clamp(frame.y, -100, 100);
+      return (zoom === null ? '' : '--media-zoom:' + zoom / 100 + ';') +
+        (x === null ? '' : '--media-x:' + x + '%;') +
+        (y === null ? '' : '--media-y:' + y + '%;');
+    }
+
+    // The faded photo or video behind a dish, or nothing when it has neither
+    function dishBackdropHtml(item, fallbackImage) {
+      var image = item.image || fallbackImage;
+      var media = '';
+      if (item.video) {
+        media = dishVideoHtml(item.video);
+      } else if (image) {
+        media = '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(image) + '\');"></div>';
+      }
+      if (!media) return '';
+      return '<div class="lunch-slot-bg" aria-hidden="true" data-frame-of="' + escapeHtml(item.id || '') + '" style="' + mediaFrameStyle(item.mediaFrame) + '">' +
+        media +
+        '<div class="lunch-slot-bg-scrim"></div>' +
+      '</div>';
+    }
+
+    // Moves a photo while the admin drags a slider, without drawing the whole menu again
+    function applyMediaFrame(id, frame) {
+      document.querySelectorAll('[data-frame-of]').forEach(function(el) {
+        if (id && el.getAttribute('data-frame-of') === id) el.setAttribute('style', mediaFrameStyle(frame));
+      });
+    }
+
+    // The admin's phone preview brings the dish or event being edited into view
+    function showPreviewItem(id) {
+      var panel = document.querySelector('.view-food-panel.is-active');
+      if (!panel || !id) return;
+      var dish = Array.prototype.find.call(panel.querySelectorAll('[data-dish]'), function(el) {
+        return el.getAttribute('data-dish') === id;
+      });
+      if (dish) {
+        var scroller = dish.closest('.lunch-vertical-scroll');
+        var goTo = {
+          lunchVerticalScroll: goToLunchItem,
+          alacarteVerticalScroll: goToAlacarteItem,
+          barVerticalScroll: goToBarItem,
+          customVerticalScroll: goToCustomItem
+        }[scroller && scroller.id];
+        if (goTo) goTo(parseInt(dish.getAttribute('data-index'), 10) || 0, false);
+        return;
+      }
+      var eventsScroll = document.getElementById('eventsViewScroll');
+      var photo = Array.prototype.find.call(panel.querySelectorAll('[data-frame-of]'), function(el) {
+        return el.getAttribute('data-frame-of') === id && el.getClientRects().length;
+      });
+      if (photo && eventsScroll && eventsScroll.contains(photo)) {
+        eventsScroll.scrollTop += photo.getBoundingClientRect().top - eventsScroll.getBoundingClientRect().top - 16;
+      }
     }
 
     function openMediaCache() {
@@ -6572,21 +6658,9 @@ Choose your spread/rillette style:</p>
         var item = slot.item;
         var isVeg = !!item.isVeg || (item.tags && item.tags.indexOf('Vegetarian') !== -1);
 
-        var mediaBackdropHtml = '';
-        if (item.video) {
-          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            dishVideoHtml(item.video) +
-            '<div class="lunch-slot-bg-scrim"></div>' +
-          '</div>';
-        } else {
-          var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
-          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(itemImg) + '\');"></div>' +
-            '<div class="lunch-slot-bg-scrim"></div>' +
-          '</div>';
-        }
+        var mediaBackdropHtml = dishBackdropHtml(item, defaultLunchImages[idx % defaultLunchImages.length]);
 
-        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" data-dish="' + escapeHtml(item.id || '') + '" aria-label="' + escapeHtml(item.name || '') + '">' +
           menuHeadingsHtml(slot.headings) +
           '<div class="lunch-slot-content">' +
             mediaBackdropHtml +
@@ -6775,21 +6849,9 @@ Choose your spread/rillette style:</p>
         var item = slot.item;
         var isVeg = !!item.isVeg || (item.tags && item.tags.indexOf('Vegetarian') !== -1);
 
-        var mediaBackdropHtml = '';
-        if (item.video) {
-          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            dishVideoHtml(item.video) +
-            '<div class="lunch-slot-bg-scrim"></div>' +
-          '</div>';
-        } else {
-          var itemImg = item.image || defaultLunchImages[idx % defaultLunchImages.length];
-          mediaBackdropHtml = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(itemImg) + '\');"></div>' +
-            '<div class="lunch-slot-bg-scrim"></div>' +
-          '</div>';
-        }
+        var mediaBackdropHtml = dishBackdropHtml(item, defaultLunchImages[idx % defaultLunchImages.length]);
 
-        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" data-dish="' + escapeHtml(item.id || '') + '" aria-label="' + escapeHtml(item.name || '') + '">' +
           menuHeadingsHtml(slot.headings) +
           '<div class="lunch-slot-content">' +
             mediaBackdropHtml +
@@ -6927,20 +6989,9 @@ Choose your spread/rillette style:</p>
             var item = slot.item;
             var isVeg = !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
 
-            var mediaBackdrop = '';
-            if (item.video) {
-              mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-                dishVideoHtml(item.video) +
-                '<div class="lunch-slot-bg-scrim"></div>' +
-              '</div>';
-            } else if (item.image) {
-              mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-                '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(item.image) + '\');"></div>' +
-                '<div class="lunch-slot-bg-scrim"></div>' +
-              '</div>';
-            }
+            var mediaBackdrop = dishBackdropHtml(item);
 
-            html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+            html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" data-dish="' + escapeHtml(item.id || '') + '" aria-label="' + escapeHtml(item.name || '') + '">' +
               menuHeadingsHtml(slot.headings) +
               '<div class="lunch-slot-content">' +
                 mediaBackdrop +
@@ -7053,20 +7104,9 @@ Choose your spread/rillette style:</p>
         }
         var item = slot.item;
         var isVeg = !!item.isVeg || (item.tags || []).indexOf('Vegetarian') !== -1;
-        var mediaBackdrop = '';
-        if (item.video) {
-          mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            dishVideoHtml(item.video) +
-            '<div class="lunch-slot-bg-scrim"></div>' +
-          '</div>';
-        } else if (item.image) {
-          mediaBackdrop = '<div class="lunch-slot-bg" aria-hidden="true">' +
-            '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(item.image) + '\');"></div>' +
-            '<div class="lunch-slot-bg-scrim"></div>' +
-          '</div>';
-        }
+        var mediaBackdrop = dishBackdropHtml(item);
 
-        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" aria-label="' + escapeHtml(item.name || '') + '">' +
+        html += '<section class="' + menuSlotClass(slot) + '" data-index="' + idx + '" data-dish="' + escapeHtml(item.id || '') + '" aria-label="' + escapeHtml(item.name || '') + '">' +
           menuHeadingsHtml(slot.headings) +
           '<div class="lunch-slot-content">' +
             mediaBackdrop +
@@ -7938,7 +7978,10 @@ Choose your spread/rillette style:</p>
         } else {
           openPanel(target);
           if (ev.data.subcat) selectPreviewSubcat(target, ev.data.subcat);
+          if (ev.data.focus) showPreviewItem(ev.data.focus);
         }
+      } else if (ev.data.type === 'BELLE_MEDIA_FRAME') {
+        applyMediaFrame(ev.data.id, ev.data.frame);
       } else if (ev.data.type === 'BELLE_RELOAD') {
         applyBelleData(window.belleCurrentData || window.BELLE_DEFAULT_DATA, true);
         returnToHome();
