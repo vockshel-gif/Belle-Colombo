@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="belleData.js?v=2"></script>
+  <script src="belleData.js?v=3"></script>
   <style>
     :root {
       --bg: #f6f3ee;
@@ -626,6 +626,38 @@
     .stage-slides { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
     .stage-slides .row-main { cursor: default; }
 
+    /* ---------- Gallery and About ---------- */
+    .gallery-row { align-items: center; gap: 10px; padding: 10px 0; }
+    .gallery-row .thumb { width: 64px; height: 64px; }
+    .gallery-fields {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px;
+      gap: 6px 8px;
+      align-items: center;
+    }
+    .gallery-fields .field-hint,
+    .gallery-fields .field-error { grid-column: 1 / -1; }
+    .pillar-row {
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 8px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+    .pillar-row:first-child { border-top: 0; padding-top: 0; }
+    .pillar-num { padding-top: 11px; font-size: 13px; font-weight: 700; color: var(--text-3); font-variant-numeric: tabular-nums; }
+    .pillar-fields { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .pillar-fields textarea { min-height: 64px; }
+    .pillar-row .btn-link { padding-top: 12px; }
+    @media (max-width: 760px) {
+      .gallery-row { flex-wrap: wrap; }
+      .gallery-fields { flex-basis: calc(100% - 50px); grid-template-columns: minmax(0, 1fr); margin-left: 44px; }
+      .gallery-row .row-add { margin-left: auto; }
+    }
+
     /* ---------- Free allowance rings ---------- */
     .usage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
     .usage-item { display: flex; align-items: center; gap: 14px; min-width: 0; }
@@ -1045,6 +1077,17 @@
       { src: 'assets/images/bg/slide_steak_grill.webp', label: 'Steak' },
       { src: 'assets/images/bg/slide_gourmet_meatballs.webp', label: 'Meatballs' }
     ];
+    // index.html has the same list. Guests filter the Gallery by these.
+    var GALLERY_TAGS = [
+      { id: 'food', label: 'Food' },
+      { id: 'drinks', label: 'Drinks' },
+      { id: 'room', label: 'The Room' },
+      { id: 'moments', label: 'Moments' }
+    ];
+    // Built into the website but not offered anywhere else
+    var MORE_PHOTOS = [
+      { src: 'assets/images/luxury_dessert.jpg', label: 'Cake' }
+    ];
     var BACKGROUND_STAGES = {
       landing: { title: 'Landing page', hint: 'The first thing guests see, behind MENU and EVENTS.', previewTarget: 'home' },
       menu: { title: 'Our Menu page', hint: 'Behind your list of menus. It also shows faintly behind each menu and Events.', previewTarget: 'menu-hub' }
@@ -1152,6 +1195,8 @@
       mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>',
       people: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
       image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+      mosaic: '<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/>',
+      story: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.4"/>',
       grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>'
     };
 
@@ -1271,6 +1316,14 @@
       };
     }
 
+    function defaultPage(key) {
+      var page = window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA[key];
+      if (page) return clone(page);
+      return key === 'gallery'
+        ? { enabled: true, intro: '', photos: [] }
+        : { enabled: true, title: 'Our Story', headline: '', image: '', lead: '', story: '', pillars: [] };
+    }
+
     function normalizeData(data) {
       var d = data || {};
       d.lunchItems = d.lunchItems || [];
@@ -1287,6 +1340,13 @@
         d.backgrounds[key] = Object.assign(defaultStage(key), d.backgrounds[key]);
       });
       d.reservations = Object.assign(defaultBookingSettings(), d.reservations);
+      // Gallery and About show the pages in belleData.js until they are first published.
+      // "enabled" is always stored, so an emptied page stays empty instead of starting over.
+      ['gallery', 'about'].forEach(function (key) {
+        if (!d[key] || typeof d[key].enabled !== 'boolean') d[key] = defaultPage(key);
+      });
+      d.gallery.photos = (d.gallery.photos || []).filter(Boolean);
+      d.about.pillars = (d.about.pillars || []).filter(Boolean);
 
       if (!d.menuCategories.length) {
         d.menuCategories = [
@@ -1535,6 +1595,14 @@
         if (keptOld.join() !== keptNew.join()) add('Rearranged', prettyName(menu.name), 'The order of dishes');
       });
 
+      var oldPhotos = before.gallery.photos.map(function (p) { return p.id; });
+      var newPhotos = after.gallery.photos.map(function (p) { return p.id; });
+      var addedPhotos = newPhotos.filter(function (id) { return oldPhotos.indexOf(id) === -1; }).length;
+      var removedPhotos = oldPhotos.filter(function (id) { return newPhotos.indexOf(id) === -1; }).length;
+      if (addedPhotos) add('Added', 'Gallery', plural(addedPhotos, 'photo'));
+      if (removedPhotos) add('Removed', 'Gallery', plural(removedPhotos, 'photo'));
+      if (!addedPhotos && !removedPhotos && !sameContent(before.gallery, after.gallery)) add('Changed', 'Gallery', 'Captions, order or settings');
+      if (!sameContent(before.about, after.about)) add('Changed', 'About', 'Your story');
       if (!sameContent(before.venue, after.venue)) add('Changed', 'Contact & Hours', 'Contact details');
       if (!sameContent(before.reservations, after.reservations)) add('Changed', 'Reservations', 'Booking settings');
       Object.keys(BACKGROUND_STAGES).forEach(function (key) {
@@ -1867,6 +1935,7 @@
     function previewPageTarget() {
       if (view.page === 'backgrounds') return BACKGROUND_STAGES[view.stage].previewTarget;
       if (view.page === 'events' || view.page === 'event') return 'events';
+      if (view.page === 'gallery' || view.page === 'about') return view.page;
       if (view.page === 'tasting') return 'tasting';
       if (view.page === 'reservations' || view.page === 'reservation' || view.page === 'bookingSettings') return 'reserve';
       if (view.page === 'menu' || view.page === 'dish') {
@@ -1969,6 +2038,8 @@
       if (can('bookings')) html += navItemHtml('Reservations', 'book', 'reservations', null, waitingBookings().length || undefined);
       if (canEdit) {
         html += navItemHtml('Events', 'calendar', 'events', null, appData.events.length);
+        html += navItemHtml('Gallery', 'mosaic', 'gallery', null, appData.gallery.photos.length);
+        html += navItemHtml('About', 'story', 'about');
         html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
         html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
         html += navItemHtml('Contact & Hours', 'pin', 'contact');
@@ -1993,7 +2064,8 @@
     function renderPage() {
       var pages = {
         home: homeHtml, menu: menuHtml, dish: dishHtml, tasting: tastingHtml,
-        events: eventsHtml, event: eventHtml, backgrounds: backgroundsHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
+        events: eventsHtml, event: eventHtml, gallery: galleryHtml, about: aboutHtml,
+        backgrounds: backgroundsHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
         reservations: reservationsHtml, reservation: reservationHtml, bookingSettings: bookingSettingsHtml,
         team: teamHtml, staffAdd: staffAddHtml
       };
@@ -2075,6 +2147,13 @@
       if (oldEvents.length) {
         issues.push({ text: '<b>' + plural(oldEvents.length, 'event') + '</b> ' + (oldEvents.length === 1 ? 'is' : 'are') + ' in the past or ' + (oldEvents.length === 1 ? 'has' : 'have') + ' no year, but still ' + (oldEvents.length === 1 ? 'shows' : 'show') + ' under Upcoming Events.', events: true });
       }
+      if (isStarterStory()) {
+        issues.push({ text: '<b>Your About page still has the starter text.</b> Replace it with your own story, or hide the page until it is ready.', page: 'about', action: 'Edit About' });
+      }
+      var lostPhotos = appData.gallery.photos.filter(function (p) { return !pagePhotoSrc(p.src); }).length;
+      if (lostPhotos) {
+        issues.push({ text: '<b>' + plural(lostPhotos, 'gallery photo') + '</b> ' + (lostPhotos === 1 ? 'was' : 'were') + ' taken off ' + (lostPhotos === 1 ? 'its dish, so guests do not see it' : 'their dishes, so guests do not see them') + '.', page: 'gallery', action: 'Review the gallery' });
+      }
       if (dataSize() > DATA_SIZE_LIMIT_BYTES) {
         issues.push({ text: '<b>Your uploaded photos are taking a lot of space.</b> Every new visitor downloads them. Delete the ones you can live without.', media: true });
       }
@@ -2100,6 +2179,8 @@
           links = '<button type="button" class="btn btn-sm" data-action="go" data-page="reservations">Review reservations</button>';
         } else if (issue.team) {
           links = '<button type="button" class="btn btn-sm" data-action="go" data-page="team">Staff accounts</button>';
+        } else if (issue.page) {
+          links = '<button type="button" class="btn btn-sm" data-action="go" data-page="' + issue.page + '">' + esc(issue.action) + '</button>';
         }
         return '<div class="issue"><p>' + issue.text + '</p><div class="issue-actions">' + links + '</div></div>';
       }).join('') : '<p class="all-good">' + icon('check') + 'Nothing needs your attention.</p>';
@@ -3004,6 +3085,10 @@
         onStageUpload(t, file);
         return;
       }
+      if (mode === 'gallery' || mode === 'about') {
+        onPagePhotoUpload(mode, Array.prototype.slice.call(t.files));
+        return;
+      }
       if (isVideoFile(file)) {
         if (mode === 'dishvideo') prepareVideo(file, useVideoOnOpenDish);
         else if (mode === 'media') chooseVideoTarget(file);
@@ -3333,7 +3418,9 @@
       });
     }
 
-    function prepareStagePhoto(file, key) {
+    // A large photo goes to belle_media like a video, with a small still in the menu.
+    // Resolves to its "media:" address, or to null if it was cancelled or failed.
+    function prepareStoredPhoto(file, label) {
       var job = { cancelled: false, stop: null };
       var id = 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
       var busy = showBusy(function () {
@@ -3349,8 +3436,8 @@
       }
       var poster = '';
       var storedSize = 0;
-      busy.step('Getting your photo ready', 'Shrinking it to suit a full screen…');
-      Promise.all([shrink(STAGE_PHOTO_MAX_PX), shrink(VIDEO_POSTER_PX)]).then(function (urls) {
+      busy.step('Getting your photo ready' + (label || ''), 'Shrinking it to suit a full screen…');
+      return Promise.all([shrink(STAGE_PHOTO_MAX_PX), shrink(VIDEO_POSTER_PX)]).then(function (urls) {
         if (job.cancelled) throw CANCELLED;
         var parts = /^data:([^;]+);base64,(.+)$/.exec(urls[0]);
         poster = urls[1];
@@ -3358,17 +3445,25 @@
         if (usageEstimate().stored + storedSize > FREE_STORAGE_BYTES) {
           throw { text: 'Your free Firebase storage is full. Delete something you no longer need, then press Publish and try again.' };
         }
-        busy.step('Uploading your photo', 'Saving it to Firebase…');
+        busy.step('Uploading your photo' + (label || ''), 'Saving it to Firebase…');
         return uploadMediaFile(id, parts[1], parts[2], job, busy.progress);
       }).then(function () {
         appData.mediaFiles[id] = { kind: 'photo', size: storedSize, poster: poster };
-        appData.backgrounds[key].photos.push('media:' + id);
         busy.close();
-        showStage(key);
-        toast('Photo added.');
+        return 'media:' + id;
       }).catch(function (err) {
         busy.close();
         showMediaFailure(err, 'photo');
+        return null;
+      });
+    }
+
+    function prepareStagePhoto(file, key) {
+      prepareStoredPhoto(file).then(function (src) {
+        if (!src) return;
+        appData.backgrounds[key].photos.push(src);
+        showStage(key);
+        toast('Photo added.');
       });
     }
 
@@ -3399,6 +3494,261 @@
       }).catch(function () {
         // Only tidying up: the next publish tries again
       });
+    }
+
+    /* ========================================================
+       GALLERY AND ABOUT PAGES
+       A photo here is a file in the website, a large photo kept in
+       belle_media (fetched only when a guest opens the page), or
+       "from:<id>", which borrows a dish's or event's photo. Photos
+       already in the menu are borrowed, never copied, so the menu
+       every visitor downloads does not grow.
+       ======================================================== */
+    function ownerOf(id) {
+      var dish = allDishes().find(function (d) { return d.item.id === id; });
+      if (dish) return { src: dish.item.image || '', label: dish.item.name || 'Unnamed', area: dish.area, menuId: dish.menuId };
+      var ev = appData.events.find(function (x) { return x.id === id; });
+      if (ev) return { src: ev.imageData || '', label: ev.title || 'Unnamed event', area: 'Events' };
+      return null;
+    }
+
+    function pagePhotoSrc(src) {
+      var match = /^from:(.+)$/.exec(src || '');
+      if (!match) return src || '';
+      var owner = ownerOf(match[1]);
+      return owner ? owner.src : '';
+    }
+
+    function pagePhotoRef(src) {
+      if (src.indexOf('data:') !== 0) return src;
+      var media = collectMedia().find(function (m) { return m.src === src; });
+      var owner = media && media.uses.find(function (u) { return u.type === 'dish' || u.type === 'event'; });
+      return owner ? 'from:' + owner.id : src;
+    }
+
+    // Every photo the website has: uploads first, then those built into it
+    function libraryPhotos() {
+      var list = [];
+      var seen = {};
+      function add(src, label) {
+        if (!src || seen[src]) return;
+        seen[src] = true;
+        list.push({ src: src, label: label || 'Photo' });
+      }
+      collectMedia().forEach(function (m) {
+        if (m.kind !== 'photo') return;
+        var owner = m.uses.find(function (u) { return u.type === 'dish' || u.type === 'event'; });
+        // A photo inside the menu can only be borrowed from something it is on
+        if (m.src.indexOf('data:') === 0 && !owner) return;
+        add(m.src, owner ? owner.label : photoLabel(m.src));
+      });
+      PHOTO_PRESETS.concat(BACKGROUND_PHOTOS, EVENT_PHOTOS, MORE_PHOTOS).forEach(function (p) { add(p.src, p.label); });
+      return list;
+    }
+
+    function photoPickHtml(photo, action, picked) {
+      return '<button type="button" class="photo-pick' + (picked ? ' is-picked' : '') + '" data-action="' + action + '" data-src="' + esc(photo.src) + '" title="' + esc(photo.label) + '" aria-pressed="' + !!picked + '">' +
+        '<img src="' + esc(photoThumb(photo.src)) + '" alt="' + esc(photo.label) + '" loading="lazy" /></button>';
+    }
+
+    function galleryRowHtml(p) {
+      var src = pagePhotoSrc(p.src);
+      var from = /^from:(.+)$/.exec(p.src || '');
+      var owner = from ? ownerOf(from[1]) : null;
+      var tags = [{ id: '', label: 'Not sorted' }].concat(GALLERY_TAGS).map(function (t) {
+        return '<option value="' + t.id + '"' + ((p.tag || '') === t.id ? ' selected' : '') + '>' + esc(t.label) + '</option>';
+      }).join('');
+      var note = '';
+      if (!src) note = '<span class="field-error">This photo was taken off its ' + (owner ? 'dish' : 'dish or event') + ', so guests do not see it. Remove it or choose another.</span>';
+      else if (owner) note = '<span class="field-hint">The photo on ' + esc(owner.label) + ' (' + esc(owner.area) + '). It changes if that photo changes.</span>';
+      return '<div class="row gallery-row" data-sort-item="' + esc(p.id) + '">' +
+        dragHandleHtml(p.caption || 'this photo') +
+        '<span class="thumb">' + (src ? '<img src="' + esc(photoThumb(src)) + '" alt="" loading="lazy" />' : icon('image', 20)) + '</span>' +
+        '<div class="gallery-fields">' +
+          '<input type="text" data-gallery="caption" data-id="' + esc(p.id) + '" value="' + esc(p.caption) + '" placeholder="A short caption (optional)" aria-label="Caption" maxlength="80" />' +
+          '<select data-gallery="tag" data-id="' + esc(p.id) + '" aria-label="Kind of photo">' + tags + '</select>' +
+          note +
+        '</div>' +
+        '<button type="button" class="btn-link danger row-add" data-action="removeGalleryPhoto" data-id="' + esc(p.id) + '">Remove</button>' +
+      '</div>';
+    }
+
+    function galleryHtml() {
+      var g = appData.gallery;
+      var inGallery = {};
+      g.photos.forEach(function (p) { inGallery[pagePhotoSrc(p.src)] = true; });
+      var picks = libraryPhotos().filter(function (photo) { return !inGallery[photo.src]; }).map(function (photo) {
+        return photoPickHtml(photo, 'addGalleryPhoto', false);
+      }).join('');
+      var uploadButton = function (cls) {
+        return '<label class="btn ' + cls + '">' + icon('plus', 16) + 'Upload photos<input type="file" accept="image/*" multiple data-upload="gallery" hidden /></label>';
+      };
+      return pageHead('Gallery', 'The photos on your Gallery page, in this order. Changes show in the phone preview, and guests see them after you press Publish.', uploadButton('btn-primary')) +
+        '<section class="card card-pad">' +
+          '<label class="check"><input type="checkbox" id="galleryOn"' + (g.enabled ? ' checked' : '') + ' /><span>Show Gallery on the website</span></label>' +
+          '<div class="field"><label for="galleryIntroText">Line under the title (optional)</label>' +
+            '<input type="text" id="galleryIntroText" value="' + esc(g.intro) + '" placeholder="Plates, pours and the people around our tables." maxlength="120" /></div>' +
+        '</section>' +
+        '<section class="card">' +
+          '<div class="section-head"><h2>Photos on the Gallery <span>' + plural(g.photos.length, 'photo') + '</span></h2></div>' +
+          '<div class="sort-list" data-sort-list="gallery" data-sort-group="gallery">' +
+            g.photos.map(galleryRowHtml).join('') +
+            '<p class="empty">No photos yet. Add some from your photos below, or upload new ones.</p>' +
+          '</div>' +
+        '</section>' +
+        '<p class="field-hint">The first photo is shown largest, and the rest make a mosaic of big, tall and small tiles. Guests see each photo in black and white until it reaches the middle of the screen, where it turns to colour. Tap a photo on the website to see it full screen. The kind of photo sorts them under Food, Drinks, The Room and Moments.</p>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Add a photo you already have</h2>' +
+          '<p class="card-hint">Every photo on your menus, events and backgrounds, and those built into the website. Click one to add it. A dish or event photo is not copied, so it adds nothing to your menu size.</p>' +
+          (picks ? '<div class="photo-grid">' + picks + '</div>' : '<p class="empty">Every photo you have is already in the gallery.</p>') +
+          '<div class="add-row">' + uploadButton('btn-sm') + '</div>' +
+          '<p class="field-hint">A photo you upload here is kept apart from your menu, so only guests who open the Gallery download it. You can choose several at once.</p>' +
+        '</section>';
+    }
+
+    function refreshPage() {
+      touch();
+      renderSide();
+      keepScroll(renderPage);
+    }
+
+    // A first guess at the caption and kind, from where the photo came from
+    function newGalleryPhoto(src) {
+      var ref = pagePhotoRef(src);
+      var from = /^from:(.+)$/.exec(ref);
+      var owner = from ? ownerOf(from[1]) : null;
+      var preset = libraryPhotos().find(function (p) { return p.src === src; });
+      var tag = '';
+      if (owner) tag = owner.area === 'Events' ? 'moments' : (owner.menuId === 'thebar' ? 'drinks' : 'food');
+      return {
+        id: 'g-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        src: ref,
+        caption: owner ? owner.label : (preset && !uploadedVideoId(src) ? preset.label : ''),
+        tag: tag
+      };
+    }
+
+    function addGalleryPhoto(el) {
+      appData.gallery.photos.push(newGalleryPhoto(el.getAttribute('data-src')));
+      refreshPage();
+      toast('Added to the gallery. Give it a caption above.');
+    }
+
+    function removeGalleryPhoto(el) {
+      var id = el.getAttribute('data-id');
+      appData.gallery.photos = appData.gallery.photos.filter(function (p) { return p.id !== id; });
+      refreshPage();
+    }
+
+    function onGalleryInput(t) {
+      var g = appData.gallery;
+      if (t.id === 'galleryOn') g.enabled = t.checked;
+      else if (t.id === 'galleryIntroText') g.intro = t.value;
+      else if (t.dataset.gallery) {
+        var photo = g.photos.find(function (p) { return p.id === t.dataset.id; });
+        if (photo) photo[t.dataset.gallery] = t.value;
+      }
+      touch();
+    }
+
+    // Several photos upload one after another, and a failure or Cancel stops the rest
+    function onPagePhotoUpload(mode, files) {
+      var photos = files.filter(function (file) { return !isVideoFile(file); });
+      if (!photos.length) {
+        toast('Please choose a photo here.');
+        return;
+      }
+      if (mode === 'about') photos = photos.slice(0, 1);
+      var added = 0;
+      photos.reduce(function (chain, file, i) {
+        return chain.then(function (keepGoing) {
+          if (!keepGoing) return false;
+          var label = photos.length > 1 ? ' (' + (i + 1) + ' of ' + photos.length + ')' : '';
+          return prepareStoredPhoto(file, label).then(function (src) {
+            if (!src) return false;
+            if (mode === 'about') appData.about.image = src;
+            else appData.gallery.photos.push(newGalleryPhoto(src));
+            added++;
+            return true;
+          });
+        });
+      }, Promise.resolve(true)).then(function () {
+        if (!added) return;
+        refreshPage();
+        toast(mode === 'about' ? 'Photo added.' : plural(added, 'photo') + ' added. Give ' + (added === 1 ? 'it' : 'them') + ' a caption.');
+      });
+    }
+
+    function isStarterStory() {
+      var starter = window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.about;
+      var about = appData.about;
+      return !!starter && about.enabled && about.lead === starter.lead && about.story === starter.story;
+    }
+
+    function aboutPhotoPartHtml() {
+      var current = pagePhotoSrc(appData.about.image);
+      var photos = libraryPhotos();
+      if (current && !photos.some(function (p) { return p.src === current; })) photos.unshift({ src: current, label: 'Current photo' });
+      return '<div class="photo-grid">' + photos.map(function (photo) {
+          return photoPickHtml(photo, 'pickAboutPhoto', photo.src === current);
+        }).join('') + '</div>' +
+        '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="about" hidden /></label>' +
+          (current ? '<button type="button" class="btn btn-sm" data-action="clearAboutPhoto">No photo</button>' : '') +
+        '</div>' +
+        '<p class="field-hint">It fills the top of the page behind your headline, so a wide, calm photo works best. An upload here is kept apart from your menu.</p>';
+    }
+
+    function aboutField(id, label, key, placeholder, rows, hint) {
+      var value = appData.about[key];
+      var input = rows
+        ? '<textarea id="' + id + '" data-about="' + key + '" rows="' + rows + '" placeholder="' + esc(placeholder) + '">' + esc(value) + '</textarea>'
+        : '<input type="text" id="' + id + '" data-about="' + key + '" value="' + esc(value) + '" placeholder="' + esc(placeholder) + '" />';
+      return '<div class="field"><label for="' + id + '">' + esc(label) + '</label>' + input + (hint ? '<span class="field-hint">' + esc(hint) + '</span>' : '') + '</div>';
+    }
+
+    function aboutHtml() {
+      var a = appData.about;
+      var pillars = a.pillars.map(function (p, i) {
+        return '<div class="pillar-row" data-sort-item="' + i + '">' +
+          dragHandleHtml(p.title || 'this highlight') +
+          '<span class="pillar-num">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+          '<div class="pillar-fields">' +
+            '<input type="text" data-pillar="title" data-i="' + i + '" value="' + esc(p.title) + '" placeholder="The Kitchen" aria-label="Highlight ' + (i + 1) + ' title" />' +
+            '<textarea rows="2" data-pillar="text" data-i="' + i + '" placeholder="A sentence or two" aria-label="Highlight ' + (i + 1) + ' text">' + esc(p.text) + '</textarea>' +
+          '</div>' +
+          '<button type="button" class="btn-link danger" data-action="removePillar" data-i="' + i + '">Remove</button>' +
+        '</div>';
+      }).join('');
+      return pageHead('About', 'Your story, on the About page. Changes show in the phone preview, and guests see them after you press Publish.') +
+        (isStarterStory() ? "<div class=\"note is-info\">This is starter text, written so the page is not empty. Replace it with Belle Colombo's own story, or untick Show About until it is ready.</div>" : '') +
+        '<section class="card card-pad">' +
+          '<label class="check"><input type="checkbox" id="aboutOn"' + (a.enabled ? ' checked' : '') + ' /><span>Show About on the website</span></label>' +
+          '<div class="field-row">' +
+            aboutField('aboutTitle', 'Small title', 'title', 'Our Story') +
+            aboutField('aboutHeadline', 'Headline', 'headline', 'A table worth lingering at.') +
+          '</div>' +
+          aboutField('aboutLead', 'Opening line', 'lead', 'One or two sentences guests read first', 3, 'Shown large, under the photo.') +
+          aboutField('aboutStory', 'Your story', 'story', 'Where Belle came from, the kitchen, the people', 9, 'Leave an empty line between paragraphs. The first letter is shown large.') +
+        '</section>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Photo at the top</h2>' +
+          '<div id="aboutPhotoPart">' + aboutPhotoPartHtml() + '</div>' +
+        '</section>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Highlights</h2>' +
+          '<p class="card-hint">Short numbered points under your story. Drag the dots to change the order.</p>' +
+          '<div class="repeat-list" data-sort-list="pillars" data-sort-group="pillars">' + pillars + '</div>' +
+          '<div><button type="button" class="btn btn-sm" data-action="addPillar">' + icon('plus', 14) + 'Add a highlight</button></div>' +
+        '</section>' +
+        '<p class="field-hint">Under the highlights, guests see your address, hours and WhatsApp number from <button type="button" class="btn-link" data-action="go" data-page="contact">Contact &amp; Hours</button>, with buttons to reserve and for directions.</p>';
+    }
+
+    function onAboutInput(t) {
+      var a = appData.about;
+      if (t.id === 'aboutOn') a.enabled = t.checked;
+      else if (t.dataset.about) a[t.dataset.about] = t.value;
+      else if (t.dataset.pillar) a.pillars[parseInt(t.dataset.i, 10)][t.dataset.pillar] = t.value;
+      touch();
     }
 
     /* ========================================================
@@ -3555,6 +3905,12 @@
       appData.events.forEach(function (ev) {
         if (ev.imageData) entry(ev.imageData, 'photo').uses.push({ type: 'event', id: ev.id, label: ev.title, area: 'Events' });
       });
+      appData.gallery.photos.forEach(function (p) {
+        var src = pagePhotoSrc(p.src);
+        if (src) entry(src, 'photo').uses.push({ type: 'gallery', id: p.id, label: p.caption || 'A gallery photo', area: 'Gallery' });
+      });
+      var aboutPhoto = pagePhotoSrc(appData.about.image);
+      if (aboutPhoto) entry(aboutPhoto, 'photo').uses.push({ type: 'about', label: 'Your story', area: 'About' });
       (appData.standaloneMedia || []).forEach(function (m) {
         if (m && m.url) entry(m.url, m.type === 'video' ? 'video' : 'photo');
       });
@@ -3594,6 +3950,11 @@
           var id = uploadedVideoId(src);
           if (id) shown[id] = true;
         });
+      });
+      // Counted as if every guest opens Gallery and About, to be safe
+      appData.gallery.photos.concat({ src: appData.about.image }).forEach(function (p) {
+        var id = uploadedVideoId(pagePhotoSrc(p.src));
+        if (id) shown[id] = true;
       });
       var stored = menu;
       var perGuest = menu + VISIT_OVERHEAD_BYTES;
@@ -3652,7 +4013,7 @@
         // The still image, because playing the real file here would use up downloads
         var info = uploadedVideo(media.src) || {};
         preview = (info.poster ? '<img src="' + esc(info.poster) + '" alt="" loading="lazy" />' : '') +
-          '<span class="media-tag">' + (media.kind === 'photo' ? 'Background photo' : 'Video' + (info.seconds ? ', ' + info.seconds + ' sec' : '')) + '</span>';
+          '<span class="media-tag">' + (media.kind === 'photo' ? 'Large photo' : 'Video' + (info.seconds ? ', ' + info.seconds + ' sec' : '')) + '</span>';
       } else if (media.kind === 'video') {
         preview = '<video src="' + esc(media.src) + '" muted playsinline preload="metadata" controls></video>';
       } else {
@@ -3662,6 +4023,7 @@
         var action = 'data-action="openEvent" data-id="' + esc(use.id) + '"';
         if (use.type === 'dish') action = 'data-action="openDish" data-menu="' + esc(use.menuId) + '" data-id="' + esc(use.id) + '"';
         if (use.type === 'background') action = 'data-action="go" data-page="backgrounds"';
+        if (use.type === 'gallery' || use.type === 'about') action = 'data-action="go" data-page="' + use.type + '"';
         return '<button type="button" class="btn-link" ' + action + '>' + esc(use.label || 'Unnamed') + '</button> <span>(' + esc(use.area) + ')</span>';
       }).join('<br />');
       var more = media.uses.length > 3 ? '<br /><span>and ' + (media.uses.length - 3) + ' more</span>' : '';
@@ -3703,7 +4065,7 @@
       return pageHead('Photos & Videos', 'See every photo and video on your website, and where it is used.',
         '<label class="btn btn-primary">' + icon('plus', 16) + 'Upload a photo or video<input type="file" accept="image/*,video/*" data-upload="media" hidden /></label>') +
         dataUseHtml() +
-        '<div class="media-heading"><h2>Your uploads</h2><p>Photos are stored with your menu. Videos are stored on their own, and a guest downloads one only on reaching that dish. Deleting an upload removes it from every dish and event using it.</p></div>' +
+        '<div class="media-heading"><h2>Your uploads</h2><p>Photos for dishes and events are stored with your menu. Videos, and photos uploaded for Backgrounds, Gallery or About, are stored on their own, and a guest downloads one only on reaching it. Deleting an upload removes it from everywhere it is used.</p></div>' +
         (uploads ? '<div class="media-grid">' + uploads + '</div>' : '<div class="card"><p class="empty">You have not uploaded any photos or videos yet.</p></div>') +
         '<div class="media-heading"><h2>Built into your website</h2><p>These files are part of the website, so they use none of your Firebase allowance. You can take one off a dish here, but the file itself stays.</p></div>' +
         (builtIn ? '<div class="media-grid">' + builtIn + '</div>' : '<div class="card"><p class="empty">None in use.</p></div>');
@@ -3718,7 +4080,10 @@
     function deleteMedia(el) {
       var media = view.mediaList[parseInt(el.getAttribute('data-i'), 10)];
       var word = media.kind === 'video' ? 'video' : 'photo';
-      var names = media.uses.map(function (use) { return use.label || 'Unnamed'; });
+      var pageNames = { gallery: 'the Gallery', about: 'the About page' };
+      var names = media.uses.map(function (use) { return pageNames[use.type] || use.label || 'Unnamed'; }).filter(function (name, i, all) {
+        return all.indexOf(name) === i;
+      });
       var where = names.length
         ? ' It will come off ' + names.slice(0, 3).join(', ') + (names.length > 3 ? ' and ' + (names.length - 3) + ' more' : '') + '.'
         : '';
@@ -3729,7 +4094,11 @@
           if (use.type === 'dish') {
             var found = findDish(use.menuId, use.id);
             if (found) found.item[use.field] = '';
-          } else {
+          } else if (use.type === 'gallery') {
+            appData.gallery.photos = appData.gallery.photos.filter(function (p) { return p.id !== use.id; });
+          } else if (use.type === 'about') {
+            appData.about.image = '';
+          } else if (use.type === 'event') {
             var ev = appData.events.find(function (x) { return x.id === use.id; });
             if (ev) {
               ev.imageData = '';
@@ -3753,7 +4122,7 @@
         if (use.type === 'dish') {
           var found = findDish(use.menuId, use.id);
           if (found) found.item.image = url;
-        } else {
+        } else if (use.type === 'event') {
           var ev = appData.events.find(function (x) { return x.id === use.id; });
           if (ev) {
             ev.imageData = url;
@@ -4922,7 +5291,7 @@
         '</section>' +
         '<section class="card card-pad">' +
           '<h2 class="card-title">Backups</h2>' +
-          '<p class="card-hint" style="margin-top:0">A backup is a file with all your menus, events and contact details. Uploaded videos and background photos stay in Firebase and are not in the file. Restoring one does not change the live site until you press Publish.</p>' +
+          '<p class="card-hint" style="margin-top:0">A backup is a file with all your menus, events, Gallery, About and contact details. Uploaded videos, and photos uploaded for Backgrounds, Gallery or About, stay in Firebase and are not in the file. Restoring one does not change the live site until you press Publish.</p>' +
           '<div class="add-row">' +
             '<button type="button" class="btn" data-action="downloadBackup">Download a backup</button>' +
             '<label class="btn">Restore from a backup<input type="file" accept=".json,application/json" id="restoreFile" hidden /></label>' +
@@ -5688,6 +6057,17 @@
     var sortHandlers = {
       'stage-landing': sortStagePhotos,
       'stage-menu': sortStagePhotos,
+      gallery: function (lists, key) {
+        var byId = {};
+        appData.gallery.photos.forEach(function (p) { byId[p.id] = p; });
+        appData.gallery.photos = lists[0].items.map(function (id) { return byId[id]; });
+        return key;
+      },
+      pillars: function (lists, key) {
+        var old = appData.about.pillars.slice();
+        appData.about.pillars = lists[0].items.map(function (k) { return old[parseInt(k, 10)]; });
+        return String(appData.about.pillars.indexOf(old[parseInt(key, 10)]));
+      },
       menus: function (lists, key) {
         appData.menuCategories = lists[0].items.map(function (id) { return getMenu(id); });
         return key;
@@ -6121,6 +6501,29 @@
         touch();
       },
 
+      addGalleryPhoto: addGalleryPhoto,
+      removeGalleryPhoto: removeGalleryPhoto,
+      pickAboutPhoto: function (el) {
+        appData.about.image = pagePhotoRef(el.getAttribute('data-src'));
+        $('aboutPhotoPart').innerHTML = aboutPhotoPartHtml();
+        touch();
+      },
+      clearAboutPhoto: function () {
+        appData.about.image = '';
+        $('aboutPhotoPart').innerHTML = aboutPhotoPartHtml();
+        touch();
+      },
+      addPillar: function () {
+        appData.about.pillars.push({ title: '', text: '' });
+        refreshPage();
+        var titles = document.querySelectorAll('[data-pillar="title"]');
+        if (titles.length) titles[titles.length - 1].focus();
+      },
+      removePillar: function (el) {
+        appData.about.pillars.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+        refreshPage();
+      },
+
       openBooking: function (el) { openBooking(el.getAttribute('data-id')); },
       addBooking: addBooking,
       saveBooking: saveBooking,
@@ -6213,6 +6616,8 @@
         else if (view.page === 'tasting') onTastingInput(t);
         else if (view.page === 'event') onEventInput(t);
         else if (view.page === 'contact') onContactInput(t);
+        else if (view.page === 'gallery') onGalleryInput(t);
+        else if (view.page === 'about') onAboutInput(t);
         else if (view.page === 'backgrounds') onBackgroundInput(t);
         else if (view.page === 'bookingSettings') onBookingSettingsInput(t);
       });

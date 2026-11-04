@@ -795,6 +795,41 @@
   ],
   "barMenuVersion": 2,
   "dinnerMenuVersion": 1,
+  "gallery": {
+    "enabled": true,
+    "intro": "Plates, pours and the people around our tables.",
+    "photos": [
+      { "id": "g-lamb", "src": "assets/images/bg/slide_lamb_chops.webp", "caption": "Lamb chops, glazed and charred", "tag": "food" },
+      { "id": "g-smoke", "src": "assets/images/bg/slide_cocktail_smoke.webp", "caption": "A smoked cocktail", "tag": "drinks" },
+      { "id": "g-bar", "src": "assets/images/bg/slide_bar_counter.webp", "caption": "The bar", "tag": "room" },
+      { "id": "g-coffee", "src": "from:bar-list-24", "caption": "Coffee, after dinner", "tag": "drinks" },
+      { "id": "g-lounge", "src": "assets/images/bg/slide_vip_lounge.webp", "caption": "The dining room", "tag": "room" },
+      { "id": "g-cake", "src": "assets/images/luxury_dessert.jpg", "caption": "Something sweet", "tag": "food" },
+      { "id": "g-guests", "src": "assets/images/bg/slide_guest_dining.webp", "caption": "At the table", "tag": "moments" },
+      { "id": "g-steak", "src": "assets/images/bg/slide_steak_grill.webp", "caption": "From the grill", "tag": "food" },
+      { "id": "g-wine", "src": "assets/events/event_wine_dine.jpg", "caption": "Wine, poured at the table", "tag": "drinks" },
+      { "id": "g-pass", "src": "assets/images/bg/slide_tacos_kitchen.webp", "caption": "Service at the pass", "tag": "moments" },
+      { "id": "g-soup", "src": "from:lunch-1", "caption": "Roasted tomato and chipotle soup", "tag": "food" },
+      { "id": "g-tempura", "src": "assets/images/bg/slide_crispy_tempura.webp", "caption": "Tempura", "tag": "food" },
+      { "id": "g-plating", "src": "assets/images/chef_plating.webp", "caption": "Plated by hand", "tag": "food" },
+      { "id": "g-ribs", "src": "assets/images/bg/slide_glazed_ribs.webp", "caption": "Glazed ribs", "tag": "food" },
+      { "id": "g-dessert", "src": "assets/images/bg/slide_luxury_dessert.webp", "caption": "Dessert, finished at the table", "tag": "food" },
+      { "id": "g-meatballs", "src": "assets/images/bg/slide_gourmet_meatballs.webp", "caption": "Meatballs", "tag": "food" }
+    ]
+  },
+  "about": {
+    "enabled": true,
+    "title": "Our Story",
+    "headline": "A table worth lingering at.",
+    "image": "assets/images/bg/slide_guest_dining.webp",
+    "lead": "Belle Colombo is a dining room and bar on Horton Place, made for long lunches, unhurried dinners and evenings that run a little later than planned.",
+    "story": "Our kitchen cooks with the island's produce and its spice, and with techniques gathered from much further away. Lunch is relaxed, dinner is à la carte, and our tasting menus can be paired with wine, course by course.\n\nAt the bar, the list runs from Ceylon arrack to single malts, with cocktails made to order and a quieter corner for a last glass.\n\nWhether it is a table for two, a celebration or a private evening, we look after every guest as if they were the only one in the room.",
+    "pillars": [
+      { "title": "The Kitchen", "text": "Seasonal produce and local spice, from a quick lunch to the tasting menus." },
+      { "title": "The Bar", "text": "Ceylon arrack, single malts and cocktails made to order." },
+      { "title": "The Room", "text": "A warm dining room for quiet dinners, celebrations and private events." }
+    ]
+  },
   "theGardenAndBar": [
     {
       "category": "Bar Bites",
