@@ -841,6 +841,30 @@
       .booking-row .row-main { flex-basis: 100%; }
       .booking-tools { max-width: none; width: 100%; justify-content: flex-start; padding: 0 16px 10px; }
     }
+
+    /* Staff accounts */
+    body.no-content .topbar-status, body.no-content #publishBtn, body.no-content [data-action="openPreview"] { display: none; }
+    body.no-content .topbar-actions { margin-left: auto; }
+    .side-who { padding: 2px 12px 8px; font-size: 12px; line-height: 1.4; color: var(--text-3); overflow-wrap: anywhere; }
+    .side-who b { display: block; font-weight: 600; color: var(--text-2); }
+    .staff-row .row-main { cursor: default; }
+    .staff-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; flex: none; gap: 6px; padding: 8px 14px 8px 0; }
+    .staff-tools select { width: auto; min-height: 36px; padding: 6px 10px; font-size: 14px; }
+    .role-choice { padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px; }
+    .role-choice:has(input:checked) { border-color: var(--text); background: var(--gold-soft); }
+    .role-choice b { display: block; font-weight: 600; }
+    .role-list { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+    .role-list b { display: block; }
+    .role-list span { color: var(--text-2); }
+    .staff-existing summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-2); }
+    .staff-existing[open] summary { margin-bottom: 10px; }
+    .handover { width: 100%; margin-top: 12px; font-family: ui-monospace, Consolas, monospace; font-size: 14px; }
+    @media (max-width: 760px) {
+      .side-who { display: none; }
+      .staff-row { flex-wrap: wrap; }
+      .staff-row .row-main { flex-basis: 100%; }
+      .staff-tools { width: 100%; justify-content: flex-start; padding: 0 12px 10px; }
+    }
   </style>
 </head>
 <body>
@@ -850,7 +874,7 @@
     <form class="login-card" id="loginForm">
       <img src="belle_logo_black.png" alt="Belle Colombo" />
       <h1>Admin sign in</h1>
-      <p>Update your menus, events and contact details.</p>
+      <p>For the Belle team: menus, events and reservations.</p>
       <div class="field">
         <label for="loginEmail">Email</label>
         <input type="email" id="loginEmail" autocomplete="username" required autofocus />
@@ -932,6 +956,7 @@
     var FIREBASE_MEDIA_URL = 'https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_media';
     var FIREBASE_USAGE_URL = 'https://console.firebase.google.com/project/bellecolombo-fea8d/database/bellecolombo-fea8d-default-rtdb/usage';
     var FIREBASE_BOOKINGS_URL = 'https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_reservations';
+    var FIREBASE_STAFF_URL = 'https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app/belle_staff';
     var NETWORK_TIMEOUT_MS = 20000;
     var UPLOAD_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -1038,6 +1063,8 @@
     var sync = { state: 'checking', changes: [] };
     var view = { page: 'home', menuId: null, tastingKey: 'fiveCourse', editor: null, sectionFilter: {}, stage: 'landing', bookingId: null };
     var bookings = newBookingState(); // Reservations are kept apart from appData, so they never reach the draft
+    var team = { list: [], state: 'idle' }; // Staff accounts, loaded only for a main admin
+    var accessCheck = null;
     var saveTimer = null;
     var previewTimer = null;
     var storageFailed = false;
@@ -1123,6 +1150,7 @@
       whatsapp: '<path d="M3.6 20.4l1.25-4.4A8.4 8.4 0 1 1 8.1 19.3z"/><path d="M9.2 9.2c0 3 2.6 5.6 5.6 5.6"/>',
       phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
       mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>',
+      people: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
       image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
       grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>'
     };
@@ -1536,7 +1564,8 @@
     function commitDraft() {
       clearTimeout(saveTimer);
       saveTimer = null;
-      if (!appData) return;
+      // Someone who cannot edit must not replace a draft another person left on this computer
+      if (!appData || !can('content')) return;
       refreshStatus();
       var text = JSON.stringify(appData);
       var meta = { baseRevision: liveRevision, dirty: sync.state !== 'live', savedAt: Date.now() };
@@ -1632,23 +1661,28 @@
       var fileData = normalizeData(clone(window.BELLE_DEFAULT_DATA || {}));
       sync.state = 'checking';
       renderStatus();
+      var canEdit = can('content');
       firebaseRequest().then(function (cloud) {
         adoptLive(cloud);
+        // Without editing there is no draft, only what guests see
+        if (!canEdit) return liveRevision ? clone(liveData) : fileData;
         return chooseWorkingCopy(fileData);
       }, function () {
         // The live site could not be read: carry on from what this computer has
         liveData = null;
-        var local = readJson(DRAFT_KEY) || readJson(LEGACY_DRAFT_KEY);
+        var local = canEdit ? readJson(DRAFT_KEY) || readJson(LEGACY_DRAFT_KEY) : null;
         return local ? normalizeData(stripPublishInfo(local)) : fileData;
       }).then(function (working) {
+        // Signed out while loading
+        if (!account) return;
         // belleData.js is only the fallback, so a newer bar menu there has to be brought in once
-        var newBarMenu = (working.barMenuVersion || 0) < (fileData.barMenuVersion || 0);
+        var newBarMenu = canEdit && (working.barMenuVersion || 0) < (fileData.barMenuVersion || 0);
         if (newBarMenu) {
           working.theGardenAndBar = clone(fileData.theGardenAndBar);
           working.barMenuVersion = fileData.barMenuVersion;
         }
         // Dinner comes in the same way, once, so deleting it later keeps it deleted
-        var newDinnerMenu = (working.dinnerMenuVersion || 0) < (fileData.dinnerMenuVersion || 0);
+        var newDinnerMenu = canEdit && (working.dinnerMenuVersion || 0) < (fileData.dinnerMenuVersion || 0);
         if (newDinnerMenu) {
           var dinner = clone(getMenu('dinner', fileData));
           working.menuCategories = working.menuCategories.filter(function (c) { return c.id !== 'dinner'; });
@@ -1705,7 +1739,11 @@
     }
 
     function publishErrorText(err) {
-      if (err && (err.status === 401 || err.status === 403)) {
+      if (isRefused(err) && account.role !== 'owner') {
+        recheckAccess();
+        return 'Firebase refused the update (error ' + err.status + '), so nothing changed on the live site. Your account may no longer be allowed to publish. Ask the main admin. Your work is still saved on this computer.';
+      }
+      if (isRefused(err)) {
         return 'Firebase refused the update (error ' + err.status + '), so nothing changed on the live site. Your database rules need to allow this account. Its User ID is ' + account.uid + '. Your work is still saved on this computer.';
       }
       if (err && err.status) {
@@ -1901,7 +1939,8 @@
       var isMenuChild = menuId && (view.page === 'dish') && view.menuId === menuId;
       var isEventChild = page === 'events' && view.page === 'event';
       var isBookingChild = page === 'reservations' && (view.page === 'reservation' || view.page === 'bookingSettings');
-      var active = isActive || isMenuChild || isEventChild || isBookingChild;
+      var isTeamChild = page === 'team' && view.page === 'staffAdd';
+      var active = isActive || isMenuChild || isEventChild || isBookingChild || isTeamChild;
       return '<button type="button" class="nav-item' + (active ? ' is-active' : '') + '" data-action="go" data-page="' + page + '"' +
         (menuId ? ' data-menu="' + esc(menuId) + '"' : '') + (active ? ' aria-current="page"' : '') + '>' +
         icon(iconName) + '<span class="nav-name">' + esc(label) + '</span>' +
@@ -1910,26 +1949,34 @@
     }
 
     function renderSide() {
-      var html = navItemHtml('Overview', 'home', 'home');
-      html += '<div class="side-label">Menus</div>';
-      html += '<div class="nav-menus" data-sort-list="menus" data-sort-group="menus">';
-      appData.menuCategories.forEach(function (menu) {
-        var page = menu.id === 'tasting' ? 'tasting' : 'menu';
-        var iconName = (menu.id === 'tasting' || menu.id === 'thebar') ? 'glass' : 'plate';
-        html += '<div class="nav-row" data-sort-item="' + esc(menu.id) + '">' + dragHandleHtml(prettyName(menu.name)) +
-          navItemHtml(prettyName(menu.name), iconName, page, menu.id === 'tasting' ? null : menu.id, countDishes(menu.id)) +
-        '</div>';
-      });
-      html += '</div>';
-      html += '<button type="button" class="nav-item is-add" data-action="addMenu">' + icon('plus', 16) + '<span class="nav-name">Add a menu</span></button>';
-      html += '<div class="side-label">Restaurant</div>';
-      html += navItemHtml('Reservations', 'book', 'reservations', null, waitingBookings().length || undefined);
-      html += navItemHtml('Events', 'calendar', 'events', null, appData.events.length);
-      html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
-      html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
-      html += navItemHtml('Contact & Hours', 'pin', 'contact');
-      html += '<div class="side-label">Admin</div>';
-      html += navItemHtml('Settings & Backup', 'sliders', 'settings');
+      var html = '';
+      var canEdit = can('content');
+      if (canEdit) {
+        html += navItemHtml('Overview', 'home', 'home');
+        html += '<div class="side-label">Menus</div>';
+        html += '<div class="nav-menus" data-sort-list="menus" data-sort-group="menus">';
+        appData.menuCategories.forEach(function (menu) {
+          var page = menu.id === 'tasting' ? 'tasting' : 'menu';
+          var iconName = (menu.id === 'tasting' || menu.id === 'thebar') ? 'glass' : 'plate';
+          html += '<div class="nav-row" data-sort-item="' + esc(menu.id) + '">' + dragHandleHtml(prettyName(menu.name)) +
+            navItemHtml(prettyName(menu.name), iconName, page, menu.id === 'tasting' ? null : menu.id, countDishes(menu.id)) +
+          '</div>';
+        });
+        html += '</div>';
+        html += '<button type="button" class="nav-item is-add" data-action="addMenu">' + icon('plus', 16) + '<span class="nav-name">Add a menu</span></button>';
+        html += '<div class="side-label">Restaurant</div>';
+      }
+      if (can('bookings')) html += navItemHtml('Reservations', 'book', 'reservations', null, waitingBookings().length || undefined);
+      if (canEdit) {
+        html += navItemHtml('Events', 'calendar', 'events', null, appData.events.length);
+        html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
+        html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
+        html += navItemHtml('Contact & Hours', 'pin', 'contact');
+      }
+      html += '<div class="side-label">' + (canEdit ? 'Admin' : 'Account') + '</div>';
+      html += '<div class="side-who"><b>' + esc(account.email) + '</b>' + esc(ROLES[account.role].label) + '</div>';
+      if (can('team')) html += navItemHtml('Staff accounts', 'people', 'team', null, team.list.length || undefined);
+      html += navItemHtml(canEdit ? 'Settings & Backup' : 'Your account', 'sliders', 'settings');
       html += '<button type="button" class="nav-item" data-action="lock">' + icon('lock') + '<span class="nav-name">Sign out</span></button>';
       $('sideNav').innerHTML = html;
     }
@@ -1947,8 +1994,13 @@
       var pages = {
         home: homeHtml, menu: menuHtml, dish: dishHtml, tasting: tastingHtml,
         events: eventsHtml, event: eventHtml, backgrounds: backgroundsHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
-        reservations: reservationsHtml, reservation: reservationHtml, bookingSettings: bookingSettingsHtml
+        reservations: reservationsHtml, reservation: reservationHtml, bookingSettings: bookingSettingsHtml,
+        team: teamHtml, staffAdd: staffAddHtml
       };
+      if (!pageAllowed(view.page)) {
+        view.page = firstPage();
+        view.menuId = null;
+      }
       var notice = storageFailed
         ? '<div class="note is-bad">This computer ran out of storage, so your latest changes may be lost if you close this page. Publish now, or remove some uploaded photos.</div>'
         : '';
@@ -1958,10 +2010,11 @@
 
     function go(page, menuId) {
       closeEditor();
-      view.page = page;
+      view.page = pageAllowed(page) ? page : firstPage();
       view.menuId = menuId || null;
       render();
       showPreviewForPage();
+      if (view.page === 'team') loadTeam();
     }
 
     function pageHead(title, text, actionsHtml) {
@@ -1987,10 +2040,13 @@
 
     function findIssues() {
       var issues = [];
-      if (appData.reservations.enabled && bookings.state === 'blocked') {
+      if (appData.reservations.enabled && bookings.state === 'blocked' && account.role === 'owner') {
         issues.push({ text: '<b>Guests cannot book yet.</b> Firebase is refusing reservations. Publish the new database rules from the README, then reload this page.', bookings: true });
       }
-      var waiting = waitingBookings().length;
+      if (can('team') && team.state === 'blocked') {
+        issues.push({ text: '<b>Staff accounts are not switched on yet.</b> Publish the new database rules from the README, then reload this page.', team: true });
+      }
+      var waiting = can('bookings') ? waitingBookings().length : 0;
       if (waiting) {
         issues.push({ text: '<b>' + plural(waiting, 'reservation') + '</b> ' + (waiting === 1 ? 'needs' : 'need') + ' a reply.', bookings: true });
       }
@@ -2042,6 +2098,8 @@
           links = '<button type="button" class="btn btn-sm" data-action="go" data-page="media">Review uploads</button>';
         } else if (issue.bookings) {
           links = '<button type="button" class="btn btn-sm" data-action="go" data-page="reservations">Review reservations</button>';
+        } else if (issue.team) {
+          links = '<button type="button" class="btn btn-sm" data-action="go" data-page="team">Staff accounts</button>';
         }
         return '<div class="issue"><p>' + issue.text + '</p><div class="issue-actions">' + links + '</div></div>';
       }).join('') : '<p class="all-good">' + icon('check') + 'Nothing needs your attention.</p>';
@@ -4150,6 +4208,7 @@
         bookings.state = refused ? 'blocked' : 'offline';
         bookings.loadedAt = Date.now();
         bookingsChanged();
+        if (isRefused(err)) recheckAccess();
       });
     }
 
@@ -4172,6 +4231,7 @@
 
     function startBookings() {
       stopBookings();
+      if (!can('bookings')) return;
       bookings.state = 'loading';
       loadBookings().then(checkBookings);
       bookings.timer = setInterval(checkBookings, BOOKING_CHECK_MS);
@@ -4245,7 +4305,11 @@
     }
 
     function bookingErrorText(err) {
-      if (err && (err.status === 401 || err.status === 403)) {
+      if (isRefused(err) && account.role !== 'owner') {
+        recheckAccess();
+        return 'Firebase refused that (error ' + err.status + '), so nothing changed. Your account may not be allowed to do this. Ask the main admin.';
+      }
+      if (isRefused(err)) {
         return 'Firebase refused that (error ' + err.status + '), so nothing changed. Your database rules need the reservations section from the README. Your User ID is ' + account.uid + '.';
       }
       return 'That did not reach Firebase, so nothing changed. Check your internet connection and try again.';
@@ -4456,6 +4520,9 @@
     }
 
     function bookingNotice() {
+      if (bookings.state === 'blocked' && account.role !== 'owner') {
+        return '<div class="note is-bad"><b>Firebase refused to show reservations.</b> Your access may have changed. Reload this page, or ask the main admin.</div>';
+      }
       if (bookings.state === 'blocked') {
         return '<div class="note is-bad"><b>Reservations are not connected yet.</b> Firebase refused to show them. Publish the new database rules from the README in the Firebase console, then reload this page. Your User ID is ' + esc(account.uid) + '.</div>';
       }
@@ -4463,14 +4530,15 @@
         return '<div class="note is-bad">Could not reach Firebase, so this list may be out of date. It will try again by itself.</div>';
       }
       if (!appData.reservations.enabled) {
-        return '<div class="note is-info">Reservations are switched off, so guests do not see the Reserve buttons. Turn them back on in Booking settings.</div>';
+        return '<div class="note is-info">Reservations are switched off, so guests do not see the Reserve buttons. ' +
+          (can('full') ? 'Turn them back on in Booking settings.' : 'Someone with full access can turn them back on.') + '</div>';
       }
       return '';
     }
 
     function reservationsHtml() {
       return pageHead('Reservations', 'New requests appear here by themselves. Changes on this page go straight to Firebase, so they do not need Publish.',
-        '<button type="button" class="btn" data-action="go" data-page="bookingSettings">' + icon('sliders', 16) + 'Booking settings</button>' +
+        (can('full') ? '<button type="button" class="btn" data-action="go" data-page="bookingSettings">' + icon('sliders', 16) + 'Booking settings</button>' : '') +
         '<button type="button" class="btn btn-primary" data-action="addBooking">' + icon('plus', 16) + 'Add a reservation</button>') +
         '<div id="bookingNotice">' + bookingNotice() + '</div>' +
         '<div class="section-pills" id="bookingTabs">' + bookingTabsHtml() + '</div>' +
@@ -4568,7 +4636,7 @@
           '<p class="form-error" id="bookError" role="alert" hidden></p>' +
           '<div class="add-row">' +
             '<button type="button" class="btn btn-primary" data-action="saveBooking" id="bookSave">' + (isNew ? 'Add reservation' : 'Save changes') + '</button>' +
-            (isNew ? '' : '<button type="button" class="btn btn-danger" data-action="deleteBooking" data-id="' + esc(b.id) + '">Delete</button>') +
+            (isNew || !can('full') ? '' : '<button type="button" class="btn btn-danger" data-action="deleteBooking" data-id="' + esc(b.id) + '">Delete</button>') +
           '</div>' +
         '</section>';
     }
@@ -4817,7 +4885,28 @@
       return new Blob([JSON.stringify(appData)]).size;
     }
 
+    function accountCardHtml(isWholePage) {
+      var isOwner = account.role === 'owner';
+      return '<section class="card card-pad">' +
+          (isWholePage ? '' : '<h2 class="card-title">Your account</h2>') +
+          '<p class="card-hint" style="margin-top:0">Signed in as <b>' + esc(account.email) + '</b>, with <b>' + esc(ROLES[account.role].label.toLowerCase()) + '</b>.' +
+            (isOwner ? '' : ' ' + esc(ROLES[account.role].hint)) + '</p>' +
+          '<div class="field"><label for="accountUid">Your User ID</label><input type="text" id="accountUid" readonly value="' + esc(account.uid) + '" />' +
+            '<span class="field-hint">' + (isOwner ? 'Your Firebase database rules use this ID, so that only your account can publish.' : 'The main admin may ask for this if your access ever needs fixing.') + '</span></div>' +
+          '<form id="passForm" class="repeat-list" autocomplete="off">' +
+            '<div class="field"><label for="passCurrent">Current password</label><input type="password" id="passCurrent" autocomplete="current-password" required /></div>' +
+            '<div class="field-row">' +
+              '<div class="field"><label for="passNew">New password</label><input type="password" id="passNew" autocomplete="new-password" required /><span class="field-hint">At least 8 characters.</span></div>' +
+              '<div class="field"><label for="passAgain">New password again</label><input type="password" id="passAgain" autocomplete="new-password" required /></div>' +
+            '</div>' +
+            '<p class="form-error" id="passError" role="alert" hidden></p>' +
+            '<div><button type="submit" class="btn">Change password</button></div>' +
+          '</form>' +
+        '</section>';
+    }
+
     function settingsHtml() {
+      if (!can('content')) return pageHead('Your account') + accountCardHtml(true);
       var backup = readJson(LIVE_BACKUP_KEY);
       var liveLine = !liveData ? "The live site can't be reached right now."
         : (liveRevision ? 'Last published ' + formatDateTime(liveRevision) + '.' : 'The live site was last published with the old admin panel.');
@@ -4840,21 +4929,7 @@
             (backup ? '<button type="button" class="btn" data-action="undoPublish">Go back to before my last publish</button>' : '') +
           '</div>' +
         '</section>' +
-        '<section class="card card-pad">' +
-          '<h2 class="card-title">Your account</h2>' +
-          '<p class="card-hint" style="margin-top:0">Signed in as <b>' + esc(account.email) + '</b>.</p>' +
-          '<div class="field"><label for="accountUid">Your User ID</label><input type="text" id="accountUid" readonly value="' + esc(account.uid) + '" />' +
-            '<span class="field-hint">Your Firebase database rules use this ID, so that only your account can publish.</span></div>' +
-          '<form id="passForm" class="repeat-list" autocomplete="off">' +
-            '<div class="field"><label for="passCurrent">Current password</label><input type="password" id="passCurrent" autocomplete="current-password" required /></div>' +
-            '<div class="field-row">' +
-              '<div class="field"><label for="passNew">New password</label><input type="password" id="passNew" autocomplete="new-password" required /><span class="field-hint">At least 8 characters.</span></div>' +
-              '<div class="field"><label for="passAgain">New password again</label><input type="password" id="passAgain" autocomplete="new-password" required /></div>' +
-            '</div>' +
-            '<p class="form-error" id="passError" role="alert" hidden></p>' +
-            '<div><button type="submit" class="btn">Change password</button></div>' +
-          '</form>' +
-        '</section>' +
+        accountCardHtml() +
         '<section class="card card-pad">' +
           '<h2 class="card-title">For developers</h2>' +
           '<p class="card-hint" style="margin-top:0">If Firebase is ever unavailable, first-time visitors see the menu saved in this file. Replace it in the website after big menu changes.</p>' +
@@ -4930,6 +5005,397 @@
       if (!backup) return;
       askConfirm('Go back to before your last publish?', 'This loads the version from before ' + formatDateTime(backup.savedAt) + '. The live site does not change until you press Publish.', 'Load that version').then(function (yes) {
         if (yes) replaceDraft(backup.data, 'Older version loaded. Check it, then press Publish.');
+      });
+    }
+
+    /* ========================================================
+       STAFF ACCOUNTS
+       The Firebase database rules decide what each account may do.
+       The main admins are named in the rules by User ID. Everyone else
+       gets an access level in belle_staff, which only the main admins
+       can change. The panel reads the same list only to hide what a
+       person cannot use, so editing this page grants nothing.
+       ======================================================== */
+    var ROLES = {
+      owner: { label: 'Main admin', hint: 'Everything, including adding and removing people.', content: true, bookings: true, full: true, team: true },
+      admin: { label: 'Full access', hint: 'Menus, events, photos, contact details, reservations and booking settings, and can publish. Cannot add or remove people.', content: true, bookings: true, full: true },
+      editor: { label: 'Menus and website', hint: 'Menus, events, photos, backgrounds and contact details, and can publish. Cannot see reservations.', content: true },
+      reservations: { label: 'Reservations only', hint: 'Sees, adds and answers reservations. Cannot change the website or booking settings, or delete a reservation.', bookings: true },
+      none: { label: 'No access', hint: 'Cannot open the admin panel. Their details stay here, so access can be given back later.' }
+    };
+    var STAFF_ROLES = ['reservations', 'editor', 'admin'];
+    var PAGE_POWERS = { reservations: 'bookings', reservation: 'bookings', bookingSettings: 'full', team: 'team', staffAdd: 'team', settings: null };
+
+    function can(power) {
+      var role = ROLES[account && account.role];
+      return !!(role && role[power]);
+    }
+
+    function pageAllowed(page) {
+      var power = PAGE_POWERS.hasOwnProperty(page) ? PAGE_POWERS[page] : 'content';
+      return !power || can(power);
+    }
+
+    function firstPage() {
+      return can('content') ? 'home' : (can('bookings') ? 'reservations' : 'settings');
+    }
+
+    function isRefused(err) {
+      return !!err && (err.status === 401 || err.status === 403);
+    }
+
+    function staffRequest(options, uid, query) {
+      return getIdToken().then(function (token) {
+        return firebaseRequest(options, FIREBASE_STAFF_URL + (uid ? '/' + encodeURIComponent(uid) : '') + '.json?' + (query ? query + '&' : '') + 'auth=' + encodeURIComponent(token));
+      });
+    }
+
+    function staffRows(data) {
+      return Object.keys(data || {}).map(function (uid) {
+        return Object.assign({}, data[uid], { uid: uid });
+      }).sort(function (a, b) {
+        return String(a.name || a.email || '').localeCompare(String(b.name || b.email || ''));
+      });
+    }
+
+    function findStaff(uid) {
+      return team.list.find(function (p) { return p.uid === uid; }) || null;
+    }
+
+    function staffName(person) {
+      return person.name || person.email || 'This person';
+    }
+
+    // Resolves to the signed-in account's role, or null when it has no access. Rejects only when Firebase cannot be reached.
+    function checkAccess() {
+      // Only a main admin may read the whole list
+      return staffRequest(null, '').then(function (data) {
+        team.list = staffRows(data);
+        team.state = 'ready';
+        return 'owner';
+      }, function (err) {
+        if (!isRefused(err)) throw err;
+        return staffRequest(null, account.uid).then(function (entry) {
+          return entry && STAFF_ROLES.indexOf(entry.role) !== -1 ? entry.role : oldRulesOwner();
+        }, function (err2) {
+          if (!isRefused(err2)) throw err2;
+          return oldRulesOwner();
+        });
+      });
+    }
+
+    // Until the new database rules are published, the old ones let only the main admins read reservations
+    function oldRulesOwner() {
+      return bookingRequest(null, '', 'orderBy=%22%24key%22&limitToLast=1').then(function () {
+        team.list = [];
+        team.state = 'blocked';
+        return 'owner';
+      }, function (err) {
+        if (isRefused(err)) return null;
+        throw err;
+      });
+    }
+
+    function applyAccess(role) {
+      account.role = role;
+      storeAccount();
+      document.body.classList.toggle('no-content', !can('content'));
+      // Nothing changes on the website without editing, so the phone preview only takes room
+      $('shell').classList.toggle('no-preview', !can('content'));
+      if (!pageAllowed(view.page)) {
+        view.page = firstPage();
+        view.menuId = null;
+        view.editor = null;
+      }
+    }
+
+    // Firebase refused a staff account, so the main admin may have changed what it can do
+    function recheckAccess() {
+      if (!account || account.role === 'owner' || accessCheck) return;
+      accessCheck = checkAccess().then(function (role) {
+        accessCheck = null;
+        if (!account) return;
+        if (!role) {
+          signOut('Your access to the admin panel has been removed. Ask the main admin if you need it.');
+          return;
+        }
+        if (role === account.role) return;
+        applyAccess(role);
+        render();
+        startBookings();
+        toast('Your access is now: ' + ROLES[role].label + '.');
+      }, function () {
+        accessCheck = null;
+      });
+    }
+
+    function loadTeam() {
+      if (!can('team')) return;
+      staffRequest(null, '').then(function (data) {
+        team.list = staffRows(data);
+        team.state = 'ready';
+      }, function (err) {
+        if (isRefused(err)) team.state = 'blocked';
+        else if (team.state !== 'ready') team.state = 'offline';
+      }).then(function () {
+        if (!account) return;
+        renderSide();
+        if (view.page === 'team') renderPage();
+      });
+    }
+
+    function teamNotice() {
+      if (team.state === 'blocked') {
+        return '<div class="note is-bad"><b>Staff accounts are not switched on in Firebase yet.</b> Publish the new database rules from the README in the Firebase console, then reload this page.</div>';
+      }
+      if (team.state === 'offline') {
+        return '<div class="note is-bad">Could not reach Firebase, so this list may be out of date.</div>';
+      }
+      return '';
+    }
+
+    function roleChipHtml(role) {
+      var cls = role === 'none' ? ' chip-bad' : (role === 'owner' || role === 'admin' ? ' chip-ok' : '');
+      return '<span class="chip' + cls + '">' + esc(ROLES[role] ? ROLES[role].label : role) + '</span>';
+    }
+
+    function staffRowHtml(person) {
+      var uid = esc(person.uid);
+      var options = STAFF_ROLES.concat('none').map(function (role) {
+        return '<option value="' + role + '"' + (person.role === role ? ' selected' : '') + '>' + esc(ROLES[role].label) + '</option>';
+      }).join('');
+      var added = person.addedAt ? 'Added ' + new Date(person.addedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      return '<div class="row staff-row">' +
+        '<div class="row-main"><span class="row-text">' +
+          '<span class="row-name">' + esc(staffName(person)) + roleChipHtml(person.role) + '</span>' +
+          '<span class="row-sub">' + esc([person.email, added].filter(Boolean).join(' · ')) + '</span>' +
+        '</span></div>' +
+        '<div class="staff-tools">' +
+          '<select data-staff-role="' + uid + '" aria-label="Access for ' + esc(staffName(person)) + '">' + options + '</select>' +
+          '<button type="button" class="btn btn-sm" data-action="staffPasswordLink" data-uid="' + uid + '">Send password link</button>' +
+          '<button type="button" class="btn btn-sm btn-danger" data-action="removeStaff" data-uid="' + uid + '">Remove</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function teamHtml() {
+      var you = '<div class="row staff-row"><div class="row-main"><span class="row-text">' +
+        '<span class="row-name">You' + roleChipHtml('owner') + '</span>' +
+        '<span class="row-sub">' + esc(account.email) + '</span>' +
+      '</span></div></div>';
+      var roles = ['owner'].concat(STAFF_ROLES.slice().reverse(), 'none').map(function (role) {
+        return '<div><b>' + esc(ROLES[role].label) + '</b><span>' + esc(ROLES[role].hint) + '</span></div>';
+      }).join('');
+      return pageHead('Staff accounts', 'Give each person their own sign-in, with only the parts of this panel they need.',
+          '<button type="button" class="btn btn-primary" data-action="go" data-page="staffAdd">' + icon('plus', 16) + 'Add a person</button>') +
+        teamNotice() +
+        '<section class="card">' + you + team.list.map(staffRowHtml).join('') +
+          (team.list.length ? '' : '<p class="empty">No staff accounts yet. Add a person to give them their own sign-in.</p>') +
+        '</section>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">What each access level can do</h2>' +
+          '<div class="role-list">' + roles + '</div>' +
+          '<p class="card-hint" style="margin-top:0">Firebase checks the access level on every change, so it applies straight away. Main admins are named in your Firebase database rules, and only they can see this page.</p>' +
+        '</section>';
+    }
+
+    // Easy to read out or type: no 0, O, 1, l or I
+    function newStaffPassword() {
+      var letters = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      var picks = window.crypto.getRandomValues(new Uint8Array(12));
+      var text = Array.prototype.map.call(picks, function (value) { return letters[value % letters.length]; }).join('');
+      return text.slice(0, 4) + '-' + text.slice(4, 8) + '-' + text.slice(8);
+    }
+
+    function staffAddHtml() {
+      var roles = STAFF_ROLES.map(function (role, i) {
+        return '<label class="check role-choice"><input type="radio" name="staffRole" value="' + role + '"' + (i === 0 ? ' checked' : '') + ' />' +
+          '<span><b>' + esc(ROLES[role].label) + '</b><span class="field-hint">' + esc(ROLES[role].hint) + '</span></span></label>';
+      }).join('');
+      return '<button type="button" class="back-link" data-action="go" data-page="team">' + icon('back', 16) + 'Back to Staff accounts</button>' +
+        pageHead('Add a person', 'They get their own email and password for this admin page.') +
+        teamNotice() +
+        '<section class="card card-pad">' +
+          '<div class="field-row">' +
+            bookingField('staffName', 'Name', '', 'text', 'maxlength="80" autocomplete="off"') +
+            bookingField('staffEmail', 'Email', '', 'email', 'maxlength="120" autocomplete="off"') +
+          '</div>' +
+          '<div class="field"><span class="field-label">What they can open</span><div class="repeat-list">' + roles + '</div></div>' +
+          '<div class="field"><label for="staffPass">Password</label>' +
+            '<div class="add-row"><input type="text" id="staffPass" value="' + esc(newStaffPassword()) + '" autocomplete="off" spellcheck="false" style="flex:1 1 200px;width:auto" />' +
+            '<button type="button" class="btn" data-action="newStaffPassword">Make another</button></div>' +
+            '<span class="field-hint">At least 8 characters. You can copy it on the next screen to send to them. They can change it after signing in.</span></div>' +
+          '<details class="staff-existing"><summary>They already have a sign-in</summary>' +
+            '<div class="field"><label for="staffUid">Their User ID</label><input type="text" id="staffUid" autocomplete="off" spellcheck="false" />' +
+            '<span class="field-hint">For someone you removed before. Ask them to sign in at this admin page: it shows their User ID. With a User ID here, the password above is not used.</span></div>' +
+          '</details>' +
+          '<p class="form-error" id="staffError" role="alert" hidden></p>' +
+          '<div class="add-row">' +
+            '<button type="button" class="btn btn-primary" data-action="createStaff" id="staffSave">Create account</button>' +
+            '<button type="button" class="btn" data-action="go" data-page="team">Cancel</button>' +
+          '</div>' +
+        '</section>';
+    }
+
+    function showStaffError(message) {
+      $('staffError').textContent = message;
+      $('staffError').hidden = !message;
+    }
+
+    function staffErrorText(err) {
+      if (err && err.authCode) {
+        if (err.authCode === 'ADMIN_ONLY_OPERATION' || err.authCode === 'OPERATION_NOT_ALLOWED') {
+          return 'Firebase is not allowing new sign-ins yet. In the Firebase console, open Authentication, then Settings, then User actions. Tick Enable create (sign-up) and save, then press Create account again.';
+        }
+        if (err.authCode === 'EMAIL_EXISTS') {
+          return 'That email already has a sign-in. If it is theirs, ask them to sign in at this admin page: it shows their User ID. Paste it under They already have a sign-in.';
+        }
+        return authErrorText(err);
+      }
+      if (isRefused(err)) {
+        team.state = 'blocked';
+        return 'Firebase refused to save their access. Publish the new database rules from the README in the Firebase console, then press Create account again.';
+      }
+      return 'That did not reach Firebase. Check your internet connection and try again.';
+    }
+
+    // Asking Firebase directly leaves the main admin signed in as themselves
+    function makeSignIn(email, password) {
+      return callAuthApi('signUp', { email: email, password: password, returnSecureToken: true }).then(function (body) {
+        return { uid: body.localId, password: password };
+      }, function (err) {
+        if (err.authCode !== 'EMAIL_EXISTS') throw err;
+        // A try that made the sign-in but could not save the access level: the same password still opens it
+        return callAuthApi('signInWithPassword', { email: email, password: password, returnSecureToken: true }).then(function (body) {
+          return { uid: body.localId, password: password };
+        }, function () {
+          throw err;
+        });
+      });
+    }
+
+    function createStaff() {
+      var name = $('staffName').value.trim();
+      var email = $('staffEmail').value.trim().toLowerCase();
+      var picked = document.querySelector('input[name="staffRole"]:checked');
+      var role = picked ? picked.value : '';
+      var password = $('staffPass').value.trim();
+      var uid = $('staffUid').value.trim();
+      var taken = team.list.find(function (p) { return p.email === email || (uid && p.uid === uid); });
+      var problem = !name ? 'Enter their name.'
+        : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Enter their email address.'
+        : STAFF_ROLES.indexOf(role) === -1 ? 'Choose what they can open.'
+        : taken ? staffName(taken) + ' is already in your list. Change their access there instead.'
+        : uid && !/^[^.#$\[\]\/\s]{6,128}$/.test(uid) ? 'That User ID does not look right. Copy it again from their sign-in screen.'
+        : uid && uid === account.uid ? 'That is your own User ID.'
+        : !uid && password.length < 8 ? 'The password needs at least 8 characters.'
+        : '';
+      showStaffError(problem);
+      if (problem) return;
+
+      $('staffSave').disabled = true;
+      var getSignIn = uid ? Promise.resolve({ uid: uid, password: null }) : makeSignIn(email, password);
+      getSignIn.then(function (made) {
+        var entry = { name: name, email: email, role: role, addedAt: Date.now(), addedBy: account.email };
+        return staffRequest({
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        }, made.uid, 'print=silent').then(function () {
+          team.list = staffRows(team.list.concat(Object.assign({ uid: made.uid }, entry)).reduce(function (all, p) {
+            all[p.uid] = p;
+            return all;
+          }, {}));
+          team.state = 'ready';
+          return made;
+        });
+      }).then(function (made) {
+        go('team');
+        if (made.password) showSignInDetails(name, email, made.password);
+        else toast(name + ' can now sign in with their own password.');
+      }, function (err) {
+        $('staffSave').disabled = false;
+        showStaffError(staffErrorText(err));
+      });
+    }
+
+    function adminAddress() {
+      return window.location.protocol === 'file:' ? 'admin.html' : window.location.origin + window.location.pathname;
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+      return Promise.reject(new Error('No clipboard'));
+    }
+
+    function showSignInDetails(name, email, password) {
+      var text = 'Belle Colombo admin\n' + adminAddress() + '\nEmail: ' + email + '\nPassword: ' + password;
+      openDialog({
+        title: 'Account ready for ' + name,
+        text: 'Send them these details. After signing in, they can change the password under Your account.',
+        html: '<textarea class="handover" rows="4" readonly data-dlg-input aria-label="Sign-in details">' + esc(text) + '</textarea>',
+        actions: [{ id: 'close', label: 'Close' }, { id: 'copy', label: 'Copy details', style: 'primary' }]
+      }).then(function (r) {
+        if (r.action !== 'copy') return;
+        copyText(text).then(function () {
+          toast('Copied. Paste them into a message to ' + name + '.');
+        }, function () {
+          toast('Could not copy. Select the details and copy them yourself.');
+          showSignInDetails(name, email, password);
+        });
+      });
+    }
+
+    function changeStaffRole(select) {
+      var person = findStaff(select.getAttribute('data-staff-role'));
+      if (!person) return;
+      var before = person.role;
+      var role = select.value;
+      select.disabled = true;
+      staffRequest({
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: role })
+      }, person.uid, 'print=silent').then(function () {
+        person.role = role;
+        toast(role === 'none'
+          ? staffName(person) + ' can no longer open the admin panel.'
+          : staffName(person) + ' now has ' + ROLES[role].label.toLowerCase() + '. If they have the panel open, it catches up when they reload it.');
+      }, function (err) {
+        openDialog({ title: 'That was not saved', text: staffErrorText(err) });
+      }).then(function () {
+        if (view.page === 'team') renderPage();
+        else select.value = person.role || before;
+      });
+    }
+
+    function removeStaff(el) {
+      var person = findStaff(el.getAttribute('data-uid'));
+      if (!person) return;
+      askConfirm('Remove ' + staffName(person) + '?',
+        'They lose access straight away, even if they are signed in now. To give access back later, you will need their User ID. To pause them instead, set them to No access.',
+        'Remove', true).then(function (yes) {
+        if (!yes) return;
+        staffRequest({ method: 'DELETE' }, person.uid, 'print=silent').then(function () {
+          team.list = team.list.filter(function (p) { return p.uid !== person.uid; });
+          toast(staffName(person) + ' was removed.');
+          render();
+        }, function (err) {
+          openDialog({ title: 'That was not removed', text: staffErrorText(err) });
+        });
+      });
+    }
+
+    function sendStaffPasswordLink(el) {
+      var person = findStaff(el.getAttribute('data-uid'));
+      if (!person || !person.email) return;
+      callAuthApi('sendOobCode', { requestType: 'PASSWORD_RESET', email: person.email }).then(function () {
+        toast('A link to set a new password is on its way to ' + person.email + '. It may land in spam.');
+      }, function (err) {
+        openDialog({
+          title: 'That was not sent',
+          text: err.authCode === 'EMAIL_NOT_FOUND' ? 'Firebase has no sign-in for ' + person.email + '. It may have been deleted in the Firebase console.' : authErrorText(err)
+        });
       });
     }
 
@@ -5021,7 +5487,7 @@
     }
 
     function renderLoading() {
-      $('page').innerHTML = '<div class="page"><p class="empty">Loading your menus…</p></div>';
+      $('page').innerHTML = '<div class="page"><p class="empty">' + (can('content') ? 'Loading your menus…' : 'Loading…') + '</p></div>';
     }
 
     function showLoginError(message) {
@@ -5041,6 +5507,15 @@
       if ($('dialog').open) $('dialog').close();
       stopBookings();
       account = null;
+      team = { list: [], state: 'idle' };
+      // The next person to sign in here may be allowed different things, so they start afresh
+      booted = false;
+      appData = null;
+      liveData = null;
+      view.page = 'home';
+      view.menuId = null;
+      view.editor = null;
+      view.bookingId = null;
       try { sessionStorage.removeItem(ACCOUNT_KEY); } catch (e) {}
       dropStore(ACCOUNT_KEY);
       $('app').hidden = true;
@@ -5069,10 +5544,19 @@
         callAuthApi('signInWithPassword', { email: email, password: $('loginPass').value, returnSecureToken: true }).then(function (body) {
           account = { email: body.email || email, uid: body.localId, remember: $('loginRemember').checked };
           setAccountTokens(body.idToken, body.refreshToken, body.expiresIn);
-          storeAccount();
+          return checkAccess();
+        }).then(function (role) {
           $('loginPass').value = '';
+          if (!role) {
+            var uid = account.uid;
+            account = null;
+            showLoginError('This account cannot open the admin panel. Ask the main admin to add you under Staff accounts. Your User ID is ' + uid + '.');
+            return;
+          }
+          applyAccess(role);
           enterApp();
         }, function (err) {
+          account = null;
           showLoginError(authErrorText(err));
           $('loginPass').select();
         }).then(function () {
@@ -5105,10 +5589,22 @@
       account = loadAccount();
       if (!account) return;
       $('login').hidden = true;
-      getIdToken().then(enterApp, function (err) {
+      getIdToken().then(checkAccess).then(function (role) {
+        if (!role) {
+          signOut('This account cannot open the admin panel any more. Ask the main admin if you need it.');
+          return;
+        }
+        applyAccess(role);
+        enterApp();
+      }, function (err) {
         // Offline is fine for editing; a sign-in Firebase has ended is not
-        if (err.authCode) signOut('Please sign in again. Your changes are saved on this computer.');
-        else enterApp();
+        if (err.authCode) {
+          signOut('Please sign in again.' + (can('content') ? ' Your changes are saved on this computer.' : ''));
+          return;
+        }
+        // Offline: use the access from last time. Accounts saved before staff accounts existed were main admins.
+        applyAccess(ROLES[account.role] && account.role !== 'none' ? account.role : 'owner');
+        enterApp();
       });
     }
 
@@ -5679,6 +6175,11 @@
         renderPage();
       },
 
+      createStaff: createStaff,
+      removeStaff: removeStaff,
+      staffPasswordLink: sendStaffPasswordLink,
+      newStaffPassword: function () { $('staffPass').value = newStaffPassword(); },
+
       discardDraft: discardDraft,
       downloadBackup: downloadBackup,
       downloadDataFile: downloadDataFile,
@@ -5719,6 +6220,7 @@
       page.addEventListener('change', function (e) {
         var t = e.target;
         if (t.id === 'restoreFile' && t.files[0]) restoreFromFile(t.files[0]);
+        else if (t.dataset.staffRole) changeStaffRole(t);
         else if (t.dataset.upload) onUpload(t);
         if (t.type === 'file') t.value = '';
       });
@@ -5744,7 +6246,7 @@
       window.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
           e.preventDefault();
-          if ($('app').hidden || !appData) return;
+          if ($('app').hidden || !appData || !can('content')) return;
           if (view.page === 'dish') saveDish();
           else if (view.page === 'event') saveEvent();
           else {
