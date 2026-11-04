@@ -20,6 +20,7 @@ _backup/
 /README.md
 /start_server.bat
 /firebase-database-rules.json
+/reservations-sheet/
 *.pdf
 *.ai
 /Belle CMB (Presentation) (2).png
