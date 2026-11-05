@@ -2,6 +2,7 @@
 // Automatically synchronized with Executive Admin Studio
 (function(root) {
   var data = {
+  "dishOverlayOpacity": 0.55,
   "venue": {
     "brandName": "BELLE COLOMBO",
     "tagline": "Fine Dining & Curated Spirits",

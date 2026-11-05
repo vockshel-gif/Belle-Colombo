@@ -674,8 +674,9 @@
     .usage-text b { color: var(--text); }
     .chip-bad { background: var(--bad-soft); color: var(--bad); }
 
-    /* ---------- Phone preview ---------- */
+    /* ---------- Phone preview & Dish Overlay Popover ---------- */
     .preview {
+      position: relative;
       display: flex;
       flex-direction: column;
       min-height: 0;
@@ -683,6 +684,106 @@
       background: #ece7dd;
       border-left: 1px solid var(--line);
     }
+    .preview-head-actions { display: flex; align-items: center; gap: 6px; }
+    .overlay-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+    .overlay-toggle-btn:hover, .overlay-toggle-btn.is-active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+    .overlay-popover {
+      position: absolute;
+      top: 54px;
+      right: 14px;
+      left: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes popoverFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .overlay-popover[hidden] { display: none !important; }
+    .overlay-popover-head { display: flex; align-items: center; justify-content: space-between; }
+    .overlay-popover-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; color: var(--text); }
+    .overlay-popover-desc { margin: 0; font-size: 12px; line-height: 1.45; color: var(--text-2); }
+    .overlay-slider-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--surface-2);
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+    .overlay-slider-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .overlay-slider-labels strong {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 700;
+    }
+    .overlay-slider-wrap input[type="range"] {
+      width: 100%;
+      cursor: pointer;
+      accent-color: var(--text);
+    }
+    .overlay-presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .btn-xs {
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      color: var(--text-2);
+    }
+    .btn-xs:hover {
+      background: var(--line);
+      color: var(--text);
+    }
+    .btn-close-popover {
+      background: transparent;
+      border: 0;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-2);
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .btn-close-popover:hover { color: var(--text); background: var(--line); }
     .preview-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
     .preview-head b { display: block; font-size: 14px; }
     .preview-head span { font-size: 13px; color: var(--text-2); }
@@ -954,7 +1055,40 @@
             <b>Phone preview</b>
             <span>Shows your changes before they go live.</span>
           </div>
-          <button type="button" class="btn btn-sm btn-close-preview" data-action="closePreview">Close</button>
+          <div class="preview-head-actions">
+            <button type="button" class="overlay-toggle-btn" id="overlayToggleBtn" data-action="toggleOverlayPopover" title="Adjust dish image dark overlay">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>
+              </svg>
+              <span>Overlay</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-close-preview" data-action="closePreview">Close</button>
+          </div>
+        </div>
+        <div class="overlay-popover" id="overlayPopover" hidden>
+          <div class="overlay-popover-head">
+            <div class="overlay-popover-title">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+              <span>Dish Image Dark Overlay</span>
+            </div>
+            <button type="button" class="btn-close-popover" data-action="toggleOverlayPopover" aria-label="Close">&times;</button>
+          </div>
+          <p class="overlay-popover-desc">Controls the black color overlay above images across all menu dishes (Lunch, Dinner, Grill, Tasting).</p>
+          <div class="overlay-slider-wrap">
+            <div class="overlay-slider-labels">
+              <span>Transparent</span>
+              <strong id="overlayValText">55%</strong>
+              <span>Pitch Black</span>
+            </div>
+            <input type="range" id="overlaySlider" min="0" max="100" step="1" value="55" aria-label="Dish overlay opacity" />
+          </div>
+          <div class="overlay-presets">
+            <button type="button" class="btn btn-xs" data-action="setOverlayPreset" data-value="0.25">Subtle 25%</button>
+            <button type="button" class="btn btn-xs" data-action="setOverlayPreset" data-value="0.45">Balanced 45%</button>
+            <button type="button" class="btn btn-xs" data-action="setOverlayPreset" data-value="0.65">Moody 65%</button>
+            <button type="button" class="btn btn-xs" data-action="setOverlayPreset" data-value="0.80">Deep 80%</button>
+          </div>
         </div>
         <div class="phone-stage" id="phoneStage">
           <div class="phone-box" id="phoneBox">
@@ -1326,6 +1460,7 @@
 
     function normalizeData(data) {
       var d = data || {};
+      if (typeof d.dishOverlayOpacity !== 'number') d.dishOverlayOpacity = 0.55;
       d.lunchItems = d.lunchItems || [];
       d.aLaCarte = d.aLaCarte || [];
       d.theGardenAndBar = d.theGardenAndBar || [];
@@ -1648,7 +1783,7 @@
       saved = writeStore(DRAFT_META_KEY, JSON.stringify(meta)) && saved;
       if (storageFailed !== !saved) {
         storageFailed = !saved;
-        renderPage();
+        keepScroll(renderPage);
       }
       sendPreview();
     }
@@ -1956,20 +2091,53 @@
     // Which pill the phone should show, so it matches what is on screen here
     function previewSubcat() {
       if (view.menuId === 'alacarte' || (view.page !== 'menu' && view.page !== 'dish')) return null;
-      if (view.page === 'dish') {
-        var found = editorDish();
-        if (!found) return 'all';
-        return found.group ? found.group.key : (found.item.subCategory || 'all');
-      }
       var chosen = chosenSection(view.menuId);
       return chosen ? chosen : 'all';
+    }
+
+    function getOverlayOpacity() {
+      if (appData && typeof appData.dishOverlayOpacity === 'number') {
+        return Math.max(0, Math.min(1, appData.dishOverlayOpacity));
+      }
+      return 0.55;
+    }
+
+    function setOverlayOpacity(value, skipSave) {
+      var num = Math.max(0, Math.min(1, Number(value)));
+      if (!appData) return;
+      appData.dishOverlayOpacity = num;
+      var pct = Math.round(num * 100);
+      var slider = $('overlaySlider');
+      if (slider && Number(slider.value) !== pct) slider.value = pct;
+      var out = $('overlayValText');
+      if (out) out.textContent = pct + '%';
+      var dishEd = $('dishEditOverlayText');
+      if (dishEd) dishEd.textContent = pct + '%';
+      postToPreview({ type: 'BELLE_OVERLAY_OPACITY', opacity: num });
+      if (!skipSave) touch();
+    }
+
+    function toggleOverlayPopover() {
+      var pop = $('overlayPopover');
+      if (!pop) return;
+      pop.hidden = !pop.hidden;
+      var btn = $('overlayToggleBtn');
+      if (btn) btn.classList.toggle('is-active', !pop.hidden);
+      if (!pop.hidden) {
+        var pct = Math.round(getOverlayOpacity() * 100);
+        var slider = $('overlaySlider');
+        if (slider) slider.value = pct;
+        var out = $('overlayValText');
+        if (out) out.textContent = pct + '%';
+      }
     }
 
     function showPreviewForPage() {
       if (!appData) return;
       sendPreview();
-      // An open dish or event is scrolled into view, so its photo can be adjusted while watching
-      var focus = view.editor && (view.page === 'dish' || view.page === 'event') ? view.editor.id : null;
+      postToPreview({ type: 'BELLE_OVERLAY_OPACITY', opacity: getOverlayOpacity() });
+      // An open dish or event is scrolled into view, or the last saved dish stays in view
+      var focus = (view.editor && (view.page === 'dish' || view.page === 'event')) ? view.editor.id : (view.lastSavedId || null);
       postToPreview({ type: 'BELLE_NAVIGATE', target: previewPageTarget(), subcat: previewSubcat(), focus: focus });
     }
 
@@ -2733,7 +2901,12 @@
     }
 
     function dishFrameHtml(item) {
-      return frameSlidersHtml(item, 50, 'Watch the phone preview as you slide. The faded edges stay where they are, so move the photo into the clear part.');
+      var overlayPct = Math.round(getOverlayOpacity() * 100);
+      return frameSlidersHtml(item, 50, 'Watch the phone preview as you slide. The faded edges stay where they are, so move the photo into the clear part.') +
+        '<div class="field-hint" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
+          '<span>Dark image overlay: <b id="dishEditOverlayText">' + overlayPct + '%</b> (applied to all dishes)</span>' +
+          '<button type="button" class="btn btn-sm" data-action="toggleOverlayPopover">' + icon('sliders', 14) + 'Adjust overlay</button>' +
+        '</div>';
     }
 
     function eventFrameHtml(ev) {
@@ -2748,6 +2921,8 @@
 
     // Keeps all three values once one moves, and drops them all when they are back at the start
     function setFrame(target, input) {
+      var page = $('page');
+      var top = page ? page.scrollTop : 0;
       var frame = {};
       FRAME_SLIDERS.forEach(function (s) { frame[s.key] = frameValue(target.mediaFrame, s); });
       frame[input.dataset.frame] = Number(input.value);
@@ -2758,15 +2933,19 @@
       input.nextElementSibling.textContent = frameValueText(slider, Number(input.value));
       // Straight to the phone, so the photo follows the slider instead of waiting for the redraw
       postToPreview({ type: 'BELLE_MEDIA_FRAME', id: target.id, frame: target.mediaFrame || null });
+      if (page && page.scrollTop !== top) page.scrollTop = top;
       touch();
     }
 
     function resetFrame() {
+      var page = $('page');
+      var top = page ? page.scrollTop : 0;
       var target = frameTarget();
       if (!target) return;
       delete target.mediaFrame;
       $('frameSliders').outerHTML = view.page === 'event' ? eventFrameHtml(target) : dishFrameHtml(target);
       postToPreview({ type: 'BELLE_MEDIA_FRAME', id: target.id, frame: null });
+      if (page) page.scrollTop = top;
       touch();
     }
 
@@ -2906,6 +3085,8 @@
     }
 
     function setBackgroundType(type) {
+      var page = $('page');
+      var top = page ? page.scrollTop : 0;
       var item = editorDish().item;
       view.editor.background = type;
       if (type === 'none') {
@@ -2917,6 +3098,7 @@
         item.video = item.video || VIDEO_PRESETS[0].src;
       }
       $('backgroundPart').innerHTML = backgroundPartHtml(item);
+      if (page) page.scrollTop = top;
       touch();
     }
 
@@ -3013,8 +3195,14 @@
       }
       found.item.name = found.item.name.trim();
       var name = found.item.name;
+      var savedId = found.item.id;
+      view.lastSavedId = savedId;
       go('menu', view.menuId);
       toast(name + ' saved. Press Publish when you are ready.');
+      setTimeout(function () {
+        var row = document.querySelector('[data-action="openDish"][data-id="' + (window.CSS && CSS.escape ? CSS.escape(savedId) : savedId) + '"]');
+        if (row) row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 50);
     }
 
     function cancelDish() {
@@ -3130,6 +3318,8 @@
     }
 
     function pickPhoto(el) {
+      var page = $('page');
+      var top = page ? page.scrollTop : 0;
       var src = el.getAttribute('data-src');
       if (view.page === 'dish') {
         var item = editorDish().item;
@@ -3144,6 +3334,7 @@
         ev.hasImage = true;
         $('eventPhotos').innerHTML = eventPhotoPartHtml(ev);
       }
+      if (page) page.scrollTop = top;
       touch();
     }
 
@@ -4436,9 +4627,15 @@
       }
       ev.title = ev.title.trim();
       var title = ev.title;
+      var savedId = ev.id;
+      view.lastSavedId = savedId;
       sortEvents();
       go('events');
       toast(title + ' saved. Press Publish when you are ready.');
+      setTimeout(function () {
+        var row = document.querySelector('[data-action="openEvent"][data-id="' + (window.CSS && CSS.escape ? CSS.escape(savedId) : savedId) + '"]');
+        if (row) row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 50);
     }
 
     function cancelEvent() {
@@ -6492,12 +6689,20 @@
       cancelEvent: cancelEvent,
       deleteEvent: deleteEvent,
       resetFrame: resetFrame,
+      toggleOverlayPopover: toggleOverlayPopover,
+      setOverlayPreset: function (el) {
+        var val = Number(el.getAttribute('data-value'));
+        setOverlayOpacity(val);
+      },
       clearEventPhoto: function () {
+        var page = $('page');
+        var top = page ? page.scrollTop : 0;
         var ev = editorEvent();
         ev.imageData = '';
         ev.imageKey = '';
         ev.hasImage = false;
         $('eventPhotos').innerHTML = eventPhotoPartHtml(ev);
+        if (page) page.scrollTop = top;
         touch();
       },
 
@@ -6598,6 +6803,14 @@
 
     function bindPageEvents() {
       var page = $('page');
+
+      var overlayInput = $('overlaySlider');
+      if (overlayInput && !overlayInput._bound) {
+        overlayInput._bound = true;
+        overlayInput.addEventListener('input', function (e) {
+          setOverlayOpacity(Number(e.target.value) / 100);
+        });
+      }
 
       page.addEventListener('input', function (e) {
         var t = e.target;
