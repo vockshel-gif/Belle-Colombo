@@ -4,8 +4,108 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
-  <title>Belle Colombo</title>
-  <meta name="description" content="Belle Colombo — Food, Menu, Events & Contacts." />
+  <title>Belle Colombo | Fine Dining Restaurant & Specialty Steakhouse · Colombo 07</title>
+  <meta name="description" content="Belle Colombo is an elevated fine-dining restaurant and steakhouse at 58A Horton Place, Cinnamon Gardens, Colombo 07. Explore our curated tasting menus, prime steaks, and online reservations." />
+  <meta name="keywords" content="Belle Colombo, fine dining Colombo, steakhouse Colombo, best steakhouse Sri Lanka, Horton Place restaurants, Colombo 07 dining, tasting menu Colombo, wine bar Colombo" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://bellecolombo.com/" />
+
+  <!-- Open Graph / Facebook / WhatsApp Preview -->
+  <meta property="og:type" content="restaurant" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="Belle Colombo | Fine Dining & Specialty Steakhouse" />
+  <meta property="og:description" content="Elevated culinary artistry, prime steaks, and artisanal tasting menus at 58A Horton Place, Cinnamon Gardens, Colombo 07." />
+  <meta property="og:url" content="https://bellecolombo.com/" />
+  <meta property="og:site_name" content="Belle Colombo" />
+  <meta property="og:image" content="https://bellecolombo.com/assets/images/steak_grill.jpg" />
+  <meta property="og:image:secure_url" content="https://bellecolombo.com/assets/images/steak_grill.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Belle Colombo — Luxury Dining & Steakhouse" />
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Belle Colombo | Fine Dining & Specialty Steakhouse" />
+  <meta name="twitter:description" content="Elevated culinary artistry, prime steaks, and artisanal tasting menus at 58A Horton Place, Cinnamon Gardens, Colombo 07." />
+  <meta name="twitter:image" content="https://bellecolombo.com/assets/images/steak_grill.jpg" />
+
+  <!-- Schema.org JSON-LD Structured Data for Google Knowledge Panel & Local SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["Restaurant", "FoodEstablishment"],
+    "@id": "https://bellecolombo.com/#restaurant",
+    "name": "Belle Colombo",
+    "alternateName": [
+      "Belle Colombo Restaurant",
+      "Belle Colombo Steakhouse",
+      "Belle Restaurant Horton Place"
+    ],
+    "image": [
+      "https://bellecolombo.com/assets/images/steak_grill.jpg",
+      "https://bellecolombo.com/assets/images/chef_plating.webp",
+      "https://bellecolombo.com/assets/images/cocktail_smoked.jpg"
+    ],
+    "logo": "https://bellecolombo.com/belle_logo_white.png",
+    "url": "https://bellecolombo.com/",
+    "telephone": "+94770315589",
+    "priceRange": "$$$$",
+    "servesCuisine": [
+      "Steakhouse",
+      "Modern Fine Dining",
+      "Contemporary European",
+      "Artisanal Tasting Menus"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "58A Horton Place",
+      "addressLocality": "Cinnamon Gardens, Colombo 07",
+      "addressRegion": "Western Province",
+      "postalCode": "00700",
+      "addressCountry": "LK"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 6.9113,
+      "longitude": 79.8711
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "11:00",
+        "closes": "22:30"
+      }
+    ],
+    "hasMenu": {
+      "@type": "Menu",
+      "name": "Belle Colombo Dining Menu",
+      "url": "https://bellecolombo.com/#menu"
+    },
+    "acceptsReservations": "True",
+    "potentialAction": {
+      "@type": "ReserveAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://bellecolombo.com/#reserve",
+        "inLanguage": "en",
+        "actionPlatform": [
+          "http://schema.org/DesktopWebPlatform",
+          "http://schema.org/MobileWebPlatform"
+        ]
+      },
+      "result": {
+        "@type": "FoodEstablishmentReservation",
+        "name": "Reserve a Table at Belle Colombo"
+      }
+    },
+    "sameAs": [
+      "https://www.instagram.com/belle.colombo/",
+      "https://www.facebook.com/belle.colombo/",
+      "https://maps.google.com/?q=Belle+Colombo+Sri+Lanka"
+    ]
+  }
+  </script>
   <link rel="icon" href="Logo/logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,6 +129,19 @@
       --font-title: 'Montserrat', system-ui, -apple-system, sans-serif;
       --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
       --font-label: 'Montserrat', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Screen-reader and search engine semantic utility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3280,7 +3393,8 @@
     <section class="view-home" aria-label="Main Navigation">
       <div class="home-stack">
         <h1 class="home-logo home-reveal">
-          <img src="belle_logo_white.png" alt="Belle Colombo" width="1004" height="404" />
+          <img src="belle_logo_white.png" alt="Belle Colombo — Fine Dining Restaurant & Steakhouse" width="1004" height="404" />
+          <span class="sr-only">Belle Colombo — Luxury Fine Dining Restaurant, Artisan Cocktails & Specialty Steakhouse at 58A Horton Place, Cinnamon Gardens, Colombo 07, Sri Lanka</span>
         </h1>
 
         <button type="button" class="home-nav-link menu-trigger" aria-label="Open Menu" style="--t:.1s">
