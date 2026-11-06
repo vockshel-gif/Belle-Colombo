@@ -1422,9 +1422,51 @@
       pointer-events: none;
       z-index: 0;
     }
-    #panel-tasting > * {
+    /* Only the menu itself rises above the dark layer. The back button and opening hours keep
+       their own place in the corners, which this once took from them. */
+    #panel-tasting > .tasting-view-scroll {
       position: relative;
       z-index: 1;
+    }
+
+    /* Each tasting menu's own photo or video, darkened so the courses stay easy to read */
+    #panel-tasting > .tasting-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .tasting-bg-item {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .tasting-bg-item.is-shown {
+      opacity: 1;
+    }
+    .tasting-bg-photo,
+    .tasting-bg-item video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.04);
+      transition: filter 0.6s ease;
+    }
+    .tasting-bg-photo.is-waiting {
+      filter: blur(16px);
+    }
+    .tasting-bg-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgb(var(--dark-rgb));
+      opacity: var(--tasting-dim, 0.7);
     }
 
     /* Item Card */
@@ -4495,7 +4537,10 @@ Choose your spread/rillette style:</p>
 
   <!-- TASTING MENUS VIEW (Exact Belle Colombo Luxury Design Matching PDF Pages 3 & 4) -->
   <div class="view-food-panel lunch-theme" id="panel-tasting" role="dialog" aria-label="Tasting Menus" aria-modal="true">
-    
+
+    <!-- The photo or video set for each tasting menu in the admin panel -->
+    <div class="tasting-bg" id="tastingBg" aria-hidden="true"></div>
+
     <!-- Top-Left Back Button -->
     <button type="button" class="btn-lunch-back" id="backFromTasting" data-back-to-hub aria-label="Back to Menu Categories">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -5774,7 +5819,163 @@ Choose your spread/rillette style:</p>
         if (pricingSevenCourse) pricingSevenCourse.classList.add('is-hidden');
       }
       if (tastingViewScroll) tastingViewScroll.scrollTop = 0;
+      showTastingBackground();
     }
+
+    /* ========================================================
+       TASTING MENU BACKGROUNDS
+       A photo or video set in the admin panel for each tasting menu.
+       Nothing downloads until the guest opens Tasting Menus, only the
+       chosen menu's background loads, and a video pauses on leaving.
+       ======================================================== */
+    var tastingBgSignature = '';
+    var TASTING_KEYS = { 'five-course': 'fiveCourse', 'seven-course': 'sevenCourse' };
+
+    function tastingBgDim(bg) {
+      var n = Number(bg.dim);
+      return (isFinite(n) && bg.dim !== '' && bg.dim !== null && bg.dim !== undefined ? Math.max(30, Math.min(95, n)) : 70) / 100;
+    }
+
+    function tastingBgSource(bg) {
+      if (!bg || (bg.type !== 'photo' && bg.type !== 'video')) return null;
+      var src = bg[bg.type];
+      return src ? { type: bg.type, src: String(src) } : null;
+    }
+
+    function tastingBgItemHtml(menuKey, bg) {
+      var source = tastingBgSource(bg);
+      if (!source) return '';
+      var id = mediaIdOf(source.src);
+      var poster = id ? mediaFileOf(id).poster : '';
+      var inner;
+      if (source.type === 'photo') {
+        if (id && readyPhotos[id]) {
+          inner = '<div class="tasting-bg-photo" style="background-image: url(\'' + escapeCssUrl(readyPhotos[id]) + '\');"></div>';
+        } else if (id) {
+          inner = '<div class="tasting-bg-photo is-waiting" data-media-photo="' + id + '"' + (poster ? ' style="background-image: url(\'' + escapeCssUrl(poster) + '\');"' : '') + '></div>';
+        } else {
+          inner = '<div class="tasting-bg-photo" data-bg="' + escapeHtml(source.src) + '"></div>';
+        }
+      } else {
+        // Not "data-media", so the dish video watcher leaves it alone
+        inner = '<video muted loop playsinline preload="none"' +
+          (id ? ' data-tasting-media="' + id + '"' : ' data-video-src="' + escapeHtml(source.src) + '"') +
+          (poster ? ' poster="' + escapeHtml(poster) + '"' : '') + '></video>';
+      }
+      return '<div class="tasting-bg-item" data-for="' + menuKey + '" style="--tasting-dim:' + tastingBgDim(bg) + '">' + inner + '</div>';
+    }
+
+    function renderTastingBackgrounds(tasting) {
+      var layer = document.getElementById('tastingBg');
+      if (!layer || !tasting) return;
+      var sources = {};
+      Object.keys(TASTING_KEYS).forEach(function(menuKey) {
+        var menu = tasting[TASTING_KEYS[menuKey]];
+        sources[menuKey] = tastingBgSource(menu && menu.background);
+      });
+      var signature = JSON.stringify(sources);
+      if (signature !== tastingBgSignature) {
+        tastingBgSignature = signature;
+        layer.innerHTML = Object.keys(TASTING_KEYS).map(function(menuKey) {
+          var menu = tasting[TASTING_KEYS[menuKey]];
+          return tastingBgItemHtml(menuKey, menu && menu.background);
+        }).join('');
+      } else {
+        // Only the darkness changed, as the admin moves its slider: no reload, no flicker
+        layer.querySelectorAll('.tasting-bg-item').forEach(function(item) {
+          var menu = tasting[TASTING_KEYS[item.getAttribute('data-for')]];
+          item.style.setProperty('--tasting-dim', tastingBgDim((menu && menu.background) || {}));
+        });
+      }
+      showTastingBackground();
+    }
+
+    function playTastingVideo(video) {
+      // Phones only play a video by itself when it is silent. Marked to play by itself, the browser
+      // also starts it once it can be seen, if it refused while the video was still fading in.
+      video.muted = true;
+      video.autoplay = true;
+      var play = video.play();
+      if (play && play.catch) {
+        play.catch(function() {
+          setTimeout(function() {
+            if (!video.autoplay) return;
+            var again = video.play();
+            if (again && again.catch) again.catch(function() {});
+          }, 900);
+        });
+      }
+    }
+
+    function stopTastingVideo(video) {
+      video.autoplay = false;
+      video.pause();
+    }
+
+    function startTastingBackground(item) {
+      var photo = item.querySelector('.tasting-bg-photo');
+      if (photo) {
+        var src = photo.getAttribute('data-bg');
+        if (src) {
+          photo.removeAttribute('data-bg');
+          photo.style.backgroundImage = "url('" + escapeCssUrl(src) + "')";
+        } else {
+          loadPhoto(photo);
+        }
+      }
+      var video = item.querySelector('video');
+      if (!video) return;
+      if (video.isReady) {
+        playTastingVideo(video);
+        return;
+      }
+      if (video.isLoading || isSavingData()) return;
+      video.isLoading = true;
+      // Its first frame then shows even where phones refuse to play videos by themselves
+      video.preload = 'auto';
+      var file = video.getAttribute('data-video-src');
+      var id = video.getAttribute('data-tasting-media');
+      if (file) {
+        video.src = file;
+        video.isReady = true;
+        playTastingVideo(video);
+      } else if (id) {
+        mediaAddress(id).then(function(address) {
+          video.src = address;
+          video.isReady = true;
+          showTastingBackground();
+        }, function() {
+          // The still image stays
+        });
+      }
+    }
+
+    // Shows the chosen tasting menu's background, and plays it only while Tasting Menus is open
+    function showTastingBackground() {
+      var layer = document.getElementById('tastingBg');
+      var panel = document.getElementById('panel-tasting');
+      if (!layer || !panel) return;
+      var isOpen = panel.classList.contains('is-active');
+      var chosen = pillTasting7 && pillTasting7.classList.contains('is-active') ? 'seven-course' : 'five-course';
+      layer.querySelectorAll('.tasting-bg-item').forEach(function(item) {
+        var isChosen = item.getAttribute('data-for') === chosen;
+        item.classList.toggle('is-shown', isChosen);
+        if (isChosen && isOpen) {
+          startTastingBackground(item);
+        } else {
+          var video = item.querySelector('video');
+          if (video) stopTastingVideo(video);
+        }
+      });
+    }
+
+    // Every way in or out of Tasting Menus changes its class, so watching that catches them all
+    (function() {
+      var panel = document.getElementById('panel-tasting');
+      if (panel && window.MutationObserver) {
+        new MutationObserver(showTastingBackground).observe(panel, { attributes: true, attributeFilter: ['class'] });
+      }
+    })();
 
     if (pillTasting5) {
       pillTasting5.addEventListener('click', function () { selectTastingMenu('five-course'); });
@@ -7108,6 +7309,13 @@ Choose your spread/rillette style:</p>
 
     // Admin Studio picks a pill in the phone preview to match its own
     function selectPreviewSubcat(target, value) {
+      if (target === 'tasting') {
+        // The admin's tabs say fiveCourse or sevenCourse; switch only when it differs, so the page keeps its place
+        var wantsSeven = value === 'sevenCourse';
+        var showsSeven = !!(pillTasting7 && pillTasting7.classList.contains('is-active'));
+        if (wantsSeven !== showsSeven) selectTastingMenu(wantsSeven ? 'seven-course' : 'five-course');
+        return;
+      }
       if (target === 'lunch') {
         if (currentLunchFilterSubcat !== value) {
           currentLunchFilterSubcat = value;
@@ -8443,7 +8651,10 @@ Choose your spread/rillette style:</p>
       if (data.lunchItems) renderLunchList(data.lunchItems);
       if (data.aLaCarte) renderAlacarteList(data.aLaCarte);
       if (data.theGardenAndBar) renderBarList(data.theGardenAndBar);
-      if (data.tastingMenus) renderTastingData(data.tastingMenus);
+      if (data.tastingMenus) {
+        renderTastingData(data.tastingMenus);
+        renderTastingBackgrounds(data.tastingMenus);
+      }
       if (data.venue) renderVenueInfo(data.venue);
 
       var customPanel = document.getElementById('panel-custom-category');

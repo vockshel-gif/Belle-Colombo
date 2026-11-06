@@ -2092,6 +2092,7 @@
 
     // Which pill the phone should show, so it matches what is on screen here
     function previewSubcat() {
+      if (view.page === 'tasting') return view.tastingKey;
       if (view.menuId === 'alacarte' || (view.page !== 'menu' && view.page !== 'dish')) return null;
       var chosen = chosenSection(view.menuId);
       return chosen ? chosen : 'all';
@@ -3283,7 +3284,7 @@
 
     // Dishes and events have smaller photos than Backgrounds and the Gallery, which fill the screen
     function photoSizeFor(uses) {
-      if (uses.some(function (u) { return u.type === 'gallery' || u.type === 'about' || u.type === 'background'; })) return STAGE_PHOTO_MAX_PX;
+      if (uses.some(function (u) { return u.type === 'gallery' || u.type === 'about' || u.type === 'background' || u.type === 'tasting'; })) return STAGE_PHOTO_MAX_PX;
       if (uses.some(function (u) { return u.type === 'event'; })) return EVENT_PHOTO_MAX_PX;
       return DISH_PHOTO_MAX_PX;
     }
@@ -3299,6 +3300,10 @@
       }
       if (mode === 'gallery' || mode === 'about') {
         onPagePhotoUpload(mode, Array.prototype.slice.call(t.files));
+        return;
+      }
+      if (mode === 'tastingphoto' || mode === 'tastingvideo') {
+        onTastingUpload(mode, file);
         return;
       }
       if (isVideoFile(file)) {
@@ -4308,6 +4313,14 @@
           entry(src, stage.type === 'video' ? 'video' : 'photo').uses.push({ type: 'background', label: BACKGROUND_STAGES[key].title, area: 'Backgrounds' });
         });
       });
+      ['fiveCourse', 'sevenCourse'].forEach(function (key) {
+        var menu = appData.tastingMenus[key];
+        var bg = tastingBgOf(menu);
+        var src = tastingBgSrc(bg);
+        if (src) {
+          entry(src, tastingBgType(bg)).uses.push({ type: 'tasting', key: key, label: prettyName(menu.shortTitle || menu.title) || 'Tasting menu', area: 'Tasting Menus' });
+        }
+      });
       Object.keys(appData.mediaFiles).forEach(function (id) {
         entry('media:' + id, appData.mediaFiles[id].kind === 'photo' ? 'photo' : 'video');
       });
@@ -4338,6 +4351,10 @@
       });
       appData.events.forEach(function (ev) {
         var id = uploadedVideoId(ev.imageData);
+        if (id) shown[id] = true;
+      });
+      ['fiveCourse', 'sevenCourse'].forEach(function (key) {
+        var id = uploadedVideoId(tastingBgSrc(tastingBgOf(appData.tastingMenus[key])));
         if (id) shown[id] = true;
       });
       Object.keys(BACKGROUND_STAGES).forEach(function (key) {
@@ -4425,6 +4442,7 @@
         if (use.type === 'dish') action = 'data-action="openDish" data-menu="' + esc(use.menuId) + '" data-id="' + esc(use.id) + '"';
         if (use.type === 'background') action = 'data-action="go" data-page="backgrounds"';
         if (use.type === 'gallery' || use.type === 'about') action = 'data-action="go" data-page="' + use.type + '"';
+        if (use.type === 'tasting') action = 'data-action="tastingTab" data-key="' + esc(use.key) + '"';
         return '<button type="button" class="btn-link" ' + action + '>' + esc(use.label || 'Unnamed') + '</button> <span>(' + esc(use.area) + ')</span>';
       }).join('<br />');
       var more = media.uses.length > 3 ? '<br /><span>and ' + (media.uses.length - 3) + ' more</span>' : '';
@@ -4525,6 +4543,7 @@
         }
         delete appData.mediaFiles[uploadedVideoId(media.src)];
         removeFromStages(media.src);
+        removeFromTasting(media.src);
         refreshAfterMediaChange();
         toast(media.isUpload ? 'Deleted. Press Publish to remove it from the live site.' : 'Removed. Press Publish to update the live site.');
       });
@@ -4548,6 +4567,10 @@
         if (p.src === media.src) p.src = url;
       });
       if (appData.about.image === media.src) appData.about.image = url;
+      ['fiveCourse', 'sevenCourse'].forEach(function (key) {
+        var bg = appData.tastingMenus[key] && appData.tastingMenus[key].background;
+        if (bg && bg.photo === media.src) bg.photo = url;
+      });
       Object.keys(BACKGROUND_STAGES).forEach(function (key) {
         var stage = appData.backgrounds[key];
         stage.photos = stage.photos.map(function (src) { return src === media.src ? url : src; });
@@ -4692,11 +4715,158 @@
           '</div>' +
           tastingField('Note for guests', 'data-tfield="note"', menu.note, 'Please select one option per course.') +
         '</section>' +
+        tastingBackgroundHtml(menu) +
         '<div class="tasting-courses" data-sort-list="courses" data-sort-group="courses">' + courses + '</div>' +
         '<div><button type="button" class="btn" data-action="addCourse">' + icon('plus', 16) + 'Add a course</button></div>';
     }
 
+    /* ========================================================
+       TASTING MENU BACKGROUNDS
+       Each tasting menu can have its own photo or video behind it.
+       Guests download it only when they open that tasting menu.
+       ======================================================== */
+    var TASTING_DIM_DEFAULT = 70;
+
+    // Read only, so looking at the page never counts as a change
+    function tastingBgOf(menu) {
+      var bg = menu && menu.background;
+      return bg && typeof bg === 'object' ? bg : { type: 'none' };
+    }
+
+    function tastingBgType(bg) {
+      return bg.type === 'photo' || bg.type === 'video' ? bg.type : 'none';
+    }
+
+    function tastingDim(bg) {
+      var n = Number(bg.dim);
+      return isFinite(n) && bg.dim !== '' && bg.dim !== null && bg.dim !== undefined ? Math.max(30, Math.min(95, n)) : TASTING_DIM_DEFAULT;
+    }
+
+    function tastingBgSrc(bg) {
+      var type = tastingBgType(bg);
+      return type === 'none' ? '' : (bg[type] || '');
+    }
+
+    function editTastingBg(fn, key) {
+      var menu = appData.tastingMenus[key || view.tastingKey];
+      if (!menu) return;
+      var bg = Object.assign({ type: 'none', photo: '', video: '', dim: TASTING_DIM_DEFAULT }, tastingBgOf(menu));
+      fn(bg);
+      menu.background = bg;
+      touch();
+    }
+
+    function refreshTastingBg() {
+      keepScroll(renderPage);
+      showPreviewForPage();
+    }
+
+    // Photos big enough to fill a screen: uploads made for one, then those built into the website
+    function tastingPhotoChoices(current) {
+      var list = [];
+      var seen = {};
+      function add(src, label) {
+        if (!src || seen[src]) return;
+        seen[src] = true;
+        list.push({ src: src, label: label });
+      }
+      uploadedStagePhotos().forEach(function (src) { add(src, photoLabel(src)); });
+      BACKGROUND_PHOTOS.concat(PHOTO_PRESETS).forEach(function (p) { add(p.src, p.label); });
+      if (current && !seen[current]) list.unshift({ src: current, label: 'Current photo' });
+      return list;
+    }
+
+    function tastingVideoPickHtml(src, label, picked) {
+      var info = uploadedVideo(src);
+      var preview = uploadedVideoId(src)
+        ? (info && info.poster ? '<img src="' + esc(info.poster) + '" alt="" />' : '')
+        : '<video src="' + esc(src) + '" muted playsinline preload="metadata"></video>';
+      return '<button type="button" class="video-pick' + (picked ? ' is-picked' : '') + '" data-action="pickTastingVideo" data-src="' + esc(src) + '" aria-pressed="' + picked + '">' +
+        preview + '<span class="media-tag">' + esc(label) + '</span></button>';
+    }
+
+    function tastingBackgroundHtml(menu) {
+      var bg = tastingBgOf(menu);
+      var type = tastingBgType(bg);
+      var choices = [['none', 'No background'], ['photo', 'Photo'], ['video', 'Video']].map(function (c) {
+        return '<label><input type="radio" name="tastingBgType" value="' + c[0] + '"' + (type === c[0] ? ' checked' : '') + ' />' + c[1] + '</label>';
+      }).join('');
+      var body = '';
+      if (type === 'photo') {
+        body = '<div class="photo-grid">' + tastingPhotoChoices(bg.photo).map(function (p) {
+            return photoPickHtml(p, 'pickTastingPhoto', p.src === bg.photo);
+          }).join('') + '</div>' +
+          '<div class="add-row"><label class="btn btn-sm">Upload a photo<input type="file" accept="image/*" data-upload="tastingphoto" hidden /></label></div>' +
+          '<p class="field-hint">A wide, calm photo works best. An upload here is kept apart from your menu, and only guests who open this tasting menu download it.</p>';
+      } else if (type === 'video') {
+        body = '<div class="video-picks">' + videoChoices(bg.video).map(function (v) {
+            return tastingVideoPickHtml(v.src, v.label, v.src === bg.video);
+          }).join('') + '</div>' +
+          '<div class="add-row"><label class="btn btn-sm">Upload a video<input type="file" accept="video/*" data-upload="tastingvideo" hidden /></label></div>' +
+          '<p class="field-hint">Videos built into the website cost nothing. An upload is cut to ' + STAGE_VIDEO.seconds + ' seconds with no sound, and only guests who open this tasting menu download it.</p>';
+      }
+      if (type !== 'none') {
+        var dim = tastingDim(bg);
+        body += '<label class="frame-slider"><span>How dark</span>' +
+            '<input type="range" id="tastingDim" min="30" max="95" step="5" value="' + dim + '" />' +
+            '<output id="tastingDimText">' + dim + '%</output></label>' +
+          '<span class="field-hint">Darker keeps the courses and prices easy to read. Watch the phone preview as you move it.</span>';
+      }
+      return '<section class="card card-pad">' +
+        '<h2 class="card-title">Background</h2>' +
+        '<p class="card-hint">A photo or video behind this tasting menu on the website. Each tasting menu has its own, and it changes when guests switch between them.</p>' +
+        '<div class="choice-group" role="radiogroup" aria-label="Background">' + choices + '</div>' +
+        body +
+      '</section>';
+    }
+
+    function setTastingBgType(type) {
+      editTastingBg(function (bg) {
+        bg.type = type;
+        if (type === 'photo' && !bg.photo) bg.photo = 'assets/images/bg/slide_chef_plating.webp';
+        if (type === 'video' && !bg.video) bg.video = VIDEO_PRESETS[0].src;
+      });
+      refreshTastingBg();
+    }
+
+    function onTastingUpload(mode, file) {
+      var key = view.tastingKey;
+      var wantsVideo = mode === 'tastingvideo';
+      if (isVideoFile(file) !== wantsVideo) {
+        toast(wantsVideo ? 'Please choose a video here.' : 'Please choose a photo here.');
+        return;
+      }
+      function use(src) {
+        editTastingBg(function (bg) {
+          bg.type = wantsVideo ? 'video' : 'photo';
+          bg[bg.type] = src;
+        }, key);
+        if (view.page === 'tasting') refreshTastingBg();
+        toast(wantsVideo ? 'Video added.' : 'Photo added.');
+      }
+      if (wantsVideo) prepareVideo(file, use, STAGE_VIDEO);
+      else prepareStoredPhoto(file, '', STAGE_PHOTO_MAX_PX).then(function (src) { if (src) use(src); });
+    }
+
+    // Something deleted from Photos & Videos comes off the tasting menus too
+    function removeFromTasting(src) {
+      ['fiveCourse', 'sevenCourse'].forEach(function (key) {
+        var menu = appData.tastingMenus[key];
+        var bg = menu && menu.background;
+        if (!bg || typeof bg !== 'object') return;
+        if (bg.photo === src) bg.photo = '';
+        if (bg.video === src) bg.video = '';
+        if (tastingBgType(bg) !== 'none' && !tastingBgSrc(bg)) bg.type = 'none';
+      });
+    }
+
     function onTastingInput(t) {
+      if (t.name === 'tastingBgType') return setTastingBgType(t.value);
+      if (t.id === 'tastingDim') {
+        editTastingBg(function (bg) { bg.dim = parseInt(t.value, 10); });
+        $('tastingDimText').textContent = t.value + '%';
+        return;
+      }
       var menu = appData.tastingMenus[view.tastingKey];
       var d = t.dataset;
       var c = parseInt(d.c, 10);
@@ -6956,7 +7126,24 @@
 
       tastingTab: function (el) {
         view.tastingKey = el.getAttribute('data-key');
+        // From Photos & Videos this opens the tasting menu that uses the photo or video
+        if (view.page !== 'tasting') return go('tasting');
         renderPage();
+        showPreviewForPage();
+      },
+      pickTastingPhoto: function (el) {
+        editTastingBg(function (bg) {
+          bg.type = 'photo';
+          bg.photo = el.getAttribute('data-src');
+        });
+        refreshTastingBg();
+      },
+      pickTastingVideo: function (el) {
+        editTastingBg(function (bg) {
+          bg.type = 'video';
+          bg.video = el.getAttribute('data-src');
+        });
+        refreshTastingBg();
       },
       renameTasting: function () {
         var menu = getMenu('tasting');
