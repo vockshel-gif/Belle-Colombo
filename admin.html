@@ -1126,9 +1126,11 @@
     var NETWORK_TIMEOUT_MS = 20000;
     var UPLOAD_TIMEOUT_MS = 5 * 60 * 1000;
 
-    // Photos travel inside the menu data, and every new visitor downloads all of it
+    // Every new visitor downloads the whole menu before anything shows, and their browser keeps a
+    // copy in a store of about 5 MB. Photos live in belle_media, so only their tiny previews count.
     var DATA_SIZE_LIMIT_BYTES = 1024 * 1024;     // Above this, the panel warns
     var DATA_SIZE_MAX_BYTES = 2 * 1024 * 1024;   // Above this, uploads are refused
+    var PHOTO_PREVIEW_PX = 64;                   // The blurred stand-in a guest sees until the photo arrives
     var FREE_DOWNLOAD_BYTES = 10 * 1000 * 1000 * 1000; // Firebase free plan, per month
     var FREE_STORAGE_BYTES = 1000 * 1000 * 1000; // Firebase free plan
     var MONTHLY_GUESTS_ESTIMATE = 1000;          // Used for the download ring
@@ -1744,7 +1746,7 @@
         if (!sameContent(before.backgrounds[key], after.backgrounds[key])) add('Changed', 'Backgrounds', BACKGROUND_STAGES[key].title);
       });
       if (!sameContent(menuStructure(before), menuStructure(after))) add('Changed', 'Menus', 'Menu or section names or their order');
-      if (!changes.length && !sameContent(before.mediaFiles, after.mediaFiles)) add('Changed', 'Photos & Videos', 'Your uploaded videos');
+      if (!changes.length && !sameContent(before.mediaFiles, after.mediaFiles)) add('Changed', 'Photos & Videos', 'Your uploaded photos and videos');
       if (!changes.length && !sameContent(before, after)) add('Changed', 'Menus', 'The order of items');
       return changes;
     }
@@ -2322,11 +2324,14 @@
       if (lostPhotos) {
         issues.push({ text: '<b>' + plural(lostPhotos, 'gallery photo') + '</b> ' + (lostPhotos === 1 ? 'was' : 'were') + ' taken off ' + (lostPhotos === 1 ? 'its dish, so guests do not see it' : 'their dishes, so guests do not see them') + '.', page: 'gallery', action: 'Review the gallery' });
       }
-      if (dataSize() > DATA_SIZE_LIMIT_BYTES) {
-        issues.push({ text: '<b>Your uploaded photos are taking a lot of space.</b> Every new visitor downloads them. Delete the ones you can live without.', media: true });
+      var insideMenu = menuPhotos().length;
+      if (insideMenu) {
+        issues.push({ text: '<b>' + plural(insideMenu, 'photo') + ' ' + (insideMenu === 1 ? 'is' : 'are') + ' still inside your menu.</b> Every new visitor downloads ' + (insideMenu === 1 ? 'it' : 'all of them') + ' before the menu shows. Move ' + (insideMenu === 1 ? 'it' : 'them') + ' out so guests download a photo only when they reach it.', movePhotos: true });
+      } else if (dataSize() > DATA_SIZE_LIMIT_BYTES) {
+        issues.push({ text: '<b>Your menu is large.</b> Every new visitor downloads it before anything shows. Delete uploads you can live without.', media: true });
       }
       if (usageEstimate().monthly >= FREE_DOWNLOAD_BYTES * 0.6) {
-        issues.push({ text: '<b>Your videos could use up your free downloads.</b> If that happens, Firebase stops your menu until next month. Take off the ones you can live without.', media: true });
+        issues.push({ text: '<b>Your photos and videos could use up your free downloads.</b> If that happens, Firebase stops your menu until next month. Take off the ones you can live without.', media: true });
       }
       return issues;
     }
@@ -2341,6 +2346,8 @@
           }).join('');
         } else if (issue.events) {
           links = '<button type="button" class="btn btn-sm" data-action="go" data-page="events">Review events</button>';
+        } else if (issue.movePhotos) {
+          links = '<button type="button" class="btn btn-sm" data-action="moveMenuPhotos">Move them out</button>';
         } else if (issue.media) {
           links = '<button type="button" class="btn btn-sm" data-action="go" data-page="media">Review uploads</button>';
         } else if (issue.bookings) {
@@ -2389,7 +2396,7 @@
     function dishRowHtml(menuId, item, sectionKey) {
       if (isHeading(item)) return headingRowHtml(menuId, item, sectionKey);
       var thumb = item.image
-        ? '<span class="thumb"><img src="' + esc(item.image) + '" alt="" loading="lazy" /></span>'
+        ? '<span class="thumb">' + thumbImgHtml(item.image) + '</span>'
         : '<span class="thumb">' + icon('plate') + '</span>';
       var chips = '';
       if (isVegDish(item)) chips += '<span class="chip chip-veg">Vegetarian</span>';
@@ -2852,12 +2859,18 @@
     }
 
     function photoGridHtml(current, presets) {
-      var uploads = collectMedia().filter(function (m) { return m.kind === 'photo' && m.src.indexOf('data:') === 0; }).map(function (m) { return m.src; });
+      // Uploaded photos, newest first, then those built into the website
+      var uploads = collectMedia().filter(function (m) { return m.kind === 'photo' && m.isUpload; }).map(function (m) { return m.src; });
+      uploads.sort(function (a, b) {
+        var idA = uploadedVideoId(a);
+        var idB = uploadedVideoId(b);
+        return (idB ? uploadTime(idB) : 0) - (idA ? uploadTime(idA) : 0);
+      });
       var isOther = current && uploads.indexOf(current) === -1 && !presets.some(function (p) { return p.src === current; });
       if (isOther) uploads.unshift(current);
       var html = uploads.map(function (src) {
         var picked = src === current;
-        return '<button type="button" class="photo-pick' + (picked ? ' is-picked' : '') + '" data-action="pickPhoto" data-src="' + esc(src) + '" title="Your photo" aria-pressed="' + picked + '"><img src="' + esc(src) + '" alt="Your photo" /></button>';
+        return '<button type="button" class="photo-pick' + (picked ? ' is-picked' : '') + '" data-action="pickPhoto" data-src="' + esc(src) + '" title="Your photo" aria-pressed="' + picked + '">' + thumbImgHtml(src, 'Your photo') + '</button>';
       }).join('');
       html += presets.map(function (p) {
         var picked = p.src === current;
@@ -3234,34 +3247,45 @@
     /* ========================================================
        PHOTO UPLOADS
        ======================================================== */
-    function shrinkImage(file, maxSize, done, fail) {
-      var reader = new FileReader();
-      reader.onerror = fail;
-      reader.onload = function (e) {
+    // Draws a photo (a file, or an address it already has) no larger than maxSize, as a data: address
+    function shrinkSource(src, maxSize, quality) {
+      return new Promise(function (resolve, reject) {
         var img = new Image();
-        img.onerror = fail;
+        img.onerror = function () { reject({ text: 'That file could not be read as a photo. Try a JPG or PNG.' }); };
         img.onload = function () {
           var scale = Math.min(1, maxSize / Math.max(img.width, img.height));
           var canvas = document.createElement('canvas');
-          canvas.width = Math.round(img.width * scale);
-          canvas.height = Math.round(img.height * scale);
+          canvas.width = Math.max(1, Math.round(img.width * scale));
+          canvas.height = Math.max(1, Math.round(img.height * scale));
           canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          var url = canvas.toDataURL('image/webp', 0.72);
-          if (url.indexOf('data:image/webp') !== 0) url = canvas.toDataURL('image/jpeg', 0.72);
-          done(url);
+          var url = canvas.toDataURL('image/webp', quality || 0.72);
+          if (url.indexOf('data:image/webp') !== 0) url = canvas.toDataURL('image/jpeg', quality || 0.72);
+          resolve(url);
         };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+        img.src = src;
+      });
     }
 
-    function hasRoomFor(url, replacing) {
-      if (dataSize() - (replacing || 0) + url.length <= DATA_SIZE_MAX_BYTES) return true;
-      openDialog({
-        title: 'There is no room for this photo',
-        text: 'Photos are stored with your menu, and every new visitor downloads all of them. Your menu has reached the 2 MB limit that keeps your website fast and inside the free Firebase allowance. Delete a photo you no longer need, then try again.'
+    function shrinkFile(file, maxSize, quality) {
+      var address = URL.createObjectURL(file);
+      return shrinkSource(address, maxSize, quality).then(function (url) {
+        URL.revokeObjectURL(address);
+        return url;
+      }, function (err) {
+        URL.revokeObjectURL(address);
+        throw err;
       });
-      return false;
+    }
+
+    function photoPreview(src) {
+      return shrinkSource(src, PHOTO_PREVIEW_PX, 0.5);
+    }
+
+    // Dishes and events have smaller photos than Backgrounds and the Gallery, which fill the screen
+    function photoSizeFor(uses) {
+      if (uses.some(function (u) { return u.type === 'gallery' || u.type === 'about' || u.type === 'background'; })) return STAGE_PHOTO_MAX_PX;
+      if (uses.some(function (u) { return u.type === 'event'; })) return EVENT_PHOTO_MAX_PX;
+      return DISH_PHOTO_MAX_PX;
     }
 
     function onUpload(t) {
@@ -3287,33 +3311,38 @@
         toast('Please choose a video here.');
         return;
       }
-      shrinkImage(file, mode === 'event' ? EVENT_PHOTO_MAX_PX : DISH_PHOTO_MAX_PX, function (url) {
-        var media = mode === 'replace' ? view.mediaList[parseInt(target, 10)] : null;
-        if (!hasRoomFor(url, media ? media.src.length : 0)) return;
+      if (mode === 'media') {
+        chooseUploadTarget(file);
+        return;
+      }
+      if (mode === 'replace') {
+        var media = view.mediaList[parseInt(target, 10)];
+        prepareStoredPhoto(file, '', photoSizeFor(media.uses)).then(function (src) {
+          if (src) replaceMedia(media, src);
+        });
+        return;
+      }
+      // A photo goes to belle_media straight away, and the dish or event keeps its "media:" address
+      prepareStoredPhoto(file, '', mode === 'event' ? EVENT_PHOTO_MAX_PX : DISH_PHOTO_MAX_PX).then(function (src) {
+        if (!src) return;
         if (mode === 'dish') {
           var found = editorDish();
           if (!found) return;
-          found.item.image = url;
+          found.item.image = src;
           found.item.video = '';
           $('backgroundPart').innerHTML = backgroundPartHtml(found.item);
         } else if (mode === 'event') {
           var ev = editorEvent();
           if (!ev) return;
-          ev.imageData = url;
+          ev.imageData = src;
           ev.imageKey = '';
           ev.hasImage = true;
           $('eventPhotos').innerHTML = eventPhotoPartHtml(ev);
-        } else if (mode === 'replace') {
-          replaceMedia(media, url);
-          return;
         } else {
-          chooseUploadTarget(url);
           return;
         }
         touch();
         toast('Photo added.');
-      }, function () {
-        toast('That file could not be read as a photo. Try a JPG or PNG.');
       });
     }
 
@@ -3520,7 +3549,7 @@
     function readBase64(blob) {
       return new Promise(function (resolve, reject) {
         var reader = new FileReader();
-        reader.onerror = function () { reject({ text: 'That video could not be read.' }); };
+        reader.onerror = function () { reject({ text: 'That file could not be read.' }); };
         reader.onload = function () { resolve(reader.result.split(',')[1]); };
         reader.readAsDataURL(blob);
       });
@@ -3541,7 +3570,7 @@
             else reject({ status: xhr.status });
           };
           xhr.onerror = xhr.ontimeout = function () {
-            reject({ text: 'The video did not reach Firebase. Check your internet connection and try again.' });
+            reject({ text: 'It did not reach Firebase. Check your internet connection and try again.' });
           };
           xhr.onabort = function () { reject(CANCELLED); };
           job.stop = function () { xhr.abort(); };
@@ -3609,43 +3638,125 @@
       });
     }
 
-    // A large photo goes to belle_media like a video, with a small still in the menu.
+    function newMediaId(prefix) {
+      return prefix + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    }
+
+    // Sends a photo that is already shrunk to belle_media, and notes it in the menu with its tiny
+    // preview. Guests download the photo itself only when they reach it.
+    // freed: what leaves the menu at the same time, when a photo inside it is being moved out
+    function storePhoto(url, preview, maxPx, job, busy, label, freed) {
+      var parts = /^data:([^;]+);base64,(.+)$/.exec(url || '');
+      if (!parts) return Promise.reject({ text: 'That photo could not be read.' });
+      if (usageEstimate().stored + parts[2].length > FREE_STORAGE_BYTES) {
+        return Promise.reject({ text: 'Your free Firebase storage is full. Delete something you no longer need, then press Publish and try again.' });
+      }
+      if (dataSize() - (freed || 0) + preview.length > DATA_SIZE_MAX_BYTES) {
+        return Promise.reject({ text: menuPhotos().length
+          ? 'Your menu is full because some photos are still kept inside it. Open Photos & Videos and press Move them out of the menu, then try again.'
+          : 'Your menu has reached the 2 MB that every new visitor downloads first. Delete photos or videos you no longer need, then try again.' });
+      }
+      var id = newMediaId('p');
+      busy.step('Uploading your photo' + (label || ''), 'Saving it to Firebase…');
+      return uploadMediaFile(id, parts[1], parts[2], job, busy.progress).then(function () {
+        appData.mediaFiles[id] = { kind: 'photo', size: parts[2].length, px: maxPx, poster: preview };
+        return 'media:' + id;
+      });
+    }
+
+    // Shrinks a chosen photo and stores it in belle_media.
     // Resolves to its "media:" address, or to null if it was cancelled or failed.
-    function prepareStoredPhoto(file, label) {
+    function prepareStoredPhoto(file, label, maxPx) {
+      maxPx = maxPx || STAGE_PHOTO_MAX_PX;
       var job = { cancelled: false, stop: null };
-      var id = 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
       var busy = showBusy(function () {
         job.cancelled = true;
         if (job.stop) job.stop();
       });
-      function shrink(maxSize) {
-        return new Promise(function (resolve, reject) {
-          shrinkImage(file, maxSize, resolve, function () {
-            reject({ text: 'That file could not be read as a photo. Try a JPG or PNG.' });
-          });
-        });
-      }
-      var poster = '';
-      var storedSize = 0;
-      busy.step('Getting your photo ready' + (label || ''), 'Shrinking it to suit a full screen…');
-      return Promise.all([shrink(STAGE_PHOTO_MAX_PX), shrink(VIDEO_POSTER_PX)]).then(function (urls) {
+      busy.step('Getting your photo ready' + (label || ''), 'Shrinking it…');
+      return Promise.all([shrinkFile(file, maxPx), shrinkFile(file, PHOTO_PREVIEW_PX, 0.5)]).then(function (urls) {
         if (job.cancelled) throw CANCELLED;
-        var parts = /^data:([^;]+);base64,(.+)$/.exec(urls[0]);
-        poster = urls[1];
-        storedSize = parts[2].length;
-        if (usageEstimate().stored + storedSize > FREE_STORAGE_BYTES) {
-          throw { text: 'Your free Firebase storage is full. Delete something you no longer need, then press Publish and try again.' };
-        }
-        busy.step('Uploading your photo' + (label || ''), 'Saving it to Firebase…');
-        return uploadMediaFile(id, parts[1], parts[2], job, busy.progress);
-      }).then(function () {
-        appData.mediaFiles[id] = { kind: 'photo', size: storedSize, poster: poster };
+        return storePhoto(urls[0], urls[1], maxPx, job, busy, label);
+      }).then(function (src) {
         busy.close();
-        return 'media:' + id;
+        return src;
       }).catch(function (err) {
         busy.close();
         showMediaFailure(err, 'photo');
         return null;
+      });
+    }
+
+    /* ========================================================
+       MOVING PHOTOS OUT OF THE MENU
+       Dish and event photos used to be kept inside the menu, so every
+       new visitor downloaded all of them before anything showed. This
+       moves each one to belle_media, keeping its exact size and
+       quality, and points the dishes and events at it.
+       ======================================================== */
+    function menuPhotos() {
+      return collectMedia().filter(function (m) { return m.kind === 'photo' && m.src.indexOf('data:') === 0; });
+    }
+
+    function moveMenuPhotos() {
+      var photos = menuPhotos();
+      if (!photos.length) {
+        toast('Every photo is already out of your menu.');
+        return;
+      }
+      var size = photos.reduce(function (sum, m) { return sum + m.src.length; }, 0);
+      askConfirm('Move ' + plural(photos.length, 'photo') + ' out of your menu?',
+        'They make up ' + formatSize(size) + ' of your menu, and every new visitor downloads all of them before the menu shows. Once they are moved, guests download a photo only when they reach that dish. They look exactly the same. Keep this page open while it works, then press Publish.',
+        'Move them').then(function (yes) {
+        if (!yes) return;
+        var job = { cancelled: false, stop: null };
+        var busy = showBusy(function () {
+          job.cancelled = true;
+          if (job.stop) job.stop();
+        });
+        var moved = 0;
+        photos.reduce(function (chain, media, i) {
+          return chain.then(function () {
+            if (job.cancelled) throw CANCELLED;
+            var label = ' (' + (i + 1) + ' of ' + photos.length + ')';
+            busy.step('Moving your photos' + label, 'Making its small preview…');
+            return photoPreview(media.src).then(function (preview) {
+              if (job.cancelled) throw CANCELLED;
+              var freed = media.src.length * Math.max(1, media.uses.length);
+              return storePhoto(media.src, preview, photoSizeFor(media.uses), job, busy, label, freed);
+            }).then(function (src) {
+              swapPhoto(media, src);
+              moved++;
+              // Saved after each one, so closing the page halfway loses nothing
+              commitDraft();
+            });
+          });
+        }, Promise.resolve()).then(function () {
+          busy.close();
+          refreshAfterMediaChange();
+          openDialog({
+            title: plural(moved, 'photo') + ' moved',
+            text: 'Your menu is now ' + formatSize(dataSize()) + '. Press Publish so guests get the lighter menu. Until then, the live site keeps working as before.'
+          });
+        }).catch(function (err) {
+          busy.close();
+          if (moved) refreshAfterMediaChange();
+          if (err === CANCELLED) {
+            if (moved) toast(plural(moved, 'photo') + ' moved. The rest stay in your menu for now.');
+            return;
+          }
+          if (err && err.authCode) {
+            signOut('Your sign-in has ended. ' + plural(moved, 'photo') + ' moved before it did. Sign in again and press Move them once more.');
+            return;
+          }
+          var reason = (err && err.text) || (err && err.status
+            ? 'Firebase returned error ' + err.status + '.'
+            : 'Something went wrong.');
+          openDialog({
+            title: moved ? 'Some photos were not moved' : 'The photos were not moved',
+            text: reason + ' ' + (moved ? plural(moved, 'photo') + ' moved before this happened, and the rest stay in your menu for now.' : 'They stay in your menu for now.') + ' You can try again later.'
+          });
+        });
       });
     }
 
@@ -3739,7 +3850,7 @@
 
     function photoPickHtml(photo, action, picked) {
       return '<button type="button" class="photo-pick' + (picked ? ' is-picked' : '') + '" data-action="' + action + '" data-src="' + esc(photo.src) + '" title="' + esc(photo.label) + '" aria-pressed="' + !!picked + '">' +
-        '<img src="' + esc(photoThumb(photo.src)) + '" alt="' + esc(photo.label) + '" loading="lazy" /></button>';
+        thumbImgHtml(photo.src, photo.label) + '</button>';
     }
 
     function galleryRowHtml(p) {
@@ -3754,7 +3865,7 @@
       else if (owner) note = '<span class="field-hint">The photo on ' + esc(owner.label) + ' (' + esc(owner.area) + '). It changes if that photo changes.</span>';
       return '<div class="row gallery-row" data-sort-item="' + esc(p.id) + '">' +
         dragHandleHtml(p.caption || 'this photo') +
-        '<span class="thumb">' + (src ? '<img src="' + esc(photoThumb(src)) + '" alt="" loading="lazy" />' : icon('image', 20)) + '</span>' +
+        '<span class="thumb">' + (src ? thumbImgHtml(src) : icon('image', 20)) + '</span>' +
         '<div class="gallery-fields">' +
           '<input type="text" data-gallery="caption" data-id="' + esc(p.id) + '" value="' + esc(p.caption) + '" placeholder="A short caption (optional)" aria-label="Caption" maxlength="80" />' +
           '<select data-gallery="tag" data-id="' + esc(p.id) + '" aria-label="Kind of photo">' + tags + '</select>' +
@@ -3961,9 +4072,95 @@
       return uploadedVideoId(src) ? (info && info.poster) || '' : src;
     }
 
+    // A thumbnail: a stored photo shows its tiny preview first, then the photo itself once it is on screen
+    function thumbImgHtml(src, alt) {
+      var id = uploadedVideoId(src);
+      var info = uploadedVideo(src);
+      var shown = photoThumb(src);
+      var full = id && info && info.kind === 'photo' ? ' data-full-media="' + esc(id) + '"' : '';
+      return '<img' + (shown ? ' src="' + esc(shown) + '"' : '') + full + ' alt="' + esc(alt || '') + '" loading="lazy" />';
+    }
+
+    // A stored photo comes from belle_media once, then from this browser's own store,
+    // which the guest site and the phone preview share
+    var MEDIA_CACHE_NAME = 'belle-media-v1';
+    var fullPhotoAddresses = {};
+
+    function storedPhotoBlob(id) {
+      var url = FIREBASE_MEDIA_URL + '/' + id + '.json';
+      var opened = window.caches ? caches.open(MEDIA_CACHE_NAME).catch(function () { return null; }) : Promise.resolve(null);
+      return opened.then(function (store) {
+        return (store ? store.match(url) : Promise.resolve(null)).then(function (kept) {
+          if (kept) return kept.blob();
+          return fetch(url).then(function (res) {
+            if (!res.ok) throw { status: res.status };
+            return res.json();
+          }).then(function (file) {
+            if (!file || !file.data) throw { text: 'That photo is missing from Firebase.' };
+            var bytes = Uint8Array.from(atob(file.data), function (c) { return c.charCodeAt(0); });
+            var blob = new Blob([bytes], { type: file.mime });
+            if (store) store.put(url, new Response(blob)).catch(function () {});
+            return blob;
+          });
+        });
+      });
+    }
+
+    function fullPhotoAddress(id) {
+      if (!fullPhotoAddresses[id]) {
+        fullPhotoAddresses[id] = storedPhotoBlob(id).then(function (blob) {
+          return URL.createObjectURL(blob);
+        });
+        // A failure is tried again the next time the photo is drawn
+        fullPhotoAddresses[id].catch(function () { delete fullPhotoAddresses[id]; });
+      }
+      return fullPhotoAddresses[id];
+    }
+
+    function showFullPhoto(img) {
+      var id = img.getAttribute('data-full-media');
+      if (!id) return;
+      img.removeAttribute('data-full-media');
+      fullPhotoAddress(id).then(function (address) {
+        img.src = address;
+      }, function () {
+        // The preview stays
+      });
+    }
+
+    var fullPhotoWatcher = window.IntersectionObserver ? new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        fullPhotoWatcher.unobserve(entry.target);
+        showFullPhoto(entry.target);
+      });
+    }, { rootMargin: '200px 0px' }) : null;
+
+    function watchFullPhotos() {
+      document.querySelectorAll('img[data-full-media]').forEach(function (img) {
+        if (img.isWatched) return;
+        img.isWatched = true;
+        if (fullPhotoWatcher) fullPhotoWatcher.observe(img);
+        else showFullPhoto(img);
+      });
+    }
+
+    // Thumbnails are drawn in many places, so any new one is noticed here
+    var fullPhotoQueued = false;
+    new MutationObserver(function () {
+      if (fullPhotoQueued) return;
+      fullPhotoQueued = true;
+      requestAnimationFrame(function () {
+        fullPhotoQueued = false;
+        watchFullPhotos();
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+
+    // Uploads made for a full screen. Dish and event photos are too small to fill one.
     function uploadedStagePhotos() {
       return Object.keys(appData.mediaFiles).filter(function (id) {
-        return appData.mediaFiles[id].kind === 'photo';
+        var info = appData.mediaFiles[id];
+        return info.kind === 'photo' && (!info.px || info.px >= STAGE_PHOTO_MAX_PX);
       }).map(function (id) { return 'media:' + id; });
     }
 
@@ -3992,7 +4189,7 @@
         var label = photoLabel(src);
         return '<div class="row" data-sort-item="' + esc(src) + '">' +
           dragHandleHtml(label) +
-          '<div class="row-main"><span class="thumb"><img src="' + esc(photoThumb(src)) + '" alt="" loading="lazy" /></span>' +
+          '<div class="row-main"><span class="thumb">' + thumbImgHtml(src) + '</span>' +
             '<span class="row-text"><span class="row-name">' + esc(label) + '</span></span></div>' +
           '<button type="button" class="btn-link danger row-add" data-action="removeStagePhoto" data-stage="' + key + '" data-src="' + esc(src) + '">Remove</button>' +
         '</div>';
@@ -4001,7 +4198,7 @@
         return stage.photos.indexOf(src) === -1;
       }).map(function (src) {
         var label = photoLabel(src);
-        return '<button type="button" class="photo-pick" data-action="addStagePhoto" data-stage="' + key + '" data-src="' + esc(src) + '" title="Add ' + esc(label) + '"><img src="' + esc(photoThumb(src)) + '" alt="Add ' + esc(label) + '" loading="lazy" /></button>';
+        return '<button type="button" class="photo-pick" data-action="addStagePhoto" data-stage="' + key + '" data-src="' + esc(src) + '" title="Add ' + esc(label) + '">' + thumbImgHtml(src, 'Add ' + label) + '</button>';
       }).join('');
       return '<div class="stage-slides sort-list" data-sort-list="' + key + '" data-sort-group="stage-' + key + '">' + rows + '</div>' +
         '<p class="field-hint">' + (stage.photos.length > 1 ? 'They fade from one to the next every 5 seconds. Drag the dots to change the order.' : 'One photo stays on screen. Add more to make a slideshow.') + '</p>' +
@@ -4132,8 +4329,15 @@
     function usageEstimate() {
       var menu = dataSize();
       var shown = {};
+      // Counted as if every guest scrolls through every menu and every event, to be safe
       allDishes().forEach(function (d) {
-        var id = uploadedVideoId(d.item.video);
+        [d.item.video, d.item.image].forEach(function (src) {
+          var id = uploadedVideoId(src);
+          if (id) shown[id] = true;
+        });
+      });
+      appData.events.forEach(function (ev) {
+        var id = uploadedVideoId(ev.imageData);
         if (id) shown[id] = true;
       });
       Object.keys(BACKGROUND_STAGES).forEach(function (key) {
@@ -4190,21 +4394,27 @@
       return '<section class="card card-pad">' +
         '<h2 class="card-title">Your free Firebase allowance</h2>' +
         '<div class="usage-grid">' +
-          ringHtml('Storage', use.stored / FREE_STORAGE_BYTES * 100, formatSize(use.stored) + ' of 1 GB', 'Your menu and every uploaded video.') +
+          ringHtml('Storage', use.stored / FREE_STORAGE_BYTES * 100, formatSize(use.stored) + ' of 1 GB', 'Your menu and every uploaded photo and video.') +
           ringHtml('Downloads a month', use.monthly / FREE_DOWNLOAD_BYTES * 100, 'About ' + formatSize(use.monthly) + ' of 10 GB',
-            'If ' + MONTHLY_GUESTS_ESTIMATE.toLocaleString('en-US') + ' new guests each see every video. The free allowance covers about <b>' + coveredVisitors(use.perGuest) + '</b> guests like that.') +
+            'If ' + MONTHLY_GUESTS_ESTIMATE.toLocaleString('en-US') + ' new guests each see every photo and video. The free allowance covers about <b>' + coveredVisitors(use.perGuest) + '</b> guests like that. Most guests see far less.') +
         '</div>' +
-        '<p class="field-hint">If downloads run out, Firebase stops your menu until next month. People coming back use almost nothing, because their browser keeps a copy. Your menu and photos are ' + formatSize(use.menu) + ' of the 2 MB limit, and photo uploads stop there. These are estimates: <a href="' + FIREBASE_USAGE_URL + '" target="_blank" rel="noopener">see the real figures in Firebase</a>.</p>' +
+        '<p class="field-hint">If downloads run out, Firebase stops your menu until next month. People coming back use almost nothing, because their phone keeps what it has seen. ' +
+          'Your menu is ' + formatSize(use.menu) + ', which every new visitor downloads before anything shows' + (use.menu > DATA_SIZE_LIMIT_BYTES ? ', so it is slow to open' : '') + '. ' +
+          'These are estimates: <a href="' + FIREBASE_USAGE_URL + '" target="_blank" rel="noopener">see the real figures in Firebase</a>.</p>' +
       '</section>';
     }
 
     function mediaCardHtml(media, index) {
       var preview;
-      if (uploadedVideoId(media.src)) {
+      if (uploadedVideoId(media.src) && media.kind === 'photo') {
+        preview = thumbImgHtml(media.src);
+      } else if (uploadedVideoId(media.src)) {
         // The still image, because playing the real file here would use up downloads
         var info = uploadedVideo(media.src) || {};
         preview = (info.poster ? '<img src="' + esc(info.poster) + '" alt="" loading="lazy" />' : '') +
-          '<span class="media-tag">' + (media.kind === 'photo' ? 'Large photo' : 'Video' + (info.seconds ? ', ' + info.seconds + ' sec' : '')) + '</span>';
+          '<span class="media-tag">Video' + (info.seconds ? ', ' + info.seconds + ' sec' : '') + '</span>';
+      } else if (media.src.indexOf('data:') === 0) {
+        preview = '<img src="' + esc(media.src) + '" alt="" loading="lazy" /><span class="media-tag">Inside your menu</span>';
       } else if (media.kind === 'video') {
         preview = '<video src="' + esc(media.src) + '" muted playsinline preload="metadata" controls></video>';
       } else {
@@ -4224,7 +4434,7 @@
       var word = media.kind === 'video' ? 'video' : 'photo';
       var actions;
       if (media.isUpload) {
-        actions = (media.kind === 'photo' && !uploadedVideoId(media.src)
+        actions = (media.kind === 'photo' && media.uses.length
           ? '<label class="btn btn-sm">Replace<input type="file" accept="image/*" data-upload="replace" data-i="' + index + '" hidden /></label>'
           : '') +
           '<button type="button" class="btn btn-sm btn-danger" data-action="deleteMedia" data-i="' + index + '">Delete</button>';
@@ -4243,6 +4453,17 @@
       '</article>';
     }
 
+    function movePhotosHtml() {
+      var photos = menuPhotos();
+      if (!photos.length) return '';
+      var size = photos.reduce(function (sum, m) { return sum + m.src.length; }, 0);
+      return '<section class="card card-pad">' +
+        '<h2 class="card-title">' + plural(photos.length, 'photo') + ' ' + (photos.length === 1 ? 'is' : 'are') + ' still inside your menu</h2>' +
+        '<p class="card-hint">' + (photos.length === 1 ? 'It makes' : 'They make') + ' up ' + formatSize(size) + ' of your menu, and every new visitor downloads ' + (photos.length === 1 ? 'it' : 'all of them') + ' before the menu shows. Move ' + (photos.length === 1 ? 'it' : 'them') + ' out, and guests download a photo only when they reach that dish. ' + (photos.length === 1 ? 'It looks' : 'They look') + ' exactly the same.</p>' +
+        '<div class="add-row"><button type="button" class="btn btn-primary btn-sm" data-action="moveMenuPhotos">Move ' + (photos.length === 1 ? 'it' : 'them') + ' out of the menu</button></div>' +
+      '</section>';
+    }
+
     function mediaHtml() {
       var list = collectMedia();
       view.mediaList = list;
@@ -4255,8 +4476,9 @@
       var builtIn = cards(false);
       return pageHead('Photos & Videos', 'See every photo and video on your website, and where it is used.',
         '<label class="btn btn-primary">' + icon('plus', 16) + 'Upload a photo or video<input type="file" accept="image/*,video/*" data-upload="media" hidden /></label>') +
+        movePhotosHtml() +
         dataUseHtml() +
-        '<div class="media-heading"><h2>Your uploads</h2><p>Photos for dishes and events are stored with your menu. Videos, and photos uploaded for Backgrounds, Gallery or About, are stored on their own, and a guest downloads one only on reaching it. Deleting an upload removes it from everywhere it is used.</p></div>' +
+        '<div class="media-heading"><h2>Your uploads</h2><p>Each photo and video is stored on its own, and a guest downloads one only on reaching it. Their phone then keeps it, so it is not downloaded again. Deleting an upload removes it from everywhere it is used.</p></div>' +
         (uploads ? '<div class="media-grid">' + uploads + '</div>' : '<div class="card"><p class="empty">You have not uploaded any photos or videos yet.</p></div>') +
         '<div class="media-heading"><h2>Built into your website</h2><p>These files are part of the website, so they use none of your Firebase allowance. You can take one off a dish here, but the file itself stays.</p></div>' +
         (builtIn ? '<div class="media-grid">' + builtIn + '</div>' : '<div class="card"><p class="empty">None in use.</p></div>');
@@ -4308,22 +4530,38 @@
       });
     }
 
-    function replaceMedia(media, url) {
+    // Puts a new photo everywhere the old one was. A gallery photo borrowed from a dish follows by itself.
+    function swapPhoto(media, url) {
       media.uses.forEach(function (use) {
         if (use.type === 'dish') {
           var found = findDish(use.menuId, use.id);
-          if (found) found.item.image = url;
+          if (found && found.item.image === media.src) found.item.image = url;
         } else if (use.type === 'event') {
           var ev = appData.events.find(function (x) { return x.id === use.id; });
-          if (ev) {
+          if (ev && ev.imageData === media.src) {
             ev.imageData = url;
             ev.imageKey = '';
           }
         }
       });
+      appData.gallery.photos.forEach(function (p) {
+        if (p.src === media.src) p.src = url;
+      });
+      if (appData.about.image === media.src) appData.about.image = url;
+      Object.keys(BACKGROUND_STAGES).forEach(function (key) {
+        var stage = appData.backgrounds[key];
+        stage.photos = stage.photos.map(function (src) { return src === media.src ? url : src; });
+      });
       (appData.standaloneMedia || []).forEach(function (m) {
         if (m && m.url === media.src) m.url = url;
       });
+    }
+
+    function replaceMedia(media, url) {
+      swapPhoto(media, url);
+      // The old file is no longer used, so it leaves Firebase after the next publish
+      var oldId = uploadedVideoId(media.src);
+      if (oldId) delete appData.mediaFiles[oldId];
       refreshAfterMediaChange();
       toast('Photo replaced.');
     }
@@ -4356,23 +4594,29 @@
       });
     }
 
-    // Every upload belongs to something, so no unused photo costs guests a download
-    function chooseUploadTarget(url) {
+    // Every upload belongs to something, so nothing is stored that no guest sees
+    function chooseUploadTarget(file) {
       var targets = dishTargets().concat(appData.events.map(function (ev) {
         return { group: 'Events', label: ev.title || 'Unnamed', event: ev };
       }));
-      askUploadTarget('photo', 'dish or event', '<img class="upload-preview" src="' + esc(url) + '" alt="The photo you chose" />', targets).then(function (target) {
+      var address = URL.createObjectURL(file);
+      askUploadTarget('photo', 'dish or event', '<img class="upload-preview" src="' + esc(address) + '" alt="The photo you chose" />', targets).then(function (target) {
+        $('dialog').innerHTML = '';
+        URL.revokeObjectURL(address);
         if (!target) return;
-        if (target.dish) {
-          target.dish.item.image = url;
-          target.dish.item.video = '';
-        } else {
-          target.event.imageData = url;
-          target.event.imageKey = '';
-          target.event.hasImage = true;
-        }
-        refreshAfterMediaChange();
-        toast('Photo added to ' + target.label + '.');
+        prepareStoredPhoto(file, '', target.dish ? DISH_PHOTO_MAX_PX : EVENT_PHOTO_MAX_PX).then(function (src) {
+          if (!src) return;
+          if (target.dish) {
+            target.dish.item.image = src;
+            target.dish.item.video = '';
+          } else {
+            target.event.imageData = src;
+            target.event.imageKey = '';
+            target.event.hasImage = true;
+          }
+          refreshAfterMediaChange();
+          toast('Photo added to ' + target.label + '.');
+        });
       });
     }
 
@@ -5514,10 +5758,74 @@
       URL.revokeObjectURL(url);
     }
 
+    // Uploaded photos are copied into the backup, so it still has them after they leave Firebase.
+    // Videos are left out, as they are too large.
     function downloadBackup() {
       commitDraft();
-      downloadFile('belle-colombo-backup-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(appData, null, 2), 'application/json');
-      toast('Backup downloaded.');
+      var name = 'belle-colombo-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      var ids = Object.keys(appData.mediaFiles).filter(function (id) { return appData.mediaFiles[id].kind === 'photo'; });
+      if (!ids.length) {
+        downloadFile(name, JSON.stringify(appData, null, 2), 'application/json');
+        toast('Backup downloaded.');
+        return;
+      }
+      var job = { cancelled: false };
+      var busy = showBusy(function () { job.cancelled = true; });
+      var photos = {};
+      var missing = 0;
+      ids.reduce(function (chain, id, i) {
+        return chain.then(function () {
+          if (job.cancelled) throw CANCELLED;
+          busy.step('Making your backup', 'Adding your photos (' + (i + 1) + ' of ' + ids.length + ')…');
+          busy.progress(i / ids.length);
+          return storedPhotoBlob(id).then(function (blob) {
+            return readBase64(blob).then(function (data) {
+              photos[id] = { mime: blob.type || 'image/webp', data: data };
+            });
+          }, function () {
+            missing++;
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        busy.close();
+        downloadFile(name, JSON.stringify(Object.assign({}, appData, { backupPhotos: photos }), null, 2), 'application/json');
+        toast(missing ? 'Backup downloaded, without ' + plural(missing, 'photo') + ' that could not be fetched.' : 'Backup downloaded, with your photos.');
+      }).catch(function (err) {
+        busy.close();
+        if (err !== CANCELLED) openDialog({ title: 'The backup was not made', text: 'Something went wrong while adding your photos. Check your internet connection and try again.' });
+      });
+    }
+
+    // Photos in a backup that are no longer in Firebase go back under their own names
+    function returnBackupPhotos(data, photos) {
+      var ids = Object.keys(photos || {}).filter(function (id) {
+        return data.mediaFiles && data.mediaFiles[id] && photos[id] && photos[id].data;
+      });
+      if (!ids.length) return Promise.resolve(0);
+      var job = { cancelled: false, stop: null };
+      var busy = showBusy(function () {
+        job.cancelled = true;
+        if (job.stop) job.stop();
+      });
+      busy.step('Restoring your backup', 'Checking your photos…');
+      return getIdToken().then(function (token) {
+        return firebaseRequest(null, FIREBASE_MEDIA_URL + '.json?shallow=true&auth=' + encodeURIComponent(token));
+      }).then(function (files) {
+        var missing = ids.filter(function (id) { return !(files || {})[id]; });
+        return missing.reduce(function (chain, id, i) {
+          return chain.then(function () {
+            if (job.cancelled) throw CANCELLED;
+            busy.step('Restoring your backup', 'Putting back a photo (' + (i + 1) + ' of ' + missing.length + ')…');
+            return uploadMediaFile(id, photos[id].mime, photos[id].data, job, busy.progress);
+          });
+        }, Promise.resolve()).then(function () { return missing.length; });
+      }).then(function (count) {
+        busy.close();
+        return count;
+      }, function (err) {
+        busy.close();
+        throw err;
+      });
     }
 
     function downloadDataFile() {
@@ -5554,7 +5862,14 @@
           return;
         }
         askConfirm('Restore this backup?', 'It replaces what you are editing now. The live site does not change until you press Publish.', 'Restore').then(function (yes) {
-          if (yes) replaceDraft(parsed, 'Backup restored. Check it, then press Publish.');
+          if (!yes) return;
+          var photos = parsed.backupPhotos;
+          delete parsed.backupPhotos;
+          returnBackupPhotos(parsed, photos).then(function (count) {
+            replaceDraft(parsed, 'Backup restored' + (count ? ', with ' + plural(count, 'photo') + ' put back' : '') + '. Check it, then press Publish.');
+          }, function (err) {
+            showMediaFailure(err, 'backup');
+          });
         });
       };
       reader.readAsText(file);
@@ -6791,7 +7106,8 @@
       discardDraft: discardDraft,
       downloadBackup: downloadBackup,
       downloadDataFile: downloadDataFile,
-      undoPublish: undoPublish
+      undoPublish: undoPublish,
+      moveMenuPhotos: moveMenuPhotos
     };
 
     document.addEventListener('click', function (e) {

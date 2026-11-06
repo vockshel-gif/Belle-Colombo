@@ -1290,7 +1290,24 @@
 
       /* Size and position from the admin panel's sliders */
       transform: translate(var(--media-x, 0%), var(--media-y, 0%)) scale(calc(1.03 * var(--media-zoom, 1)));
-      transition: transform 0.6s var(--ease-out), opacity 0.4s ease;
+      transition: transform 0.6s var(--ease-out), opacity 0.4s ease, filter 0.6s ease;
+    }
+
+    /* An uploaded photo shows its tiny preview, softened, until the photo itself arrives */
+    .lunch-slot-bg-photo.is-waiting {
+      filter: blur(14px) saturate(1.24) contrast(1.08) brightness(1.02);
+    }
+    .event-photo img.is-waiting,
+    .event-feature > img.is-waiting,
+    .about-hero-photo img.is-waiting,
+    .viewer-img.is-waiting,
+    .ambient-slide.is-waiting {
+      filter: blur(14px);
+    }
+    .event-photo img,
+    .event-feature > img,
+    .about-hero-photo img {
+      transition: filter 0.6s ease;
     }
 
     /* Video Element inside Dish backdrop */
@@ -2932,6 +2949,12 @@
     .g-tile.is-lit img {
       filter: none;
       transform: scale(1);
+    }
+    .g-tile img.is-waiting {
+      filter: blur(12px) grayscale(1) contrast(1.08) brightness(0.74);
+    }
+    .g-tile.is-lit img.is-waiting {
+      filter: blur(12px);
     }
     .g-tile::after {
       content: '';
@@ -5380,11 +5403,12 @@ Choose your spread/rillette style:</p>
         var id = mediaIdOf(el.dataset.bg);
         if (!id) {
           el.style.backgroundImage = "url('" + escapeCssUrl(el.dataset.bg) + "')";
-        } else if (!isSavingData()) {
-          mediaAddress(id).then(function(address) {
+        } else {
+          mediaPhotoAddress(id).then(function(address) {
             el.style.backgroundImage = "url('" + address + "')";
+            el.classList.remove('is-waiting');
           }, function() {
-            // The small still image stays
+            // The small preview stays
           });
         }
       }
@@ -5495,7 +5519,10 @@ Choose your spread/rillette style:</p>
           el.className = 'ambient-slide' + (idx === 0 ? ' is-active' : '');
           el.dataset.bg = src;
           var id = mediaIdOf(src);
-          if (id && mediaFileOf(id).poster) el.style.backgroundImage = "url('" + escapeCssUrl(mediaFileOf(id).poster) + "')";
+          if (id && mediaFileOf(id).poster) {
+            el.style.backgroundImage = "url('" + escapeCssUrl(mediaFileOf(id).poster) + "')";
+            el.classList.add('is-waiting');
+          }
           stage.layer.insertBefore(el, stage.layer.lastElementChild);
           stage.slides.push(el);
         });
@@ -5600,6 +5627,7 @@ Choose your spread/rillette style:</p>
       document.body.classList.add('is-menu-active');
       window.scrollTo(0, 0);
       if (window.ambientBg) window.ambientBg.onEnterMenu();
+      startFirstMenuPhotos();
       if (window.belleCurrentData && window.belleCurrentData.menuCategories) {
         renderMenuHubCategories(window.belleCurrentData.menuCategories);
       } else if (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) {
@@ -5678,6 +5706,10 @@ Choose your spread/rillette style:</p>
           }
         }
       }
+      // After the list has settled at its new place, its first photos start
+      requestAnimationFrame(function() {
+        requestAnimationFrame(loadNearPhotos);
+      });
     }
 
     function returnToMenuHub() {
@@ -6950,9 +6982,15 @@ Choose your spread/rillette style:</p>
         '<button type="button" class="event-reserve" data-date="' + eventIsoDate(view) + '" data-event="' + escapeHtml(view.title) + '">Reserve</button>';
     }
 
+    function eventImgHtml(view, lazy) {
+      if (!view.image) return '';
+      if (mediaIdOf(view.image)) return photoImgHtml(view.image, '', view.title);
+      return '<img src="' + escapeHtml(view.image) + '" alt="' + escapeHtml(view.title) + '"' + (lazy ? ' loading="lazy"' : '') + '>';
+    }
+
     function eventFeatureHtml(view) {
       return '<article class="event-feature" ' + view.frameOf + '>' +
-        (view.image ? '<img src="' + escapeHtml(view.image) + '" alt="' + escapeHtml(view.title) + '">' : '') +
+        eventImgHtml(view, false) +
         eventDateHtml(view) +
         '<div class="event-feature-body">' +
           '<div class="event-tag">Next event</div>' +
@@ -6965,7 +7003,7 @@ Choose your spread/rillette style:</p>
     function eventCardHtml(view, isFeature) {
       return '<article class="event-card' + (view.image ? '' : ' no-photo') + '" data-category="' + escapeHtml(view.category) + '" data-key="' + view.date.month + '-' + view.date.day + '"' + (isFeature ? ' data-feature' : '') + '>' +
         '<div class="event-photo" ' + view.frameOf + '>' +
-          (view.image ? '<img src="' + escapeHtml(view.image) + '" alt="' + escapeHtml(view.title) + '" loading="lazy">' : '') +
+          eventImgHtml(view, true) +
           eventDateHtml(view) +
         '</div>' +
         '<div class="event-body">' +
@@ -7177,6 +7215,16 @@ Choose your spread/rillette style:</p>
         (y === null ? '' : '--media-y:' + y + '%;');
     }
 
+    // A photo built into the website loads with the page. An uploaded one waits as its preview.
+    function dishPhotoHtml(src) {
+      var id = mediaIdOf(src);
+      if (!id) return '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(src) + '\');"></div>';
+      if (readyPhotos[id]) return '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(readyPhotos[id]) + '\');"></div>';
+      var preview = mediaFileOf(id).poster;
+      return '<div class="lunch-slot-bg-photo is-waiting" data-media-photo="' + id + '"' +
+        (preview ? ' style="background-image: url(\'' + escapeCssUrl(preview) + '\');"' : '') + '></div>';
+    }
+
     // The faded photo or video behind a dish, or nothing when it has neither
     function dishBackdropHtml(item, fallbackImage) {
       var image = item.image || fallbackImage;
@@ -7184,7 +7232,7 @@ Choose your spread/rillette style:</p>
       if (item.video) {
         media = dishVideoHtml(item.video);
       } else if (image) {
-        media = '<div class="lunch-slot-bg-photo" style="background-image: url(\'' + escapeCssUrl(image) + '\');"></div>';
+        media = dishPhotoHtml(image);
       }
       if (!media) return '';
       return '<div class="lunch-slot-bg" aria-hidden="true" data-frame-of="' + escapeHtml(item.id || '') + '" style="' + mediaFrameStyle(item.mediaFrame) + '">' +
@@ -7266,6 +7314,96 @@ Choose your spread/rillette style:</p>
         });
       }
       return mediaAddresses[id];
+    }
+
+    // Photos already downloaded and decoded, so a redraw shows them at once instead of the preview
+    var readyPhotos = {};
+
+    function mediaPhotoAddress(id) {
+      return mediaAddress(id).then(function(address) {
+        if (readyPhotos[id]) return address;
+        var probe = new Image();
+        probe.src = address;
+        var decoded = probe.decode ? probe.decode().catch(function() {}) : Promise.resolve();
+        return decoded.then(function() {
+          readyPhotos[id] = address;
+          return address;
+        });
+      });
+    }
+
+    /* ========================================================
+       PHOTOS IN THE MENUS AND EVENTS
+       An uploaded dish or event photo is not in the menu. Each one
+       downloads about three dishes before it scrolls into view, only
+       in the menu that is open, and the phone keeps it, so coming back
+       costs nothing. Its tiny preview shows, softened, until then.
+       ======================================================== */
+    var PHOTO_LISTS = ['lunchVerticalScroll', 'alacarteVerticalScroll', 'barVerticalScroll', 'customVerticalScroll', 'eventsViewScroll'];
+    var photoListWatchers = {};
+
+    function watchListPhotos(list) {
+      var waiting = list.querySelectorAll('[data-media-photo]');
+      if (!window.IntersectionObserver) {
+        waiting.forEach(function(el) { el.isNear = true; });
+        loadNearPhotos();
+        return;
+      }
+      var watcher = photoListWatchers[list.id];
+      if (!watcher) {
+        // A list shows two dishes a screen, so one and a half screens is about three dishes ahead
+        watcher = photoListWatchers[list.id] = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) { entry.target.isNear = entry.isIntersecting; });
+          loadNearPhotos();
+        }, { root: list, rootMargin: '150% 0px' });
+      }
+      watcher.disconnect();
+      waiting.forEach(function(el) { watcher.observe(el); });
+    }
+
+    // Closed menus stay in place, invisible, so being near is not enough
+    function loadNearPhotos() {
+      document.querySelectorAll('.view-food-panel.is-active [data-media-photo]').forEach(function(el) {
+        if (el.isNear) loadPhoto(el);
+      });
+    }
+
+    // The lists are drawn again whenever the menu changes, so new photos are noticed here
+    PHOTO_LISTS.forEach(function(listId) {
+      var list = document.getElementById(listId);
+      if (!list) return;
+      var queued = false;
+      new MutationObserver(function() {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(function() {
+          queued = false;
+          watchListPhotos(list);
+        });
+      }).observe(list, { childList: true, subtree: true });
+      watchListPhotos(list);
+    });
+
+    // Opening Our Menu starts the first two dishes of each menu, so whichever the guest picks
+    // already looks finished at the top
+    var menuPhotosStarted = false;
+    function startFirstMenuPhotos() {
+      if (menuPhotosStarted || isSavingData()) return;
+      menuPhotosStarted = true;
+      setTimeout(function() {
+        ['lunchVerticalScroll', 'alacarteVerticalScroll', 'barVerticalScroll'].forEach(function(listId) {
+          var list = document.getElementById(listId);
+          if (list) Array.prototype.slice.call(list.querySelectorAll('[data-media-photo]'), 0, 2).forEach(loadPhoto);
+        });
+        var data = window.belleCurrentData || window.BELLE_DEFAULT_DATA || {};
+        (data.menuCategories || []).forEach(function(cat) {
+          ((cat && cat.items) || []).filter(function(item) {
+            return item && !item.video && mediaIdOf(item.image);
+          }).slice(0, 2).forEach(function(item) {
+            mediaPhotoAddress(mediaIdOf(item.image)).catch(function() {});
+          });
+        });
+      }, 800);
     }
 
     var mediaVideoWatcher = window.IntersectionObserver ? new IntersectionObserver(function(entries) {
@@ -8382,28 +8520,34 @@ Choose your spread/rillette style:</p>
       return match ? owners[match[1]] || '' : String(src || '');
     }
 
-    // Nothing is downloaded until the page is open: an uploaded photo shows its small still meanwhile
-    function photoImgHtml(src, extra) {
+    // Nothing is downloaded until the page is open: an uploaded photo shows its small preview meanwhile
+    function photoImgHtml(src, extra, alt) {
       var id = mediaIdOf(src);
-      if (!id) return '<img data-src="' + escapeHtml(src) + '" alt="" decoding="async"' + (extra || '') + '>';
+      var altText = ' alt="' + escapeHtml(alt || '') + '"';
+      if (!id) return '<img data-src="' + escapeHtml(src) + '"' + altText + ' decoding="async"' + (extra || '') + '>';
+      if (readyPhotos[id]) return '<img src="' + escapeHtml(readyPhotos[id]) + '"' + altText + ' decoding="async"' + (extra || '') + '>';
       var poster = mediaFileOf(id).poster;
-      return '<img' + (poster ? ' src="' + escapeHtml(poster) + '"' : '') + ' data-media-photo="' + id + '" alt="" decoding="async"' + (extra || '') + '>';
+      return '<img class="is-waiting"' + (poster ? ' src="' + escapeHtml(poster) + '"' : '') + ' data-media-photo="' + id + '"' + altText + ' decoding="async"' + (extra || '') + '>';
     }
 
-    function loadPhoto(img) {
-      var src = img.getAttribute('data-src');
+    // Works for an <img> and for a dish's photo, which is a background
+    function loadPhoto(el) {
+      var src = el.getAttribute('data-src');
       if (src) {
-        img.removeAttribute('data-src');
-        img.src = src;
+        el.removeAttribute('data-src');
+        el.src = src;
         return;
       }
-      var id = img.getAttribute('data-media-photo');
-      if (!id || img.isLoading || isSavingData()) return;
-      img.isLoading = true;
-      mediaAddress(id).then(function(address) {
-        img.src = address;
+      var id = el.getAttribute('data-media-photo');
+      if (!id || el.isLoading) return;
+      el.isLoading = true;
+      mediaPhotoAddress(id).then(function(address) {
+        el.removeAttribute('data-media-photo');
+        if (el.tagName === 'IMG') el.src = address;
+        else el.style.backgroundImage = "url('" + escapeCssUrl(address) + "')";
+        el.classList.remove('is-waiting');
       }, function() {
-        // The small still stays
+        // The small preview stays
       });
     }
 
@@ -8578,17 +8722,22 @@ Choose your spread/rillette style:</p>
       img.style.opacity = '0';
       img.style.transform = direction ? 'translateX(' + direction * 40 + 'px)' : 'scale(0.96)';
       var id = mediaIdOf(photo.src);
-      if (id) {
+      img.classList.remove('is-waiting');
+      if (id && readyPhotos[id]) {
+        img.src = readyPhotos[id];
+      } else if (id) {
         var poster = mediaFileOf(id).poster;
         if (poster) img.src = poster;
         else img.removeAttribute('src');
-        if (!isSavingData()) {
-          mediaAddress(id).then(function(address) {
-            if (viewer.open && viewerPhoto(viewer.pos) === photo) img.src = address;
-          }, function() {
-            // The small still stays
-          });
-        }
+        img.classList.add('is-waiting');
+        mediaPhotoAddress(id).then(function(address) {
+          if (viewer.open && viewerPhoto(viewer.pos) === photo) {
+            img.src = address;
+            img.classList.remove('is-waiting');
+          }
+        }, function() {
+          // The small preview stays
+        });
       } else {
         img.src = photo.src;
       }
