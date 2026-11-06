@@ -1345,12 +1345,12 @@
       return '<button type="button" class="drag-handle" title="Drag to rearrange" aria-label="Move ' + esc(label) + '. Use the arrow keys.">' + icon('grip', 16) + '</button>';
     }
 
-    function toast(message) {
+    function toast(message, ms) {
       var el = document.createElement('div');
       el.className = 'toast';
       el.textContent = message;
       $('toasts').appendChild(el);
-      setTimeout(function () { el.remove(); }, 4200);
+      setTimeout(function () { el.remove(); }, ms || 4200);
     }
 
     /* ========================================================
@@ -3649,8 +3649,9 @@
 
     // Sends a photo that is already shrunk to belle_media, and notes it in the menu with its tiny
     // preview. Guests download the photo itself only when they reach it.
-    // freed: what leaves the menu at the same time, when a photo inside it is being moved out
-    function storePhoto(url, preview, maxPx, job, busy, label, freed) {
+    // freed: what leaves the menu at the same time, when a photo inside it is being moved out.
+    // step: what the progress window says while it uploads, if not "Uploading your photo".
+    function storePhoto(url, preview, maxPx, job, busy, label, freed, step) {
       var parts = /^data:([^;]+);base64,(.+)$/.exec(url || '');
       if (!parts) return Promise.reject({ text: 'That photo could not be read.' });
       if (usageEstimate().stored + parts[2].length > FREE_STORAGE_BYTES) {
@@ -3662,7 +3663,7 @@
           : 'Your menu has reached the 2 MB that every new visitor downloads first. Delete photos or videos you no longer need, then try again.' });
       }
       var id = newMediaId('p');
-      busy.step('Uploading your photo' + (label || ''), 'Saving it to Firebase…');
+      busy.step((step ? step.title : 'Uploading your photo') + (label || ''), step ? step.text : 'Saving it to Firebase…');
       return uploadMediaFile(id, parts[1], parts[2], job, busy.progress).then(function () {
         appData.mediaFiles[id] = { kind: 'photo', size: parts[2].length, px: maxPx, poster: preview };
         return 'media:' + id;
@@ -3678,15 +3679,30 @@
         job.cancelled = true;
         if (job.stop) job.stop();
       });
+      var movedFirst = 0;
       busy.step('Getting your photo ready' + (label || ''), 'Shrinking it…');
       return Promise.all([shrinkFile(file, maxPx), shrinkFile(file, PHOTO_PREVIEW_PX, 0.5)]).then(function (urls) {
         if (job.cancelled) throw CANCELLED;
+        // A menu still full of older photos has no room: they move out first, once, and then this one is added
+        if (!menuPhotos().length || dataSize() + urls[1].length <= DATA_SIZE_MAX_BYTES) return urls;
+        return movePhotosOut(job, busy, 'Making room first').then(function (moved) {
+          movedFirst = moved;
+          return urls;
+        }, function (failure) {
+          movedFirst = failure.moved;
+          throw failure.cause;
+        });
+      }).then(function (urls) {
         return storePhoto(urls[0], urls[1], maxPx, job, busy, label);
       }).then(function (src) {
         busy.close();
+        if (movedFirst) {
+          toast(plural(movedFirst, 'older photo') + ' moved out of your menu to make room. They look the same. Press Publish when you are ready.', 9000);
+        }
         return src;
       }).catch(function (err) {
         busy.close();
+        if (movedFirst) refreshAfterMediaChange();
         showMediaFailure(err, 'photo');
         return null;
       });
@@ -3701,6 +3717,38 @@
        ======================================================== */
     function menuPhotos() {
       return collectMedia().filter(function (m) { return m.kind === 'photo' && m.src.indexOf('data:') === 0; });
+    }
+
+    // Moves every photo still inside the menu, one by one, saving the draft after each.
+    // Resolves to how many moved. On a failure or Cancel it rejects with { cause, moved }.
+    function movePhotosOut(job, busy, title) {
+      var photos = menuPhotos();
+      var moved = 0;
+      var step = {
+        title: title || 'Moving your photos',
+        text: 'Moving your older photos out of the menu, where they slow it down. This happens only once. Please keep this page open.'
+      };
+      return photos.reduce(function (chain, media, i) {
+        return chain.then(function () {
+          if (job.cancelled) throw CANCELLED;
+          var label = ' (' + (i + 1) + ' of ' + photos.length + ')';
+          busy.step(step.title + label, step.text);
+          return photoPreview(media.src).then(function (preview) {
+            if (job.cancelled) throw CANCELLED;
+            var freed = media.src.length * Math.max(1, media.uses.length);
+            return storePhoto(media.src, preview, photoSizeFor(media.uses), job, busy, label, freed, step);
+          }).then(function (src) {
+            swapPhoto(media, src);
+            moved++;
+            // Saved after each one, so closing the page halfway loses nothing
+            commitDraft();
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        return moved;
+      }, function (err) {
+        throw { cause: err, moved: moved };
+      });
     }
 
     function moveMenuPhotos() {
@@ -3720,30 +3768,17 @@
           if (job.stop) job.stop();
         });
         var moved = 0;
-        photos.reduce(function (chain, media, i) {
-          return chain.then(function () {
-            if (job.cancelled) throw CANCELLED;
-            var label = ' (' + (i + 1) + ' of ' + photos.length + ')';
-            busy.step('Moving your photos' + label, 'Making its small preview…');
-            return photoPreview(media.src).then(function (preview) {
-              if (job.cancelled) throw CANCELLED;
-              var freed = media.src.length * Math.max(1, media.uses.length);
-              return storePhoto(media.src, preview, photoSizeFor(media.uses), job, busy, label, freed);
-            }).then(function (src) {
-              swapPhoto(media, src);
-              moved++;
-              // Saved after each one, so closing the page halfway loses nothing
-              commitDraft();
-            });
-          });
-        }, Promise.resolve()).then(function () {
+        movePhotosOut(job, busy).then(function (count) {
+          moved = count;
           busy.close();
           refreshAfterMediaChange();
           openDialog({
             title: plural(moved, 'photo') + ' moved',
             text: 'Your menu is now ' + formatSize(dataSize()) + '. Press Publish so guests get the lighter menu. Until then, the live site keeps working as before.'
           });
-        }).catch(function (err) {
+        }).catch(function (failure) {
+          var err = failure.cause;
+          moved = failure.moved;
           busy.close();
           if (moved) refreshAfterMediaChange();
           if (err === CANCELLED) {
