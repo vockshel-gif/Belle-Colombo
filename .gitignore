@@ -21,6 +21,7 @@ _backup/
 /start_server.bat
 /firebase-database-rules.json
 /reservations-sheet/
+/belle-staff-app/
 *.pdf
 *.ai
 /Belle CMB (Presentation) (2).png
