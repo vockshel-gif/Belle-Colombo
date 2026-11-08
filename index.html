@@ -2866,16 +2866,19 @@
        GALLERY AND ABOUT
        ======================================================== */
     #panel-gallery,
-    #panel-about {
+    #panel-about,
+    #panel-reviews {
       backdrop-filter: blur(22px);
       -webkit-backdrop-filter: blur(22px);
     }
     #panel-gallery [hidden],
-    #panel-about [hidden] {
+    #panel-about [hidden],
+    #panel-reviews [hidden] {
       display: none !important;
     }
     .gallery-scroll,
-    .about-scroll {
+    .about-scroll,
+    .reviews-scroll {
       flex: 1 1 auto;
       width: 100%;
       min-width: 0;
@@ -2886,7 +2889,8 @@
       box-sizing: border-box;
     }
     .gallery-scroll::-webkit-scrollbar,
-    .about-scroll::-webkit-scrollbar { display: none; }
+    .about-scroll::-webkit-scrollbar,
+    .reviews-scroll::-webkit-scrollbar { display: none; }
 
     /* ---------- Gallery: a mosaic of big, tall, small and wide tiles ---------- */
     .gallery-scroll {
@@ -3390,7 +3394,226 @@
       transform: none;
     }
 
+    /* ---------- Reviews: the Google rating and a few words from guests ---------- */
+    /* Five stars from one star shape, filled to the rating, so 4.5 shows four and a half */
+    .stars {
+      --fill: 100%;
+      --star: 14px;
+      display: inline-block;
+      flex: none;
+      width: calc(var(--star) * 5);
+      height: var(--star);
+      background:
+        linear-gradient(90deg, currentColor var(--fill), transparent var(--fill)),
+        rgba(var(--light-rgb), 0.24);
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'/%3E%3C/svg%3E") left center / var(--star) var(--star) repeat-x;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'/%3E%3C/svg%3E") left center / var(--star) var(--star) repeat-x;
+    }
+
+    /* On the home page, one quiet line under the social icons */
+    .home-rating {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .62rem;
+      min-height: 44px;
+      margin-top: clamp(.55rem, 2vh, .95rem);
+      padding: 0 .3rem;
+      font-size: clamp(.64rem, 2.8vw, .72rem);
+      font-weight: 500;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: rgba(var(--light-rgb), .66);
+      transition: color .25s, opacity 1.1s var(--ease-smooth) var(--t, 0s), transform 1.1s var(--ease-out) var(--t, 0s);
+    }
+    .home-rating[hidden] { display: none; }
+    .home-rating .stars { --star: 11px; color: var(--light); }
+    .home-rating-score { color: var(--light); letter-spacing: .08em; }
+    .home-rating-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: .6;
+    }
+    .home-rating:hover,
+    .home-rating:focus-visible { color: var(--light); }
+    .home-rating:focus-visible {
+      outline: 1px solid rgba(var(--light-rgb), .6);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    /* The Reviews page */
+    .reviews-body {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 6vw, 40px) 8px;
+      box-sizing: border-box;
+    }
+    .reviews-score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0 34px;
+      text-align: center;
+    }
+    .reviews-score-num {
+      margin: 0;
+      font-size: clamp(56px, 17vw, 76px);
+      font-weight: 300;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+    .reviews-score .stars { --star: 19px; color: var(--ink); }
+    .reviews-score-label {
+      margin: 2px 0 0;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      text-indent: 0.24em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .reviews-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid var(--rule);
+    }
+    .review {
+      padding: 26px 0 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .review .stars { --star: 12px; color: var(--ink); }
+    .review-text {
+      margin: 14px 0 0;
+      font-size: 15px;
+      line-height: 1.72;
+      color: var(--ink);
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+    }
+    /* Long reviews open on request */
+    .review.is-long:not(.is-open) .review-text {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
+      overflow: hidden;
+    }
+    .review-more {
+      margin-top: 8px;
+      padding: 6px 0;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .review-more:hover { color: var(--ink); }
+    .review-by {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px 12px;
+      margin: 16px 0 0;
+    }
+    .review-name {
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    a.review-name { text-decoration: none; }
+    a.review-name:hover { text-decoration: underline; text-underline-offset: 4px; }
+    .review-when {
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+    .reviews-empty {
+      max-width: 34ch;
+      margin: 0 auto 30px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      text-align: center;
+      color: var(--ink-soft);
+    }
+    /* Many reviews come a few at a time */
+    .reviews-more-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .reviews-more {
+      min-height: 44px;
+      padding: 0 24px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-indent: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink);
+      transition: border-color 0.25s;
+    }
+    .reviews-more:hover { border-color: var(--ink); }
+    .reviews-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .reviews-shown {
+      margin: 0;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+    /* Two columns on a wide screen, each row lined up */
+    @media (min-width: 900px) {
+      .reviews-body { max-width: 1040px; }
+      .reviews-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 64px;
+      }
+      .reviews-actions,
+      .reviews-empty { max-width: 600px; margin-left: auto; margin-right: auto; }
+    }
+    .reviews-actions { margin-top: 32px; margin-bottom: 14px; }
+    .reviews-actions .about-btn {
+      padding: 0 14px;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+    .reviews-credit {
+      margin: 0 0 26px;
+      font-size: 12px;
+      text-align: center;
+      color: var(--ink-soft);
+    }
+    /* Google asks for its name unchanged under reviews that come straight from it */
+    .reviews-credit b {
+      font-family: Roboto, Arial, sans-serif;
+      font-weight: 400;
+      color: #ffffff;
+    }
+    #panel-reviews.is-active .reviews-score,
+    #panel-reviews.is-active .review {
+      animation: reviewRise 0.9s var(--ease-out) both;
+      animation-delay: calc(0.1s + var(--i, 0) * 0.08s);
+    }
+    @keyframes reviewRise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: none; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
+      #panel-reviews.is-active .reviews-score,
+      #panel-reviews.is-active .review { animation: none; }
       .gallery-grid.is-playing .g-tile,
       #panel-about.is-active .about-hero-photo img { animation: none; }
       .g-tile img { filter: none; transform: none; transition: none; }
@@ -3514,6 +3737,14 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
           </a>
         </nav>
+
+        <!-- Belle's Google rating, which opens the Reviews page -->
+        <button type="button" class="home-rating home-reveal reviews-trigger" id="homeRating" style="--t:1.2s" hidden>
+          <span class="stars" id="homeRatingStars" aria-hidden="true"></span>
+          <span class="home-rating-score" id="homeRatingScore"></span>
+          <span class="home-rating-dot" aria-hidden="true"></span>
+          <span id="homeRatingCount"></span>
+        </button>
       </div>
     </section>
 
@@ -5289,6 +5520,65 @@ Choose your spread/rillette style:</p>
   </div>
 
 
+  <!-- ===== REVIEWS: Belle's Google rating and what guests wrote, picked in the admin panel ===== -->
+  <div class="view-food-panel" id="panel-reviews" role="dialog" aria-label="Guest reviews" aria-modal="true">
+
+    <button type="button" class="btn-lunch-back" id="backFromReviews" aria-label="Back to Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+
+    <div class="reviews-scroll" id="reviewsScroll">
+      <header class="gallery-header">
+        <p class="gallery-eyebrow">Belle Colombo</p>
+        <h2 class="gallery-title">Reviews</h2>
+      </header>
+
+      <div class="reviews-body">
+        <section class="reviews-score" id="reviewsScore" aria-label="Rating on Google">
+          <p class="reviews-score-num" id="reviewsScoreNum"></p>
+          <span class="stars" id="reviewsScoreStars"></span>
+          <p class="reviews-score-label" id="reviewsScoreLabel"></p>
+        </section>
+
+        <ol class="reviews-list" id="reviewsList"></ol>
+        <div class="reviews-more-wrap" id="reviewsMoreWrap" hidden>
+          <button type="button" class="reviews-more" id="reviewsMore">More reviews</button>
+          <p class="reviews-shown" id="reviewsShown"></p>
+        </div>
+        <p class="reviews-empty" id="reviewsEmpty" hidden>Read what our guests have written about Belle on Google, or share your own evening with us.</p>
+
+        <div class="about-actions reviews-actions">
+          <a class="about-btn" id="reviewsWrite" href="#" target="_blank" rel="noopener noreferrer" data-reviews-link>Write a review</a>
+          <a class="about-btn is-quiet" id="reviewsAll" href="#" target="_blank" rel="noopener noreferrer" data-reviews-link>All reviews</a>
+        </div>
+        <p class="reviews-credit" id="reviewsCredit"></p>
+      </div>
+
+      <div class="lunch-dock-wrap" aria-label="Social and Contact links">
+        <span class="lunch-dock-line"></span>
+        <footer class="lunch-sm-dock">
+          <a href="https://wa.me/94770315589" class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp (+94 77 031 5589)" title="Message us on WhatsApp (+94 77 031 5589)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3.6 20.4l1.25-4.4A8.4 8.4 0 1 1 8.1 19.3z"/><path fill="currentColor" d="M9.3 7.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.6l-.5.6c-.1.1-.2.3 0 .5.5.9 1.3 1.7 2.3 2.3.2.1.4.1.5 0l.6-.7c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.4 0 .3 0 1-.4 1.5-.4.5-1.3.9-2 .9-.8 0-2.6-.4-4.3-2.1S8.4 10.6 8.4 9.7c0-.9.6-1.7.9-2.1z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/belle.colombo/" class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="Instagram (@belle.colombo)" title="Follow @belle.colombo on Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+          </a>
+          <a href="https://www.facebook.com/belle.colombo/" class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="Facebook (Belle Colombo)" title="Belle Colombo on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.4 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.7v3h2.6V21z"/></svg>
+          </a>
+          <a href="https://www.google.com/maps/search/?api=1&query=Belle+Colombo,+58A+Horton+Place,+Colombo+00700" class="lunch-sm-btn" target="_blank" rel="noopener noreferrer" aria-label="Location (58A Horton Place, Colombo 7)" title="Find us at 58A Horton Place, Colombo 7">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-6.4-6-6.4-11a6.4 6.4 0 0 1 12.8 0c0 5-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </a>
+        </footer>
+        <span class="lunch-dock-line"></span>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ===== RESERVE: Guests send a request here, and staff confirm it from the admin panel ===== -->
   <div class="view-food-panel" id="panel-reserve" role="dialog" aria-label="Reserve a table" aria-modal="true">
 
@@ -5603,7 +5893,8 @@ Choose your spread/rillette style:</p>
         'tasting': 'slide_chef_plating.webp',
         'events': 'slide_vip_lounge.webp',
         'gallery': 'slide_guest_dining.webp',
-        'about': 'slide_vip_lounge.webp'
+        'about': 'slide_vip_lounge.webp',
+        'reviews': 'slide_guest_dining.webp'
       };
 
       function focusCategorySlide(catKey) {
@@ -5726,6 +6017,8 @@ Choose your spread/rillette style:</p>
             openGallery();
           } else if (targetId === 'about') {
             openAbout();
+          } else if (targetId === 'reviews') {
+            openReviews();
           }
         }
       } else {
@@ -7069,7 +7362,7 @@ Choose your spread/rillette style:</p>
       } else if (h === '#events') {
         document.body.classList.add('is-ready', 'is-menu-active');
         openPanel('events');
-      } else if (h === '#gallery' || h === '#about') {
+      } else if (h === '#gallery' || h === '#about' || h === '#reviews') {
         var pageKey = h.substring(1);
         if (!document.body.classList.contains(pageKey + '-off')) {
           document.body.classList.add('is-ready', 'is-menu-active');
@@ -8502,9 +8795,9 @@ Choose your spread/rillette style:</p>
         a.setAttribute('href', fbUrl);
       });
 
-      // Update Google Maps / Location links
+      // Update Google Maps / Location links (the Reviews page's own links point at the reviews instead)
       document.querySelectorAll('a[href*="google.com/maps"], a[href*="maps.google.com"]').forEach(function(a) {
-        a.setAttribute('href', mapsUrl);
+        if (!a.hasAttribute('data-reviews-link')) a.setAttribute('href', mapsUrl);
       });
 
       // Update Tax Notice if configured
@@ -8669,6 +8962,7 @@ Choose your spread/rillette style:</p>
       }
       renderGallery(data);
       renderAbout(data);
+      renderReviews(data);
       refreshReservationPanel();
       console.log('⚡ Belle Colombo Live Data Applied Successfully (0ms)');
     }
@@ -9070,6 +9364,199 @@ Choose your spread/rillette style:</p>
       watchAboutReveal();
     }
 
+    /* ========================================================
+       REVIEWS
+       Belle's rating on Google and its reviews, which staff import
+       from Google's export of the Business Profile (or paste one by
+       one) on the admin panel's Reviews page.
+
+       To add Google's newest reviews by themselves, fill in
+       GOOGLE_REVIEWS_LIVE with Belle's Place ID and a browser key
+       for "Places API (New)" (see the README). The page then asks
+       Google once per visit, only when a guest opens Reviews, and
+       never stores the answer, as Google's terms require. Up to five
+       come back; any not already saved go on top. If Google does not
+       answer, guests see the saved ones alone.
+       ======================================================== */
+    var GOOGLE_REVIEWS_LIVE = { placeId: '', apiKey: '' };
+    var GOOGLE_LISTING_URL = 'https://maps.google.com/?cid=6242184591687957341';
+    var REVIEWS_FIRST = 8;   // Shown when the page opens
+    var REVIEWS_STEP = 12;   // Added by each "More reviews"
+    var reviewsState = { page: null, live: null, liveAsked: false, shown: REVIEWS_FIRST };
+
+    function starFill(rating) {
+      var r = Math.max(0, Math.min(5, Number(rating) || 0));
+      return (r / 5 * 100) + '%';
+    }
+
+    function ratingText(rating) {
+      return (Math.round((Number(rating) || 0) * 10) / 10).toFixed(1);
+    }
+
+    // Two copies of one review match on the name and the start of the words
+    function reviewKey(review) {
+      var clean = function(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); };
+      return clean(review.name) + '|' + clean(review.text).slice(0, 40);
+    }
+
+    function reviewsView() {
+      var page = reviewsState.page || {};
+      var live = reviewsState.live;
+      var listing = safeHttpUrl(page.googleUrl, GOOGLE_LISTING_URL);
+      var picked = (page.items || []).filter(function(r) { return r && String(r.text || '').trim(); });
+      // Google's latest go on top, unless the same review is already among the saved ones
+      var known = {};
+      picked.forEach(function(r) { known[reviewKey(r)] = true; });
+      var fresh = live ? live.items.filter(function(r) { return !known[reviewKey(r)]; }) : [];
+      return {
+        rating: live && live.rating ? live.rating : Number(page.rating) || 0,
+        count: live && live.count ? live.count : parseInt(page.count, 10) || 0,
+        items: fresh.concat(picked),
+        allUrl: (live && live.allUrl) || listing,
+        writeUrl: (live && live.writeUrl) || safeHttpUrl(page.writeUrl, '') || listing,
+        fromGoogle: fresh.length > 0
+      };
+    }
+
+    function reviewHtml(review, i) {
+      var stars = Math.max(1, Math.min(5, Math.round(Number(review.stars) || 5)));
+      var name = String(review.name || '').trim() || 'A guest';
+      var url = safeHttpUrl(review.url, '');
+      return '<li class="review" style="--i:' + (i % REVIEWS_STEP + 1) + '">' +
+        '<span class="stars" style="--fill:' + starFill(stars) + '" role="img" aria-label="' + stars + ' out of 5 stars"></span>' +
+        '<p class="review-text">' + escapeHtml(String(review.text || '').trim()) + '</p>' +
+        '<button type="button" class="review-more" hidden>Read more</button>' +
+        '<p class="review-by">' +
+          (url
+            ? '<a class="review-name" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer" data-reviews-link>' + escapeHtml(name) + '</a>'
+            : '<span class="review-name">' + escapeHtml(name) + '</span>') +
+          (review.when ? '<span class="review-when">' + escapeHtml(review.when) + '</span>' : '') +
+        '</p>' +
+      '</li>';
+    }
+
+    function drawReviews() {
+      var page = reviewsState.page || {};
+      var view = reviewsView();
+      var showRating = page.enabled !== false && view.rating > 0;
+      var countText = view.count ? view.count.toLocaleString('en-US') + (view.count === 1 ? ' review' : ' reviews') : 'Reviews';
+
+      // The line on the home page
+      var home = document.getElementById('homeRating');
+      home.hidden = !showRating;
+      document.getElementById('homeRatingStars').style.setProperty('--fill', starFill(view.rating));
+      document.getElementById('homeRatingScore').textContent = ratingText(view.rating);
+      document.getElementById('homeRatingCount').textContent = view.count ? view.count.toLocaleString('en-US') + ' Google ' + (view.count === 1 ? 'review' : 'reviews') : 'On Google';
+      home.setAttribute('aria-label', 'Rated ' + ratingText(view.rating) + ' out of 5 on Google' + (view.count ? ' from ' + countText : '') + '. Read reviews');
+
+      // The Reviews page
+      document.getElementById('reviewsScore').hidden = !(view.rating > 0);
+      document.getElementById('reviewsScoreNum').textContent = ratingText(view.rating);
+      var bigStars = document.getElementById('reviewsScoreStars');
+      bigStars.style.setProperty('--fill', starFill(view.rating));
+      bigStars.setAttribute('role', 'img');
+      bigStars.setAttribute('aria-label', ratingText(view.rating) + ' out of 5 stars');
+      document.getElementById('reviewsScoreLabel').textContent = countText + ' on Google';
+
+      var list = document.getElementById('reviewsList');
+      list.innerHTML = view.items.slice(0, reviewsState.shown).map(reviewHtml).join('');
+      list.hidden = !view.items.length;
+      updateMoreReviews(view);
+      document.getElementById('reviewsEmpty').hidden = !!view.items.length;
+      document.getElementById('reviewsAll').href = view.allUrl;
+      document.getElementById('reviewsAll').textContent = view.count ? 'All ' + countText : 'All reviews';
+      document.getElementById('reviewsWrite').href = view.writeUrl;
+      document.getElementById('reviewsCredit').innerHTML = view.fromGoogle
+        ? 'The newest reviews come from <b>Google Maps</b>'
+        : (view.items.length ? 'From our guests on Google' : '');
+      if (reviewsAreOpen()) markLongReviews();
+    }
+
+    function updateMoreReviews(view) {
+      var total = view.items.length;
+      var shown = Math.min(reviewsState.shown, total);
+      document.getElementById('reviewsMoreWrap').hidden = shown >= total;
+      document.getElementById('reviewsShown').textContent = 'Showing ' + shown + ' of ' + total;
+    }
+
+    // The next few are added under the ones already open, so nothing jumps
+    function showMoreReviews() {
+      var view = reviewsView();
+      var from = Math.min(reviewsState.shown, view.items.length);
+      reviewsState.shown = from + REVIEWS_STEP;
+      document.getElementById('reviewsList').insertAdjacentHTML('beforeend', view.items.slice(from, reviewsState.shown).map(function(r, i) {
+        return reviewHtml(r, i);
+      }).join(''));
+      updateMoreReviews(view);
+      markLongReviews();
+    }
+
+    function renderReviews(data) {
+      reviewsState.page = pageData(data, 'reviews');
+      document.body.classList.toggle('reviews-off', reviewsState.page.enabled === false);
+      drawReviews();
+    }
+
+    function reviewsAreOpen() {
+      return document.getElementById('panel-reviews').classList.contains('is-active');
+    }
+
+    // A review longer than six lines shows its start and a "Read more"
+    function markLongReviews() {
+      document.querySelectorAll('#reviewsList .review').forEach(function(item) {
+        if (item.classList.contains('is-open')) return;
+        var text = item.querySelector('.review-text');
+        item.classList.add('is-long');
+        var long = text.scrollHeight > text.clientHeight + 2;
+        item.classList.toggle('is-long', long);
+        item.querySelector('.review-more').hidden = !long;
+      });
+    }
+
+    function fetchLiveReviews() {
+      var cfg = GOOGLE_REVIEWS_LIVE;
+      if (!cfg.placeId || !cfg.apiKey || reviewsState.liveAsked || !window.fetch) return;
+      reviewsState.liveAsked = true;
+      fetch('https://places.googleapis.com/v1/places/' + encodeURIComponent(cfg.placeId) + '?languageCode=en', {
+        headers: {
+          'X-Goog-Api-Key': cfg.apiKey,
+          'X-Goog-FieldMask': 'rating,userRatingCount,reviews,googleMapsUri,googleMapsLinks'
+        }
+      }).then(function(res) {
+        if (!res.ok) throw new Error('Google answered ' + res.status);
+        return res.json();
+      }).then(function(place) {
+        var links = place.googleMapsLinks || {};
+        reviewsState.live = {
+          rating: Number(place.rating) || 0,
+          count: Number(place.userRatingCount) || 0,
+          allUrl: safeHttpUrl(links.reviewsUri || place.googleMapsUri, ''),
+          writeUrl: safeHttpUrl(links.writeAReviewUri, ''),
+          items: (place.reviews || []).map(function(r) {
+            var author = r.authorAttribution || {};
+            return {
+              name: author.displayName || '',
+              url: author.uri || '',
+              stars: r.rating,
+              text: (r.text && r.text.text) || (r.originalText && r.originalText.text) || '',
+              when: r.relativePublishTimeDescription || ''
+            };
+          }).filter(function(r) { return String(r.text).trim(); })
+        };
+        drawReviews();
+      }).catch(function() {
+        // The picked reviews stay. The next visit asks again.
+      });
+    }
+
+    function openReviews() {
+      document.getElementById('reviewsScroll').scrollTop = 0;
+      // Each visit starts again with the first few, all closed
+      reviewsState.shown = REVIEWS_FIRST;
+      drawReviews();
+      fetchLiveReviews();
+    }
+
     function bindGalleryAndAbout() {
       document.querySelectorAll('.gallery-trigger').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -9088,6 +9575,27 @@ Choose your spread/rillette style:</p>
         returnToHome();
       });
       document.getElementById('backFromAbout').addEventListener('click', returnToHome);
+      document.querySelectorAll('.reviews-trigger').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          openPanel('reviews');
+        });
+      });
+      document.getElementById('backFromReviews').addEventListener('click', returnToHome);
+      document.getElementById('reviewsList').addEventListener('click', function(e) {
+        var more = e.target.closest('.review-more');
+        if (!more) return;
+        more.parentNode.classList.add('is-open');
+        more.hidden = true;
+      });
+      document.getElementById('reviewsMore').addEventListener('click', showMoreReviews);
+      // A turned phone, or the admin's preview coming into view, changes which reviews are long
+      var reviewsResizeFrame = 0;
+      window.addEventListener('resize', function() {
+        if (!reviewsAreOpen()) return;
+        cancelAnimationFrame(reviewsResizeFrame);
+        reviewsResizeFrame = requestAnimationFrame(markLongReviews);
+      });
       document.getElementById('aboutReserve').addEventListener('click', function() {
         openReservation({ returnTo: 'about' });
       });

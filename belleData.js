@@ -831,6 +831,14 @@
       { "title": "The Room", "text": "A warm dining room for quiet dinners, celebrations and private events." }
     ]
   },
+  "reviews": {
+    "enabled": true,
+    "rating": 4.5,
+    "count": 61,
+    "googleUrl": "https://maps.google.com/?cid=6242184591687957341",
+    "writeUrl": "",
+    "items": []
+  },
   "theGardenAndBar": [
     {
       "category": "Bar Bites",

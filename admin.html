@@ -652,6 +652,15 @@
     .pillar-fields { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
     .pillar-fields textarea { min-height: 64px; }
     .pillar-row .btn-link { padding-top: 12px; }
+    .import-steps { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; line-height: 1.5; color: var(--text-2); }
+    .import-steps a { text-decoration: underline; text-underline-offset: 3px; color: inherit; }
+    .import-steps b { color: var(--text); font-weight: 600; }
+    .review-fields { display: grid; grid-template-columns: minmax(0, 1fr) 104px minmax(0, 0.7fr); gap: 6px; min-width: 0; }
+    .review-fields textarea { grid-column: 1 / -1; min-height: 88px; }
+    @media (max-width: 760px) {
+      .review-fields { grid-template-columns: minmax(0, 1fr) 104px; }
+      .review-fields [data-review="when"] { grid-column: 1 / -1; }
+    }
     @media (max-width: 760px) {
       .gallery-row { flex-wrap: wrap; }
       .gallery-fields { flex-basis: calc(100% - 50px); grid-template-columns: minmax(0, 1fr); margin-left: 44px; }
@@ -1333,6 +1342,7 @@
       image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
       mosaic: '<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/>',
       story: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.4"/>',
+      star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>',
       grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>'
     };
 
@@ -1455,6 +1465,7 @@
     function defaultPage(key) {
       var page = window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA[key];
       if (page) return clone(page);
+      if (key === 'reviews') return { enabled: true, rating: 0, count: 0, googleUrl: '', writeUrl: '', items: [] };
       return key === 'gallery'
         ? { enabled: true, intro: '', photos: [] }
         : { enabled: true, title: 'Our Story', headline: '', image: '', lead: '', story: '', pillars: [] };
@@ -1479,11 +1490,12 @@
       d.reservations = Object.assign(defaultBookingSettings(), d.reservations);
       // Gallery and About show the pages in belleData.js until they are first published.
       // "enabled" is always stored, so an emptied page stays empty instead of starting over.
-      ['gallery', 'about'].forEach(function (key) {
+      ['gallery', 'about', 'reviews'].forEach(function (key) {
         if (!d[key] || typeof d[key].enabled !== 'boolean') d[key] = defaultPage(key);
       });
       d.gallery.photos = (d.gallery.photos || []).filter(Boolean);
       d.about.pillars = (d.about.pillars || []).filter(Boolean);
+      d.reviews.items = (d.reviews.items || []).filter(Boolean);
 
       if (!d.menuCategories.length) {
         d.menuCategories = [
@@ -1740,6 +1752,7 @@
       if (removedPhotos) add('Removed', 'Gallery', plural(removedPhotos, 'photo'));
       if (!addedPhotos && !removedPhotos && !sameContent(before.gallery, after.gallery)) add('Changed', 'Gallery', 'Captions, order or settings');
       if (!sameContent(before.about, after.about)) add('Changed', 'About', 'Your story');
+      if (!sameContent(before.reviews, after.reviews)) add('Changed', 'Reviews', 'Rating and reviews');
       if (!sameContent(before.venue, after.venue)) add('Changed', 'Contact & Hours', 'Contact details');
       if (!sameContent(before.reservations, after.reservations)) add('Changed', 'Reservations', 'Booking settings');
       Object.keys(BACKGROUND_STAGES).forEach(function (key) {
@@ -2072,7 +2085,7 @@
     function previewPageTarget() {
       if (view.page === 'backgrounds') return BACKGROUND_STAGES[view.stage].previewTarget;
       if (view.page === 'events' || view.page === 'event') return 'events';
-      if (view.page === 'gallery' || view.page === 'about') return view.page;
+      if (view.page === 'gallery' || view.page === 'about' || view.page === 'reviews') return view.page;
       if (view.page === 'tasting') return 'tasting';
       if (view.page === 'reservations' || view.page === 'reservation' || view.page === 'bookingSettings') return 'reserve';
       if (view.page === 'menu' || view.page === 'dish') {
@@ -2211,6 +2224,7 @@
         html += navItemHtml('Events', 'calendar', 'events', null, appData.events.length);
         html += navItemHtml('Gallery', 'mosaic', 'gallery', null, appData.gallery.photos.length);
         html += navItemHtml('About', 'story', 'about');
+        html += navItemHtml('Reviews', 'star', 'reviews', null, appData.reviews.items.length);
         html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
         html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
         html += navItemHtml('Contact & Hours', 'pin', 'contact');
@@ -2235,7 +2249,7 @@
     function renderPage() {
       var pages = {
         home: homeHtml, menu: menuHtml, dish: dishHtml, tasting: tastingHtml,
-        events: eventsHtml, event: eventHtml, gallery: galleryHtml, about: aboutHtml,
+        events: eventsHtml, event: eventHtml, gallery: galleryHtml, about: aboutHtml, reviews: reviewsHtml,
         backgrounds: backgroundsHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
         reservations: reservationsHtml, reservation: reservationHtml, bookingSettings: bookingSettingsHtml,
         team: teamHtml, staffAdd: staffAddHtml
@@ -4091,6 +4105,203 @@
       else if (t.dataset.about) a[t.dataset.about] = t.value;
       else if (t.dataset.pillar) a.pillars[parseInt(t.dataset.i, 10)][t.dataset.pillar] = t.value;
       touch();
+    }
+
+    /* ========================================================
+       REVIEWS PAGE
+       Belle's Google rating and the reviews staff choose to show.
+       Guests see the rating on the home page, under the social
+       icons, and the reviews on a page of their own.
+       ======================================================== */
+    function reviewStarsOptions(value) {
+      return [5, 4, 3, 2, 1].map(function (n) {
+        return '<option value="' + n + '"' + (n === value ? ' selected' : '') + '>' + n + (n === 1 ? ' star' : ' stars') + '</option>';
+      }).join('');
+    }
+
+    function reviewsHtml() {
+      var r = appData.reviews;
+      var rows = r.items.map(function (item, i) {
+        var stars = Math.max(1, Math.min(5, Math.round(Number(item.stars) || 5)));
+        return '<div class="pillar-row" data-sort-item="' + i + '">' +
+          dragHandleHtml(item.name || 'this review') +
+          '<span class="pillar-num">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+          '<div class="review-fields">' +
+            '<input type="text" data-review="name" data-i="' + i + '" value="' + esc(item.name) + '" placeholder="Name, as Google shows it" aria-label="Review ' + (i + 1) + ' name" />' +
+            '<select data-review="stars" data-i="' + i + '" aria-label="Review ' + (i + 1) + ' stars">' + reviewStarsOptions(stars) + '</select>' +
+            '<input type="text" data-review="when" data-i="' + i + '" value="' + esc(item.when) + '" placeholder="October 2026" aria-label="Review ' + (i + 1) + ' date" />' +
+            '<textarea rows="4" data-review="text" data-i="' + i + '" placeholder="Paste the review here, word for word" aria-label="Review ' + (i + 1) + ' text">' + esc(item.text) + '</textarea>' +
+          '</div>' +
+          '<button type="button" class="btn-link danger" data-action="removeReview" data-i="' + i + '">Remove</button>' +
+        '</div>';
+      }).join('');
+      return pageHead('Reviews', 'Your Google rating and a few reviews. Changes show in the phone preview, and guests see them after you press Publish.') +
+        '<section class="card card-pad">' +
+          '<label class="check"><input type="checkbox" id="reviewsOn"' + (r.enabled ? ' checked' : '') + ' /><span>Show reviews on the website</span></label>' +
+          '<div class="field-row">' +
+            '<div class="field"><label for="reviewsRating">Google rating</label><input type="number" id="reviewsRating" data-reviews="rating" min="1" max="5" step="0.1" value="' + esc(r.rating || '') + '" placeholder="4.5" /></div>' +
+            '<div class="field"><label for="reviewsCount">Number of reviews</label><input type="number" id="reviewsCount" data-reviews="count" min="0" step="1" value="' + esc(r.count || '') + '" placeholder="61" /></div>' +
+          '</div>' +
+          '<p class="field-hint">Copy both from your Google listing now and then, so they stay current. The rating shows on the home page, under the social icons.</p>' +
+        '</section>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Bring in all your Google reviews</h2>' +
+          '<p class="card-hint">Google lets the owner of the listing download every review, with its stars and date. Import the file here and they all appear on the website, newest first.</p>' +
+          '<ol class="import-steps">' +
+            '<li>Signed in with the Google account that manages Belle\'s listing, open <a href="https://takeout.google.com/" target="_blank" rel="noopener noreferrer">takeout.google.com</a>.</li>' +
+            '<li>Press <b>Deselect all</b>, tick only <b>Business Profile</b>, then <b>Next step</b> and <b>Create export</b>. Google emails a link when it is ready.</li>' +
+            '<li>Download and unzip it. In the Business Profile folder, find the reviews file (it ends in .json).</li>' +
+          '</ol>' +
+          '<div class="add-row"><label class="btn btn-sm">' + icon('plus', 14) + 'Import reviews file<input type="file" id="reviewsImport" accept=".json,application/json" multiple hidden /></label></div>' +
+          '<p class="field-hint">Import again whenever you like: reviews already here are updated, and only new ones are added.</p>' +
+        '</section>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Reviews on the website' + (r.items.length ? ' (' + r.items.length + ')' : '') + '</h2>' +
+          '<p class="card-hint">Guests see the first eight, then more on request. You can also add one by hand: paste it exactly as written, with the guest\'s name as Google shows it. Drag the dots to change the order.</p>' +
+          '<div class="repeat-list" data-sort-list="reviews" data-sort-group="reviews">' + rows + '</div>' +
+          '<div class="add-row"><button type="button" class="btn btn-sm" data-action="addReview">' + icon('plus', 14) + 'Add a review</button>' +
+            (r.items.length > 1 ? '<button type="button" class="btn-link danger" data-action="removeAllReviews">Remove all</button>' : '') +
+          '</div>' +
+        '</section>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Links to Google</h2>' +
+          '<div class="field"><label for="reviewsGoogleUrl">Your Google listing</label><input type="url" id="reviewsGoogleUrl" data-reviews="googleUrl" value="' + esc(r.googleUrl) + '" placeholder="https://maps.google.com/?cid=…" /><span class="field-hint">Opens from the All reviews button.</span></div>' +
+          '<div class="field"><label for="reviewsWriteUrl">Write a review link</label><input type="url" id="reviewsWriteUrl" data-reviews="writeUrl" value="' + esc(r.writeUrl) + '" placeholder="https://g.page/r/…/review" /><span class="field-hint">In Google Business Profile, choose Ask for reviews and copy the link. Left empty, the button opens your listing.</span></div>' +
+        '</section>';
+    }
+
+    function onReviewsInput(t) {
+      var r = appData.reviews;
+      if (t.id === 'reviewsOn') r.enabled = t.checked;
+      else if (t.dataset.reviews === 'rating') r.rating = Math.max(0, Math.min(5, parseFloat(t.value) || 0));
+      else if (t.dataset.reviews === 'count') r.count = Math.max(0, parseInt(t.value, 10) || 0);
+      else if (t.dataset.reviews) r[t.dataset.reviews] = t.value.trim();
+      else if (t.dataset.review === 'stars') r.items[parseInt(t.dataset.i, 10)].stars = parseInt(t.value, 10) || 5;
+      else if (t.dataset.review) r.items[parseInt(t.dataset.i, 10)][t.dataset.review] = t.value;
+      touch();
+    }
+
+    /* Google Takeout's Business Profile export lists every review the
+       listing has. Its exact layout is not documented, so any object
+       with a star rating and a reviewer or comment counts as a review,
+       whether its keys are written starRating or star_rating. */
+    var STAR_WORDS = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
+
+    function takeoutStars(value) {
+      if (typeof value === 'number') return value;
+      var word = String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/STARS?$/, '');
+      return STAR_WORDS[word] || parseInt(word, 10) || 0;
+    }
+
+    function takeoutField(obj, names) {
+      for (var i = 0; i < names.length; i++) {
+        if (obj[names[i]] != null && obj[names[i]] !== '') return obj[names[i]];
+      }
+      return '';
+    }
+
+    // Google adds an English translation in front of the guest's own words; the English is kept
+    function takeoutComment(text) {
+      var s = String(text || '');
+      var translated = /\(Translated by Google\)\s*([\s\S]*?)\s*(?:\(Original\)[\s\S]*)?$/.exec(s);
+      return (translated ? translated[1] : s).trim();
+    }
+
+    function takeoutMonth(time) {
+      var d = new Date(time);
+      return isNaN(d) ? '' : d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    }
+
+    function findTakeoutReviews(node, found) {
+      if (!node || typeof node !== 'object') return found;
+      if (Array.isArray(node)) {
+        node.forEach(function (child) { findTakeoutReviews(child, found); });
+        return found;
+      }
+      var stars = takeoutStars(takeoutField(node, ['starRating', 'star_rating', 'rating']));
+      var reviewer = takeoutField(node, ['reviewer']);
+      var comment = takeoutField(node, ['comment', 'text']);
+      if (comment && typeof comment === 'object') comment = comment.text || '';
+      if (stars >= 1 && stars <= 5 && (reviewer || comment)) {
+        var name = typeof reviewer === 'string' ? reviewer : takeoutField(reviewer || {}, ['displayName', 'display_name', 'name']);
+        if (reviewer && reviewer.isAnonymous) name = 'A Google user';
+        var time = takeoutField(node, ['createTime', 'create_time', 'updateTime', 'update_time']);
+        found.push({
+          gid: String(takeoutField(node, ['reviewId', 'review_id', 'name']) || (name + '|' + time)),
+          name: String(name || '').trim(),
+          stars: Math.round(stars),
+          text: takeoutComment(typeof comment === 'string' ? comment : ''),
+          time: String(time || ''),
+          when: takeoutMonth(time)
+        });
+        return found;
+      }
+      Object.keys(node).forEach(function (key) { findTakeoutReviews(node[key], found); });
+      return found;
+    }
+
+    function readJsonFile(file) {
+      return new Promise(function (resolve) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          try { resolve(JSON.parse(String(reader.result).replace(/^﻿/, ''))); } catch (e) { resolve(null); }
+        };
+        reader.onerror = function () { resolve(null); };
+        reader.readAsText(file);
+      });
+    }
+
+    function importReviewFiles(files) {
+      Promise.all(files.map(readJsonFile)).then(function (contents) {
+        var all = [];
+        var seen = {};
+        contents.forEach(function (json) {
+          findTakeoutReviews(json, []).forEach(function (rev) {
+            if (seen[rev.gid]) return;
+            seen[rev.gid] = true;
+            all.push(rev);
+          });
+        });
+        if (!all.length) {
+          toast('No reviews found in that file. Pick the reviews file from the Business Profile folder.', 6000);
+          return;
+        }
+        var r = appData.reviews;
+        var withText = all.filter(function (rev) { return rev.text; });
+        var byGid = {};
+        r.items.forEach(function (item) { if (item.gid) byGid[item.gid] = item; });
+        var added = [];
+        var updated = 0;
+        withText.forEach(function (rev) {
+          var existing = byGid[rev.gid];
+          if (existing) {
+            existing.name = rev.name;
+            existing.stars = rev.stars;
+            existing.text = rev.text;
+            existing.when = rev.when;
+            existing.time = rev.time;
+            updated++;
+          } else {
+            added.push(rev);
+          }
+        });
+        added.sort(function (a, b) { return a.time < b.time ? 1 : a.time > b.time ? -1 : 0; });
+        var before = r.items.length;
+        r.items = added.concat(r.items);
+        // A full export holds every review, so it also gives the rating and how many there are.
+        // A smaller file than what is already here is only part of them, so it leaves both alone.
+        var full = all.length >= before;
+        if (full) {
+          var total = all.reduce(function (sum, rev) { return sum + rev.stars; }, 0);
+          r.count = all.length;
+          r.rating = Math.round(total / all.length * 10) / 10;
+        }
+        refreshPage();
+        var starOnly = all.length - withText.length;
+        toast('Added ' + plural(added.length, 'review') + (updated ? ', updated ' + updated : '') + '.' +
+          (starOnly ? ' ' + plural(starOnly, 'rating') + ' had stars but no words, so they only count in the rating.' : '') +
+          (full ? ' Rating set to ' + r.rating.toFixed(1) + ' from ' + r.count + ': check it matches Google, then Publish.' : ' Press Publish when ready.'), 9000);
+      });
     }
 
     /* ========================================================
@@ -6785,6 +6996,11 @@
         appData.about.pillars = lists[0].items.map(function (k) { return old[parseInt(k, 10)]; });
         return String(appData.about.pillars.indexOf(old[parseInt(key, 10)]));
       },
+      reviews: function (lists, key) {
+        var old = appData.reviews.items.slice();
+        appData.reviews.items = lists[0].items.map(function (k) { return old[parseInt(k, 10)]; });
+        return String(appData.reviews.items.indexOf(old[parseInt(key, 10)]));
+      },
       menus: function (lists, key) {
         appData.menuCategories = lists[0].items.map(function (id) { return getMenu(id); });
         return key;
@@ -7265,6 +7481,23 @@
         appData.about.pillars.splice(parseInt(el.getAttribute('data-i'), 10), 1);
         refreshPage();
       },
+      addReview: function () {
+        appData.reviews.items.push({ name: '', stars: 5, when: '', text: '' });
+        refreshPage();
+        var names = document.querySelectorAll('[data-review="name"]');
+        if (names.length) names[names.length - 1].focus();
+      },
+      removeReview: function (el) {
+        appData.reviews.items.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+        refreshPage();
+      },
+      removeAllReviews: function () {
+        askConfirm('Remove all reviews?', 'All ' + appData.reviews.items.length + ' come off the Reviews page. The rating stays. Nothing changes on the website until you press Publish.', 'Remove all', true).then(function (yes) {
+          if (!yes) return;
+          appData.reviews.items = [];
+          refreshPage();
+        });
+      },
 
       openBooking: function (el) { openBooking(el.getAttribute('data-id')); },
       addBooking: addBooking,
@@ -7369,6 +7602,7 @@
         else if (view.page === 'contact') onContactInput(t);
         else if (view.page === 'gallery') onGalleryInput(t);
         else if (view.page === 'about') onAboutInput(t);
+        else if (view.page === 'reviews') onReviewsInput(t);
         else if (view.page === 'backgrounds') onBackgroundInput(t);
         else if (view.page === 'bookingSettings') onBookingSettingsInput(t);
       });
@@ -7376,6 +7610,7 @@
       page.addEventListener('change', function (e) {
         var t = e.target;
         if (t.id === 'restoreFile' && t.files[0]) restoreFromFile(t.files[0]);
+        else if (t.id === 'reviewsImport' && t.files.length) importReviewFiles(Array.prototype.slice.call(t.files));
         else if (t.dataset.staffRole) changeStaffRole(t);
         else if (t.dataset.upload) onUpload(t);
         if (t.type === 'file') t.value = '';
