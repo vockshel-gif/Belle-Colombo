@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /staff/
 Disallow: /_backup/
 
 Sitemap: https://bellecolombo.com/sitemap.xml

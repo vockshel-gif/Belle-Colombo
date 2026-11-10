@@ -9993,10 +9993,22 @@ Choose your spread/rillette style:</p>
       }).then(function(res) {
         clearTimeout(timer);
         if (!res.ok) throw new Error('HTTP ' + res.status);
+        pingStaffAlerts();
       }, function(err) {
         clearTimeout(timer);
         throw err;
       });
+    }
+
+    // Tells the Belle alerts server to look now, so staff iPhones ring within seconds.
+    // It sends nothing about the guest: the server reads the booking from Firebase itself.
+    var STAFF_ALERTS_PING_URL = 'https://belle-alerts.bellecolombolinktree.workers.dev/ping';
+    function pingStaffAlerts() {
+      if (/REPLACE/.test(STAFF_ALERTS_PING_URL)) return;
+      try {
+        if (navigator.sendBeacon && navigator.sendBeacon(STAFF_ALERTS_PING_URL)) return;
+        fetch(STAFF_ALERTS_PING_URL, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(function() {});
+      } catch (err) {}
     }
 
     function submitReservation(e) {

@@ -1,0 +1,1812 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0b0b0b" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Belle" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" href="icon-192.png" />
+  <title>Belle Reservations</title>
+  <style>
+    :root {
+      --bg: #fafafa; --card: #ffffff; --text: #111111; --text-2: #555555; --line: #d6d6d6; --soft: #ededed;
+      --primary: #111111; --on-primary: #ffffff; --error: #b3261e; --scrim: rgba(0, 0, 0, 0.42);
+      --warn-bg: #fff0d1; --warn-fg: #6b4300; --good-bg: #ddf3e3; --good-fg: #125c2b; --bad-bg: #fbe0de; --bad-fg: #8c1d18;
+      --banner-bg: #222222; --banner-fg: #f2f2f2;
+      color-scheme: light dark;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0b0b; --card: #141414; --text: #f2f2f2; --text-2: #b0b0b0; --line: #333333; --soft: #242424;
+        --primary: #f2f2f2; --on-primary: #111111; --error: #f2b8b5; --scrim: rgba(0, 0, 0, 0.6);
+        --warn-bg: #3d2e0f; --warn-fg: #ffd48a; --good-bg: #12321c; --good-fg: #9ee2b0; --bad-bg: #3b1513; --bad-fg: #f2b8b5;
+        --banner-bg: #f2f2f2; --banner-fg: #111111;
+      }
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); }
+    body { font: 16px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    h1, h2, h3, p { margin: 0; }
+
+    .bar { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: calc(env(safe-area-inset-top) + 8px) 8px 8px 16px; display: flex; align-items: center; gap: 4px; min-height: 60px; }
+    .bar h1 { font-size: 22px; font-weight: 600; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar .sub { font-size: 13px; color: var(--text-2); }
+    .bar .grow { flex: 1; min-width: 0; }
+    .icon-btn { width: 44px; height: 44px; border: 0; background: none; border-radius: 22px; display: grid; place-items: center; flex: none; }
+    .icon-btn:active { background: var(--soft); }
+    .icon-btn svg { width: 24px; height: 24px; }
+
+    .page { padding: 0 16px calc(env(safe-area-inset-bottom) + 110px); }
+    .page.form { padding-bottom: calc(env(safe-area-inset-bottom) + 40px); }
+
+    .segments { display: flex; gap: 6px; overflow-x: auto; padding: 4px 16px 10px; scrollbar-width: none; position: sticky; top: calc(env(safe-area-inset-top) + 60px); background: var(--bg); z-index: 4; }
+    .segments::-webkit-scrollbar { display: none; }
+    .seg { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; white-space: nowrap; font-size: 15px; font-weight: 500; }
+    .seg.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .card.tap { cursor: pointer; }
+    .card.tap:active { background: var(--soft); }
+    .row { display: flex; align-items: center; gap: 10px; }
+    .grow { flex: 1; min-width: 0; }
+    .time { font-weight: 700; font-size: 17px; }
+    .name { font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .muted { color: var(--text-2); font-size: 15px; }
+    .small { font-size: 13px; }
+    .clip2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .chip { border-radius: 999px; padding: 3px 10px; font-size: 13px; font-weight: 600; white-space: nowrap; background: var(--soft); color: var(--text-2); }
+    .chip.warn { background: var(--warn-bg); color: var(--warn-fg); }
+    .chip.good { background: var(--good-bg); color: var(--good-fg); }
+    .chip.bad { background: var(--bad-bg); color: var(--bad-fg); }
+    .chip.strong { background: var(--primary); color: var(--on-primary); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+    .btn { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 9px 18px; font-weight: 600; font-size: 15px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: var(--text); }
+    .btn:active { background: var(--soft); }
+    .btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+    .btn.danger { color: var(--error); }
+    .btn.block { width: 100%; min-height: 52px; font-size: 16px; }
+    .btn.text { border: 0; background: none; padding: 9px 10px; }
+    .btn:disabled { opacity: 0.5; }
+
+    .section { font-weight: 700; font-size: 15px; margin: 18px 0 6px; }
+    .section + .note { margin-top: -4px; margin-bottom: 8px; }
+    .note { font-size: 13px; color: var(--text-2); }
+    .empty { color: var(--text-2); padding: 32px 0; font-size: 17px; }
+    .info { background: var(--soft); border-radius: 12px; padding: 12px 14px; font-size: 15px; margin-bottom: 12px; }
+
+    .banner { background: var(--banner-bg); color: var(--banner-fg); display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 16px; margin: 0 -16px 10px; font-size: 15px; }
+    .banner button { background: none; border: 0; color: inherit; font-weight: 700; padding: 8px 10px; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+
+    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+    .tabbar button { flex: 1; border: 0; background: none; padding: 8px 0 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; font-weight: 600; color: var(--text-2); position: relative; }
+    .tabbar button.on { color: var(--text); }
+    .tabbar svg { width: 26px; height: 26px; }
+    .tabbar .count { position: absolute; top: 3px; left: calc(50% + 6px); background: #c62828; color: #fff; border-radius: 999px; min-width: 18px; height: 18px; font-size: 11px; line-height: 18px; padding: 0 5px; }
+    .fab { position: fixed; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 76px); z-index: 6; background: var(--primary); color: var(--on-primary); border: 0; border-radius: 16px; padding: 14px 20px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); display: flex; align-items: center; gap: 8px; }
+
+    .datebox { width: 54px; flex: none; background: var(--soft); border-radius: 10px; text-align: center; padding: 6px 0; align-self: flex-start; }
+    .datebox b { display: block; font-size: 24px; line-height: 1.15; }
+    .datebox span { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; }
+    .datebox span + b + span { color: var(--text-2); }
+    .thumb { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; background: var(--soft); flex: none; align-self: flex-start; }
+    .past { opacity: 0.6; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    .field { display: block; margin: 0 0 14px; }
+    .field > span { display: block; font-size: 13px; font-weight: 600; color: var(--text-2); margin-bottom: 5px; }
+    .field input, .field textarea, .field select { width: 100%; border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 12px; font-size: 16px; min-height: 48px; -webkit-appearance: none; appearance: none; }
+    .field textarea { min-height: 96px; resize: vertical; }
+    .field input:focus, .field textarea:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+    .field small { display: block; color: var(--text-2); font-size: 13px; margin-top: 4px; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: -6px 0 14px; }
+    .switch-row { display: flex; align-items: center; gap: 12px; padding: 6px 0 14px; cursor: pointer; }
+    .switch { width: 52px; height: 32px; border-radius: 16px; background: var(--line); position: relative; flex: none; transition: background 0.15s; }
+    .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 13px; background: #fff; transition: left 0.15s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+    .switch.on { background: var(--primary); }
+    .switch.on::after { left: 23px; background: var(--on-primary); }
+    .error { color: var(--error); font-size: 15px; margin: 0 0 12px; }
+    .photo-main { width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; background: var(--soft); object-fit: cover; display: block; }
+    .photo-empty { width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; background: var(--soft); display: grid; place-items: center; color: var(--text-2); }
+    .builtins { display: flex; gap: 8px; overflow-x: auto; margin: 6px -16px 8px; padding: 2px 16px; scrollbar-width: none; }
+    .builtins::-webkit-scrollbar { display: none; }
+    .builtins button { border: 0; padding: 0; background: none; flex: none; border-radius: 9px; }
+    .builtins img { width: 112px; height: 72px; object-fit: cover; border-radius: 8px; display: block; }
+    .builtins button.on { outline: 3px solid var(--primary); outline-offset: 0; }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 6px 0 16px; }
+
+    .facts { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin: 14px 0; }
+    .facts div { padding: 10px 14px; border-top: 1px solid var(--line); }
+    .facts div:first-child { border-top: 0; }
+    .facts span { display: block; font-size: 13px; color: var(--text-2); }
+    .stack { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+
+    .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
+    .sheet { background: var(--card); width: 100%; max-width: 560px; border-radius: 18px 18px 0 0; padding: 10px 0 calc(env(safe-area-inset-bottom) + 10px); max-height: 85dvh; overflow-y: auto; }
+    .sheet .who { padding: 10px 20px 12px; border-bottom: 1px solid var(--line); }
+    .sheet button.item { width: 100%; text-align: left; border: 0; background: none; padding: 14px 20px; font-size: 17px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .sheet button.item:active { background: var(--soft); }
+    .sheet .item.danger { color: var(--error); }
+    .sheet .foot { padding: 10px 20px 4px; font-size: 13px; color: var(--text-2); border-top: 1px solid var(--line); }
+    .dialog-wrap { align-items: center; padding: 24px; }
+    .dialog { background: var(--card); border-radius: 18px; padding: 22px 22px 12px; width: 100%; max-width: 380px; }
+    .dialog h2 { font-size: 19px; margin-bottom: 8px; }
+    .dialog p { color: var(--text-2); }
+    .dialog .actions { justify-content: flex-end; margin-top: 18px; }
+
+    .toast { position: fixed; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom) + 76px); z-index: 30; background: var(--banner-bg); color: var(--banner-fg); border-radius: 12px; padding: 12px 8px 12px 16px; display: flex; align-items: center; gap: 10px; font-size: 15px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3); max-width: 560px; margin: 0 auto; }
+    .toast button { background: none; border: 0; color: inherit; font-weight: 700; padding: 6px 10px; }
+
+    .signin { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px); max-width: 460px; margin: 0 auto; }
+    .signin .logo { display: block; width: 190px; margin: 0 auto 8px; }
+    .signin .label { text-align: center; letter-spacing: 0.32em; font-weight: 600; font-size: 15px; margin-bottom: 26px; }
+    .signin .intro { text-align: center; color: var(--text-2); margin-bottom: 22px; }
+    .pass { position: relative; }
+    .pass input { padding-right: 70px; }
+    .pass button { position: absolute; right: 4px; top: 4px; bottom: 4px; border: 0; background: none; font-weight: 600; padding: 0 12px; }
+    .logo-dark { display: none !important; }
+    @media (prefers-color-scheme: dark) { .logo-light { display: none !important; } .logo-dark { display: block !important; } }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toast" class="toast" hidden></div>
+  <div id="layer"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* ========================================================
+       SETTINGS
+       The same Firebase project, sign-in and rules as admin.html
+       and the Android app. ?emulator on localhost uses the local
+       Firebase emulators instead, for testing.
+       ======================================================== */
+    var TEST = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && (/[?&]emulator\b/.test(location.search) || sessionStorage.getItem('belleEmulator') === '1');
+    if (TEST) sessionStorage.setItem('belleEmulator', '1');
+    var DB_URL = TEST ? 'http://127.0.0.1:9000' : 'https://bellecolombo-fea8d-default-rtdb.asia-southeast1.firebasedatabase.app';
+    var DB_NS = TEST ? 'demo-belle-default-rtdb' : '';
+    var AUTH_URL = TEST ? 'http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:' : 'https://identitytoolkit.googleapis.com/v1/accounts:';
+    var TOKEN_URL = TEST ? 'http://127.0.0.1:9099/securetoken.googleapis.com/v1/token' : 'https://securetoken.googleapis.com/v1/token';
+    // Public by design, as in admin.html: it only names the Firebase project. The database rules protect the data.
+    var API_KEY = 'AIzaSyCt_wxhRokhPreRCNju2R8-cDPP32DZcfE';
+    // The Belle alerts server on Cloudflare (belle-alerts-server). Set once it is deployed.
+    var ALERTS_URL = TEST ? (new URLSearchParams(location.search).get('alerts') || sessionStorage.getItem('belleAlerts') || 'http://127.0.0.1:8787') : 'https://belle-alerts.bellecolombolinktree.workers.dev';
+    if (TEST) sessionStorage.setItem('belleAlerts', ALERTS_URL);
+    var ALERTS_READY = !/REPLACE/.test(ALERTS_URL);
+    var ADMIN_URL = '../admin.html';
+    var CALENDAR_URL = '../#events';
+    var VERSION = '1.1 (web)';
+    var TZ = 'Asia/Colombo';
+    var SESSION_KEY = 'belle_staff_session';
+    var TIMEOUT_MS = 20000;
+
+    var LABELS = { owner: 'Main admin', admin: 'Full access', editor: 'Menus and website', reservations: 'Reservations only', none: 'No access' };
+    var STATES = {
+      requested: ['Needs a reply', 'warn'], confirmed: ['Confirmed', 'good'], arrived: ['Arrived', 'good'],
+      noshow: ['No-show', 'bad'], declined: ['Declined', ''], cancelled: ['Cancelled', '']
+    };
+    var TELL_STATES = { confirmed: 1, declined: 1, cancelled: 1 };
+    var EVENT_TYPES = [
+      { id: 'dining', label: 'Dining', badge: 'DINING' },
+      { id: 'live-music', label: 'Live Music', badge: 'LIVE MUSIC' },
+      { id: 'specials', label: 'Specials', badge: 'SPECIALS' },
+      { id: 'private-events', label: 'Private Events', badge: 'PRIVATE EVENTS' }
+    ];
+    // The same list as EVENT_PHOTOS in admin.html
+    var BUILT_IN = [
+      { key: 'event_wine_dine', src: 'assets/events/event_wine_dine.jpg', label: 'Wine and dine' },
+      { key: 'event_acoustic_night', src: 'assets/events/event_acoustic_night.jpg', label: 'Acoustic night' },
+      { key: 'event_chefs_tasting', src: 'assets/events/event_chefs_tasting.jpg', label: "Chef's tasting" },
+      { key: 'event_sunset_terrace', src: 'assets/events/event_sunset_terrace.jpg', label: 'Sunset terrace' },
+      { key: 'event_private_event', src: 'assets/events/event_private_event.jpg', label: 'Private event' }
+    ];
+    var EVENT_PHOTO_PX = 900;
+    var DEFAULT_VENUE = 'Main Dining Hall';
+    var MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    var DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    var ICONS = {
+      back: '<path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+      more: '<circle cx="12" cy="5" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="19" r="2" fill="currentColor"/>',
+      list: '<path d="M8 6h12M8 12h12M8 18h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4" cy="6" r="1.3" fill="currentColor"/><circle cx="4" cy="12" r="1.3" fill="currentColor"/><circle cx="4" cy="18" r="1.3" fill="currentColor"/>',
+      calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      plus: '<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
+      edit: '<path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'
+    };
+    function icon(name) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>'; }
+
+    /* ========================================================
+       SMALL HELPERS
+       ======================================================== */
+    var app = document.getElementById('app');
+    var layer = document.getElementById('layer');
+
+    function esc(text) {
+      return String(text == null ? '' : text).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function str(v) { return v == null ? '' : String(v); }
+    function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+    function cap(text) { return text.charAt(0) + text.slice(1).toLowerCase(); }
+
+    // The restaurant's date, whatever time zone the phone is set to
+    function colomboDay(offset) {
+      return new Date(Date.now() + (offset || 0) * 86400000).toLocaleDateString('en-CA', { timeZone: TZ });
+    }
+    function parseDay(iso) {
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+      return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
+    }
+    function shortDay(d) { return cap(WEEKDAYS[d.getUTCDay()]) + ' ' + d.getUTCDate() + ' ' + cap(MONTHS[d.getUTCMonth()]); }
+    function dayText(iso) {
+      var d = parseDay(iso);
+      if (!d) return iso || '';
+      var text = shortDay(d);
+      if (iso === colomboDay(0)) return 'Today, ' + text;
+      if (iso === colomboDay(1)) return 'Tomorrow, ' + text;
+      if (iso === colomboDay(-1)) return 'Yesterday, ' + text;
+      return text;
+    }
+    function longDay(iso) {
+      var d = parseDay(iso);
+      return d ? DAY_NAMES[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MONTH_NAMES[d.getUTCMonth()] : iso;
+    }
+    function timeText(time) {
+      var m = /^(\d{1,2}):(\d{2})$/.exec(time || '');
+      if (!m) return time || '';
+      var h = +m[1];
+      return (h % 12 === 0 ? 12 : h % 12) + ':' + m[2] + ' ' + (h < 12 ? 'AM' : 'PM');
+    }
+    function moment(ms) {
+      var d = new Date(ms);
+      var day = parseDay(d.toLocaleDateString('en-CA', { timeZone: TZ }));
+      var clock = d.toLocaleTimeString('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false });
+      return day.getUTCDate() + ' ' + cap(MONTHS[day.getUTCMonth()]) + ', ' + timeText(clock);
+    }
+
+    function dbUrl(path, params) {
+      var url = new URL(DB_URL + '/' + path + '.json');
+      Object.keys(params || {}).forEach(function (k) { url.searchParams.set(k, params[k]); });
+      if (DB_NS) url.searchParams.set('ns', DB_NS);
+      return url.toString();
+    }
+
+    function request(url, init) {
+      var controller = new AbortController();
+      var timer = setTimeout(function () { controller.abort(); }, TIMEOUT_MS);
+      return fetch(url, Object.assign({ cache: 'no-store', signal: controller.signal }, init || {})).then(function (res) {
+        clearTimeout(timer);
+        return res;
+      }, function (err) {
+        clearTimeout(timer);
+        throw { network: true, cause: err };
+      });
+    }
+
+    function failed(res) {
+      return { status: res.status };
+    }
+
+    function errorText(err) {
+      if (err && err.signedOut) return 'You have been signed out. Sign in again.';
+      if (err && (err.status === 401 || err.status === 403)) return 'Firebase refused that (error ' + err.status + '), so nothing changed. Your account may not be allowed to do this. Ask the main admin.';
+      if (err && err.status) return 'Firebase returned error ' + err.status + ', so nothing changed. Try again in a moment.';
+      if (err && err.text) return err.text;
+      return 'That did not reach Firebase, so nothing changed. Check your internet connection and try again.';
+    }
+
+    /* ========================================================
+       SIGNING IN
+       Firebase Authentication over its REST API, the same calls as
+       admin.html. Only the refresh token is kept, never the password.
+       ======================================================== */
+    var session = null;
+    var refreshing = null;
+    var DEAD = { TOKEN_EXPIRED: 1, USER_DISABLED: 1, USER_NOT_FOUND: 1, INVALID_REFRESH_TOKEN: 1, INVALID_GRANT_TYPE: 1, MISSING_REFRESH_TOKEN: 1 };
+
+    function loadSession() {
+      try { session = JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch (e) { session = null; }
+    }
+    function saveSession() {
+      try {
+        if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        else localStorage.removeItem(SESSION_KEY);
+      } catch (e) {}
+    }
+
+    function authCall(url, body, form) {
+      return request(url, form
+        ? { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body).toString() }
+        : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+      ).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (res.ok) return data;
+          var message = (data.error && data.error.message) || 'HTTP_' + res.status;
+          throw { authCode: message.split(/[ :]/)[0] };
+        });
+      });
+    }
+
+    function signInMessage(err) {
+      if (!err || !err.authCode) return 'Could not reach Firebase. Check your internet connection and try again.';
+      return {
+        INVALID_LOGIN_CREDENTIALS: "That email or password isn't right.", EMAIL_NOT_FOUND: "That email or password isn't right.",
+        INVALID_PASSWORD: "That email or password isn't right.", INVALID_EMAIL: 'Please check the email address.',
+        MISSING_PASSWORD: 'Please type your password.', USER_DISABLED: 'This account has been turned off in Firebase.',
+        TOO_MANY_ATTEMPTS_TRY_LATER: 'Too many tries. Please wait a few minutes and try again.'
+      }[err.authCode] || 'Firebase could not do that (' + err.authCode + ').';
+    }
+
+    function getIdToken(force) {
+      if (!session) return Promise.reject({ signedOut: true });
+      if (!force && session.idToken && Date.now() < session.expiresAt - 60000) return Promise.resolve(session.idToken);
+      if (refreshing) return refreshing;
+      var who = session.uid;
+      refreshing = authCall(TOKEN_URL + '?key=' + API_KEY, { grant_type: 'refresh_token', refresh_token: session.refreshToken }, true).then(function (data) {
+        refreshing = null;
+        if (!session || session.uid !== who) throw { signedOut: true };
+        session.idToken = data.id_token;
+        session.refreshToken = data.refresh_token || session.refreshToken;
+        session.expiresAt = Date.now() + (Number(data.expires_in) || 3600) * 1000;
+        saveSession();
+        return session.idToken;
+      }, function (err) {
+        refreshing = null;
+        if (err && DEAD[err.authCode] && session && session.uid === who) {
+          endSession(err.authCode === 'USER_DISABLED' ? 'This account has been turned off. Ask the main admin.' : 'Your sign-in has run out, for example after a password change. Sign in again.');
+          throw { signedOut: true };
+        }
+        throw err;
+      });
+      return refreshing;
+    }
+
+    // The same check as admin.html's checkAccess and the Android app
+    function checkAccess(uid, token) {
+      function get(path, params) { return request(dbUrl(path, Object.assign({ auth: token }, params || {}))); }
+      return get('belle_staff', { shallow: 'true' }).then(function (res) {
+        if (res.ok) return 'owner';
+        if (res.status !== 401 && res.status !== 403) throw failed(res);
+        return get('belle_staff/' + uid).then(function (own) {
+          if (own.ok) {
+            return own.json().then(function (data) {
+              var role = data && data.role;
+              if (role === 'reservations' || role === 'editor' || role === 'admin') return role;
+              return oldRules();
+            });
+          }
+          if (own.status !== 401 && own.status !== 403) throw failed(own);
+          return oldRules();
+        });
+      });
+      // Under the older rules only the main admins could read reservations
+      function oldRules() {
+        return get('belle_reservations', { orderBy: '"$key"', limitToLast: '1' }).then(function (res) {
+          if (res.ok) return 'owner';
+          if (res.status === 401 || res.status === 403) return null;
+          throw failed(res);
+        });
+      }
+    }
+
+    function seesBookings(role) { return role === 'owner' || role === 'admin' || role === 'reservations'; }
+    function editsEvents(role) { return role === 'owner' || role === 'admin' || role === 'editor'; }
+
+    function signIn(email, password) {
+      if (!email || !password) return Promise.reject({ text: 'Type your email and password.' });
+      return authCall(AUTH_URL + 'signInWithPassword?key=' + API_KEY, { email: email, password: password, returnSecureToken: true }).then(function (data) {
+        return checkAccess(data.localId, data.idToken).then(function (role) {
+          if (role === 'editor') throw { text: 'This account is set to Menus and website, so it cannot see reservations. Ask the main admin to change it under Staff accounts.' };
+          if (!seesBookings(role)) throw { text: 'This account cannot see reservations. Ask the main admin to add you under Staff accounts with Reservations only or Full access.' };
+          session = {
+            email: data.email || email, uid: data.localId, role: role, refreshToken: data.refreshToken,
+            idToken: data.idToken, expiresAt: Date.now() + (Number(data.expiresIn) || 3600) * 1000
+          };
+          saveSession();
+        }, function (err) {
+          if (err && err.text) throw err;
+          throw { text: 'Could not reach Firebase. Check your internet connection and try again.' };
+        });
+      }, function (err) {
+        throw { text: signInMessage(err) };
+      });
+    }
+
+    function endSession(reason) {
+      alertsOff(true);
+      session = null;
+      saveSession();
+      stopStream();
+      tree = {};
+      bookingsLoaded = false;
+      events = [];
+      eventsLoaded = false;
+      setBadge(0);
+      signInNote = reason || '';
+      history.replaceState(null, '', location.pathname + location.search);
+      render();
+    }
+
+    /* ========================================================
+       RESERVATIONS
+       A live copy of belle_reservations from yesterday onwards, over
+       Firebase's streaming API. Changes from the website, the panel
+       or another phone arrive within a second or two.
+       ======================================================== */
+    var tree = {};
+    var bookingsLoaded = false;
+    var link = 'idle';
+    var stream = null;
+    var streamTimer = null;
+    var lastHeard = 0;
+    var failures = 0;
+    var WAITS = [1000, 3000, 10000, 30000, 60000];
+
+    function bookingOf(id, o) {
+      var b = {
+        id: id, reference: str(o.reference), date: str(o.date), time: str(o.time), party: Number(o.party) || 0,
+        name: str(o.name), phone: str(o.phone), email: str(o.email), occasion: str(o.occasion), note: str(o.note),
+        event: str(o.event), status: str(o.status), source: str(o.source), createdAt: Number(o.createdAt) || 0,
+        statusAt: Number(o.statusAt) || 0, guestToldAt: Number(o.guestToldAt) || 0, table: str(o.table), staffNote: str(o.staffNote)
+      };
+      b.isCancelled = b.status === 'declined' || b.status === 'cancelled';
+      b.digits = b.phone.replace(/\D/g, '');
+      b.firstName = b.name.trim().split(/\s+/)[0] || '';
+      b.needsTelling = !!TELL_STATES[b.status] && !b.guestToldAt && b.digits.length >= 9;
+      b.state = STATES[b.status] || [b.status, ''];
+      return b;
+    }
+
+    function allBookings() {
+      return Object.keys(tree).filter(function (id) { return tree[id] && typeof tree[id] === 'object'; }).map(function (id) {
+        return bookingOf(id, tree[id]);
+      }).sort(function (a, b) {
+        return a.date < b.date ? -1 : a.date > b.date ? 1 : a.time < b.time ? -1 : a.time > b.time ? 1 : a.id < b.id ? -1 : 1;
+      });
+    }
+
+    // Requests to answer, and turned-away guests nobody has told yet. The same rule as the panel.
+    function waiting(rows) {
+      var today = colomboDay(0);
+      return rows.filter(function (b) { return (b.status === 'requested' || (b.isCancelled && b.needsTelling)) && b.date >= today; });
+    }
+
+    function findBooking(id) { return tree[id] ? bookingOf(id, tree[id]) : null; }
+
+    function setLink(state) {
+      if (link === state) return;
+      link = state;
+      var el = document.getElementById('linkText');
+      if (el) el.textContent = linkText();
+    }
+    function linkText() {
+      return link === 'live' ? 'Live' : link === 'offline' ? 'No connection, trying again' : 'Connecting…';
+    }
+
+    function stopStream() {
+      clearTimeout(streamTimer);
+      if (stream) stream.close();
+      stream = null;
+      link = 'idle';
+    }
+
+    function startStream(fresh) {
+      clearTimeout(streamTimer);
+      if (stream) stream.close();
+      stream = null;
+      if (!session) return;
+      if (link !== 'offline') setLink('connecting');
+      getIdToken(fresh).then(function (token) {
+        if (!session) return;
+        var source = new EventSource(dbUrl('belle_reservations', { orderBy: '"date"', startAt: '"' + colomboDay(-1) + '"', auth: token }));
+        stream = source;
+        function heard() {
+          lastHeard = Date.now();
+          failures = 0;
+          setLink('live');
+        }
+        source.addEventListener('put', function (e) { heard(); applyStream('put', e.data); });
+        source.addEventListener('patch', function (e) { heard(); applyStream('patch', e.data); });
+        source.addEventListener('keep-alive', heard);
+        // Tokens last an hour. Firebase says when one runs out, and a new one carries straight on.
+        source.addEventListener('auth_revoked', function () { startStream(true); });
+        source.addEventListener('cancel', function () {
+          source.close();
+          stream = null;
+          recheckAccess();
+        });
+        source.onerror = function () {
+          if (stream !== source) return;
+          source.close();
+          stream = null;
+          retryStream();
+        };
+      }, function (err) {
+        if (err && err.signedOut) return;
+        retryStream();
+      });
+    }
+
+    function retryStream() {
+      failures++;
+      if (failures >= 2) setLink('offline');
+      clearTimeout(streamTimer);
+      streamTimer = setTimeout(function () { startStream(true); }, WAITS[Math.min(failures, WAITS.length) - 1]);
+    }
+
+    function segments(path) { return String(path || '/').split('/').filter(Boolean); }
+
+    function setAt(path, value) {
+      var gone = value === null || value === undefined;
+      if (!path.length) {
+        tree = value && typeof value === 'object' ? value : {};
+        return;
+      }
+      var node = tree;
+      for (var i = 0; i < path.length - 1; i++) {
+        if (!node[path[i]] || typeof node[path[i]] !== 'object') {
+          if (gone) return;
+          node[path[i]] = {};
+        }
+        node = node[path[i]];
+      }
+      if (gone) delete node[path[path.length - 1]];
+      else node[path[path.length - 1]] = value;
+    }
+
+    function applyStream(kind, text) {
+      var message;
+      try { message = JSON.parse(text); } catch (e) { return; }
+      if (!message) return;
+      var path = segments(message.path);
+      if (kind === 'put') setAt(path, message.data);
+      else if (message.data && typeof message.data === 'object') {
+        Object.keys(message.data).forEach(function (key) { setAt(path.concat(segments(key)), message.data[key]); });
+      }
+      bookingsLoaded = true;
+      dataChanged();
+    }
+
+    // Firebase refused the list, so the main admin may have changed this account's access
+    function recheckAccess() {
+      getIdToken(true).then(function (token) {
+        return checkAccess(session.uid, token);
+      }).then(function (role) {
+        if (!seesBookings(role)) {
+          endSession('Your access to reservations has been removed. Ask the main admin if you need it.');
+          return;
+        }
+        session.role = role;
+        saveSession();
+        retryStream();
+      }, function (err) {
+        if (!(err && err.signedOut)) retryStream();
+      });
+    }
+
+    function dbWrite(method, path, body, params) {
+      return getIdToken().then(function (token) {
+        return request(dbUrl(path, Object.assign({ auth: token }, params || {})), {
+          method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+        });
+      }).then(function (res) {
+        if (!res.ok) throw failed(res);
+        return res.status === 204 ? null : res.json().catch(function () { return null; });
+      });
+    }
+
+    function patchBooking(id, changes) {
+      return dbWrite('PATCH', 'belle_reservations/' + id, changes, { print: 'silent' }).then(function () {
+        // Show it at once; the live connection brings the same change a moment later
+        if (tree[id]) {
+          Object.keys(changes).forEach(function (key) { setAt([id, key], changes[key]); });
+          dataChanged();
+        }
+      });
+    }
+
+    function setStatus(b, status) {
+      return patchBooking(b.id, { status: status, statusAt: Date.now(), guestToldAt: null }).then(function () {
+        var after = bookingOf(b.id, Object.assign({}, tree[b.id] || {}, { status: status, guestToldAt: null }));
+        var saved = status === 'confirmed' ? 'Confirmed.' : 'Saved as ' + after.state[0].toLowerCase() + '.';
+        toast(after.needsTelling ? saved + ' Now tell the guest on WhatsApp.' : saved);
+      }, function (err) { toast(errorText(err)); });
+    }
+
+    function markTold(b, quiet) {
+      return patchBooking(b.id, { guestToldAt: Date.now() }).then(function () {
+        if (!quiet) toast('Noted.');
+      }, function (err) { if (!quiet) toast(errorText(err)); });
+    }
+
+    function guestMessage(b) {
+      var whenLine = longDay(b.date) + ' at ' + timeText(b.time) + ', ' + plural(b.party, 'guest');
+      var reference = b.reference ? ' Your reference is ' + b.reference + '.' : '';
+      var name = b.firstName;
+      if (b.status === 'confirmed') return 'Hello ' + name + ', your table at Belle is confirmed for ' + whenLine + '.' + reference + ' If anything changes, reply here.';
+      if (b.status === 'declined') return 'Hello ' + name + ', we are sorry, but we have no table for ' + whenLine + '. Reply here and we will find you another time.';
+      if (b.status === 'cancelled') return 'Hello ' + name + ', your table at Belle for ' + whenLine + ' has been cancelled. Reply here if you would like another time.';
+      return 'Hello ' + name + ', this is Belle, about your table for ' + whenLine + '.';
+    }
+
+    function openOutside(url) {
+      if (/^(tel|mailto):/.test(url)) location.href = url;
+      else window.open(url, '_blank', 'noopener');
+    }
+
+    function tellGuest(b) {
+      openOutside('https://wa.me/' + b.digits + '?text=' + encodeURIComponent(guestMessage(b)));
+      markTold(b, true);
+    }
+
+    /* ========================================================
+       EVENTS
+       Part of belle_content, which every guest downloads, so a change
+       is live straight away. Only the events list is written, with a
+       check that nobody else saved it in between, then publishedAt
+       moves on so guests' browsers fetch the new version.
+       ======================================================== */
+    var events = [];
+    var eventsLoaded = false;
+    var eventsFailed = false;
+    var versionOwed = false;
+    var saving = Promise.resolve();
+
+    function parseEvents(data) {
+      if (!data) return [];
+      if (Array.isArray(data)) return data.filter(function (e) { return e && typeof e === 'object'; });
+      return Object.keys(data).sort(function (a, b) { return (+a) - (+b); }).map(function (k) { return data[k]; }).filter(function (e) { return e && typeof e === 'object'; });
+    }
+
+    function eventDay(ev) { return parseDay(ev.dateStr) ? ev.dateStr : ''; }
+    function eventState(ev) {
+      var day = eventDay(ev);
+      if (!day) return 'nodate';
+      return day < colomboDay(0) ? 'past' : 'upcoming';
+    }
+    function eventType(ev) { return EVENT_TYPES.find(function (t) { return t.id === (ev.category || 'dining'); }); }
+
+    function sortEvents(rows) {
+      function rank(ev) { var d = parseDay(ev.dateStr); return d ? d.getTime() : Infinity; }
+      return rows.map(function (ev, i) { return [ev, i]; }).sort(function (a, b) {
+        var x = rank(a[0]), y = rank(b[0]);
+        return x === y ? a[1] - b[1] : x < y ? -1 : 1;
+      }).map(function (pair) { return pair[0]; });
+    }
+
+    var eventsLoading = null;
+    function refreshEvents() {
+      if (eventsLoading) return eventsLoading;
+      eventsLoading = request(dbUrl('belle_content/events')).then(function (res) {
+        if (!res.ok) throw failed(res);
+        return res.json();
+      }).then(function (data) {
+        eventsLoading = null;
+        events = parseEvents(data);
+        eventsLoaded = true;
+        eventsFailed = false;
+        if (versionOwed) getIdToken().then(stampVersion).catch(function () {});
+        dataChanged();
+      }, function (err) {
+        eventsLoading = null;
+        eventsFailed = true;
+        dataChanged();
+        throw err;
+      });
+      return eventsLoading;
+    }
+
+    function stampVersion(token) {
+      return request(dbUrl('belle_content/publishedAt', { auth: token, print: 'silent' }), {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: String(Date.now())
+      }).then(function (res) {
+        if (!res.ok) throw failed(res);
+        versionOwed = false;
+      });
+    }
+
+    // Applies a change to the live list as it is right now, so an event someone else just added is kept
+    function updateEvents(change) {
+      var job = saving.then(function () {
+        var attempt = 0;
+        function tryOnce() {
+          attempt++;
+          if (attempt > 5) throw { text: 'The events kept changing while saving. Try again.' };
+          return request(dbUrl('belle_content/events'), { headers: { 'X-Firebase-ETag': 'true' } }).then(function (res) {
+            if (!res.ok) throw failed(res);
+            var tag = res.headers.get('ETag');
+            return res.json().then(function (data) {
+              var rows = parseEvents(data);
+              change(rows);
+              rows = sortEvents(rows);
+              return getIdToken().then(function (token) {
+                var headers = { 'Content-Type': 'application/json' };
+                if (tag) headers['if-match'] = tag;
+                // Firebase refuses print=silent together with if-match
+                return request(dbUrl('belle_content/events', tag ? { auth: token } : { auth: token, print: 'silent' }), {
+                  method: 'PUT', headers: headers, body: JSON.stringify(rows)
+                }).then(function (put) {
+                  if (put.status === 412) return tryOnce();
+                  if (!put.ok) throw failed(put);
+                  events = rows;
+                  eventsLoaded = true;
+                  versionOwed = true;
+                  dataChanged();
+                  return stampVersion(token).catch(function () {
+                    throw { text: 'Saved, but the website was not told yet, so guests may not see it for now. Open Events again to retry.', saved: true };
+                  });
+                });
+              });
+            });
+          });
+        }
+        return tryOnce();
+      });
+      saving = job.catch(function () {});
+      return job;
+    }
+
+    function saveEvent(entry) {
+      return updateEvents(function (rows) {
+        var at = rows.findIndex(function (r) { return r.id === entry.id; });
+        if (at >= 0) rows[at] = entry; else rows.push(entry);
+      });
+    }
+
+    function deleteEvent(id) {
+      var removed = null;
+      return updateEvents(function (rows) {
+        var at = rows.findIndex(function (r) { return r.id === id; });
+        if (at >= 0) removed = rows.splice(at, 1)[0];
+      }).then(function () { return removed; });
+    }
+
+    function newMediaId() {
+      var letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      var random = crypto.getRandomValues(new Uint8Array(6));
+      return 'p-' + Date.now().toString(36) + '-' + Array.prototype.map.call(random, function (n) { return letters[n % letters.length]; }).join('');
+    }
+
+    // Shrinks a photo the way admin.html does. Safari cannot make WebP, so iPhones send a JPEG.
+    function shrink(file, maxPx, quality) {
+      return new Promise(function (resolve, reject) {
+        var address = URL.createObjectURL(file);
+        var img = new Image();
+        img.onerror = function () { URL.revokeObjectURL(address); reject({ text: 'That file could not be read as a photo. Try another one.' }); };
+        img.onload = function () {
+          var scale = Math.min(1, maxPx / Math.max(img.naturalWidth, img.naturalHeight));
+          var canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(address);
+          var url = canvas.toDataURL('image/webp', quality);
+          if (url.indexOf('data:image/webp') !== 0) url = canvas.toDataURL('image/jpeg', quality);
+          resolve(url);
+        };
+        img.src = address;
+      });
+    }
+
+    function preparePhoto(file) {
+      return Promise.all([shrink(file, EVENT_PHOTO_PX, 0.72), shrink(file, 64, 0.5)]).then(function (urls) {
+        var parts = /^data:([^;]+);base64,(.+)$/.exec(urls[0]);
+        return { url: urls[0], mime: parts[1], base64: parts[2], poster: urls[1] };
+      });
+    }
+
+    // Stored like the admin panel's uploads: the photo in belle_media, a tiny preview in the menu
+    function uploadPhoto(photo) {
+      var id = newMediaId();
+      return dbWrite('PUT', 'belle_media/' + id, { mime: photo.mime, data: photo.base64 }, { print: 'silent' }).then(function () {
+        return dbWrite('PUT', 'belle_content/mediaFiles/' + id, { kind: 'photo', size: photo.base64.length, px: EVENT_PHOTO_PX, poster: photo.poster }, { print: 'silent' });
+      }).then(function () {
+        photoCache['media:' + id] = photo.url;
+        return 'media:' + id;
+      });
+    }
+
+    function forgetPhoto(address) {
+      var id = String(address).replace(/^media:/, '');
+      if (id === address) return;
+      getIdToken().then(function (token) {
+        request(dbUrl('belle_content/mediaFiles/' + id, { auth: token, print: 'silent' }), { method: 'DELETE' });
+        request(dbUrl('belle_media/' + id, { auth: token, print: 'silent' }), { method: 'DELETE' });
+      }).catch(function () {});
+    }
+
+    var photoCache = {};
+    function photoUrl(src) {
+      if (!src) return Promise.resolve('');
+      if (photoCache[src]) return Promise.resolve(photoCache[src]);
+      var m = /^media:([a-z0-9-]+)$/.exec(src);
+      var job;
+      if (m) {
+        job = request(dbUrl('belle_media/' + m[1])).then(function (res) { return res.ok ? res.json() : null; }).then(function (file) {
+          return file && file.data ? 'data:' + (file.mime || 'image/jpeg') + ';base64,' + file.data : '';
+        });
+      } else if (/^(data:|https?:)/.test(src)) {
+        job = Promise.resolve(src);
+      } else {
+        job = Promise.resolve('../' + src.replace(/^\//, ''));
+      }
+      return job.then(function (url) {
+        if (url) photoCache[src] = url;
+        return url;
+      }, function () { return ''; });
+    }
+
+    // Images are drawn with data-photo, then filled in once each one is ready
+    function fillPhotos() {
+      app.querySelectorAll('img[data-photo]').forEach(function (img) {
+        var src = img.getAttribute('data-photo');
+        img.removeAttribute('data-photo');
+        photoUrl(src).then(function (url) { if (url) img.src = url; });
+      });
+    }
+
+    /* ========================================================
+       ALERTS ON THIS PHONE
+       The Belle alerts server sends an encrypted push when a guest
+       asks for a table. iPhones allow it only for an app added to
+       the Home Screen, on iOS 16.4 or later.
+       ======================================================== */
+    var alerts = { checked: false, on: false, busy: false };
+    var registration = null;
+
+    function isIos() {
+      return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+    function isStandalone() {
+      return navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+    }
+
+    function alertsState() {
+      if (!ALERTS_READY) return 'none';
+      if (!('serviceWorker' in navigator)) return 'unsupported';
+      if (isIos() && !isStandalone()) return 'install';
+      if (!('PushManager' in window) || !('Notification' in window)) return isIos() ? 'old' : 'unsupported';
+      if (Notification.permission === 'denied') return 'blocked';
+      if (!alerts.checked) return 'checking';
+      return alerts.on ? 'on' : 'off';
+    }
+
+    function deviceName() {
+      if (/iPhone/.test(navigator.userAgent)) return 'iPhone';
+      if (/iPad/.test(navigator.userAgent) || isIos()) return 'iPad';
+      if (/Android/.test(navigator.userAgent)) return 'Android phone';
+      return 'Browser';
+    }
+
+    function keyBytes(text) {
+      var plain = text.replace(/-/g, '+').replace(/_/g, '/');
+      var raw = atob(plain + '='.repeat((4 - plain.length % 4) % 4));
+      var out = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+      return out;
+    }
+
+    function sameKey(a, b) {
+      if (!a || !b || a.byteLength !== b.byteLength) return false;
+      var x = new Uint8Array(a), y = new Uint8Array(b);
+      for (var i = 0; i < x.length; i++) if (x[i] !== y[i]) return false;
+      return true;
+    }
+
+    function server(path, body) {
+      return request(ALERTS_URL + path, { method: body ? 'POST' : 'GET', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (!res.ok) throw { text: data.error || 'The alerts server replied ' + res.status + '.' };
+          return data;
+        });
+      });
+    }
+
+    function readyWorker() {
+      if (registration) return Promise.resolve(registration);
+      return navigator.serviceWorker.register('sw.js').then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
+        registration = reg;
+        return reg;
+      });
+    }
+
+    // On every start: is this phone subscribed, and does the server still know it?
+    function checkAlerts() {
+      var state = alertsState();
+      if (state !== 'checking' && state !== 'on' && state !== 'off') return;
+      readyWorker().then(function (reg) {
+        return reg.pushManager.getSubscription().then(function (sub) {
+          if (!sub || Notification.permission !== 'granted') return null;
+          return server('/key').then(function (key) {
+            // The server was set up again with a new key, so the old subscription is useless
+            if (!sameKey(sub.options && sub.options.applicationServerKey, keyBytes(key.publicKey).buffer)) {
+              return sub.unsubscribe().then(function () { return null; });
+            }
+            return getIdToken().then(function (token) {
+              return server('/subscribe', { idToken: token, subscription: sub.toJSON(), device: deviceName() });
+            }).then(function () { return sub; });
+          });
+        });
+      }).then(function (sub) {
+        alerts.checked = true;
+        alerts.on = !!sub;
+        dataChanged();
+      }, function () {
+        alerts.checked = true;
+        dataChanged();
+      });
+      pruneOnceADay();
+    }
+
+    function alertsOn() {
+      if (alerts.busy) return;
+      // iPhones only ask from a tap, so this comes first
+      var asking = Notification.requestPermission();
+      alerts.busy = true;
+      Promise.resolve(asking).then(function (answer) {
+        if (answer !== 'granted') throw { text: answer === 'denied' ? 'Alerts are blocked for this app. Turn them on in the phone\'s Settings, under Notifications.' : 'Alerts were not allowed.' };
+        return Promise.all([readyWorker(), server('/key')]);
+      }).then(function (both) {
+        return both[0].pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(both[1].publicKey) });
+      }).then(function (sub) {
+        return getIdToken().then(function (token) {
+          return server('/subscribe', { idToken: token, subscription: sub.toJSON(), device: deviceName() });
+        });
+      }).then(function () {
+        alerts.on = true;
+        alerts.checked = true;
+        toast('Alerts are on. New reservation requests will ring on this phone.');
+      }, function (err) {
+        toast((err && err.text) || 'Alerts could not be turned on. Check the connection and try again.');
+      }).then(function () {
+        alerts.busy = false;
+        dataChanged();
+      });
+    }
+
+    function alertsOff(quiet) {
+      if (!('serviceWorker' in navigator) || !ALERTS_READY) return Promise.resolve();
+      return navigator.serviceWorker.getRegistration().then(function (reg) {
+        return reg && reg.pushManager.getSubscription();
+      }).then(function (sub) {
+        if (!sub) return;
+        var endpoint = sub.endpoint;
+        return sub.unsubscribe().then(function () { return server('/unsubscribe', { endpoint: endpoint }); });
+      }).then(function () {
+        alerts.on = false;
+        if (!quiet) toast('Alerts are off on this phone.');
+        dataChanged();
+      }, function () {
+        if (!quiet) toast('Could not reach the alerts server. Try again.');
+      });
+    }
+
+    function testAlert() {
+      getIdToken().then(function (token) { return server('/test', { idToken: token }); }).then(function (r) {
+        toast(r.sent ? 'Test alert sent. It should arrive in a few seconds.' : 'This phone is not on the alerts list. Turn alerts off and on again.');
+      }, function (err) { toast((err && err.text) || 'Could not reach the alerts server.'); });
+    }
+
+    // A main admin's phone tells the server once a day to drop phones of people who lost access
+    function pruneOnceADay() {
+      if (!session || session.role !== 'owner' || !ALERTS_READY) return;
+      var last = 0;
+      try { last = +localStorage.getItem('belle_staff_pruned') || 0; } catch (e) {}
+      if (Date.now() - last < 86400000) return;
+      getIdToken().then(function (token) { return server('/prune', { idToken: token }); }).then(function () {
+        try { localStorage.setItem('belle_staff_pruned', String(Date.now())); } catch (e) {}
+      }, function () {});
+    }
+
+    function setBadge(count) {
+      try {
+        if (count > 0 && navigator.setAppBadge) navigator.setAppBadge(count);
+        else if (navigator.clearAppBadge) navigator.clearAppBadge();
+      } catch (e) {}
+    }
+
+    /* ========================================================
+       SCREENS
+       The address after # says where the app is, so the iPhone's
+       back swipe and a tap on an alert both land in the right place.
+       ======================================================== */
+    var view = { list: 'reply' };
+    var drawn = '';
+    var signInNote = '';
+    var depth = 0;
+
+    function route() {
+      var parts = location.hash.replace(/^#/, '').split('/');
+      return { name: parts[0] || '', id: parts[1] ? decodeURIComponent(parts[1]) : null };
+    }
+
+    function go(hash) {
+      depth++;
+      location.hash = hash;
+    }
+
+    function back(fallback) {
+      if (depth > 0) {
+        depth--;
+        history.back();
+      } else {
+        history.replaceState(null, '', location.pathname + location.search + (fallback ? '#' + fallback : ''));
+        render();
+      }
+    }
+
+    // Lists redraw whenever the data changes; a form is drawn once, so typing is never lost
+    function dataChanged() {
+      if (!session) return;
+      var r = route();
+      if (r.name === '' || r.name === 'events' || r.name === 'booking') render();
+      else updateTabCount();
+      setBadge(waiting(allBookings()).length);
+    }
+
+    function render() {
+      var r = route();
+      var key = r.name + '/' + r.id;
+      var scroll = window.scrollY;
+      var sameScreen = drawn === key;
+      drawn = key;
+      if (!session) {
+        app.innerHTML = signInHtml();
+      } else if (r.name === 'booking' && r.id) {
+        app.innerHTML = bookingHtml(r.id);
+      } else if ((r.name === 'booking-edit' && r.id) || r.name === 'booking-new') {
+        if (sameScreen) return;
+        app.innerHTML = bookingFormHtml(r.name === 'booking-new' ? null : r.id);
+      } else if ((r.name === 'event' && r.id) || r.name === 'event-new') {
+        if (sameScreen) return;
+        if (!editsEvents(session.role)) {
+          history.replaceState(null, '', '#events');
+          return render();
+        }
+        app.innerHTML = eventFormHtml(r.name === 'event-new' ? null : r.id);
+      } else if (r.name === 'events') {
+        app.innerHTML = eventsHtml();
+      } else {
+        app.innerHTML = reservationsHtml();
+      }
+      fillPhotos();
+      window.scrollTo(0, sameScreen ? scroll : 0);
+    }
+
+    function topBar(title, sub, left, right) {
+      return '<header class="bar">' + (left || '') + '<div class="grow"><h1>' + esc(title) + '</h1>' +
+        (sub ? '<div class="sub"' + (sub.id ? ' id="' + sub.id + '"' : '') + '>' + esc(sub.text) + '</div>' : '') + '</div>' + (right || '') + '</header>';
+    }
+    function backButton() { return '<button class="icon-btn" data-action="back" aria-label="Back">' + icon('back') + '</button>'; }
+    function moreButton() { return '<button class="icon-btn" data-action="menu" aria-label="More">' + icon('more') + '</button>'; }
+
+    function tabBar(on) {
+      var count = session ? waiting(allBookings()).length : 0;
+      return '<nav class="tabbar">' +
+        '<button class="' + (on === 'reservations' ? 'on' : '') + '" data-action="tab" data-tab="">' + icon('list') + 'Reservations' +
+        '<span class="count" id="tabCount"' + (count ? '' : ' hidden') + '>' + count + '</span></button>' +
+        '<button class="' + (on === 'events' ? 'on' : '') + '" data-action="tab" data-tab="events">' + icon('calendar') + 'Events</button>' +
+        '</nav>';
+    }
+    function updateTabCount() {
+      var el = document.getElementById('tabCount');
+      if (!el) return;
+      var count = waiting(allBookings()).length;
+      el.textContent = count;
+      el.hidden = !count;
+    }
+
+    function chip(b) { return '<span class="chip ' + b.state[1] + '">' + esc(b.state[0]) + '</span>'; }
+
+    /* ---------- Sign in ---------- */
+    function signInHtml() {
+      return '<main class="signin">' +
+        '<img class="logo logo-light" src="../belle_logo_black.png" alt="Belle Colombo" />' +
+        '<img class="logo logo-dark" src="../belle_logo_white.png" alt="Belle Colombo" />' +
+        '<div class="label">RESERVATIONS</div>' +
+        (TEST ? '<p class="info">Test mode: this uses the local Firebase emulators, not the live site.</p>' : '') +
+        '<p class="intro">Sign in with the same email and password you use for the admin panel.</p>' +
+        '<form id="signInForm">' +
+          '<label class="field"><span>Email</span><input id="siEmail" type="email" autocomplete="username" autocapitalize="none" inputmode="email" required /></label>' +
+          '<label class="field"><span>Password</span><div class="pass"><input id="siPassword" type="password" autocomplete="current-password" required />' +
+          '<button type="button" data-action="showPass">Show</button></div></label>' +
+          '<p class="error" id="siError"' + (signInNote ? '' : ' hidden') + '>' + esc(signInNote) + '</p>' +
+          '<button class="btn primary block" id="siButton">Sign in</button>' +
+        '</form>' +
+        '<button class="btn text" style="margin:14px auto 0;display:block" data-action="forgot">Forgot your password?</button>' +
+      '</main>';
+    }
+
+    /* ---------- Reservations ---------- */
+    function alertBanner() {
+      var state = alertsState();
+      if (state === 'install') {
+        return '<div class="banner"><div class="grow">To get alerts on this iPhone, tap the Share button, then <b>Add to Home Screen</b>, and open Belle from there.</div></div>';
+      }
+      if (state === 'off') return '<div class="banner"><div class="grow">Alerts are off on this phone, so new reservations will not ring.</div><button data-action="alertsOn">Turn on</button></div>';
+      if (state === 'blocked') return '<div class="banner"><div class="grow">Alerts are blocked. Open Settings, then Notifications, then Belle, and allow them.</div></div>';
+      if (state === 'old') return '<div class="banner"><div class="grow">Alerts need iOS 16.4 or later. Update this iPhone in Settings, then General, then Software Update.</div></div>';
+      return '';
+    }
+
+    function reservationsHtml() {
+      var rows = allBookings();
+      var today = colomboDay(0);
+      var lists = {
+        reply: waiting(rows),
+        today: rows.filter(function (b) { return b.date === today && !b.isCancelled; }),
+        upcoming: rows.filter(function (b) { return b.date > today && !b.isCancelled; })
+      };
+      var empty = { reply: 'No requests are waiting for a reply.', today: 'No tables booked for today.', upcoming: 'No reservations after today.' };
+      var labels = { reply: 'Needs a reply', today: 'Today', upcoming: 'Upcoming' };
+      var unmarked = rows.filter(function (b) { return b.date < today && b.status === 'confirmed'; });
+      var shown = lists[view.list];
+      var body;
+      if (!bookingsLoaded) body = '<p class="empty">' + (link === 'offline' ? 'No connection. The list loads when the phone is back online.' : 'Loading reservations…') + '</p>';
+      else if (!shown.length) body = '<p class="empty">' + empty[view.list] + '</p>';
+      else body = shown.map(function (b) { return bookingCard(b, view.list !== 'today'); }).join('');
+      if (view.list === 'today' && bookingsLoaded && unmarked.length) {
+        body += '<h2 class="section">Still to mark from yesterday</h2>' + unmarked.map(function (b) { return bookingCard(b, true); }).join('');
+      }
+      return topBar('Reservations', { id: 'linkText', text: linkText() }, '', moreButton()) +
+        '<div class="segments">' + ['reply', 'today', 'upcoming'].map(function (k) {
+          var n = lists[k].length;
+          return '<button class="seg' + (view.list === k ? ' on' : '') + '" data-action="list" data-list="' + k + '">' + labels[k] + (bookingsLoaded && n ? ' · ' + n : '') + '</button>';
+        }).join('') + '</div>' +
+        '<main class="page">' + alertBanner() + body + '</main>' +
+        '<button class="fab" data-action="go" data-to="booking-new">' + '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' + ICONS.plus + '</svg>Add</button>' +
+        tabBar('reservations');
+    }
+
+    function bookingCard(b, showDay) {
+      var today = colomboDay(0);
+      var facts = [plural(b.party, 'guest'), b.table && 'Table ' + b.table, b.occasion, b.event, b.note].filter(Boolean).join(' · ');
+      var canMark = b.status === 'confirmed' && b.date <= today;
+      var buttons = '';
+      if (b.needsTelling) {
+        buttons += '<button class="btn primary" data-action="tell" data-id="' + esc(b.id) + '">Tell the guest</button>';
+        if (b.isCancelled) buttons += '<button class="btn" data-action="told" data-id="' + esc(b.id) + '">Already told</button>';
+      }
+      if (b.status === 'requested') {
+        buttons += '<button class="btn primary" data-action="status" data-status="confirmed" data-id="' + esc(b.id) + '">Confirm</button>' +
+          '<button class="btn danger" data-action="status" data-status="declined" data-id="' + esc(b.id) + '">Decline</button>';
+      } else if (canMark) {
+        buttons += '<button class="btn" data-action="status" data-status="arrived" data-id="' + esc(b.id) + '">Arrived</button>' +
+          '<button class="btn" data-action="status" data-status="noshow" data-id="' + esc(b.id) + '">No-show</button>';
+      }
+      return '<article class="card tap" data-action="go" data-to="booking/' + encodeURIComponent(b.id) + '">' +
+        '<div class="row"><span class="time">' + esc(timeText(b.time)) + '</span><span class="name grow">' + esc(b.name || 'No name') + '</span>' + chip(b) + '</div>' +
+        (showDay ? '<div style="margin-top:4px">' + esc(dayText(b.date)) + '</div>' : '') +
+        '<div class="muted clip2" style="margin-top:4px">' + esc(facts) + '</div>' +
+        (buttons ? '<div class="actions">' + buttons + '</div>' : '') +
+      '</article>';
+    }
+
+    function bookingHtml(id) {
+      var b = findBooking(id);
+      if (!b) {
+        if (!bookingsLoaded) return topBar('Reservation', null, backButton()) + '<main class="page"><p class="empty">Loading…</p></main>';
+        loadOldBooking(id);
+        return topBar('Reservation', null, backButton()) + '<main class="page"><p class="empty" id="oldBooking">Loading…</p></main>';
+      }
+      var today = colomboDay(0);
+      var buttons = '';
+      if (b.needsTelling) {
+        buttons += '<button class="btn primary block" data-action="tell" data-id="' + esc(id) + '">Tell the guest on WhatsApp</button>';
+        if (b.isCancelled) buttons += '<button class="btn block" data-action="told" data-id="' + esc(id) + '">Already told them</button>';
+      }
+      function act(status, label, style) {
+        return '<button class="btn block ' + (style || '') + '" data-action="status" data-status="' + status + '" data-id="' + esc(id) + '">' + label + '</button>';
+      }
+      if (b.status === 'requested') buttons += act('confirmed', 'Confirm', 'primary') + act('declined', 'Decline', 'danger');
+      else if (b.status === 'confirmed') {
+        if (b.date <= today) buttons += act('arrived', 'Arrived', b.needsTelling ? '' : 'primary') + act('noshow', 'No-show');
+        buttons += act('cancelled', 'Cancel it', 'danger');
+      } else buttons += act('confirmed', 'Put back as confirmed');
+      var contact = '';
+      if (b.digits.length >= 9 && !b.needsTelling) contact += '<a class="btn" href="https://wa.me/' + b.digits + '" target="_blank" rel="noopener">WhatsApp</a>';
+      if (b.digits.length >= 7) contact += '<a class="btn" href="tel:+' + b.digits + '">Call</a>';
+      if (b.email) contact += '<a class="btn" href="mailto:' + esc(b.email) + '">Email</a>';
+      var facts = [
+        ['Guests', String(b.party)], ['Table', b.table], ['WhatsApp', b.phone], ['Email', b.email], ['Occasion', b.occasion],
+        ['For the event', b.event], ['Note from the guest', b.note], ['Note for staff', b.staffNote]
+      ].filter(function (f) { return f[1]; });
+      var about = [b.reference && 'Ref ' + b.reference, b.source === 'website' ? 'From the website' : 'Added by staff', b.createdAt && 'Received ' + moment(b.createdAt)].filter(Boolean);
+      return topBar(b.name || 'Reservation', null, backButton(),
+        '<button class="icon-btn" data-action="go" data-to="booking-edit/' + encodeURIComponent(id) + '" aria-label="Change details">' + icon('edit') + '</button>') +
+        '<main class="page form">' +
+          '<div class="row" style="margin-top:4px">' + chip(b) + '</div>' +
+          '<h2 style="font-size:22px;font-weight:500;margin-top:10px">' + esc(longDay(b.date) + ' at ' + timeText(b.time) + ', ' + plural(b.party, 'guest')) + '</h2>' +
+          '<p class="muted" style="margin-top:6px">' + esc(about.join(' · ')) + '</p>' +
+          '<div class="stack">' + buttons + '</div>' +
+          (contact ? '<h3 class="section">Contact the guest</h3><div class="actions" style="margin-top:0">' + contact + '</div>' : '') +
+          '<div class="facts">' + facts.map(function (f) { return '<div><span>' + esc(f[0]) + '</span>' + esc(f[1]) + '</div>'; }).join('') + '</div>' +
+          '<button class="btn block" data-action="go" data-to="booking-edit/' + encodeURIComponent(id) + '">Change date, time, table or notes</button>' +
+        '</main>';
+    }
+
+    // A booking older than yesterday is not in the live list, so it is read once by itself
+    var oldBookings = {};
+    function loadOldBooking(id) {
+      if (oldBookings[id]) return;
+      oldBookings[id] = true;
+      getIdToken().then(function (token) { return request(dbUrl('belle_reservations/' + id, { auth: token })); }).then(function (res) {
+        if (!res.ok) throw failed(res);
+        return res.json();
+      }).then(function (data) {
+        if (data) {
+          tree[id] = data;
+          dataChanged();
+        } else {
+          var el = document.getElementById('oldBooking');
+          if (el) el.textContent = 'This reservation no longer exists.';
+        }
+      }, function (err) {
+        var el = document.getElementById('oldBooking');
+        if (el) el.textContent = errorText(err);
+      });
+    }
+
+    function bookingFormHtml(id) {
+      var b = id ? findBooking(id) : null;
+      if (id && !b) return topBar('Change details', null, backButton()) + '<main class="page"><p class="empty">This reservation is not loaded. Go back and open it again.</p></main>';
+      function field(label, name, value, attrs, hint) {
+        return '<label class="field"><span>' + label + '</span><input name="' + name + '" value="' + esc(value) + '" ' + (attrs || '') + ' />' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
+      }
+      function area(label, name, value, max, hint) {
+        return '<label class="field"><span>' + label + '</span><textarea name="' + name + '" maxlength="' + max + '" rows="2">' + esc(value) + '</textarea>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
+      }
+      return topBar(id ? 'Change details' : 'Add a reservation', null, backButton()) +
+        '<main class="page form"><form id="bookingForm" data-id="' + esc(id || '') + '" novalidate>' +
+          (id ? '' : '<p class="muted" style="margin-bottom:14px">For a guest who called or walked in. It is saved as confirmed.</p>') +
+          '<div class="pair">' + field('Date', 'date', b ? b.date : colomboDay(0), 'type="date" required') + field('Time', 'time', b ? b.time : '19:00', 'type="time" required') + '</div>' +
+          '<div class="pair">' + field('Guests', 'party', b ? b.party : 2, 'type="number" inputmode="numeric" min="1" max="100"') + field('Table', 'table', b ? b.table : '', 'maxlength="40"') + '</div>' +
+          field('Name', 'name', b ? b.name : '', 'maxlength="80" autocapitalize="words"') +
+          field('WhatsApp number', 'phone', b ? b.phone : '', 'type="tel" maxlength="24"', 'Include the country code, for example +94 77 123 4567.') +
+          field('Email', 'email', b ? b.email : '', 'type="email" maxlength="120" autocapitalize="none"') +
+          field('Occasion', 'occasion', b ? b.occasion : '', 'maxlength="40"') +
+          area('Note from the guest', 'note', b ? b.note : '', 500) +
+          area('Note for staff', 'staffNote', b ? b.staffNote : '', 500, 'Guests never see this. Nor the table.') +
+          '<p class="error" id="formError" hidden></p>' +
+          '<button class="btn primary block" id="formSave">' + (id ? 'Save changes' : 'Add reservation') + '</button>' +
+        '</form></main>';
+    }
+
+    function saveBooking(form) {
+      var id = form.getAttribute('data-id');
+      var v = function (name) { return form.elements[name].value.trim(); };
+      var party = parseInt(v('party'), 10);
+      var problem = !v('date') ? 'Choose a date.' : !/^\d{2}:\d{2}$/.test(v('time')) ? 'Choose a time.'
+        : !(party >= 1 && party <= 100) ? 'Enter between 1 and 100 guests.' : !v('name') ? 'Enter a name.'
+        : v('phone') && v('phone').length < 7 ? 'That WhatsApp number looks too short. Leave it empty if you do not have one.' : '';
+      var error = document.getElementById('formError');
+      error.hidden = !problem;
+      error.textContent = problem;
+      if (problem) return;
+      // An empty field is removed from the booking, as in the admin panel
+      var fields = { date: v('date'), time: v('time'), party: party, name: v('name') };
+      ['phone', 'email', 'table', 'occasion', 'note', 'staffNote'].forEach(function (k) { fields[k] = v(k) || null; });
+      var button = document.getElementById('formSave');
+      button.disabled = true;
+      button.textContent = 'Saving…';
+      var job;
+      if (id) {
+        job = patchBooking(id, fields).then(function () { toast('Saved.'); });
+      } else {
+        var entry = { reference: newReference(), status: 'confirmed', source: 'staff', createdAt: Date.now() };
+        Object.keys(fields).forEach(function (k) { if (fields[k] !== null) entry[k] = fields[k]; });
+        job = dbWrite('POST', 'belle_reservations', entry).then(function () { toast('Reservation added.'); });
+      }
+      job.then(function () { back(id ? 'booking/' + encodeURIComponent(id) : ''); }, function (err) {
+        error.hidden = false;
+        error.textContent = errorText(err);
+        button.disabled = false;
+        button.textContent = id ? 'Save changes' : 'Add reservation';
+      });
+    }
+
+    function newReference() {
+      var letters = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      var random = crypto.getRandomValues(new Uint8Array(5));
+      return 'BC-' + Array.prototype.map.call(random, function (n) { return letters[n % letters.length]; }).join('');
+    }
+
+    /* ---------- Events ---------- */
+    function eventsHtml() {
+      var canEdit = editsEvents(session.role);
+      if (!eventsLoaded && !eventsFailed) refreshEvents().catch(function () {});
+      var upcoming = events.filter(function (ev) { return eventState(ev) === 'upcoming'; }).sort(function (a, b) { return a.dateStr < b.dateStr ? -1 : 1; });
+      var undated = events.filter(function (ev) { return eventState(ev) === 'nodate'; });
+      var past = events.filter(function (ev) { return eventState(ev) === 'past'; }).sort(function (a, b) { return a.dateStr > b.dateStr ? -1 : 1; });
+      var body = canEdit ? '' : '<p class="info">You can see the events here, but only Main admin and Full access accounts can add or delete them.</p>';
+      if (!eventsLoaded) body += '<p class="empty">' + (eventsFailed ? 'Could not load the events. Check the internet connection, then tap Events to try again.' : 'Loading events…') + '</p>';
+      else if (!events.length) body += '<p class="empty">' + (canEdit ? 'No events yet. Tap Add event to put one on the calendar.' : 'No events yet.') + '</p>';
+      else {
+        if (!upcoming.length) body += '<p class="empty">Nothing coming up, so guests see an empty Event Calendar.</p>';
+        var month = '';
+        upcoming.forEach(function (ev) {
+          var d = parseDay(ev.dateStr);
+          var title = MONTH_NAMES[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+          if (title !== month) {
+            month = title;
+            body += '<h2 class="section">' + title + '</h2>';
+          }
+          body += eventCard(ev, canEdit);
+        });
+        if (undated.length) body += '<h2 class="section">Needs a date</h2><p class="note">These were saved without a year, so guests see them on that day every year. Open one and pick the date.</p>' + undated.map(function (ev) { return eventCard(ev, canEdit); }).join('');
+        if (past.length) body += '<h2 class="section">Past</h2><p class="note">Guests no longer see these.</p>' + past.map(function (ev) { return eventCard(ev, canEdit); }).join('');
+      }
+      return topBar('Events', { text: 'The Event Calendar on the website' }, '', moreButton()) +
+        '<main class="page">' + body + '</main>' +
+        (canEdit ? '<button class="fab" data-action="go" data-to="event-new"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' + ICONS.plus + '</svg>Add event</button>' : '') +
+        tabBar('events');
+    }
+
+    function eventCard(ev, canEdit) {
+      var d = parseDay(ev.dateStr);
+      var month = d ? MONTHS[d.getUTCMonth()] : str(ev.month).toUpperCase();
+      var dayNum = d ? d.getUTCDate() : str(ev.day);
+      var weekday = d ? WEEKDAYS[d.getUTCDay()] : str(ev.dow).toUpperCase();
+      var type = eventType(ev);
+      var facts = [ev.time, ev.venue].filter(function (x) { return x && String(x).trim(); }).join(' · ');
+      return '<article class="card' + (canEdit ? ' tap' : '') + (eventState(ev) === 'past' ? ' past' : '') + '"' + (canEdit ? ' data-action="go" data-to="event/' + encodeURIComponent(ev.id) + '"' : '') + '>' +
+        '<div class="row" style="align-items:flex-start">' +
+          '<div class="datebox"><span>' + esc(month) + '</span><b>' + esc(dayNum || '?') + '</b><span>' + esc(weekday) + '</span></div>' +
+          '<div class="grow"><div style="font-size:17px;font-weight:600" class="clip2">' + esc(ev.title || 'Unnamed event') + '</div>' +
+            (facts ? '<div class="muted clip2" style="margin-top:2px">' + esc(facts) + '</div>' : '') +
+            '<div class="tags"><span class="chip">' + esc(type ? type.label : cap(str(ev.categoryLabel))) + '</span>' + (ev.isVip ? '<span class="chip strong">Special</span>' : '') + '</div></div>' +
+          (ev.imageData ? '<img class="thumb" alt="" data-photo="' + esc(ev.imageData) + '" />' : '') +
+        '</div>' +
+        (canEdit ? '<div class="actions" style="justify-content:flex-end;margin-top:8px"><button class="btn text danger" data-action="deleteEvent" data-id="' + esc(ev.id) + '">Delete</button></div>' : '') +
+      '</article>';
+    }
+
+    // An event's time is free text on the website, such as "7:00 PM – 10:00 PM"
+    var ONE_TIME = '(\\d{1,2})(?:[:.](\\d{2}))?\\s*([AaPp])\\.?\\s*[Mm]\\.?';
+    var WHOLE_TIME = new RegExp('^\\s*' + ONE_TIME + '\\s*(?:(?:–|—|-|to)\\s*' + ONE_TIME + ')?\\s*$');
+    function clock(h, m, half) {
+      h = +h; m = m === undefined || m === '' ? 0 : +m;
+      if (!(h >= 1 && h <= 12) || !(m >= 0 && m <= 59)) return null;
+      var h24 = (h % 12) + (/p/i.test(half) ? 12 : 0);
+      return (h24 < 10 ? '0' : '') + h24 + ':' + (m < 10 ? '0' : '') + m;
+    }
+    function parseEventTime(text) {
+      if (!String(text || '').trim()) return ['19:00', '22:00'];
+      var m = WHOLE_TIME.exec(text);
+      if (!m) return null;
+      var start = clock(m[1], m[2], m[3]);
+      if (!start) return null;
+      if (!m[4]) return [start, ''];
+      var end = clock(m[4], m[5], m[6]);
+      return end ? [start, end] : null;
+    }
+    function eventTimeText(start, end) { return end ? timeText(start) + ' – ' + timeText(end) : timeText(start); }
+
+    var eventDraft = null;
+
+    function eventFormHtml(id) {
+      var ev = id ? events.find(function (e) { return e.id === id; }) : null;
+      if (id && !ev) {
+        if (!eventsLoaded) refreshEvents().then(function () { drawn = ''; render(); }, function () {});
+        return topBar('Event', null, backButton()) + '<main class="page"><p class="empty">' + (eventsLoaded ? 'This event no longer exists. Someone may have deleted it.' : 'Loading…') + '</p></main>';
+      }
+      var times = parseEventTime(ev ? ev.time : '');
+      eventDraft = { id: id, existing: ev, photoSrc: ev ? str(ev.imageData) : '', picked: null, preparing: false, special: !!(ev && ev.isVip), category: (ev && ev.category) || 'dining', freeTime: times ? null : str(ev.time) };
+      var venues = [];
+      events.concat([{ venue: DEFAULT_VENUE }]).forEach(function (e) {
+        var v = str(e.venue).trim();
+        if (v && venues.every(function (x) { return x.toLowerCase() !== v.toLowerCase(); })) venues.push(v);
+      });
+      var today = colomboDay(0);
+      return topBar(ev ? 'Change event' : 'Add an event', null, backButton()) +
+        '<main class="page form"><form id="eventForm" novalidate>' +
+          (ev ? '' : '<p class="muted" style="margin-bottom:14px">It goes on the Event Calendar on the website as soon as you add it.</p>') +
+          '<label class="field"><span>Event name</span><input name="title" maxlength="120" autocapitalize="words" value="' + esc(ev ? ev.title : '') + '" /></label>' +
+          '<label class="field"><span>Date</span><input name="date" type="date" value="' + esc(ev ? eventDay(ev) : '') + '"' + (ev ? '' : ' min="' + today + '"') + ' />' +
+            (ev && !eventDay(ev) ? '<small>This event has no year. Pick the date so it shows correctly.</small>' : '') + '</label>' +
+          '<div id="timePart">' + timePartHtml(times) + '</div>' +
+          '<label class="field"><span>Where</span><input name="venue" maxlength="80" autocapitalize="words" value="' + esc(ev ? str(ev.venue) : DEFAULT_VENUE) + '" /></label>' +
+          '<div class="chips">' + venues.slice(0, 5).map(function (v) { return '<button type="button" class="seg" data-action="venue" data-venue="' + esc(v) + '">' + esc(v) + '</button>'; }).join('') + '</div>' +
+          '<div class="field"><span>Type of event</span><div class="chips" style="margin:0" id="typeChips">' + typeChipsHtml() + '</div></div>' +
+          '<div class="switch-row" data-action="special" role="switch" aria-checked="' + eventDraft.special + '" id="specialRow"><div class="grow"><div>Show it as Special</div><div class="note">Guests see a Special label on it instead of the type.</div></div><div class="switch' + (eventDraft.special ? ' on' : '') + '"></div></div>' +
+          '<label class="field"><span>Description</span><textarea name="desc" maxlength="600" rows="3" placeholder="Tell guests about the evening.">' + esc(ev ? str(ev.desc) : '') + '</textarea></label>' +
+          '<hr /><div class="field"><span>Photo</span><div id="photoPart">' + photoPartHtml() + '</div></div>' +
+          '<p class="error" id="formError" hidden></p>' +
+          '<button class="btn primary block" id="formSave">' + (ev ? 'Save changes' : 'Add to the calendar') + '</button>' +
+          (ev ? '<button type="button" class="btn block danger" style="margin-top:10px" data-action="deleteEvent" data-id="' + esc(ev.id) + '" data-leave="1">Delete event</button>' : '') +
+        '</form></main>';
+    }
+
+    function timePartHtml(times) {
+      if (!times) {
+        return '<label class="field"><span>Time</span><input name="freeTime" maxlength="60" value="' + esc(eventDraft.freeTime) + '" /><small>Written in the admin panel, for example 7:00 PM – 10:00 PM.</small></label>' +
+          '<button type="button" class="btn text" style="margin:-8px 0 8px" data-action="usePickers">Use the time pickers instead</button>';
+      }
+      return '<div class="pair"><label class="field"><span>Starts</span><input name="starts" type="time" value="' + times[0] + '" /></label>' +
+        '<label class="field"><span>Ends</span><input name="ends" type="time" value="' + times[1] + '"' + (times[1] ? '' : ' disabled') + ' /></label></div>' +
+        '<label class="switch-row" style="padding-top:0"><input type="checkbox" name="noEnd"' + (times[1] ? '' : ' checked') + ' style="width:22px;height:22px;margin:0" /><span>No end time</span></label>';
+    }
+
+    function typeChipsHtml() {
+      return EVENT_TYPES.map(function (t) {
+        return '<button type="button" class="seg' + (eventDraft.category === t.id ? ' on' : '') + '" data-action="eventType" data-type="' + t.id + '">' + t.label + '</button>';
+      }).join('');
+    }
+
+    function photoPartHtml() {
+      var d = eventDraft;
+      var main;
+      if (d.preparing) main = '<div class="photo-empty">Getting the photo ready…</div>';
+      else if (d.picked) main = '<img class="photo-main" alt="" src="' + d.picked.url + '" />';
+      else if (d.photoSrc) main = '<img class="photo-main" alt="" data-photo="' + esc(d.photoSrc) + '" />';
+      else main = '<div class="photo-empty">No photo</div>';
+      return main +
+        '<div class="actions"><label class="btn">' + '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">' + ICONS.plus + '</svg>Choose from phone' +
+          '<input type="file" accept="image/*" id="photoFile" hidden /></label>' +
+          (d.picked || d.photoSrc ? '<button type="button" class="btn text" data-action="noPhoto">No photo</button>' : '') + '</div>' +
+        '<p class="muted" style="margin-top:12px">Or use one of Belle\'s photos:</p>' +
+        '<div class="builtins">' + BUILT_IN.map(function (p) {
+          return '<button type="button" class="' + (!d.picked && d.photoSrc === p.src ? 'on' : '') + '" data-action="builtIn" data-src="' + p.src + '" aria-label="' + esc(p.label) + '"><img alt="" src="../' + p.src + '" loading="lazy" /></button>';
+        }).join('') + '</div>' +
+        '<p class="note">A wide photo looks best. The website shows it large at the top when it is the next event.</p>';
+    }
+
+    function redrawPhotoPart() {
+      var el = document.getElementById('photoPart');
+      if (el) {
+        el.innerHTML = photoPartHtml();
+        fillPhotos();
+      }
+    }
+
+    function saveEventForm(form) {
+      var d = eventDraft;
+      var v = function (name) { return form.elements[name] ? form.elements[name].value.trim() : ''; };
+      var date = v('date');
+      var free = form.elements.freeTime ? v('freeTime') : null;
+      var problem = !v('title') ? 'Give the event a name.'
+        : !parseDay(date) && (!d.existing || eventDay(d.existing)) ? 'Pick the date of the event.'
+        : !d.existing && date < colomboDay(0) ? 'That date has passed. Pick today or a later date.'
+        : free !== null && !free ? 'Say when it starts, or use the time pickers.'
+        : d.preparing ? 'The photo is still getting ready. Try again in a moment.' : '';
+      var error = document.getElementById('formError');
+      error.hidden = !problem;
+      error.textContent = problem;
+      if (problem) return;
+      // Starting from the saved entry keeps anything the admin panel added that this form does not show
+      var entry = d.existing ? JSON.parse(JSON.stringify(d.existing)) : { id: 'event-' + Date.now(), hasImage: false, imageKey: '', imageData: '' };
+      var type = EVENT_TYPES.find(function (t) { return t.id === d.category; }) || EVENT_TYPES[0];
+      var ends = form.elements.noEnd && form.elements.noEnd.checked ? '' : v('ends');
+      entry.title = v('title');
+      entry.category = type.id;
+      entry.categoryLabel = type.badge;
+      entry.time = free !== null ? free : eventTimeText(v('starts') || '19:00', ends);
+      entry.venue = v('venue');
+      entry.desc = v('desc');
+      entry.isVip = d.special;
+      var day = parseDay(date);
+      if (day) {
+        entry.dateStr = date;
+        entry.day = day.getUTCDate();
+        entry.month = MONTHS[day.getUTCMonth()];
+        entry.dow = WEEKDAYS[day.getUTCDay()];
+      }
+      var button = document.getElementById('formSave');
+      button.disabled = true;
+      button.textContent = d.picked ? 'Uploading the photo…' : 'Saving…';
+      var uploaded = null;
+      var picked = d.picked;
+      var keep = d.photoSrc;
+      function setPhoto(src, key) {
+        // Framing set in the admin panel was for the old photo
+        if (!d.existing || src !== d.existing.imageData) delete entry.mediaFrame;
+        entry.imageData = src;
+        entry.imageKey = src ? key : '';
+        entry.hasImage = !!src;
+      }
+      (picked ? uploadPhoto(picked).then(function (address) {
+        uploaded = address;
+        setPhoto(address, '');
+      }) : Promise.resolve().then(function () {
+        var builtIn = BUILT_IN.find(function (p) { return p.src === keep; });
+        setPhoto(keep, builtIn ? builtIn.key : d.existing && keep === d.existing.imageData ? str(d.existing.imageKey) : '');
+      })).then(function () {
+        return saveEvent(entry);
+      }).then(function () {
+        toast(d.existing ? 'Saved. The website shows the change now.' : 'Added to the Event Calendar.');
+        back('events');
+      }, function (err) {
+        if (err && err.saved) {
+          toast(err.text);
+          back('events');
+          return;
+        }
+        if (uploaded) forgetPhoto(uploaded);
+        error.hidden = false;
+        error.textContent = errorText(err);
+        button.disabled = false;
+        button.textContent = d.existing ? 'Save changes' : 'Add to the calendar';
+      });
+    }
+
+    function askDeleteEvent(id, leave) {
+      var ev = events.find(function (e) { return e.id === id; });
+      confirmBox('Delete ' + ((ev && ev.title) || 'this event') + '?', 'It comes off the Event Calendar on the website straight away.', 'Delete', true).then(function (yes) {
+        if (!yes) return;
+        if (leave) back('events');
+        deleteEvent(id).then(function (removed) {
+          if (!removed) return toast('That event was already deleted.');
+          toast('Deleted from the website.', 'Undo', function () {
+            saveEvent(removed).then(function () { toast('Put back on the calendar.'); }, function (err) { toast(errorText(err)); });
+          });
+        }, function (err) { toast(errorText(err)); });
+      });
+    }
+
+    /* ---------- Menu, dialogs and short messages ---------- */
+    function openMenu() {
+      var state = alertsState();
+      var alertItem = '';
+      if (state === 'on') alertItem = '<button class="item" data-action="alertsOff">Alerts on this phone<span class="chip good">On</span></button><button class="item" data-action="testAlert">Send a test alert</button>';
+      else if (state === 'off') alertItem = '<button class="item" data-action="alertsOn">Alerts on this phone<span class="chip">Off</span></button>';
+      layer.innerHTML = '<div class="scrim" data-action="closeLayer"><div class="sheet" role="dialog" aria-label="Menu">' +
+        '<div class="who"><div>' + esc(session.email) + '</div><div class="note">' + esc(LABELS[session.role] || session.role) + '</div></div>' +
+        alertItem +
+        '<button class="item" data-action="open" data-url="' + CALENDAR_URL + '">See the calendar on the website</button>' +
+        '<button class="item" data-action="open" data-url="' + ADMIN_URL + '">Open the full admin panel</button>' +
+        '<button class="item danger" data-action="signOut">Sign out</button>' +
+        '<div class="foot">Version ' + VERSION + '</div>' +
+      '</div></div>';
+    }
+
+    function closeLayer() { layer.innerHTML = ''; }
+
+    function confirmBox(title, text, okLabel, danger) {
+      return new Promise(function (resolve) {
+        layer.innerHTML = '<div class="scrim dialog-wrap"><div class="dialog" role="alertdialog"><h2>' + esc(title) + '</h2><p>' + esc(text) + '</p>' +
+          '<div class="actions"><button class="btn text" data-answer="no">' + (danger ? 'Keep it' : 'Cancel') + '</button>' +
+          '<button class="btn text' + (danger ? ' danger' : '') + '" data-answer="yes">' + esc(okLabel) + '</button></div></div></div>';
+        layer.querySelectorAll('[data-answer]').forEach(function (b) {
+          b.addEventListener('click', function (e) {
+            e.stopPropagation();
+            closeLayer();
+            resolve(b.getAttribute('data-answer') === 'yes');
+          });
+        });
+      });
+    }
+
+    var toastTimer = null;
+    function toast(text, actionLabel, onAction) {
+      var el = document.getElementById('toast');
+      clearTimeout(toastTimer);
+      el.innerHTML = '<div class="grow">' + esc(text) + '</div>' + (actionLabel ? '<button>' + esc(actionLabel) + '</button>' : '');
+      el.hidden = false;
+      if (actionLabel) {
+        el.querySelector('button').addEventListener('click', function () {
+          el.hidden = true;
+          onAction();
+        });
+      }
+      toastTimer = setTimeout(function () { el.hidden = true; }, actionLabel ? 7000 : 4000);
+    }
+
+    function askStatus(b, status) {
+      if (status !== 'declined' && status !== 'cancelled') return setStatus(b, status);
+      var decline = status === 'declined';
+      confirmBox(decline ? 'Decline this request?' : 'Cancel this reservation?', 'The guest is not told until you send them the message.', decline ? 'Decline' : 'Cancel it', true).then(function (yes) {
+        if (yes) setStatus(b, status);
+      });
+    }
+
+    /* ========================================================
+       TAPS AND TYPING
+       ======================================================== */
+    var actions = {
+      back: function () {
+        var r = route();
+        back(r.name === 'booking-edit' ? 'booking/' + encodeURIComponent(r.id) : r.name === 'event' || r.name === 'event-new' ? 'events' : '');
+      },
+      go: function (el) { go(el.getAttribute('data-to')); },
+      tab: function (el) {
+        depth = 0;
+        var to = el.getAttribute('data-tab');
+        history.replaceState(null, '', location.pathname + location.search + (to ? '#' + to : ''));
+        if (to === 'events') refreshEvents().catch(function () {});
+        render();
+      },
+      list: function (el) {
+        view.list = el.getAttribute('data-list');
+        render();
+      },
+      status: function (el) {
+        var b = findBooking(el.getAttribute('data-id'));
+        if (b) askStatus(b, el.getAttribute('data-status'));
+      },
+      tell: function (el) { var b = findBooking(el.getAttribute('data-id')); if (b) tellGuest(b); },
+      told: function (el) { var b = findBooking(el.getAttribute('data-id')); if (b) markTold(b); },
+      menu: openMenu,
+      closeLayer: function (el, e) { if (e.target === el) closeLayer(); },
+      alertsOn: function () { closeLayer(); alertsOn(); },
+      alertsOff: function () { closeLayer(); alertsOff(); },
+      testAlert: function () { closeLayer(); testAlert(); },
+      open: function (el) { closeLayer(); window.open(el.getAttribute('data-url'), '_blank', 'noopener'); },
+      signOut: function () {
+        closeLayer();
+        confirmBox('Sign out?', 'This phone stops getting reservation alerts until someone signs in again.', 'Sign out', false).then(function (yes) {
+          if (yes) endSession('');
+        });
+      },
+      showPass: function (el) {
+        var input = document.getElementById('siPassword');
+        input.type = input.type === 'password' ? 'text' : 'password';
+        el.textContent = input.type === 'password' ? 'Show' : 'Hide';
+      },
+      forgot: function () {
+        var email = document.getElementById('siEmail').value.trim();
+        var error = document.getElementById('siError');
+        if (!email) {
+          error.hidden = false;
+          error.textContent = 'Type your email first, then tap Forgot your password.';
+          return;
+        }
+        authCall(AUTH_URL + 'sendOobCode?key=' + API_KEY, { requestType: 'PASSWORD_RESET', email: email }).catch(function (err) {
+          if (!err || err.authCode !== 'EMAIL_NOT_FOUND') throw err;
+        }).then(function () {
+          toast('If that email has an account, a reset link is on its way.');
+        }, function (err) { toast(signInMessage(err)); });
+      },
+      deleteEvent: function (el, e) {
+        e.stopPropagation();
+        askDeleteEvent(el.getAttribute('data-id'), el.getAttribute('data-leave') === '1');
+      },
+      venue: function (el) { document.querySelector('#eventForm [name=venue]').value = el.getAttribute('data-venue'); },
+      eventType: function (el) {
+        eventDraft.category = el.getAttribute('data-type');
+        document.getElementById('typeChips').innerHTML = typeChipsHtml();
+      },
+      special: function (el) {
+        eventDraft.special = !eventDraft.special;
+        el.setAttribute('aria-checked', eventDraft.special);
+        el.querySelector('.switch').classList.toggle('on', eventDraft.special);
+      },
+      usePickers: function () {
+        eventDraft.freeTime = null;
+        document.getElementById('timePart').innerHTML = timePartHtml(['19:00', '22:00']);
+      },
+      noPhoto: function () {
+        eventDraft.picked = null;
+        eventDraft.photoSrc = '';
+        redrawPhotoPart();
+      },
+      builtIn: function (el) {
+        eventDraft.picked = null;
+        eventDraft.photoSrc = el.getAttribute('data-src');
+        redrawPhotoPart();
+      },
+      alertsBanner: function () { alertsOn(); }
+    };
+
+    document.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-action]');
+      if (!el || !actions[el.getAttribute('data-action')]) return;
+      if (el.tagName === 'A') return;
+      // A button inside a card does its own thing, not the card's
+      if (el.getAttribute('data-action') === 'go' && e.target.closest('button') && e.target.closest('button') !== el) return;
+      e.preventDefault();
+      actions[el.getAttribute('data-action')](el, e);
+    });
+
+    document.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var form = e.target;
+      if (form.id === 'signInForm') {
+        var button = document.getElementById('siButton');
+        var error = document.getElementById('siError');
+        button.disabled = true;
+        button.textContent = 'Signing in…';
+        signIn(document.getElementById('siEmail').value.trim(), document.getElementById('siPassword').value).then(function () {
+          signInNote = '';
+          start();
+        }, function (err) {
+          error.hidden = false;
+          error.textContent = err.text;
+          button.disabled = false;
+          button.textContent = 'Sign in';
+        });
+      } else if (form.id === 'bookingForm') {
+        saveBooking(form);
+      } else if (form.id === 'eventForm') {
+        saveEventForm(form);
+      }
+    });
+
+    document.addEventListener('change', function (e) {
+      var t = e.target;
+      if (t.id === 'photoFile' && t.files && t.files[0]) {
+        eventDraft.preparing = true;
+        redrawPhotoPart();
+        preparePhoto(t.files[0]).then(function (photo) {
+          eventDraft.picked = photo;
+        }, function (err) {
+          toast((err && err.text) || 'That photo could not be opened. Try another one.');
+        }).then(function () {
+          eventDraft.preparing = false;
+          redrawPhotoPart();
+        });
+      } else if (t.name === 'noEnd') {
+        var ends = document.querySelector('#eventForm [name=ends]');
+        ends.disabled = t.checked;
+        if (!t.checked && !ends.value) {
+          var starts = document.querySelector('#eventForm [name=starts]').value || '19:00';
+          ends.value = ((+starts.slice(0, 2) + 3) % 24 + '').padStart(2, '0') + starts.slice(2);
+        }
+      }
+    });
+
+    window.addEventListener('hashchange', function () {
+      closeLayer();
+      render();
+    });
+
+    // A tap on an alert while the app is open
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', function (e) {
+        if (e.data && e.data.type === 'open' && e.data.url) {
+          var hash = new URL(e.data.url).hash;
+          if (hash && hash !== location.hash) go(hash.slice(1));
+        }
+      });
+    }
+
+    // iPhones pause the app in the background, so coming back checks the live line and the alerts
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden || !session) return;
+      if (!stream || Date.now() - lastHeard > 100000) startStream(true);
+      if (route().name === 'events') refreshEvents().catch(function () {});
+      checkAlerts();
+      dataChanged();
+    });
+
+    function start() {
+      if (!session) return render();
+      startStream(false);
+      render();
+      if (route().name === 'events') refreshEvents().catch(function () {});
+      checkAlerts();
+      // The role may have changed since this phone last signed in
+      getIdToken().then(function (token) { return checkAccess(session.uid, token); }).then(function (role) {
+        if (!session) return;
+        if (!seesBookings(role)) return endSession('Your access to reservations has been removed. Ask the main admin if you need it.');
+        if (role !== session.role) {
+          session.role = role;
+          saveSession();
+          drawn = '';
+          render();
+        }
+      }, function () {});
+    }
+
+    loadSession();
+    if ('serviceWorker' in navigator) readyWorker().catch(function () {});
+    start();
+  })();
+  </script>
+</body>
+</html>

@@ -22,6 +22,7 @@ _backup/
 /firebase-database-rules.json
 /reservations-sheet/
 /belle-staff-app/
+/belle-alerts-server/
 *.pdf
 *.ai
 /Belle CMB (Presentation) (2).png

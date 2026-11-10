@@ -1688,6 +1688,90 @@
       return JSON.stringify(canon(a)) === JSON.stringify(canon(b));
     }
 
+    /* ========================================================
+       EVENTS CHANGED IN THE STAFF APP
+       The staff phone app adds, changes and deletes events straight
+       on the live site. When the live site moves on under a draft,
+       those event changes are brought into the draft, so publishing
+       from here does not undo them. An event changed in both places
+       keeps the change made here.
+       ======================================================== */
+    function contentPrint(value) {
+      var text = JSON.stringify(canon(value)) || '';
+      var hash = 5381;
+      for (var i = 0; i < text.length; i++) hash = ((hash * 33) ^ text.charCodeAt(i)) >>> 0;
+      return hash.toString(36) + '.' + text.length.toString(36);
+    }
+
+    function eventPrints(data) {
+      var prints = {};
+      ((data && data.events) || []).forEach(function (ev) {
+        if (ev && ev.id) prints[ev.id] = contentPrint(ev);
+      });
+      return prints;
+    }
+
+    // What the events looked like on the live site this panel last read, kept with the draft
+    var livePrintsCache = { of: null, prints: null };
+    function liveEventPrints() {
+      if (!liveData) return null;
+      if (livePrintsCache.of !== liveData) livePrintsCache = { of: liveData, prints: eventPrints(liveData) };
+      return livePrintsCache.prints;
+    }
+
+    function draftBasePrints() {
+      return liveEventPrints() || (readJson(DRAFT_META_KEY) || {}).baseEvents || null;
+    }
+
+    // Changes mine in place. Returns how many events it brought in or took out.
+    function mergeOutsideEvents(mine, live, basePrints) {
+      if (!mine || !live || !basePrints) return 0;
+      var taken = 0;
+      var liveIds = {};
+      (live.events || []).forEach(function (ev) {
+        if (!ev || !ev.id) return;
+        liveIds[ev.id] = true;
+        var base = basePrints[ev.id];
+        if (contentPrint(ev) === base) return;
+        var at = mine.events.findIndex(function (x) { return x.id === ev.id; });
+        if (at === -1) {
+          // Deleted here, so it stays deleted
+          if (base !== undefined) return;
+          mine.events.push(clone(ev));
+        } else if (contentPrint(mine.events[at]) === base) {
+          mine.events[at] = clone(ev);
+        } else {
+          return;
+        }
+        taken++;
+        var photoId = uploadedVideoId(ev.imageData);
+        if (photoId && !mine.mediaFiles[photoId] && live.mediaFiles && live.mediaFiles[photoId]) {
+          mine.mediaFiles[photoId] = clone(live.mediaFiles[photoId]);
+        }
+      });
+      // Deleted elsewhere and not changed here
+      mine.events = mine.events.filter(function (ev) {
+        var base = basePrints[ev.id];
+        if (liveIds[ev.id] || base === undefined || contentPrint(ev) !== base) return true;
+        taken++;
+        return false;
+      });
+      if (taken) sortEventsOf(mine);
+      return taken;
+    }
+
+    function withoutEvents(data) {
+      var copy = Object.assign({}, data);
+      delete copy.events;
+      delete copy.mediaFiles;
+      delete copy.publishedAt;
+      return copy;
+    }
+
+    function mergedEventsText(count) {
+      return plural(count, 'event change') + ' from the staff app or another computer ' + (count === 1 ? 'was' : 'were') + ' added to your draft.';
+    }
+
     function menuStructure(d) {
       return {
         menus: d.menuCategories.map(function (c) { return { id: c.id, name: c.name }; }),
@@ -1786,12 +1870,13 @@
       if (!appData || !can('content')) return;
       refreshStatus();
       var text = JSON.stringify(appData);
-      var meta = { baseRevision: liveRevision, dirty: sync.state !== 'live', savedAt: Date.now() };
+      var meta = { baseRevision: liveRevision, baseEvents: liveEventPrints(), dirty: sync.state !== 'live', savedAt: Date.now() };
       if (!liveData) {
         // Offline there is nothing to compare with, so keep what was known and only note real edits
         var known = readJson(DRAFT_META_KEY) || { baseRevision: 0, dirty: false };
         var stored = readStore(DRAFT_KEY);
         meta.baseRevision = known.baseRevision;
+        meta.baseEvents = known.baseEvents || null;
         meta.dirty = known.dirty || (stored !== null && stored !== text);
       }
       var saved = writeStore(DRAFT_KEY, text);
@@ -1848,12 +1933,17 @@
         if (meta.baseRevision === liveRevision) return Promise.resolve(draft);
         return openDialog({
           title: 'The live site was updated somewhere else',
-          text: 'Someone published from another computer since you last worked here. You also have unpublished changes on this computer.',
+          text: 'Someone published from another computer, or changed events in the staff app, since you last worked here. You also have unpublished changes on this computer. If you keep yours, event changes made elsewhere are added to them.',
           actions: [
             { id: 'live', label: 'Use the live version' },
             { id: 'mine', label: 'Keep my changes', style: 'primary' }
           ]
-        }).then(function (r) { return r.action === 'mine' ? draft : latest; });
+        }).then(function (r) {
+          if (r.action !== 'mine') return latest;
+          var taken = liveRevision ? mergeOutsideEvents(draft, liveData, meta.baseEvents) : 0;
+          if (taken) toast(mergedEventsText(taken));
+          return draft;
+        });
       }
 
       var legacy = readJson(LEGACY_DRAFT_KEY);
@@ -1922,6 +2012,7 @@
     function checkLiveAgain() {
       var hadChanges = !liveData || listChanges(liveData, appData).length > 0;
       var previousRevision = liveRevision;
+      var basePrints = draftBasePrints();
       sync.state = 'checking';
       renderStatus();
       return firebaseRequest().then(function (cloud) {
@@ -1929,6 +2020,12 @@
         if (liveRevision !== previousRevision && !hadChanges) {
           appData = clone(liveData);
           render();
+        } else if (liveRevision !== previousRevision) {
+          var taken = mergeOutsideEvents(appData, liveData, basePrints);
+          if (taken) {
+            render();
+            toast(mergedEventsText(taken));
+          }
         }
         commitDraft();
       }, function () {
@@ -2012,18 +2109,30 @@
       // Checking only the version number saves downloading the whole menu again
       firebaseRequest(null, FIREBASE_VERSION_URL).then(function (version) {
         if ((version || 0) === liveRevision) return true;
-        return openDialog({
-          title: 'The live site changed while you were working',
-          text: 'Someone published from another computer. Publishing now will replace what they did with your version.',
-          actions: [
-            { id: 'no', label: 'Stop' },
-            { id: 'yes', label: 'Replace it with mine', style: 'danger' }
-          ]
-        }).then(function (r) {
-          if (r.action !== 'yes') return false;
-          return firebaseRequest().then(function (cloud) {
-            adoptLive(cloud);
+        var basePrints = draftBasePrints();
+        var before = { data: liveData, revision: liveRevision };
+        return firebaseRequest().then(function (cloud) {
+          adoptLive(cloud);
+          var taken = mergeOutsideEvents(appData, liveData, basePrints);
+          if (taken) render();
+          // Only events changed, as the staff app does, and those are now in this draft too
+          if (before.data && sameContent(withoutEvents(before.data), withoutEvents(liveData))) {
+            if (taken) toast(mergedEventsText(taken));
             return true;
+          }
+          return openDialog({
+            title: 'The live site changed while you were working',
+            text: 'Someone published from another computer. Publishing now will replace what they did with your version. Event changes made in the staff app are kept.',
+            actions: [
+              { id: 'no', label: 'Stop' },
+              { id: 'yes', label: 'Replace it with mine', style: 'danger' }
+            ]
+          }).then(function (r) {
+            if (r.action === 'yes') return true;
+            // Publish asks again next time
+            liveData = before.data;
+            liveRevision = before.revision;
+            return false;
           });
         });
       }).then(function (shouldPublish) {
@@ -5263,11 +5372,15 @@
     }
 
     function sortEvents() {
+      sortEventsOf(appData);
+    }
+
+    function sortEventsOf(data) {
       function rank(ev) {
         var date = eventDate(ev);
         return date ? date.getTime() : Infinity;
       }
-      appData.events.sort(function (a, b) {
+      data.events.sort(function (a, b) {
         return rank(a) === rank(b) ? 0 : (rank(a) < rank(b) ? -1 : 1);
       });
     }
