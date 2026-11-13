@@ -2856,11 +2856,31 @@
       align-items: flex-end;
       gap: 4px 12px;
     }
+    /* The closed box shows only the flag and the dial code: the select itself draws no text of its
+       own (its real text is only ever read out loud, not shown), and this span draws the short version
+       on top of it. The dropdown it opens is unaffected, so the full country name is still there to find. */
+    .reserve-country-wrap {
+      position: relative;
+      flex: 0 0 auto;
+    }
     .reserve-phone-row select {
-      flex: 0 1 auto;
-      width: auto;
-      max-width: 46%;
-      padding-right: 2px;
+      width: 4.4em;
+      color: transparent;
+    }
+    .reserve-phone-row select option {
+      color: initial; /* only the closed box hides its text; the opened list still reads normally */
+    }
+    .reserve-country-display {
+      position: absolute;
+      inset: 0 14px 0 0; /* leaves room for the select's own arrow, drawn just behind this */
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 16px;
+      color: var(--ink);
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
     }
     .reserve-phone-row input {
       flex: 1 1 110px;
@@ -5744,6 +5764,13 @@ Choose your spread/rillette style:</p>
           <p class="reserve-hint" id="reservePartyHint" hidden>For a larger table, <a id="reservePartyLink" target="_blank" rel="noopener noreferrer">message us on WhatsApp</a>.</p>
         </section>
 
+        <section class="reserve-step" id="reserveEventStep" aria-labelledby="reserveEventPickerLabel" hidden>
+          <h3 class="reserve-label" id="reserveEventPickerLabel">Which event? (optional)</h3>
+          <div class="reserve-field">
+            <select id="reserveEventPicker" aria-label="Which event this is for"></select>
+          </div>
+        </section>
+
         <section class="reserve-step" aria-labelledby="reserveDateLabel">
           <h3 class="reserve-label" id="reserveDateLabel">Date</h3>
           <div class="events-month-bar">
@@ -5775,7 +5802,10 @@ Choose your spread/rillette style:</p>
           <div class="reserve-field">
             <label for="reservePhone">WhatsApp number</label>
             <div class="reserve-phone-row">
-              <select id="reserveCountry" name="country" aria-label="Country code" autocomplete="tel-country-code"></select>
+              <div class="reserve-country-wrap">
+                <select id="reserveCountry" name="country" aria-label="Country code" autocomplete="tel-country-code"></select>
+                <span class="reserve-country-display" id="reserveCountryDisplay" aria-hidden="true"></span>
+              </div>
               <input type="tel" id="reservePhone" name="phone" autocomplete="tel-national" inputmode="tel" maxlength="17" required placeholder="77 031 5589" />
             </div>
           </div>
@@ -10029,7 +10059,7 @@ Choose your spread/rillette style:</p>
       closedDates: []
     };
 
-    var reserve = { year: 0, month: 0, date: '', time: '', party: 2, occasion: '', event: '', eventDate: '', returnTo: '', sending: false };
+    var reserve = { year: 0, month: 0, date: '', time: '', party: 2, occasion: '', event: '', eventId: '', eventDate: '', returnTo: '', sending: false };
 
     function rid(id) { return document.getElementById(id); }
 
@@ -10189,6 +10219,7 @@ Choose your spread/rillette style:</p>
 
     function renderReserveForm() {
       renderReserveParty();
+      renderReserveEventPicker();
       renderReserveCalendar();
       renderReserveTimes();
       renderReserveSummary();
@@ -10248,11 +10279,58 @@ Choose your spread/rillette style:</p>
       rid('reserveDone').focus({ preventScroll: true });
     }
 
+    // Every event a guest could be reserving for, soonest first, the same set the Events page shows
+    function upcomingReserveEvents() {
+      var events = (window.belleCurrentData && window.belleCurrentData.events) || [];
+      var now = new Date();
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      return events.map(function(ev) {
+        var view = eventView(ev);
+        return { id: ev.id || '', title: view.title, date: eventIsoDate(view), time: view.time };
+      }).filter(function(v) {
+        return v.date.length !== 10 || !(v.time < today);
+      }).sort(function(a, b) {
+        return a.time - b.time;
+      });
+    }
+
+    // The header under RESERVE, and the calendar's extra-day rule, both read reserve.event /
+    // reserve.eventDate, so changing either here keeps both in step with what is picked
+    function showReserveEventHeader() {
+      rid('reserveEvent').hidden = !reserve.event;
+      rid('reserveEvent').textContent = reserve.event ? 'For ' + reserve.event : '';
+    }
+
+    function renderReserveEventPicker() {
+      var select = rid('reserveEventPicker');
+      var step = rid('reserveEventStep');
+      var events = upcomingReserveEvents();
+      step.hidden = !events.length;
+      if (!events.length) return;
+      var matchById = events.find(function(v) { return v.id && v.id === reserve.eventId; });
+      var matchByTitle = !matchById && events.find(function(v) { return v.title === reserve.event; });
+      var current = matchById || matchByTitle || null;
+      reserve.eventId = current ? current.id : '';
+      select.innerHTML = '<option value="">No specific event</option>' + events.map(function(v) {
+        return '<option value="' + escapeHtml(v.id) + '">' + escapeHtml(v.title) + '</option>';
+      }).join('');
+      select.value = current ? current.id : '';
+    }
+
+    function onReserveEventPick() {
+      var events = upcomingReserveEvents();
+      var picked = events.find(function(v) { return v.id === rid('reserveEventPicker').value; });
+      reserve.event = picked ? picked.title : '';
+      reserve.eventId = picked ? picked.id : '';
+      reserve.eventDate = picked ? picked.date : '';
+      showReserveEventHeader();
+      renderReserveCalendar();
+    }
+
     function showReservationForm() {
       rid('reserveDone').hidden = true;
       rid('reserveForm').hidden = false;
-      rid('reserveEvent').hidden = !reserve.event;
-      rid('reserveEvent').textContent = reserve.event ? 'For ' + reserve.event : '';
+      showReserveEventHeader();
       showReserveError('');
       if (!reserve.date || !dayIsOpen(reserve.date)) reserve.date = firstOpenDay();
       showReserveMonth(reserve.date);
@@ -10269,6 +10347,7 @@ Choose your spread/rillette style:</p>
 
     function openReservation(details) {
       reserve.event = (details && details.event) || '';
+      reserve.eventId = '';
       reserve.eventDate = reserve.event ? details.date : '';
       reserve.returnTo = (details && details.returnTo) || '';
       if (details && details.date) reserve.date = details.date;
@@ -10376,10 +10455,24 @@ Choose your spread/rillette style:</p>
       var ordered = [['Sri Lanka', 'LK', '94']].concat(
         COUNTRY_DIAL_CODES.filter(function(c) { return c[1] !== 'LK'; })
       );
+      // The option text is what gets read out and what the opened list shows: the full country name.
+      // data-flag carries just that option's flag, for the closed box's own short display to use —
+      // several countries share a dial code (Canada and the US both dial +1), so the flag has to come
+      // from the exact option chosen, not be guessed back from the code alone.
       select.innerHTML = ordered.map(function(c) {
-        return '<option value="' + c[2] + '"' + (c[1] === 'LK' ? ' selected' : '') + '>' +
+        return '<option value="' + c[2] + '" data-flag="' + countryFlagEmoji(c[1]) + '"' + (c[1] === 'LK' ? ' selected' : '') + '>' +
           countryFlagEmoji(c[1]) + ' ' + c[0] + ' +' + c[2] + '</option>';
       }).join('');
+      updateReserveCountryDisplay();
+    }
+
+    // Keeps the closed box in sync with whichever option is actually selected
+    function updateReserveCountryDisplay() {
+      var select = rid('reserveCountry');
+      var display = rid('reserveCountryDisplay');
+      if (!select || !display) return;
+      var option = select.options[select.selectedIndex];
+      display.textContent = option ? (option.dataset.flag || '') + ' +' + option.value : '';
     }
 
     // A guest's own country code is picked from the list above, so nothing here has to guess it.
@@ -10476,6 +10569,7 @@ Choose your spread/rillette style:</p>
         rid('reserveForm').reset();
         reserve.occasion = '';
         reserve.event = '';
+        reserve.eventId = '';
         reserve.eventDate = '';
         renderReserveOccasions();
         showReservationDone(memory);
@@ -10525,6 +10619,9 @@ Choose your spread/rillette style:</p>
         var button = e.target.closest('.event-reserve');
         if (button) openReservation({ date: button.getAttribute('data-date'), event: button.getAttribute('data-event'), returnTo: 'events' });
       });
+
+      rid('reserveEventPicker').addEventListener('change', onReserveEventPick);
+      rid('reserveCountry').addEventListener('change', updateReserveCountryDisplay);
 
       rid('backFromReserve').addEventListener('click', leaveReservation);
       rid('reserveDoneBack').addEventListener('click', leaveReservation);
