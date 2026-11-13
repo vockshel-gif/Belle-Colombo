@@ -507,6 +507,66 @@
     }
     .choice-group label:has(input:checked) { border-color: var(--text); background: var(--gold-soft); font-weight: 600; }
     .choice-group input { accent-color: var(--text); margin: 0; }
+
+    /* ---------- Colours & Season ---------- */
+    .look-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+    .look-preset {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 6px 12px 6px 6px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .look-preset:hover { border-color: var(--text-3); }
+    .look-preset.is-active { border-color: var(--text); background: var(--gold-soft); font-weight: 600; }
+    .look-chip {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(27, 26, 24, 0.14);
+    }
+    .look-colour { display: flex; gap: 8px; }
+    .look-colour input[type='color'] {
+      flex: none;
+      width: 54px;
+      height: 44px;
+      padding: 3px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      cursor: pointer;
+    }
+    .look-colour input[type='text'] { font-family: ui-monospace, Consolas, monospace; }
+    .look-sample {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 24px 18px 22px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .look-sample-title { font-size: 26px; font-weight: 500; letter-spacing: 0.14em; }
+    .look-sample-rule { width: 120px; height: 1px; margin: 4px 0 10px; }
+    .look-sample-name { font-size: 14px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .look-sample-desc { font-size: 13px; max-width: 34ch; }
+    .look-verdict { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; font-weight: 500; }
+    .look-verdict svg { flex: none; margin-top: 1px; }
+    .look-verdict.is-ok { color: var(--ok); }
+    .look-verdict.is-warn { color: var(--warn); }
+    .look-verdict.is-bad { color: var(--bad); }
+    .look-options { display: flex; flex-direction: column; gap: 14px; padding-left: 27px; }
+    .look-options .field { max-width: 320px; }
     .repeat-list { display: flex; flex-direction: column; gap: 8px; }
     .repeat-row { display: grid; gap: 8px; align-items: center; }
     .repeat-price { grid-template-columns: minmax(0, 1fr) 130px auto auto; }
@@ -1343,6 +1403,8 @@
       mosaic: '<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/>',
       story: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.4"/>',
       star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>',
+      palette: '<path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4.5-4.5 4.5h-1.9a1.8 1.8 0 0 0-1.3 3.1 1.5 1.5 0 0 1-1 2.4z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="6.8" r="1.2"/><circle cx="15.6" cy="7.6" r="1.2"/>',
+      alert: '<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
       grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>'
     };
 
@@ -1471,9 +1533,50 @@
         : { enabled: true, title: 'Our Story', headline: '', image: '', lead: '', story: '', pillars: [] };
     }
 
+    /* Colours & Season. The website reads data.look; without it, it stays black and white. */
+    var LOOK_DARK = '#000000';
+    var LOOK_LIGHT = '#ffffff';
+    var LOOK_PRESETS = [
+      { name: 'Black and white', dark: '#000000', light: '#ffffff' },
+      { name: 'Christmas red', dark: '#4a0b12', light: '#f8f1e6' },
+      { name: 'Evergreen', dark: '#0d2a1e', light: '#f3ecdc' },
+      { name: 'Midnight blue', dark: '#0b1729', light: '#f1ede4' },
+      { name: 'Chocolate', dark: '#24160f', light: '#f2e6d2' },
+      { name: 'Black and gold', dark: '#000000', light: '#d9bf8c' }
+    ];
+    // The letters of BELLE the hat can sit on. The website knows where each one is.
+    var HAT_LETTERS = [
+      { key: 'b', label: 'The B' },
+      { key: 'e1', label: 'The first E' },
+      { key: 'l1', label: 'The first L' },
+      { key: 'l2', label: 'The second L' },
+      { key: 'e2', label: 'The last E' }
+    ];
+
+    function isHexColour(value) {
+      return /^#[0-9a-f]{6}$/i.test(String(value || ''));
+    }
+
+    function normalizeLook(look) {
+      var l = look && typeof look === 'object' ? look : {};
+      var x = l.christmas && typeof l.christmas === 'object' ? l.christmas : {};
+      var letterKnown = HAT_LETTERS.some(function (h) { return h.key === x.hatOn; });
+      return {
+        dark: isHexColour(l.dark) ? l.dark.toLowerCase() : LOOK_DARK,
+        light: isHexColour(l.light) ? l.light.toLowerCase() : LOOK_LIGHT,
+        christmas: {
+          on: x.on === true,
+          snow: x.snow !== false,
+          hat: x.hat !== false,
+          hatOn: letterKnown ? x.hatOn : 'e2'
+        }
+      };
+    }
+
     function normalizeData(data) {
       var d = data || {};
       if (typeof d.dishOverlayOpacity !== 'number') d.dishOverlayOpacity = 0.55;
+      d.look = normalizeLook(d.look);
       d.lunchItems = d.lunchItems || [];
       d.aLaCarte = d.aLaCarte || [];
       d.theGardenAndBar = d.theGardenAndBar || [];
@@ -1838,6 +1941,14 @@
       if (!sameContent(before.about, after.about)) add('Changed', 'About', 'Your story');
       if (!sameContent(before.reviews, after.reviews)) add('Changed', 'Reviews', 'Rating and reviews');
       if (!sameContent(before.venue, after.venue)) add('Changed', 'Contact & Hours', 'Contact details');
+      if (before.look.dark !== after.look.dark || before.look.light !== after.look.light) {
+        add('Changed', 'Colours & Season', 'Website colours');
+      }
+      if (before.look.christmas.on !== after.look.christmas.on) {
+        add(after.look.christmas.on ? 'Turned on' : 'Turned off', 'Colours & Season', 'Christmas mode');
+      } else if (!sameContent(before.look.christmas, after.look.christmas)) {
+        add('Changed', 'Colours & Season', 'Christmas mode settings');
+      }
       if (!sameContent(before.reservations, after.reservations)) add('Changed', 'Reservations', 'Booking settings');
       Object.keys(BACKGROUND_STAGES).forEach(function (key) {
         if (!sameContent(before.backgrounds[key], after.backgrounds[key])) add('Changed', 'Backgrounds', BACKGROUND_STAGES[key].title);
@@ -2335,6 +2446,7 @@
         html += navItemHtml('About', 'story', 'about');
         html += navItemHtml('Reviews', 'star', 'reviews', null, appData.reviews.items.length);
         html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
+        html += navItemHtml('Colours & Season', 'palette', 'look');
         html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
         html += navItemHtml('Contact & Hours', 'pin', 'contact');
       }
@@ -2359,7 +2471,7 @@
       var pages = {
         home: homeHtml, menu: menuHtml, dish: dishHtml, tasting: tastingHtml,
         events: eventsHtml, event: eventHtml, gallery: galleryHtml, about: aboutHtml, reviews: reviewsHtml,
-        backgrounds: backgroundsHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
+        backgrounds: backgroundsHtml, look: lookHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
         reservations: reservationsHtml, reservation: reservationHtml, bookingSettings: bookingSettingsHtml,
         team: teamHtml, staffAdd: staffAddHtml
       };
@@ -2440,6 +2552,13 @@
       var oldEvents = appData.events.filter(function (ev) { return eventState(ev) !== 'upcoming'; });
       if (oldEvents.length) {
         issues.push({ text: '<b>' + plural(oldEvents.length, 'event') + '</b> ' + (oldEvents.length === 1 ? 'is' : 'are') + ' in the past or ' + (oldEvents.length === 1 ? 'has' : 'have') + ' no year, but still ' + (oldEvents.length === 1 ? 'shows' : 'show') + ' under Upcoming Events.', events: true });
+      }
+      var lookCheck = lookReadability(appData.look);
+      if (lookCheck.level === 'bad') {
+        issues.push({ text: '<b>Your website colours are hard to read.</b> ' + esc(lookCheck.text), page: 'look', action: 'Change the colours' });
+      }
+      if (appData.look.christmas.on && !isChristmasSeason(new Date())) {
+        issues.push({ text: '<b>Christmas mode is still on.</b> Guests see snow and the Santa hat until you turn it off and publish.', page: 'look', action: 'Colours & Season' });
       }
       if (isStarterStory()) {
         issues.push({ text: '<b>Your About page still has the starter text.</b> Replace it with your own story, or hide the page until it is ready.', page: 'about', action: 'Edit About' });
@@ -6218,6 +6337,158 @@
     }
 
     /* ========================================================
+       COLOURS & CHRISTMAS PAGE
+       ======================================================== */
+    // How bright a colour looks, as the WCAG contrast formula measures it
+    function colourLuminance(hex) {
+      var weights = [0.2126, 0.7152, 0.0722];
+      return [1, 3, 5].reduce(function (sum, at, i) {
+        var v = parseInt(hex.substr(at, 2), 16) / 255;
+        v = v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        return sum + v * weights[i];
+      }, 0);
+    }
+
+    function colourContrast(a, b) {
+      var x = colourLuminance(a);
+      var y = colourLuminance(b);
+      return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+    }
+
+    // The text colour faded towards the background, like dish descriptions on the website
+    function colourMix(top, under, amount) {
+      return '#' + [1, 3, 5].map(function (at) {
+        var v = Math.round(parseInt(top.substr(at, 2), 16) * amount + parseInt(under.substr(at, 2), 16) * (1 - amount));
+        return (v < 16 ? '0' : '') + v.toString(16);
+      }).join('');
+    }
+
+    function lookReadability(look) {
+      if (colourLuminance(look.dark) >= colourLuminance(look.light)) {
+        return { level: 'bad', text: 'The background is lighter than the text. The website is made for a dark background with light text, so choose a darker background and a lighter text colour.' };
+      }
+      if (colourContrast(look.dark, look.light) < 4.5) {
+        return { level: 'bad', text: 'Guests will struggle to read the text. Choose a lighter text colour or a darker background.' };
+      }
+      if (colourContrast(look.dark, colourMix(look.light, look.dark, 0.72)) < 4.5) {
+        return { level: 'warn', text: 'Headings are clear, but paler text such as dish descriptions will be hard to read. A lighter text colour or a darker background would help.' };
+      }
+      return { level: 'ok', text: 'Easy to read.' };
+    }
+
+    // Christmas mode is expected from November until mid January
+    function isChristmasSeason(date) {
+      var month = date.getMonth();
+      return month >= 10 || (month === 0 && date.getDate() <= 15);
+    }
+
+    function lookSampleHtml() {
+      var look = appData.look;
+      return '<div class="look-sample" id="lookSample" style="background:' + look.dark + ';color:' + look.light + '" aria-hidden="true">' +
+        '<span class="look-sample-title">MENU</span>' +
+        '<span class="look-sample-rule" style="background:' + look.light + '"></span>' +
+        '<span class="look-sample-name">Forest Mushroom Soup</span>' +
+        '<span class="look-sample-desc" style="opacity:.72">Roasted forest mushrooms, fresh thyme and black truffle oil</span>' +
+      '</div>';
+    }
+
+    function lookVerdictHtml() {
+      var check = lookReadability(appData.look);
+      return '<p class="look-verdict is-' + check.level + '" id="lookVerdict" role="status">' +
+        icon(check.level === 'ok' ? 'check' : 'alert', 17) + '<span>' + esc(check.text) + '</span></p>';
+    }
+
+    function lookColourField(id, label, value, hint) {
+      return '<div class="field"><label for="' + id + 'Hex">' + esc(label) + '</label>' +
+        '<div class="look-colour">' +
+          '<input type="color" id="' + id + '" value="' + value + '" aria-label="Pick the ' + esc(label.toLowerCase()) + '" />' +
+          '<input type="text" id="' + id + 'Hex" value="' + value + '" maxlength="7" spellcheck="false" autocomplete="off" />' +
+        '</div>' +
+        '<span class="field-hint">' + esc(hint) + '</span></div>';
+    }
+
+    function lookHtml() {
+      var look = appData.look;
+      var xmas = look.christmas;
+      var presets = LOOK_PRESETS.map(function (p) {
+        var active = p.dark === look.dark && p.light === look.light;
+        return '<button type="button" class="look-preset' + (active ? ' is-active' : '') + '" data-action="lookPreset" data-dark="' + p.dark + '" data-light="' + p.light + '" aria-pressed="' + active + '">' +
+          '<span class="look-chip" style="background:' + p.dark + ';color:' + p.light + '">Aa</span>' + esc(p.name) + '</button>';
+      }).join('');
+      var letters = HAT_LETTERS.map(function (h) {
+        return '<option value="' + h.key + '"' + (h.key === xmas.hatOn ? ' selected' : '') + '>' + esc(h.label) + '</option>';
+      }).join('');
+      var options = !xmas.on ? '' :
+        '<div class="look-options">' +
+          '<label class="check"><input type="checkbox" id="xmasSnow"' + (xmas.snow ? ' checked' : '') + ' /><span>Falling snow on every page</span></label>' +
+          '<label class="check"><input type="checkbox" id="xmasHat"' + (xmas.hat ? ' checked' : '') + ' /><span>Santa hat on the logo</span></label>' +
+          (xmas.hat ? '<div class="field"><label for="xmasHatOn">The hat sits on</label><select id="xmasHatOn">' + letters + '</select></div>' : '') +
+        '</div>';
+
+      return pageHead('Colours & Season', 'Changes show in the phone preview. Guests see them after you press Publish.') +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Colours</h2>' +
+          '<p class="card-hint">The website uses two colours: a dark one behind everything, and a light one for text, lines and the logo. The booking form swaps them round. Pick a pair below, or choose your own.</p>' +
+          '<div class="look-presets">' + presets + '</div>' +
+          '<div class="field-row">' +
+            lookColourField('lookDark', 'Background colour', look.dark, 'Replaces the black.') +
+            lookColourField('lookLight', 'Text colour', look.light, 'Replaces the white. The logo turns this colour too.') +
+          '</div>' +
+          lookSampleHtml() +
+          lookVerdictHtml() +
+        '</section>' +
+        '<section class="card card-pad">' +
+          '<h2 class="card-title">Christmas mode</h2>' +
+          '<p class="card-hint">Falling snow and a Santa hat on the logo. Turn it on when the season starts and off when it ends, pressing Publish each time. It does not change the colours, so pick Christmas red above as well if you want it.</p>' +
+          '<label class="check"><input type="checkbox" id="xmasOn"' + (xmas.on ? ' checked' : '') + ' /><span>Christmas mode is on</span></label>' +
+          options +
+          (xmas.on && xmas.snow ? '<p class="field-hint">Guests whose phones are set to reduce motion see the hat but no snow.</p>' : '') +
+        '</section>';
+    }
+
+    // Colour changes update the sample in place, so the picker keeps its place while it is dragged
+    function refreshLookCard() {
+      var sample = $('lookSample');
+      if (sample) sample.outerHTML = lookSampleHtml();
+      var verdict = $('lookVerdict');
+      if (verdict) verdict.outerHTML = lookVerdictHtml();
+      Array.prototype.forEach.call(document.querySelectorAll('.look-preset'), function (btn) {
+        var active = btn.getAttribute('data-dark') === appData.look.dark && btn.getAttribute('data-light') === appData.look.light;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active);
+      });
+    }
+
+    function onLookInput(t) {
+      var look = appData.look;
+      var colours = { lookDark: 'dark', lookLight: 'light', lookDarkHex: 'dark', lookLightHex: 'light' };
+      if (colours[t.id]) {
+        var value = t.value.trim().toLowerCase();
+        if (/Hex$/.test(t.id)) {
+          if (value && value.charAt(0) !== '#') value = '#' + value;
+          if (/^#[0-9a-f]{3}$/.test(value)) value = '#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3];
+          // Wait until all six characters are typed
+          if (!isHexColour(value)) return;
+          $(t.id.replace(/Hex$/, '')).value = value;
+        } else {
+          $(t.id + 'Hex').value = value;
+        }
+        look[colours[t.id]] = value;
+        refreshLookCard();
+        return touch();
+      }
+      var xmas = look.christmas;
+      if (t.id === 'xmasOn') xmas.on = t.checked;
+      else if (t.id === 'xmasSnow') xmas.snow = t.checked;
+      else if (t.id === 'xmasHat') xmas.hat = t.checked;
+      else if (t.id === 'xmasHatOn') xmas.hatOn = t.value;
+      else return;
+      touch();
+      // Show or hide the options that depend on this one
+      if (t.id !== 'xmasHatOn') keepScroll(renderPage);
+    }
+
+    /* ========================================================
        SETTINGS PAGE
        ======================================================== */
     function dataSize() {
@@ -7671,6 +7942,13 @@
       staffPasswordLink: sendStaffPasswordLink,
       newStaffPassword: function () { $('staffPass').value = newStaffPassword(); },
 
+      lookPreset: function (el) {
+        appData.look.dark = el.getAttribute('data-dark');
+        appData.look.light = el.getAttribute('data-light');
+        touch();
+        keepScroll(renderPage);
+      },
+
       discardDraft: discardDraft,
       downloadBackup: downloadBackup,
       downloadDataFile: downloadDataFile,
@@ -7713,6 +7991,7 @@
         else if (view.page === 'tasting') onTastingInput(t);
         else if (view.page === 'event') onEventInput(t);
         else if (view.page === 'contact') onContactInput(t);
+        else if (view.page === 'look') onLookInput(t);
         else if (view.page === 'gallery') onGalleryInput(t);
         else if (view.page === 'about') onAboutInput(t);
         else if (view.page === 'reviews') onReviewsInput(t);
