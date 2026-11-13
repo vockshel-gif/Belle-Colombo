@@ -1544,23 +1544,28 @@
       { name: 'Chocolate', dark: '#24160f', light: '#f2e6d2' },
       { name: 'Black and gold', dark: '#000000', light: '#d9bf8c' }
     ];
-    // The letters of BELLE the hat can sit on. The website knows where each one is.
+    // Quick starting points for the hat: each letter's centre as a share of the logo's width, how far
+    // it tips, and whether its tip flops to the left. The sliders below then fine-tune from there.
     var HAT_LETTERS = [
-      { key: 'b', label: 'The B' },
-      { key: 'e1', label: 'The first E' },
-      { key: 'l1', label: 'The first L' },
-      { key: 'l2', label: 'The second L' },
-      { key: 'e2', label: 'The last E' }
+      { key: 'b', label: 'The B', x: 9.4, tilt: -14, flip: true },
+      { key: 'e1', label: 'The first E', x: 31.5, tilt: -10, flip: true },
+      { key: 'l1', label: 'The first L', x: 51.8, tilt: 9, flip: false },
+      { key: 'l2', label: 'The second L', x: 71.3, tilt: 11, flip: false },
+      { key: 'e2', label: 'The last E', x: 91.4, tilt: 14, flip: false }
     ];
 
     function isHexColour(value) {
       return /^#[0-9a-f]{6}$/i.test(String(value || ''));
     }
 
+    function clampNum(value, min, max, fallback) {
+      var n = Number(value);
+      return isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback;
+    }
+
     function normalizeLook(look) {
       var l = look && typeof look === 'object' ? look : {};
       var x = l.christmas && typeof l.christmas === 'object' ? l.christmas : {};
-      var letterKnown = HAT_LETTERS.some(function (h) { return h.key === x.hatOn; });
       return {
         dark: isHexColour(l.dark) ? l.dark.toLowerCase() : LOOK_DARK,
         light: isHexColour(l.light) ? l.light.toLowerCase() : LOOK_LIGHT,
@@ -1568,7 +1573,10 @@
           on: x.on === true,
           snow: x.snow !== false,
           hat: x.hat !== false,
-          hatOn: letterKnown ? x.hatOn : 'e2'
+          hatX: clampNum(x.hatX, 0, 100, 91.4),
+          hatY: clampNum(x.hatY, -80, 80, 0),
+          hatRotate: clampNum(x.hatRotate, -180, 180, 14),
+          hatFlip: x.hatFlip === true
         }
       };
     }
@@ -6407,6 +6415,38 @@
         '<span class="field-hint">' + esc(hint) + '</span></div>';
     }
 
+    // Left/right, up/down and rotate, in the same house style as a dish photo's Size/position sliders
+    var HAT_SLIDERS = [
+      { key: 'hatX', label: 'Left or right', min: 0, max: 100, step: 1 },
+      { key: 'hatY', label: 'Up or down', min: -80, max: 80, step: 1, words: ['up', 'down'] },
+      { key: 'hatRotate', label: 'Rotate', min: -180, max: 180, step: 1, words: ['tilts left', 'tilts right'] }
+    ];
+
+    function hatSliderText(slider, value) {
+      if (!slider.words) return value + '%';
+      if (!value) return slider.key === 'hatRotate' ? 'Upright' : 'Centred';
+      return Math.abs(value) + (slider.key === 'hatRotate' ? '\u00b0 ' : ' ') + slider.words[value > 0 ? 1 : 0];
+    }
+
+    function hatControlsHtml(xmas) {
+      var letterButtons = HAT_LETTERS.map(function (h) {
+        return '<button type="button" class="btn btn-sm" data-action="hatSpot" data-x="' + h.x + '" data-tilt="' + h.tilt + '" data-flip="' + (h.flip ? '1' : '') + '">' + esc(h.label.replace(/^The /, '')) + '</button>';
+      }).join('');
+      var sliders = HAT_SLIDERS.map(function (s) {
+        var value = xmas[s.key];
+        return '<label class="frame-slider"><span>' + s.label + '</span>' +
+          '<input type="range" id="xmas' + s.key.charAt(0).toUpperCase() + s.key.slice(1) + '" min="' + s.min + '" max="' + s.max + '" step="' + s.step + '" value="' + value + '" />' +
+          '<output>' + hatSliderText(s, value) + '</output></label>';
+      }).join('');
+      return '<div class="field">' +
+          '<label class="field-label">Start near a letter</label>' +
+          '<div class="add-row">' + letterButtons + '</div>' +
+        '</div>' +
+        sliders +
+        '<label class="check"><input type="checkbox" id="xmasHatFlip"' + (xmas.hatFlip ? ' checked' : '') + ' /><span>Flip the hat</span></label>' +
+        '<p class="field-hint">Drag the sliders to place the hat and tilt it exactly how you want. Flip mirrors which way it leans. Watch the phone preview as you go.</p>';
+    }
+
     function lookHtml() {
       var look = appData.look;
       var xmas = look.christmas;
@@ -6415,14 +6455,11 @@
         return '<button type="button" class="look-preset' + (active ? ' is-active' : '') + '" data-action="lookPreset" data-dark="' + p.dark + '" data-light="' + p.light + '" aria-pressed="' + active + '">' +
           '<span class="look-chip" style="background:' + p.dark + ';color:' + p.light + '">Aa</span>' + esc(p.name) + '</button>';
       }).join('');
-      var letters = HAT_LETTERS.map(function (h) {
-        return '<option value="' + h.key + '"' + (h.key === xmas.hatOn ? ' selected' : '') + '>' + esc(h.label) + '</option>';
-      }).join('');
       var options = !xmas.on ? '' :
         '<div class="look-options">' +
           '<label class="check"><input type="checkbox" id="xmasSnow"' + (xmas.snow ? ' checked' : '') + ' /><span>Falling snow on every page</span></label>' +
           '<label class="check"><input type="checkbox" id="xmasHat"' + (xmas.hat ? ' checked' : '') + ' /><span>Santa hat on the logo</span></label>' +
-          (xmas.hat ? '<div class="field"><label for="xmasHatOn">The hat sits on</label><select id="xmasHatOn">' + letters + '</select></div>' : '') +
+          (xmas.hat ? hatControlsHtml(xmas) : '') +
         '</div>';
 
       return pageHead('Colours & Season', 'Changes show in the phone preview. Guests see them after you press Publish.') +
@@ -6459,6 +6496,19 @@
       });
     }
 
+    // The hat sliders update their own value and output in place, so dragging one does not jump the page
+    function refreshHatSliders() {
+      var xmas = appData.look.christmas;
+      HAT_SLIDERS.forEach(function (s) {
+        var input = $('xmas' + s.key.charAt(0).toUpperCase() + s.key.slice(1));
+        if (!input) return;
+        input.value = xmas[s.key];
+        input.nextElementSibling.textContent = hatSliderText(s, xmas[s.key]);
+      });
+      var flip = $('xmasHatFlip');
+      if (flip) flip.checked = xmas.hatFlip;
+    }
+
     function onLookInput(t) {
       var look = appData.look;
       var colours = { lookDark: 'dark', lookLight: 'light', lookDarkHex: 'dark', lookLightHex: 'light' };
@@ -6478,14 +6528,22 @@
         return touch();
       }
       var xmas = look.christmas;
+      var hatSlider = HAT_SLIDERS.find(function (s) { return 'xmas' + s.key.charAt(0).toUpperCase() + s.key.slice(1) === t.id; });
       if (t.id === 'xmasOn') xmas.on = t.checked;
       else if (t.id === 'xmasSnow') xmas.snow = t.checked;
       else if (t.id === 'xmasHat') xmas.hat = t.checked;
-      else if (t.id === 'xmasHatOn') xmas.hatOn = t.value;
+      else if (t.id === 'xmasHatFlip') xmas.hatFlip = t.checked;
+      else if (hatSlider) {
+        xmas[hatSlider.key] = Number(t.value);
+        t.nextElementSibling.textContent = hatSliderText(hatSlider, xmas[hatSlider.key]);
+        postToPreview({ type: 'BELLE_LOOK_UPDATE', look: look });
+        return touch();
+      }
       else return;
+      postToPreview({ type: 'BELLE_LOOK_UPDATE', look: look });
       touch();
       // Show or hide the options that depend on this one
-      if (t.id !== 'xmasHatOn') keepScroll(renderPage);
+      if (t.id !== 'xmasHatFlip') keepScroll(renderPage);
     }
 
     /* ========================================================
@@ -7945,8 +8003,20 @@
       lookPreset: function (el) {
         appData.look.dark = el.getAttribute('data-dark');
         appData.look.light = el.getAttribute('data-light');
+        postToPreview({ type: 'BELLE_LOOK_UPDATE', look: appData.look });
         touch();
         keepScroll(renderPage);
+      },
+
+      hatSpot: function (el) {
+        var xmas = appData.look.christmas;
+        xmas.hatX = Number(el.getAttribute('data-x'));
+        xmas.hatRotate = Number(el.getAttribute('data-tilt'));
+        xmas.hatFlip = el.getAttribute('data-flip') === '1';
+        xmas.hatY = 0;
+        refreshHatSliders();
+        postToPreview({ type: 'BELLE_LOOK_UPDATE', look: appData.look });
+        touch();
       },
 
       discardDraft: discardDraft,

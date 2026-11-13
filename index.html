@@ -518,7 +518,7 @@
       mask: url("belle_logo_white.png") center / 100% 100% no-repeat;
     }
 
-    /* ---------- Christmas mode: a Santa hat on one letter of the logo, and falling snow ---------- */
+    /* ---------- Christmas mode: a Santa hat on the logo, placed and tilted from the admin panel, and falling snow ---------- */
     .home-logo { position: relative; }
     .xmas-hat {
       position: absolute;
@@ -526,19 +526,37 @@
       width: 22%;
       left: calc(var(--hat-x, 91.4%) - 11%);
       bottom: 93%;
-      pointer-events: none;
+      cursor: pointer;
       transform-origin: 50% 88%;
-      transform: translateY(-38%) rotate(calc(var(--hat-tilt, 14deg) * 2.2));
+      transform: translate(0, calc(-38% + var(--hat-y, 0%))) rotate(calc(var(--hat-tilt, 14deg) * 2.2));
       opacity: 0;
       filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35));
       transition: opacity .5s ease 1.25s, transform .9s cubic-bezier(.34, 1.56, .64, 1) 1.25s;
     }
     .is-ready:not(.is-menu-active) .xmas-hat {
       opacity: 1;
-      transform: rotate(var(--hat-tilt, 14deg));
+      transform: translate(0, var(--hat-y, 0%)) rotate(var(--hat-tilt, 14deg));
     }
-    .xmas-hat svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .xmas-hat svg { display: block; width: 100%; height: auto; overflow: visible; pointer-events: none; }
     .xmas-hat.is-flipped svg { transform: scaleX(-1); }
+    /* The pompom is its own small layer on top of the hat, so a tap can wobble it on its own */
+    .hat-pompom {
+      position: absolute;
+      left: 80.5%;
+      top: 38.5%;
+      width: 19%;
+      aspect-ratio: 1;
+    }
+    .hat-pompom svg { display: block; width: 100%; height: 100%; }
+    @keyframes hatPompomJerk {
+      0% { transform: rotate(0deg) scale(1); }
+      15% { transform: rotate(-22deg) scale(1.18); }
+      35% { transform: rotate(16deg) scale(0.9); }
+      55% { transform: rotate(-9deg) scale(1.07); }
+      75% { transform: rotate(4deg) scale(0.97); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+    .hat-pompom.is-jerking { animation: hatPompomJerk .55s cubic-bezier(.36, .07, .19, .97); }
     .xmas-snow {
       position: fixed;
       inset: 0;
@@ -549,6 +567,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .xmas-hat { transition: none; }
+      .hat-pompom.is-jerking { animation: none; }
     }
 
     .home-nav-link {
@@ -8920,20 +8939,11 @@ Choose your spread/rillette style:</p>
        COLOURS AND CHRISTMAS MODE
        Both are set in the admin panel under Colours & Season and
        published with everything else, as data.look:
-       { dark, light, christmas: { on, snow, hat, hatOn } }
+       { dark, light, christmas: { on, snow, hat, hatX, hatY, hatRotate, hatFlip } }
        ======================================================== */
     var LOOK_CACHE_KEY = 'belle_look';
 
-    // Where the hat sits on BELLE, measured on belle_logo_white.png: the letter's centre as a share
-    // of the logo's width, how far it tips, and whether its tip flops to the left
-    var HAT_SPOTS = {
-      b:  { x: 9.4,  tilt: -14, flip: true },
-      e1: { x: 31.5, tilt: -10, flip: true },
-      l1: { x: 51.8, tilt: 9 },
-      l2: { x: 71.3, tilt: 11 },
-      e2: { x: 91.4, tilt: 14 }
-    };
-
+    // The hat body, without its pompom: a position, a tilt and a lean the admin panel sets freely
     var HAT_SVG = '<svg viewBox="0 0 120 104" aria-hidden="true" focusable="false">' +
       '<path d="M18 84C20 52 36 20 64 14c22-5 40 8 44 36-6-10-16-14-24-10 8 14 14 28 16 44z" fill="#c8102e"/>' +
       '<path d="M84 40c8 14 14 28 16 44H89c-1-15-4-29-11-40z" fill="#7d0a1d" opacity=".55"/>' +
@@ -8942,8 +8952,28 @@ Choose your spread/rillette style:</p>
       '<path d="M14 92c18 4 70 4 90 0" fill="none" stroke="#ddd6ca" stroke-width="3" stroke-linecap="round"/>' +
       '<circle cx="26" cy="82" r="2.4" fill="#e6e0d5"/><circle cx="48" cy="86" r="2.2" fill="#e6e0d5"/>' +
       '<circle cx="70" cy="81" r="2.4" fill="#e6e0d5"/><circle cx="92" cy="87" r="2.2" fill="#e6e0d5"/>' +
-      '<circle cx="108" cy="52" r="11" fill="#fbf8f2"/><circle cx="111" cy="56" r="6" fill="#e6e0d5" opacity=".7"/>' +
       '</svg>';
+
+    // The pompom, on its own small layer so a tap can wobble just the ball, not the whole hat
+    var HAT_POMPOM_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      '<circle cx="12" cy="12" r="11" fill="#fbf8f2"/><circle cx="15" cy="16" r="6" fill="#e6e0d5" opacity=".7"/>' +
+      '</svg>';
+
+    // A tap or touch on the hat gives its pompom a playful jerk, restarting if it is already wobbling
+    document.addEventListener('pointerdown', function(ev) {
+      var hat = ev.target.closest && ev.target.closest('.xmas-hat');
+      var pompom = hat && hat.querySelector('.hat-pompom');
+      if (!pompom) return;
+      pompom.classList.remove('is-jerking');
+      void pompom.offsetWidth; // forces the animation to restart on a second tap
+      pompom.classList.add('is-jerking');
+      // A backup for the rare phone that does not tell us the animation finished
+      clearTimeout(pompom._jerkTimer);
+      pompom._jerkTimer = setTimeout(function () { pompom.classList.remove('is-jerking'); }, 650);
+    });
+    document.addEventListener('animationend', function(ev) {
+      if (ev.target.classList && ev.target.classList.contains('hat-pompom')) ev.target.classList.remove('is-jerking');
+    });
 
     var snowfall = null;
 
@@ -9053,20 +9083,28 @@ Choose your spread/rillette style:</p>
         hat = document.createElement('span');
         hat.className = 'xmas-hat';
         hat.setAttribute('aria-hidden', 'true');
-        hat.innerHTML = HAT_SVG;
+        hat.innerHTML = HAT_SVG + '<span class="hat-pompom">' + HAT_POMPOM_SVG + '</span>';
         logo.appendChild(hat);
       }
       hat.style.setProperty('--hat-x', spot.x + '%');
-      hat.style.setProperty('--hat-tilt', spot.tilt + 'deg');
+      hat.style.setProperty('--hat-y', spot.y + '%');
+      hat.style.setProperty('--hat-tilt', spot.rotate + 'deg');
       hat.classList.toggle('is-flipped', !!spot.flip);
     }
 
+    // Applied straight away on a slider drag in the admin panel (BELLE_LOOK_UPDATE), and whenever the
+    // published or draft menu data changes
     function applyLook(look) {
       look = look && typeof look === 'object' ? look : {};
       window.belleSetPalette(look.dark, look.light);
       var xmas = look.christmas && typeof look.christmas === 'object' ? look.christmas : {};
       setSnow(!!xmas.on && xmas.snow !== false);
-      setHat(xmas.on && xmas.hat !== false ? (HAT_SPOTS[xmas.hatOn] || HAT_SPOTS.e2) : null);
+      setHat(xmas.on && xmas.hat !== false ? {
+        x: isFinite(xmas.hatX) ? xmas.hatX : 91.4,
+        y: isFinite(xmas.hatY) ? xmas.hatY : 0,
+        rotate: isFinite(xmas.hatRotate) ? xmas.hatRotate : 14,
+        flip: !!xmas.hatFlip
+      } : null);
       // Remember the colours for the next visit, but never the admin's unpublished ones
       if (!isInsideAdminIframe) {
         try {
@@ -10531,6 +10569,8 @@ Choose your spread/rillette style:</p>
       } else if (ev.data.type === 'BELLE_OVERLAY_OPACITY') {
         var op = Number(ev.data.opacity);
         if (isFinite(op)) document.documentElement.style.setProperty('--dish-overlay-opacity', op);
+      } else if (ev.data.type === 'BELLE_LOOK_UPDATE') {
+        applyLook(ev.data.look);
       } else if (ev.data.type === 'BELLE_MEDIA_FRAME') {
         applyMediaFrame(ev.data.id, ev.data.frame);
       } else if (ev.data.type === 'BELLE_RELOAD') {
