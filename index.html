@@ -556,6 +556,9 @@
       width: 19%;
       aspect-ratio: 1;
     }
+    /* Flipping the hat mirrors its shape, so the pompom's own layer has to jump to the other side too,
+       or it stays on the side the tip no longer points to */
+    .xmas-hat.is-flipped .hat-pompom { left: auto; right: 80.5%; }
     .hat-pompom svg { display: block; width: 100%; height: 100%; }
     @keyframes hatPompomJerk {
       0% { transform: rotate(0deg) scale(1); }
