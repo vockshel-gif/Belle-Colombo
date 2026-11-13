@@ -539,6 +539,12 @@
     }
     .xmas-hat svg { display: block; width: 100%; height: auto; overflow: visible; pointer-events: none; }
     .xmas-hat.is-flipped svg { transform: scaleX(-1); }
+    /* The hat itself is small, so its real tap target reaches further than its drawn shape, for a finger */
+    .xmas-hat::before {
+      content: '';
+      position: absolute;
+      inset: -40%;
+    }
     /* The pompom is its own small layer on top of the hat, so a tap can wobble it on its own */
     .hat-pompom {
       position: absolute;
