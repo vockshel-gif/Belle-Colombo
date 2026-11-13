@@ -537,6 +537,9 @@
       opacity: 1;
       transform: translate(0, var(--hat-y, 0%)) rotate(var(--hat-tilt, 14deg));
     }
+    /* The slow drop-in is only for the hat's first appearance. Once settled, an admin panel edit to its
+       position or tilt should show at once, not play that same animation again on every slider move. */
+    .xmas-hat.is-settled { transition: opacity .5s ease; }
     .xmas-hat svg { display: block; width: 100%; height: auto; overflow: visible; pointer-events: none; }
     .xmas-hat.is-flipped svg { transform: scaleX(-1); }
     /* The hat itself is small, so its real tap target reaches further than its drawn shape, for a finger */
@@ -9085,7 +9088,8 @@ Choose your spread/rillette style:</p>
         if (hat) hat.remove();
         return;
       }
-      if (!hat) {
+      var isNew = !hat;
+      if (isNew) {
         hat = document.createElement('span');
         hat.className = 'xmas-hat';
         hat.setAttribute('aria-hidden', 'true');
@@ -9095,6 +9099,9 @@ Choose your spread/rillette style:</p>
       hat.style.setProperty('--hat-x', spot.x + '%');
       hat.style.setProperty('--hat-y', spot.y + '%');
       hat.style.setProperty('--hat-tilt', spot.rotate + 'deg');
+      // Only the hat's very first appearance drops in slowly. Every call after that is an admin-panel
+      // edit to a hat already on screen, which should show at once rather than replay that animation.
+      if (!isNew) hat.classList.add('is-settled');
       hat.classList.toggle('is-flipped', !!spot.flip);
     }
 
