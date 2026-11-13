@@ -1162,7 +1162,13 @@
         <div class="phone-stage" id="phoneStage">
           <div class="phone-box" id="phoneBox">
             <div class="phone" id="phone">
-              <iframe id="previewFrame" src="index.html?preview=1" title="Preview of the guest website"></iframe>
+              <iframe id="previewFrame" title="Preview of the guest website"></iframe>
+              <script>
+                // A browser can keep an old, cached copy of index.html for this preview long after a new
+                // version is published here. A fresh mark on every load of the admin panel itself stops that,
+                // so the preview is never showing older code than this admin panel is.
+                document.getElementById('previewFrame').src = 'index.html?preview=1&v=' + Date.now();
+              </script>
             </div>
           </div>
         </div>
