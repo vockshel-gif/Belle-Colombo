@@ -9089,7 +9089,214 @@ Choose your spread/rillette style:</p>
       fctx.fillStyle = glow;
       fctx.fillRect(0, 0, 32, 32);
 
+      // Now and then a big six-armed ice crystal drifts down slowly through the small snow, turning
+      // and glowing a soft icy blue. Three designs, each drawn once with its glow, then stamped.
+      var CRYSTAL_PX = 256;
+      var CRYSTAL_DESIGNS = [
+        // A feathery one: a small hexagon at the middle, three pairs of branches on each arm
+        { hub: 0.15, start: 0.15, branches: [[0.38, 0.3], [0.62, 0.22], [0.82, 0.12]] },
+        // A plate: an open hexagon round a small one, a chevron, short branches and a diamond tip
+        { hub: 0.28, inner: 0.12, start: 0.28, vees: [[0.5, 0.17]], branches: [[0.72, 0.18]], tip: 0.1 },
+        // A star: a bright dot at the middle and four pairs of branches, longest halfway along
+        { dot: 0.08, start: 0, branches: [[0.28, 0.14], [0.52, 0.3], [0.76, 0.18], [0.92, 0.08]] }
+      ];
+
+      // Each design is drawn twice: icy blue as it falls, and warm gold for when a finger touches it
+      function drawCrystal(d, warm) {
+        var c = document.createElement('canvas');
+        c.width = c.height = CRYSTAL_PX;
+        var g = c.getContext('2d');
+        var mid = CRYSTAL_PX / 2;
+        var r = CRYSTAL_PX * 0.38; // arm length, leaving room round it for the glow
+        // A point on arm k, given across (x) and out along the arm (y), as a fraction of the arm
+        function at(k, x, y) {
+          var a = k * Math.PI / 3, cs = Math.cos(a), sn = Math.sin(a);
+          return [mid + r * (x * cs + y * sn), mid + r * (x * sn - y * cs)];
+        }
+        function line(k, pts, closed) {
+          for (var i = 0; i < pts.length; i++) {
+            var p = at(k, pts[i][0], pts[i][1]);
+            if (i) g.lineTo(p[0], p[1]); else g.moveTo(p[0], p[1]);
+          }
+          if (closed) g.closePath();
+        }
+        function hexagon(size) {
+          var hex = [];
+          for (var k = 0; k < 6; k++) hex.push(at(k, 0, size));
+          g.moveTo(hex[0][0], hex[0][1]);
+          for (k = 1; k < 6; k++) g.lineTo(hex[k][0], hex[k][1]);
+          g.closePath();
+        }
+
+        g.beginPath();
+        if (d.hub) hexagon(d.hub);
+        if (d.inner) hexagon(d.inner);
+        for (var k = 0; k < 6; k++) {
+          line(k, [[0, d.start], [0, 1]]);
+          (d.branches || []).forEach(function(b) {
+            // Side branches leave the arm at 60 degrees, as on a real snow crystal
+            line(k, [[-0.866 * b[1], b[0] + 0.5 * b[1]], [0, b[0]], [0.866 * b[1], b[0] + 0.5 * b[1]]]);
+          });
+          (d.vees || []).forEach(function(v) {
+            line(k, [[-v[1], v[0] - 0.9 * v[1]], [0, v[0]], [v[1], v[0] - 0.9 * v[1]]]);
+          });
+          if (d.tip) line(k, [[0, 1 - d.tip], [d.tip / 2, 1 - d.tip / 2], [0, 1], [-d.tip / 2, 1 - d.tip / 2]], true);
+        }
+        g.lineCap = 'round';
+        g.lineJoin = 'round';
+        // A wide, soft glow first, then a fine bright line over it
+        g.shadowColor = warm ? 'rgba(255, 190, 95, 0.95)' : 'rgba(150, 205, 255, 0.95)';
+        g.shadowBlur = r * 0.22;
+        g.strokeStyle = warm ? 'rgba(255, 205, 130, 0.6)' : 'rgba(170, 215, 255, 0.55)';
+        g.lineWidth = r * 0.075;
+        g.stroke();
+        var core = warm ? '#fff3dc' : '#ffffff';
+        g.shadowColor = warm ? 'rgba(255, 236, 200, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+        g.shadowBlur = r * 0.06;
+        g.strokeStyle = core;
+        g.lineWidth = r * 0.03;
+        g.stroke();
+        if (d.dot) {
+          g.beginPath();
+          g.arc(mid, mid, r * d.dot, 0, Math.PI * 2);
+          g.fillStyle = core;
+          g.fill();
+        }
+        return c;
+      }
+
+      var crystalImages = CRYSTAL_DESIGNS.map(function(d) {
+        return { icy: drawCrystal(d, false), warm: drawCrystal(d, true) };
+      });
+
+      // What a touched crystal melts into: tiny golden twinkles and one small glowing heart
+      function drawSpark() {
+        var c = document.createElement('canvas');
+        c.width = c.height = 32;
+        var g = c.getContext('2d');
+        var glow = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+        glow.addColorStop(0, 'rgba(255, 246, 220, 1)');
+        glow.addColorStop(0.3, 'rgba(255, 208, 125, 0.7)');
+        glow.addColorStop(1, 'rgba(255, 180, 80, 0)');
+        g.fillStyle = glow;
+        g.fillRect(0, 0, 32, 32);
+        // A four-pointed twinkle across the glow
+        g.beginPath();
+        g.moveTo(16, 1);
+        g.quadraticCurveTo(17.2, 14.8, 31, 16);
+        g.quadraticCurveTo(17.2, 17.2, 16, 31);
+        g.quadraticCurveTo(14.8, 17.2, 1, 16);
+        g.quadraticCurveTo(14.8, 14.8, 16, 1);
+        g.fillStyle = '#fff8e8';
+        g.fill();
+        return c;
+      }
+
+      function drawHeart() {
+        var c = document.createElement('canvas');
+        c.width = c.height = 64;
+        var g = c.getContext('2d');
+        g.translate(32, 34);
+        g.beginPath();
+        g.moveTo(0, 14);
+        g.bezierCurveTo(-4, 10, -18, 2, -18, -7);
+        g.bezierCurveTo(-18, -14, -12, -18, -7, -18);
+        g.bezierCurveTo(-3, -18, -1, -16, 0, -12);
+        g.bezierCurveTo(1, -16, 3, -18, 7, -18);
+        g.bezierCurveTo(12, -18, 18, -14, 18, -7);
+        g.bezierCurveTo(18, 2, 4, 10, 0, 14);
+        g.closePath();
+        g.shadowColor = 'rgba(255, 185, 95, 0.95)';
+        g.shadowBlur = 12;
+        g.fillStyle = '#ffd59e';
+        g.fill();
+        // A soft shine on its upper left
+        g.shadowBlur = 0;
+        g.beginPath();
+        g.ellipse(-9, -9, 4.5, 3, -0.6, 0, Math.PI * 2);
+        g.fillStyle = 'rgba(255, 255, 255, 0.55)';
+        g.fill();
+        return c;
+      }
+
+      var sparkImage = drawSpark();
+      var heartImage = drawHeart();
+
+      function newCrystal() {
+        // Bigger on a bigger screen: about 40 to 65 pixels across on a phone, up to about 95 on a laptop
+        var base = Math.max(57, Math.min(101, Math.min(width, height) * 0.18));
+        var size = base * (0.8 + Math.random() * 0.45);
+        return {
+          img: crystalImages[Math.floor(Math.random() * crystalImages.length)],
+          x: width * (0.12 + Math.random() * 0.76),
+          y: -size / 2,
+          size: size,
+          fall: 30 + Math.random() * 18,  // pixels a second, a slow, floating drift
+          sway: 18 + Math.random() * 26,
+          swaySpeed: 0.22 + Math.random() * 0.2,
+          phase: Math.random() * Math.PI * 2,
+          angle: Math.random() * Math.PI / 3,
+          spin: (Math.random() < 0.5 ? -1 : 1) * (0.12 + Math.random() * 0.22), // radians a second
+          age: 0
+        };
+      }
+
       var flakes = [];
+      var crystals = [];
+      var sparks = [];
+      var hearts = [];
+      var maxCrystals = 2;
+      var WARM_TIME = 0.45; // seconds a touched crystal spends glowing gold, swelling and spinning
+      var MELT_TIME = 0.3;  // then seconds it takes to shrink away as its sparkles fly out
+
+      function burst(x, y, size) {
+        var count = 14 + Math.floor(Math.random() * 5);
+        for (var i = 0; i < count; i++) {
+          var a = Math.random() * Math.PI * 2;
+          var speed = 60 + Math.random() * 100;
+          sparks.push({
+            x: x, y: y,
+            vx: Math.cos(a) * speed,
+            vy: Math.sin(a) * speed - 20,
+            size: 10 + Math.random() * 9,
+            life: 1.1 + Math.random() * 0.7,
+            age: 0,
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+        hearts.push({ x: x, y: y, size: Math.max(40, size * 0.45), age: 0, life: 1.9, phase: Math.random() * Math.PI * 2 });
+      }
+
+      // Something drawn over the snow, like the photo viewer or the opening logo, hides any crystal
+      // under it, so a tap there must not count as touching one
+      function isOverSnow(el) {
+        for (; el && el !== document.body; el = el.parentElement) {
+          if (parseInt(getComputedStyle(el).zIndex, 10) > 70) return true;
+        }
+        return false;
+      }
+
+      // A finger or click on a big crystal warms it up. The tap still reaches whatever is under it as
+      // normal (the snow never catches taps), so a crystal passing over a button never blocks it.
+      function onTouch(ev) {
+        if (!crystals.length || isOverSnow(ev.target)) return;
+        for (var i = crystals.length - 1; i >= 0; i--) {
+          var c = crystals[i];
+          if (c.touchedAt != null || c.drawX == null) continue;
+          var dx = ev.clientX - c.drawX, dy = ev.clientY - c.y;
+          // A little past the tips of its arms, as it is moving and fingers are wide, and never smaller
+          // than a fingertip even on the smallest crystal
+          var reach = Math.max(32, c.size * 0.5);
+          if (dx * dx + dy * dy <= reach * reach) {
+            c.touchedAt = c.age;
+            c.touchAlpha = c.drawAlpha;
+            break; // one crystal a tap
+          }
+        }
+      }
+      document.addEventListener('pointerdown', onTouch, { passive: true });
+      var clock = 0;
+      var nextCrystalAt = 2 + Math.random() * 3; // the first one soon after the page opens
       var width = 0, height = 0, frameId = 0, last = 0, running = true;
 
       function newFlake(anywhere) {
@@ -9117,6 +9324,8 @@ Choose your spread/rillette style:</p>
         var wanted = Math.max(24, Math.min(110, Math.round(width * height / 8500)));
         while (flakes.length < wanted) flakes.push(newFlake(true));
         flakes.length = wanted;
+        // Two big crystals on screen at most on a phone, three on a wide screen
+        maxCrystals = width < 700 ? 2 : 3;
       }
 
       function draw(now) {
@@ -9137,6 +9346,104 @@ Choose your spread/rillette style:</p>
           ctx.globalAlpha = f.alpha;
           ctx.drawImage(flake, x - f.size / 2, f.y - f.size / 2, f.size, f.size);
         }
+
+        // The big crystals arrive at random, 5 to 14 seconds apart. The clock only runs while the
+        // page is on screen, so a tab left in the background never comes back to a pile of them.
+        clock += seconds;
+        if (clock >= nextCrystalAt) {
+          if (crystals.length < maxCrystals) crystals.push(newCrystal());
+          nextCrystalAt = clock + 5 + Math.random() * 9;
+        }
+        for (var j = crystals.length - 1; j >= 0; j--) {
+          var c = crystals[j];
+          c.age += seconds;
+          var angle = c.angle, scale = 1, warmth = 0, alpha;
+          if (c.touchedAt == null) {
+            c.y += c.fall * seconds;
+            c.angle += c.spin * seconds;
+            if (c.y - c.size / 2 > height) {
+              crystals.splice(j, 1);
+              continue;
+            }
+            angle = c.angle;
+            c.drawX = c.x + Math.sin(t * c.swaySpeed + c.phase) * c.sway;
+            // Fades in as it arrives, then shimmers gently as it turns
+            c.drawAlpha = alpha = Math.min(1, c.age / 1.5) * (0.8 + 0.14 * Math.sin(t * 1.3 + c.phase));
+          } else {
+            // Touched: it stops where it is, glows warm gold, swells and gives one happy spin...
+            var since = c.age - c.touchedAt;
+            var warm = Math.min(1, since / WARM_TIME);
+            warmth = 1 - Math.pow(1 - warm, 3);
+            scale = 1 + 0.18 * warmth;
+            angle = c.angle + warmth * (Math.PI * 2 / 3) * (c.spin < 0 ? -1 : 1);
+            alpha = c.touchAlpha + (1 - c.touchAlpha) * warmth;
+            // ...then melts away into twinkles and a little heart
+            if (since >= WARM_TIME) {
+              if (!c.burst) {
+                c.burst = true;
+                burst(c.drawX, c.y, c.size);
+              }
+              var melt = Math.min(1, (since - WARM_TIME) / MELT_TIME);
+              if (melt >= 1) {
+                crystals.splice(j, 1);
+                continue;
+              }
+              scale *= 1 - melt;
+              alpha *= 1 - melt;
+            }
+          }
+          var s = c.size * scale;
+          ctx.save();
+          ctx.translate(c.drawX, c.y);
+          ctx.rotate(angle);
+          if (warmth < 1) {
+            ctx.globalAlpha = alpha * (1 - warmth);
+            ctx.drawImage(c.img.icy, -s / 2, -s / 2, s, s);
+          }
+          if (warmth > 0) {
+            ctx.globalAlpha = alpha * warmth;
+            ctx.drawImage(c.img.warm, -s / 2, -s / 2, s, s);
+          }
+          ctx.restore();
+        }
+
+        // The twinkles fly out, slow down, float gently upward and fade, flickering as they go
+        var slow = Math.exp(-2 * seconds);
+        for (var k = sparks.length - 1; k >= 0; k--) {
+          var p = sparks[k];
+          p.age += seconds;
+          if (p.age >= p.life) {
+            sparks.splice(k, 1);
+            continue;
+          }
+          p.vx *= slow;
+          p.vy = p.vy * slow - 30 * seconds;
+          p.x += p.vx * seconds;
+          p.y += p.vy * seconds;
+          var ps = p.size * (1 - 0.4 * p.age / p.life);
+          ctx.globalAlpha = (1 - p.age / p.life) * (0.55 + 0.45 * Math.sin(p.age * 14 + p.phase));
+          ctx.drawImage(sparkImage, p.x - ps / 2, p.y - ps / 2, ps, ps);
+        }
+
+        // The heart pops up from the middle, rises with a little sway and fades
+        for (var h = hearts.length - 1; h >= 0; h--) {
+          var hp = hearts[h];
+          hp.age += seconds;
+          if (hp.age >= hp.life) {
+            hearts.splice(h, 1);
+            continue;
+          }
+          var pop = Math.min(1, hp.age / 0.35);
+          var hs = hp.size * (0.4 + 0.6 * (1 + 2.2 * Math.pow(pop - 1, 3) + 1.2 * Math.pow(pop - 1, 2)));
+          var lifeLeft = 1 - hp.age / hp.life;
+          ctx.globalAlpha = Math.min(1, lifeLeft * 2);
+          ctx.save();
+          ctx.translate(hp.x + Math.sin(hp.age * 2.6 + hp.phase) * 7, hp.y - hp.age * 42);
+          ctx.rotate(Math.sin(hp.age * 2.6 + hp.phase) * 0.12);
+          ctx.drawImage(heartImage, -hs / 2, -hs / 2, hs, hs);
+          ctx.restore();
+        }
+        ctx.globalAlpha = 1;
         frameId = requestAnimationFrame(draw);
       }
 
@@ -9148,6 +9455,7 @@ Choose your spread/rillette style:</p>
           running = false;
           cancelAnimationFrame(frameId);
           window.removeEventListener('resize', fit);
+          document.removeEventListener('pointerdown', onTouch);
           canvas.remove();
         }
       };
