@@ -3802,18 +3802,21 @@
     :root {
       --xmas-red: #c8102e;   /* the Santa hat's red */
       --xmas-cream: #fbf6ee;
+      --bm-h: 46px;          /* the ribbon's height, and its band's */
     }
-    /* The slot keeps a free band between the menus and the social icons. The ribbon itself is pinned
-       to the right edge of the screen at the slot's height (set by placeChristmasBookmark), so on a
-       desktop it still comes from the side of the window, not from the middle column. */
+    /* Each page keeps a free band for the ribbon: on Our Menu between the menus and the social icons,
+       on the landing page under the Google rating. The ribbon itself is one button pinned to the right
+       edge of the screen, level with the band of whichever page is showing (placeChristmasBookmark),
+       so on a desktop it still comes from the side of the window, not from the middle column. */
     .xmas-bm-slot {
-      --bm-h: 46px;
       flex-shrink: 0;
       height: var(--bm-h);
       margin: clamp(12px, 2.6vh, 24px) 0;
       pointer-events: none;
     }
     .xmas-bm-slot[hidden] { display: none; }
+    /* Last on the landing page, so it needs no space under it, and the page moves up as little as it can */
+    #xmasBmHomeSlot { margin: clamp(8px, 1.8vh, 18px) 0 0; }
     /* Peek and tuck: it slides out to say Christmas Menu, then tucks back until only its star shows */
     .xmas-bookmark {
       --bm-tuck: 24px;  /* hidden past the edge, so a springy slide never shows a gap */
@@ -3821,7 +3824,8 @@
       position: fixed;
       top: 0;
       right: calc(var(--bm-tuck) * -1);
-      z-index: 2;
+      z-index: 55; /* over the landing page and Our Menu, under any page opened over them */
+      display: none;
       margin: 0;
       padding: 0;
       border: 0;
@@ -3833,11 +3837,22 @@
       -webkit-tap-highlight-color: transparent;
       filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.42)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
       transform: translateX(calc(100% - var(--bm-tuck) - var(--bm-peek)));
-      transition: transform 0.7s cubic-bezier(0.6, 0, 0.3, 1);
+      transition: transform 0.7s cubic-bezier(0.6, 0, 0.3, 1), opacity 0.35s ease, visibility 0.35s;
     }
     .xmas-bookmark.is-out {
       transform: translateX(0);
-      transition: transform 0.8s cubic-bezier(0.2, 1.25, 0.35, 1);
+      transition: transform 0.8s cubic-bezier(0.2, 1.25, 0.35, 1), opacity 0.35s ease, visibility 0.35s;
+    }
+    /* Shown on Our Menu, and on the landing page unless the admin panel says otherwise */
+    .is-ready.christmas-menu-on.is-menu-active .xmas-bookmark,
+    .is-ready.christmas-menu-on.xmas-bm-home:not(.is-menu-active) .xmas-bookmark {
+      display: block;
+    }
+    /* Out of sight while a menu, the booking form or any other page is open over them */
+    body:has(.view-food-panel.is-active) .xmas-bookmark {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
     .xmas-bookmark.is-away {
       transform: translateX(calc(100% + 30px));
@@ -3914,7 +3929,7 @@
     }
     /* A little larger on a desktop, still from the right edge of the window */
     @media (min-width: 768px) {
-      .xmas-bm-slot { --bm-h: 52px; }
+      :root { --bm-h: 52px; }
       .xmas-bookmark { --bm-peek: 52px; }
       .bm-ribbon { gap: 14px; padding-left: 28px; }
       .bm-star { width: 15px; height: 15px; }
@@ -4274,6 +4289,9 @@
           <span class="home-rating-dot" aria-hidden="true"></span>
           <span id="homeRatingCount"></span>
         </button>
+
+        <!-- Christmas Menu bookmark: its band on the landing page -->
+        <div class="xmas-bm-slot" id="xmasBmHomeSlot" aria-hidden="true" hidden></div>
       </div>
     </section>
 
@@ -4318,18 +4336,8 @@
         <button type="button" class="menu-cat-btn cat-btn-thebar" data-target="thebar">THE BAR</button>
       </div>
 
-      <!-- Christmas Menu bookmark: slides in from the right edge when switched on in the admin panel -->
-      <div class="xmas-bm-slot" id="xmasBmSlot" hidden>
-        <button type="button" class="xmas-bookmark" id="xmasBookmark" aria-label="Christmas Menu">
-          <span class="bm-ribbon">
-            <span class="bm-star" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg></span>
-            <span class="bm-text">
-              <span class="bm-note" id="xmasBmNote"></span>
-              <span class="bm-label" id="xmasBmLabel">Christmas Menu</span>
-            </span>
-          </span>
-        </button>
-      </div>
+      <!-- Christmas Menu bookmark: this keeps a free band for it, between the menus and the social icons -->
+      <div class="xmas-bm-slot" id="xmasBmSlot" aria-hidden="true" hidden></div>
 
       <!-- Bottom Social Media Dock -->
       <footer class="menu-hub-sm-dock" aria-label="Social and Contact links">
@@ -4350,6 +4358,18 @@
     </section>
 
   </main>
+
+  <!-- Christmas Menu bookmark: peeks in from the right edge of the screen on the landing page and Our Menu,
+       level with whichever page's band is showing. Switched on in the admin panel. -->
+  <button type="button" class="xmas-bookmark" id="xmasBookmark" aria-label="Christmas Menu">
+    <span class="bm-ribbon">
+      <span class="bm-star" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg></span>
+      <span class="bm-text">
+        <span class="bm-note" id="xmasBmNote"></span>
+        <span class="bm-label" id="xmasBmLabel">Christmas Menu</span>
+      </span>
+    </span>
+  </button>
 
   <!-- ===== STATE 3: FULL SCREEN FOOD PANELS ===== -->
   
@@ -6286,6 +6306,7 @@ Choose your spread/rillette style:</p>
       setTimeout(function () {
         document.body.classList.add('is-ready');
         playHomeDividers();
+        introChristmasBookmark();
       }, 1350);
     });
 
@@ -6568,6 +6589,7 @@ Choose your spread/rillette style:</p>
       window.scrollTo(0, 0);
       playHomeDividers();
       if (window.ambientBg) window.ambientBg.onEnterHome();
+      introChristmasBookmark();
     }
 
     function openPanel(targetId) {
@@ -10544,11 +10566,17 @@ Choose your spread/rillette style:</p>
 
       var label = String(c.label || 'Christmas Menu');
       var note = String(c.note || '');
+      var onHome = on && c.onHome !== false;
       var slot = document.getElementById('xmasBmSlot');
-      var wasOn = !slot.hidden;
+      var homeSlot = document.getElementById('xmasBmHomeSlot');
+      var wasShown = !slot.hidden && (!homeSlot.hidden || document.body.classList.contains('is-menu-active'));
       slot.hidden = !on;
-      // Switched on while Our Menu is open (as in the admin preview): it arrives as it would for a guest
-      if (on && !wasOn) introChristmasBookmark();
+      homeSlot.hidden = !onHome;
+      document.body.classList.toggle('xmas-bm-home', onHome);
+      // Switched on while it can be seen (as in the admin preview): it arrives as it would for a guest
+      var shownNow = on && (onHome || document.body.classList.contains('is-menu-active'));
+      if (shownNow && !wasShown) introChristmasBookmark();
+      else placeChristmasBookmark();
       document.getElementById('xmasBmLabel').textContent = label;
       document.getElementById('xmasBmNote').textContent = note;
       document.getElementById('xmasBookmark').setAttribute('aria-label', label + (note ? ', ' + note : ''));
@@ -10625,26 +10653,32 @@ Choose your spread/rillette style:</p>
       }, ms);
     }
 
-    // Seen only on Our Menu, with no menu or page open over it
+    // The band of the page showing now: Our Menu's, or the landing page's
+    function xmasBmSlot() {
+      return document.getElementById(document.body.classList.contains('is-menu-active') ? 'xmasBmSlot' : 'xmasBmHomeSlot');
+    }
+
+    // Seen on Our Menu or the landing page, with no menu or page open over them
     function xmasBmOnScreen() {
-      return document.body.classList.contains('is-menu-active') &&
-        !document.getElementById('xmasBmSlot').hidden &&
+      return document.body.classList.contains('is-ready') &&
+        !xmasBmSlot().hidden &&
         !document.querySelector('.view-food-panel.is-active');
     }
 
-    // Level with its slot between the menus and the social icons, at the right edge of the screen
+    // Level with that page's band, at the right edge of the screen
     function placeChristmasBookmark() {
-      var slot = document.getElementById('xmasBmSlot');
-      if (slot.hidden || !document.body.classList.contains('is-menu-active')) return;
+      var slot = xmasBmSlot();
+      if (slot.hidden) return;
       document.getElementById('xmasBookmark').style.top = Math.round(slot.getBoundingClientRect().top) + 'px';
     }
 
+    // Runs each time the landing page or Our Menu comes into view
     function introChristmasBookmark() {
       var s = xmasBmState();
       clearTimeout(s.introTimer);
       clearTimeout(s.tuckTimer);
       clearInterval(s.cycleTimer);
-      if (document.getElementById('xmasBmSlot').hidden) return;
+      if (xmasBmSlot().hidden) return;
       placeChristmasBookmark();
       if (xmasBmCalm()) {
         setXmasBm('out');
@@ -10688,12 +10722,14 @@ Choose your spread/rillette style:</p>
 
       var hub = document.querySelector('.view-menu-hub');
       hub.addEventListener('scroll', placeChristmasBookmark, { passive: true });
+      window.addEventListener('scroll', placeChristmasBookmark, { passive: true });
       window.addEventListener('resize', placeChristmasBookmark);
-      // Fonts arriving or menus changing move the slot without a resize
+      // Fonts arriving, the rating line appearing or menus changing move a band without a resize
       if (window.ResizeObserver) {
         var watch = new ResizeObserver(placeChristmasBookmark);
         watch.observe(hub);
         watch.observe(document.getElementById('menuCatList'));
+        watch.observe(document.querySelector('.home-stack'));
       }
       document.getElementById('xmasReserve').addEventListener('click', function() {
         openReservation({ returnTo: 'christmas' });

@@ -1596,6 +1596,7 @@
     function defaultChristmasMenu() {
       return {
         enabled: false,
+        onHome: true,
         label: 'Christmas Menu',
         note: 'Coming soon',
         leadsTo: 'soon',
@@ -4454,10 +4455,11 @@
         targetNote = '<div class="note"><b>' + esc(prettyName(target.name)) + '</b> has no dishes yet, so guests would find an empty menu.</div>';
       }
 
-      return pageHead('Christmas Menu', 'A bookmark that slides in from the right edge of Our Menu and takes guests to your Christmas menu. Changes show in the phone preview. Guests see them after you press Publish.', christmasPreviewSwitchHtml()) +
+      return pageHead('Christmas Menu', 'A red bookmark that peeks in from the right edge of Our Menu and the landing page, and takes guests to your Christmas menu. Changes show in the phone preview. Guests see them after you press Publish.', christmasPreviewSwitchHtml()) +
         '<section class="card card-pad" data-xmas-part="bookmark">' +
           '<h2 class="card-title">The bookmark</h2>' +
           '<label class="check"><input type="checkbox" id="xmasMenuOn"' + (c.enabled ? ' checked' : '') + ' /><span>Show the Christmas bookmark on Our Menu</span></label>' +
+          (c.enabled ? '<label class="check" style="padding-left:27px"><input type="checkbox" id="xmasOnHome"' + (c.onHome ? ' checked' : '') + ' /><span>Also on the landing page, under the Google rating</span></label>' : '') +
           '<div class="field-row">' +
             christmasField('xmasLabel', 'Words on the bookmark', 'label', 'Christmas Menu') +
             christmasField('xmasNote', 'Small line above them', 'note', 'Coming soon', 0, 'Leave it empty for one line. Change it to Now serving when the menu is ready.') +
@@ -4510,7 +4512,16 @@
     function onChristmasInput(t) {
       var c = appData.christmasMenu;
       var redraw = false;
-      if (t.id === 'xmasMenuOn') c.enabled = t.checked;
+      if (t.id === 'xmasMenuOn') { c.enabled = t.checked; redraw = true; }
+      else if (t.id === 'xmasOnHome') {
+        c.onHome = t.checked;
+        // Show the landing page in the phone, where this changes something
+        touch();
+        clearTimeout(previewTimer);
+        sendPreview();
+        postToPreview({ type: 'BELLE_NAVIGATE', target: c.onHome ? 'home' : 'menu-hub' });
+        return;
+      }
       else if (t.id === 'xmasReserveOn') { c.reserve = t.checked; redraw = true; }
       else if (t.id === 'xmasWhatsappOn') { c.whatsapp = t.checked; redraw = true; }
       else if (t.name === 'xmasLeadsTo') {
