@@ -1410,6 +1410,8 @@
       mosaic: '<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/>',
       story: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.4"/>',
       star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>',
+      bookmark: '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+      link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
       palette: '<path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4.5-4.5 4.5h-1.9a1.8 1.8 0 0 0-1.3 3.1 1.5 1.5 0 0 1-1 2.4z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="6.8" r="1.2"/><circle cx="15.6" cy="7.6" r="1.2"/>',
       alert: '<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
       grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>'
@@ -1588,10 +1590,43 @@
       };
     }
 
+    /* Christmas Menu. A bookmark on Our Menu that leads to a Coming soon page, or to one of the
+       menus once the Christmas menu is ready. The website reads data.christmasMenu; without it, or
+       with enabled false, guests see nothing. */
+    function defaultChristmasMenu() {
+      return {
+        enabled: false,
+        label: 'Christmas Menu',
+        note: 'Coming soon',
+        leadsTo: 'soon',
+        eyebrow: 'The festive season',
+        title: 'Christmas Menu',
+        soon: 'Coming soon',
+        message: 'Our kitchen is putting the finishing touches to a menu made for the season. Check back soon, or reserve your festive table now.',
+        when: '',
+        reserve: true,
+        reserveLabel: 'Reserve for Christmas',
+        whatsapp: true,
+        whatsappLabel: 'Ask us on WhatsApp'
+      };
+    }
+
+    // Every setting is kept, even an emptied one, so an empty small line stays empty
+    function normalizeChristmasMenu(saved) {
+      var c = saved && typeof saved === 'object' ? saved : {};
+      var d = defaultChristmasMenu();
+      Object.keys(d).forEach(function (key) {
+        if (typeof d[key] === 'boolean') d[key] = typeof c[key] === 'boolean' ? c[key] : d[key];
+        else if (typeof c[key] === 'string') d[key] = c[key];
+      });
+      return d;
+    }
+
     function normalizeData(data) {
       var d = data || {};
       if (typeof d.dishOverlayOpacity !== 'number') d.dishOverlayOpacity = 0.55;
       d.look = normalizeLook(d.look);
+      d.christmasMenu = normalizeChristmasMenu(d.christmasMenu);
       d.lunchItems = d.lunchItems || [];
       d.aLaCarte = d.aLaCarte || [];
       d.theGardenAndBar = d.theGardenAndBar || [];
@@ -1964,6 +1999,11 @@
       } else if (!sameContent(before.look.christmas, after.look.christmas)) {
         add('Changed', 'Colours & Season', 'Christmas mode settings');
       }
+      if (before.christmasMenu.enabled !== after.christmasMenu.enabled) {
+        add(after.christmasMenu.enabled ? 'Turned on' : 'Turned off', 'Christmas Menu', 'The bookmark on Our Menu');
+      } else if (!sameContent(before.christmasMenu, after.christmasMenu)) {
+        add('Changed', 'Christmas Menu', 'The bookmark and its page');
+      }
       if (!sameContent(before.reservations, after.reservations)) add('Changed', 'Reservations', 'Booking settings');
       Object.keys(BACKGROUND_STAGES).forEach(function (key) {
         if (!sameContent(before.backgrounds[key], after.backgrounds[key])) add('Changed', 'Backgrounds', BACKGROUND_STAGES[key].title);
@@ -2321,6 +2361,8 @@
       if (view.page === 'backgrounds') return BACKGROUND_STAGES[view.stage].previewTarget;
       if (view.page === 'events' || view.page === 'event') return 'events';
       if (view.page === 'gallery' || view.page === 'about' || view.page === 'reviews') return view.page;
+      // The bookmark sits on Our Menu; the Coming soon page shows while its words are being edited
+      if (view.page === 'christmas') return view.xmasPart === 'page' ? 'christmas' : 'menu-hub';
       if (view.page === 'tasting') return 'tasting';
       if (view.page === 'reservations' || view.page === 'reservation' || view.page === 'bookingSettings') return 'reserve';
       if (view.page === 'menu' || view.page === 'dish') {
@@ -2457,6 +2499,7 @@
       if (can('bookings')) html += navItemHtml('Reservations', 'book', 'reservations', null, waitingBookings().length || undefined);
       if (canEdit) {
         html += navItemHtml('Events', 'calendar', 'events', null, appData.events.length);
+        html += navItemHtml('Christmas Menu', 'bookmark', 'christmas');
         html += navItemHtml('Gallery', 'mosaic', 'gallery', null, appData.gallery.photos.length);
         html += navItemHtml('About', 'story', 'about');
         html += navItemHtml('Reviews', 'star', 'reviews', null, appData.reviews.items.length);
@@ -2485,7 +2528,7 @@
     function renderPage() {
       var pages = {
         home: homeHtml, menu: menuHtml, dish: dishHtml, tasting: tastingHtml,
-        events: eventsHtml, event: eventHtml, gallery: galleryHtml, about: aboutHtml, reviews: reviewsHtml,
+        events: eventsHtml, event: eventHtml, gallery: galleryHtml, about: aboutHtml, reviews: reviewsHtml, christmas: christmasHtml,
         backgrounds: backgroundsHtml, look: lookHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
         reservations: reservationsHtml, reservation: reservationHtml, bookingSettings: bookingSettingsHtml,
         team: teamHtml, staffAdd: staffAddHtml
@@ -2574,6 +2617,12 @@
       }
       if (appData.look.christmas.on && !isChristmasSeason(new Date())) {
         issues.push({ text: '<b>Christmas mode is still on.</b> Guests see snow and the Santa hat until you turn it off and publish.', page: 'look', action: 'Colours & Season' });
+      }
+      var xmasMenu = appData.christmasMenu;
+      if (xmasMenu.enabled && !isChristmasSeason(new Date())) {
+        issues.push({ text: '<b>The Christmas bookmark is still on.</b> Guests see it on Our Menu until you turn it off and publish.', page: 'christmas', action: 'Christmas Menu' });
+      } else if (xmasMenu.enabled && xmasMenu.leadsTo !== 'soon' && !christmasMenuTarget()) {
+        issues.push({ text: '<b>The Christmas bookmark has no menu to lead to</b>, so guests see the Coming soon page.', page: 'christmas', action: 'Choose the menu' });
       }
       if (isStarterStory()) {
         issues.push({ text: '<b>Your About page still has the starter text.</b> Replace it with your own story, or hide the page until it is ready.', page: 'about', action: 'Edit About' });
@@ -4348,6 +4397,133 @@
       else if (t.dataset.about) a[t.dataset.about] = t.value;
       else if (t.dataset.pillar) a.pillars[parseInt(t.dataset.i, 10)][t.dataset.pillar] = t.value;
       touch();
+    }
+
+    /* ========================================================
+       CHRISTMAS MENU PAGE
+       A bookmark that slides in from the right edge of Our Menu, and
+       the page it opens: Coming soon until the Christmas menu is
+       ready, then that menu itself, chosen from the menus here.
+       ======================================================== */
+    function christmasLink() {
+      return window.location.protocol === 'file:' ? 'index.html#christmas' : window.location.origin + '/#christmas';
+    }
+
+    // The menu the bookmark leads to, or null for the Coming soon page (also when that menu was deleted)
+    function christmasMenuTarget(data) {
+      var c = (data || appData).christmasMenu;
+      return c.leadsTo && c.leadsTo !== 'soon' ? getMenu(c.leadsTo, data) : null;
+    }
+
+    function christmasField(id, label, key, placeholder, rows, hint) {
+      var value = appData.christmasMenu[key];
+      var input = rows
+        ? '<textarea id="' + id + '" data-xmas="' + key + '" rows="' + rows + '" placeholder="' + esc(placeholder) + '">' + esc(value) + '</textarea>'
+        : '<input type="text" id="' + id + '" data-xmas="' + key + '" value="' + esc(value) + '" placeholder="' + esc(placeholder) + '" />';
+      return '<div class="field"><label for="' + id + '">' + esc(label) + '</label>' + input + (hint ? '<span class="field-hint">' + esc(hint) + '</span>' : '') + '</div>';
+    }
+
+    function christmasPreviewSwitchHtml() {
+      var part = view.xmasPart === 'page' ? 'page' : 'bookmark';
+      return '<div class="choice-group" role="group" aria-label="What the phone preview shows">' +
+        [['bookmark', 'Show Our Menu'], ['page', 'Show the Coming soon page']].map(function (c) {
+          return '<button type="button" class="btn btn-sm' + (part === c[0] ? ' btn-primary' : '') + '" data-action="xmasPreview" data-part="' + c[0] + '" aria-pressed="' + (part === c[0]) + '">' + c[1] + '</button>';
+        }).join('') +
+      '</div>';
+    }
+
+    function christmasHtml() {
+      var c = appData.christmasMenu;
+      // An empty leadsTo means a menu is wanted but not chosen yet
+      var leadsToMenu = c.leadsTo !== 'soon';
+      var target = christmasMenuTarget();
+      var menuOptions = appData.menuCategories.map(function (menu) {
+        return '<option value="' + esc(menu.id) + '"' + (menu.id === c.leadsTo ? ' selected' : '') + '>' + esc(prettyName(menu.name)) + '</option>';
+      }).join('');
+      var leadChoices = [['soon', 'The Coming soon page'], ['menu', 'One of your menus']].map(function (choice) {
+        var checked = (choice[0] === 'menu') === !!leadsToMenu;
+        return '<label><input type="radio" name="xmasLeadsTo" value="' + choice[0] + '"' + (checked ? ' checked' : '') + ' />' + choice[1] + '</label>';
+      }).join('');
+
+      var targetNote = '';
+      if (leadsToMenu && !target) {
+        targetNote = c.leadsTo
+          ? '<div class="note">The menu chosen before was deleted, so guests see the Coming soon page. Choose another menu.</div>'
+          : '<div class="note is-info">Choose the menu. Until you do, guests see the Coming soon page.</div>';
+      } else if (target && target.id !== 'tasting' && !countDishes(target.id)) {
+        targetNote = '<div class="note"><b>' + esc(prettyName(target.name)) + '</b> has no dishes yet, so guests would find an empty menu.</div>';
+      }
+
+      return pageHead('Christmas Menu', 'A bookmark that slides in from the right edge of Our Menu and takes guests to your Christmas menu. Changes show in the phone preview. Guests see them after you press Publish.', christmasPreviewSwitchHtml()) +
+        '<section class="card card-pad" data-xmas-part="bookmark">' +
+          '<h2 class="card-title">The bookmark</h2>' +
+          '<label class="check"><input type="checkbox" id="xmasMenuOn"' + (c.enabled ? ' checked' : '') + ' /><span>Show the Christmas bookmark on Our Menu</span></label>' +
+          '<div class="field-row">' +
+            christmasField('xmasLabel', 'Words on the bookmark', 'label', 'Christmas Menu') +
+            christmasField('xmasNote', 'Small line above them', 'note', 'Coming soon', 0, 'Leave it empty for one line. Change it to Now serving when the menu is ready.') +
+          '</div>' +
+          '<div class="field"><label for="xmasLinkBox">Link to share</label>' +
+            '<div class="add-row"><input type="text" id="xmasLinkBox" readonly value="' + esc(christmasLink()) + '" style="flex:1;min-width:0" />' +
+            '<button type="button" class="btn btn-sm" data-action="copyXmasLink">' + icon('link', 14) + 'Copy link</button></div>' +
+            '<span class="field-hint">Opens wherever the bookmark leads. Put it on Instagram or WhatsApp. It works once the bookmark is on and published.</span></div>' +
+        '</section>' +
+        '<section class="card card-pad" data-xmas-part="bookmark">' +
+          '<h2 class="card-title">Where it leads</h2>' +
+          '<div class="choice-group" role="radiogroup" aria-label="Where the bookmark leads">' + leadChoices + '</div>' +
+          (leadsToMenu
+            ? '<div class="field"><label for="xmasLeadsMenu">Menu</label><select id="xmasLeadsMenu">' +
+                (target ? '' : '<option value="" selected disabled>Choose a menu</option>') + menuOptions + '</select></div>'
+            : '') +
+          targetNote +
+          '<p class="field-hint">When your Christmas menu is ready, add it under Menus with <b>Add a menu</b>, fill in its dishes, then choose it here and press Publish. Until then, guests see the Coming soon page below.</p>' +
+        '</section>' +
+        '<section class="card card-pad" data-xmas-part="page">' +
+          '<h2 class="card-title">The Coming soon page</h2>' +
+          (target ? '<div class="note is-info">Guests now go straight to ' + esc(prettyName(target.name)) + ', so this page is not shown. It is kept for next year.</div>' : '') +
+          christmasField('xmasEyebrow', 'Small title', 'eyebrow', 'The festive season', 0, 'A few words. Leave it empty to hide it.') +
+          christmasField('xmasTitle', 'Big title', 'title', 'Christmas Menu') +
+          christmasField('xmasSoon', 'Under the line', 'soon', 'Coming soon', 0, 'Shown letter by letter as the page opens.') +
+          christmasField('xmasMessage', 'Message', 'message', 'A sentence or two for guests', 4, 'Leave an empty line between paragraphs.') +
+          christmasField('xmasWhen', 'Date (optional)', 'when', 'Unveiling 1 December', 0, 'Shown in a small frame. Leave it empty if there is no date yet.') +
+          '<label class="check"><input type="checkbox" id="xmasReserveOn"' + (c.reserve ? ' checked' : '') + ' /><span>Reserve button, which opens the booking form</span></label>' +
+          (c.reserve ? christmasField('xmasReserveLabel', 'Reserve button words', 'reserveLabel', 'Reserve for Christmas', 0, 'Hidden while reservations are paused in Booking settings.') : '') +
+          '<label class="check"><input type="checkbox" id="xmasWhatsappOn"' + (c.whatsapp ? ' checked' : '') + ' /><span>WhatsApp button, with a first message about the Christmas menu ready to send</span></label>' +
+          (c.whatsapp ? christmasField('xmasWhatsappLabel', 'WhatsApp button words', 'whatsappLabel', 'Ask us on WhatsApp', 0, 'Uses the WhatsApp number from Contact & Hours.') : '') +
+        '</section>';
+    }
+
+    // Moves the phone to Our Menu or to the Coming soon page. A press of the switch always moves it,
+    // even if the guest view inside the phone was tapped elsewhere since.
+    function showChristmasPart(part, always) {
+      part = part === 'page' ? 'page' : 'bookmark';
+      var current = view.xmasPart === 'page' ? 'page' : 'bookmark';
+      if (current === part && !always) return;
+      view.xmasPart = part;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-action="xmasPreview"]'), function (btn) {
+        var on = btn.getAttribute('data-part') === part;
+        btn.classList.toggle('btn-primary', on);
+        btn.setAttribute('aria-pressed', on);
+      });
+      postToPreview({ type: 'BELLE_NAVIGATE', target: previewPageTarget() });
+    }
+
+    function onChristmasInput(t) {
+      var c = appData.christmasMenu;
+      var redraw = false;
+      if (t.id === 'xmasMenuOn') c.enabled = t.checked;
+      else if (t.id === 'xmasReserveOn') { c.reserve = t.checked; redraw = true; }
+      else if (t.id === 'xmasWhatsappOn') { c.whatsapp = t.checked; redraw = true; }
+      else if (t.name === 'xmasLeadsTo') {
+        // Choosing a menu starts at one called Christmas, if there is one
+        var christmasMenu = appData.menuCategories.find(function (m) { return /christmas|xmas|festive/i.test(m.name || ''); });
+        c.leadsTo = t.value === 'soon' ? 'soon' : (christmasMenu ? christmasMenu.id : '');
+        redraw = true;
+      }
+      else if (t.id === 'xmasLeadsMenu') { c.leadsTo = t.value; redraw = true; }
+      else if (t.dataset.xmas) c[t.dataset.xmas] = t.value;
+      else return;
+      touch();
+      if (redraw) keepScroll(renderPage);
     }
 
     /* ========================================================
@@ -7908,6 +8084,19 @@
         touch();
       },
 
+      xmasPreview: function (el) {
+        showChristmasPart(el.getAttribute('data-part'), true);
+      },
+      copyXmasLink: function () {
+        copyText(christmasLink()).then(function () {
+          toast('Link copied.');
+        }, function () {
+          var box = $('xmasLinkBox');
+          if (box) { box.focus(); box.select(); }
+          toast('Press Ctrl+C to copy the selected link.');
+        });
+      },
+
       addGalleryPhoto: addGalleryPhoto,
       removeGalleryPhoto: removeGalleryPhoto,
       pickAboutPhoto: function (el) {
@@ -8071,9 +8260,17 @@
         else if (view.page === 'look') onLookInput(t);
         else if (view.page === 'gallery') onGalleryInput(t);
         else if (view.page === 'about') onAboutInput(t);
+        else if (view.page === 'christmas') onChristmasInput(t);
         else if (view.page === 'reviews') onReviewsInput(t);
         else if (view.page === 'backgrounds') onBackgroundInput(t);
         else if (view.page === 'bookingSettings') onBookingSettingsInput(t);
+      });
+
+      // On the Christmas Menu page, the phone shows whichever part is being edited
+      page.addEventListener('focusin', function (e) {
+        if (view.page !== 'christmas') return;
+        var part = e.target.closest && e.target.closest('[data-xmas-part]');
+        if (part) showChristmasPart(part.getAttribute('data-xmas-part'));
       });
 
       page.addEventListener('change', function (e) {

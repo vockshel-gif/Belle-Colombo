@@ -3791,6 +3791,366 @@
       .about-body [data-reveal] { opacity: 1; transform: none; transition: none; }
     }
 
+    /* ========================================================
+       CHRISTMAS MENU: A BOOKMARK AND THE PAGE IT OPENS
+       A ribbon slides in from the right edge of Our Menu, like a
+       bookmark left in the book. It opens the Christmas page (Coming
+       soon until the menu is ready) or, once chosen in the admin
+       panel, the Christmas menu itself. Both are set on the admin
+       panel's Christmas Menu page.
+       ======================================================== */
+    :root {
+      --xmas-red: #c8102e;   /* the Santa hat's red */
+      --xmas-cream: #fbf6ee;
+    }
+    /* The slot keeps a free band between the menus and the social icons. The ribbon itself is pinned
+       to the right edge of the screen at the slot's height (set by placeChristmasBookmark), so on a
+       desktop it still comes from the side of the window, not from the middle column. */
+    .xmas-bm-slot {
+      --bm-h: 46px;
+      flex-shrink: 0;
+      height: var(--bm-h);
+      margin: clamp(12px, 2.6vh, 24px) 0;
+      pointer-events: none;
+    }
+    .xmas-bm-slot[hidden] { display: none; }
+    /* Peek and tuck: it slides out to say Christmas Menu, then tucks back until only its star shows */
+    .xmas-bookmark {
+      --bm-tuck: 24px;  /* hidden past the edge, so a springy slide never shows a gap */
+      --bm-peek: 48px;  /* what stays out when tucked: the notch and the star */
+      position: fixed;
+      top: 0;
+      right: calc(var(--bm-tuck) * -1);
+      z-index: 2;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--xmas-cream);
+      font: inherit;
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.42)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+      transform: translateX(calc(100% - var(--bm-tuck) - var(--bm-peek)));
+      transition: transform 0.7s cubic-bezier(0.6, 0, 0.3, 1);
+    }
+    .xmas-bookmark.is-out {
+      transform: translateX(0);
+      transition: transform 0.8s cubic-bezier(0.2, 1.25, 0.35, 1);
+    }
+    .xmas-bookmark.is-away {
+      transform: translateX(calc(100% + 30px));
+      transition: none;
+    }
+    .xmas-bookmark:focus-visible {
+      outline: 2px solid var(--xmas-cream);
+      outline-offset: 4px;
+    }
+    .bm-ribbon {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: var(--bm-h);
+      padding: 0 calc(20px + var(--bm-tuck)) 0 25px;
+      background: var(--xmas-red);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 15px 50%);
+      transition: transform 0.25s var(--ease-out);
+    }
+    /* A stitched edge, like a fabric ribbon */
+    .bm-ribbon::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 8px;
+      right: 0;
+      border-top: 1px dashed rgba(255, 255, 255, 0.4);
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+    }
+    .xmas-bookmark:active .bm-ribbon { transform: scale(0.97); }
+    .bm-star {
+      flex: none;
+      width: 14px;
+      height: 14px;
+      animation: bmTwinkle 3.4s ease-in-out infinite;
+    }
+    .bm-star svg { display: block; width: 100%; height: 100%; }
+    .bm-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      min-width: 0;
+      line-height: 1;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .bm-note,
+    .bm-label {
+      max-width: 58vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--font-label);
+      text-transform: uppercase;
+    }
+    .bm-note {
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      opacity: 0.78;
+    }
+    .bm-note:empty { display: none; }
+    .bm-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+    }
+    @keyframes bmTwinkle {
+      0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.75; }
+      50% { transform: scale(1.08) rotate(45deg); opacity: 1; }
+    }
+    /* A little larger on a desktop, still from the right edge of the window */
+    @media (min-width: 768px) {
+      .xmas-bm-slot { --bm-h: 52px; }
+      .xmas-bookmark { --bm-peek: 52px; }
+      .bm-ribbon { gap: 14px; padding-left: 28px; }
+      .bm-star { width: 15px; height: 15px; }
+      .bm-note { font-size: 9px; }
+      .bm-label { font-size: 13.5px; }
+    }
+
+    /* ---------- The Christmas page ---------- */
+    #panel-christmas {
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      background:
+        radial-gradient(130% 62% at 50% 0%, rgba(var(--light-rgb), 0.08), transparent 62%),
+        var(--paper);
+    }
+    #panel-christmas [hidden] { display: none !important; }
+    .xmas-scroll {
+      position: relative;
+      flex: 1 1 auto;
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .xmas-scroll::-webkit-scrollbar { display: none; }
+    /* A ribbon hanging from the top of the page: the bookmark the guest followed in */
+    .xmas-hang {
+      --hang-h: clamp(92px, 16vh, 150px);
+      position: absolute;
+      top: -24px;
+      right: clamp(28px, 11vw, 84px);
+      z-index: 2;
+      width: 30px;
+      height: calc(var(--hang-h) + 24px);
+      pointer-events: none;
+      filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
+      transform: translateY(-101%);
+    }
+    #panel-christmas.is-active .xmas-hang {
+      animation: hangDrop 1.2s cubic-bezier(0.2, 1.3, 0.4, 1) 0.25s both;
+    }
+    .xmas-hang-body {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 24px;
+      box-sizing: border-box;
+      background: var(--xmas-red);
+      color: var(--xmas-cream);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 14px), 0 100%);
+      transform-origin: 50% 0;
+    }
+    #panel-christmas.is-active .xmas-hang-body {
+      animation: hangSway 7s ease-in-out 1.5s infinite;
+    }
+    .xmas-hang-body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 10px;
+      left: 4px;
+      right: 4px;
+      border-left: 1px dashed rgba(255, 255, 255, 0.4);
+      border-right: 1px dashed rgba(255, 255, 255, 0.4);
+    }
+    .xmas-hang-body svg { width: 12px; height: 12px; }
+    @keyframes hangDrop {
+      from { transform: translateY(-101%); }
+      to { transform: translateY(0); }
+    }
+    @keyframes hangSway {
+      0%, 100% { transform: rotate(0deg); }
+      30% { transform: rotate(1.6deg); }
+      70% { transform: rotate(-1.4deg); }
+    }
+
+    .xmas-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+      padding: calc(clamp(92px, 16vh, 150px) + 18px) clamp(24px, 8vw, 44px) calc(max(24px, env(safe-area-inset-bottom)) + 28px);
+      box-sizing: border-box;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    .xmas-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 0 0 20px;
+      font-family: var(--font-label);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: rgba(var(--light-rgb), 0.78);
+    }
+    .xmas-eyebrow span { margin-right: -0.34em; } /* the spacing after the last letter would push it off centre */
+    .xmas-eyebrow::before,
+    .xmas-eyebrow::after {
+      content: '';
+      flex: none;
+      width: 22px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.7;
+    }
+    .xmas-title {
+      max-width: 12ch;
+      margin: 0;
+      padding-left: 0.12em;
+      font-family: var(--font-title);
+      font-size: clamp(34px, 10.4vw, 58px);
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-wrap: balance;
+      color: var(--ink);
+    }
+    .xmas-rule {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: min(70%, 250px);
+      margin: 24px auto 22px;
+      color: var(--ink);
+    }
+    .xmas-rule span {
+      flex: 1;
+      height: 1px;
+      background: rgba(var(--light-rgb), 0.45);
+    }
+    .xmas-rule span:first-child { transform-origin: right center; }
+    .xmas-rule span:last-child { transform-origin: left center; }
+    .xmas-rule svg { flex: none; width: 15px; height: 15px; }
+    .xmas-soon {
+      margin: 0;
+      padding-left: 0.48em;
+      font-family: var(--font-label);
+      font-size: clamp(13px, 3.9vw, 16px);
+      font-weight: 500;
+      line-height: 1.6;
+      letter-spacing: 0.48em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .xmas-word { display: inline-block; white-space: nowrap; }
+    .xmas-ch { display: inline-block; }
+    .xmas-message {
+      max-width: 33ch;
+      margin: 22px auto 0;
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+    }
+    .xmas-message p { margin: 0; }
+    .xmas-message p + p { margin-top: 12px; }
+    .xmas-when {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 24px 0 0;
+      padding: 10px 18px 10px calc(18px + 0.26em);
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      font-family: var(--font-label);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .xmas-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 340px;
+      margin-top: 34px;
+    }
+    .xmas-actions .about-btn { flex: none; }
+    .reservations-off .xmas-reserve { display: none !important; }
+
+    /* Each part rises in as the page opens. Edits from the admin panel then show without replaying it. */
+    #panel-christmas.is-active .xmas-rise {
+      animation: xmasRise 0.95s var(--ease-out) var(--d, 0s) both;
+    }
+    #panel-christmas.is-active .xmas-rule span {
+      animation: xmasGrow 0.9s var(--ease-out) 0.55s both;
+    }
+    #panel-christmas.is-active .xmas-rule svg {
+      animation: xmasStar 0.9s var(--ease-out) 0.5s both;
+    }
+    #panel-christmas.is-active .xmas-ch {
+      animation: xmasLetter 0.7s var(--ease-out) calc(0.75s + var(--i, 0) * 45ms) both;
+    }
+    .xmas-page.is-settled *,
+    .xmas-page.is-settled *::before,
+    .xmas-page.is-settled *::after { animation: none !important; }
+    @keyframes xmasRise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes xmasGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+    @keyframes xmasStar {
+      from { opacity: 0; transform: scale(0.3) rotate(-90deg); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes xmasLetter {
+      from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+      to { opacity: 1; transform: none; filter: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      /* No sliding: the ribbon simply stays out */
+      .xmas-bookmark,
+      .xmas-bookmark.is-away { transform: none; transition: none; }
+      .bm-star { animation: none; }
+      .xmas-hang,
+      #panel-christmas.is-active .xmas-hang { animation: none; transform: none; }
+      #panel-christmas * { animation: none !important; }
+    }
+
   </style>
   <script src="belleData.js"></script>
 </head>
@@ -3956,6 +4316,19 @@
   <span class="d-line line-right"></span>
 </div>
         <button type="button" class="menu-cat-btn cat-btn-thebar" data-target="thebar">THE BAR</button>
+      </div>
+
+      <!-- Christmas Menu bookmark: slides in from the right edge when switched on in the admin panel -->
+      <div class="xmas-bm-slot" id="xmasBmSlot" hidden>
+        <button type="button" class="xmas-bookmark" id="xmasBookmark" aria-label="Christmas Menu">
+          <span class="bm-ribbon">
+            <span class="bm-star" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg></span>
+            <span class="bm-text">
+              <span class="bm-note" id="xmasBmNote"></span>
+              <span class="bm-label" id="xmasBmLabel">Christmas Menu</span>
+            </span>
+          </span>
+        </button>
       </div>
 
       <!-- Bottom Social Media Dock -->
@@ -5689,6 +6062,41 @@ Choose your spread/rillette style:</p>
   </div>
 
 
+  <!-- ===== CHRISTMAS MENU: opened by the bookmark on Our Menu, written in the admin panel ===== -->
+  <div class="view-food-panel" id="panel-christmas" role="dialog" aria-label="Christmas Menu" aria-modal="true">
+
+    <button type="button" class="btn-lunch-back" id="backFromChristmas" data-back-to-hub aria-label="Back to Our Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+
+    <div class="xmas-scroll" id="xmasScroll">
+      <span class="xmas-hang" aria-hidden="true">
+        <span class="xmas-hang-body"><svg viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg></span>
+      </span>
+
+      <div class="xmas-page" id="xmasPage">
+        <p class="xmas-eyebrow xmas-rise" id="xmasEyebrow" style="--d:.2s"><span id="xmasEyebrowText"></span></p>
+        <h2 class="xmas-title xmas-rise" id="xmasTitle" style="--d:.32s">Christmas Menu</h2>
+        <div class="xmas-rule" aria-hidden="true">
+          <span></span>
+          <svg viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg>
+          <span></span>
+        </div>
+        <p class="xmas-soon" id="xmasSoon"><span class="sr-only" id="xmasSoonText"></span><span id="xmasSoonLetters" aria-hidden="true"></span></p>
+        <div class="xmas-message xmas-rise" id="xmasMessage" style="--d:1.15s"></div>
+        <p class="xmas-when xmas-rise" id="xmasWhen" style="--d:1.3s"></p>
+        <div class="xmas-actions xmas-rise" id="xmasActions" style="--d:1.45s">
+          <button type="button" class="about-btn xmas-reserve" id="xmasReserve">Reserve for Christmas</button>
+          <a class="about-btn is-quiet" id="xmasWhatsapp" href="https://wa.me/94770315589" target="_blank" rel="noopener noreferrer">Ask us on WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ===== REVIEWS: Belle's Google rating and what guests wrote, picked in the admin panel ===== -->
   <div class="view-food-panel" id="panel-reviews" role="dialog" aria-label="Guest reviews" aria-modal="true">
 
@@ -6151,6 +6559,7 @@ Choose your spread/rillette style:</p>
       } else if (window.BELLE_DEFAULT_DATA && window.BELLE_DEFAULT_DATA.menuCategories) {
         renderMenuHubCategories(window.BELLE_DEFAULT_DATA.menuCategories);
       }
+      introChristmasBookmark();
     }
 
     function returnToHome() {
@@ -6199,6 +6608,8 @@ Choose your spread/rillette style:</p>
             openGallery();
           } else if (targetId === 'about') {
             openAbout();
+          } else if (targetId === 'christmas') {
+            openChristmasPage();
           } else if (targetId === 'reviews') {
             openReviews();
           }
@@ -6235,6 +6646,7 @@ Choose your spread/rillette style:</p>
     function returnToMenuHub() {
       document.querySelectorAll('.view-food-panel').forEach(function (p) { p.classList.remove('is-active'); });
       if (window.ambientBg) window.ambientBg.onEnterMenu();
+      placeChristmasBookmark();
     }
 
     // Click on MENU link on Home page
@@ -7569,6 +7981,15 @@ Choose your spread/rillette style:</p>
           openPanel(pageKey);
         } else {
           // The published data may still switch it on, so retry once after sync
+          unresolvedDeepLinkHash = h;
+          if (document.body.classList.contains('is-ready')) returnToHome();
+        }
+      } else if (h === '#christmas') {
+        // A link to share: it opens wherever the bookmark leads, once the bookmark is switched on
+        if (christmasMenuData(window.belleCurrentData).enabled === true) {
+          document.body.classList.add('is-ready', 'is-menu-active');
+          openPanel(christmasTarget());
+        } else {
           unresolvedDeepLinkHash = h;
           if (document.body.classList.contains('is-ready')) returnToHome();
         }
@@ -9534,12 +9955,13 @@ Choose your spread/rillette style:</p>
         return;
       }
       applyLook(data.look);
+      renderChristmas(data);
       var newStructureJson = '';
       try {
         newStructureJson = JSON.stringify(data, function(key, val) {
           if (key === 'mediaFrame') return undefined;
-          // Colours and Christmas mode are already applied, so changing them alone redraws nothing
-          if (key === 'look' && this === data) return undefined;
+          // Colours, Christmas mode and the Christmas Menu are already applied, so changing them alone redraws nothing
+          if ((key === 'look' || key === 'christmasMenu') && this === data) return undefined;
           return val;
         });
       } catch (e) {
@@ -10071,6 +10493,213 @@ Choose your spread/rillette style:</p>
       document.querySelectorAll('.about-body [data-reveal]').forEach(function(el) { el.classList.remove('is-in'); });
       watchAboutReveal();
     }
+
+    /* ========================================================
+       CHRISTMAS MENU
+       A bookmark on Our Menu and the page it opens, both written on
+       the admin panel's Christmas Menu page and published as
+       data.christmasMenu:
+       { enabled, label, note, leadsTo, eyebrow, title, soon, message,
+         when, reserve, reserveLabel, whatsapp, whatsappLabel }
+       leadsTo is 'soon' for the Coming soon page, or the id of one of
+       the menus once the Christmas menu is ready. #christmas opens
+       whichever it is, so the link can be shared.
+       ======================================================== */
+    function christmasMenuData(data) {
+      var c = data && data.christmasMenu;
+      return c && typeof c === 'object' ? c : { enabled: false };
+    }
+
+    // The menu the bookmark leads to, if it still exists, or else the Coming soon page
+    function christmasTarget() {
+      var data = window.belleCurrentData || {};
+      var id = christmasMenuData(data).leadsTo;
+      if (id && id !== 'soon') {
+        var menus = (data.menuCategories || []).concat(data.customCategories || []);
+        if (menus.some(function(menu) { return menu && menu.id === id; })) return id;
+      }
+      return 'christmas';
+    }
+
+    // Each letter of "Coming soon" fades in after the one before
+    function christmasLettersHtml(text) {
+      var n = 0;
+      return String(text || '').trim().split(/\s+/).filter(Boolean).map(function(word) {
+        return '<span class="xmas-word">' + Array.from(word).map(function(ch) {
+          return '<span class="xmas-ch" style="--i:' + (n++) + '">' + escapeHtml(ch) + '</span>';
+        }).join('') + '</span>';
+      }).join(' ');
+    }
+
+    function setChristmasText(id, text) {
+      var el = document.getElementById(id);
+      el.textContent = text || '';
+      el.hidden = !text;
+    }
+
+    function renderChristmas(data) {
+      var c = christmasMenuData(data);
+      var on = c.enabled === true;
+      document.body.classList.toggle('christmas-menu-on', on);
+
+      var label = String(c.label || 'Christmas Menu');
+      var note = String(c.note || '');
+      var slot = document.getElementById('xmasBmSlot');
+      var wasOn = !slot.hidden;
+      slot.hidden = !on;
+      // Switched on while Our Menu is open (as in the admin preview): it arrives as it would for a guest
+      if (on && !wasOn) introChristmasBookmark();
+      document.getElementById('xmasBmLabel').textContent = label;
+      document.getElementById('xmasBmNote').textContent = note;
+      document.getElementById('xmasBookmark').setAttribute('aria-label', label + (note ? ', ' + note : ''));
+
+      // Typing in the admin panel updates the open page without replaying its entrance
+      var panel = document.getElementById('panel-christmas');
+      if (panel.classList.contains('is-active')) document.getElementById('xmasPage').classList.add('is-settled');
+
+      var title = String(c.title || label);
+      panel.setAttribute('aria-label', title);
+      document.getElementById('xmasEyebrowText').textContent = c.eyebrow || '';
+      document.getElementById('xmasEyebrow').hidden = !c.eyebrow;
+      document.getElementById('xmasTitle').textContent = title;
+      var soon = String(c.soon || '').trim();
+      document.getElementById('xmasSoon').hidden = !soon;
+      document.getElementById('xmasSoonText').textContent = soon;
+      var letters = document.getElementById('xmasSoonLetters');
+      if (letters.getAttribute('data-text') !== soon) {
+        letters.setAttribute('data-text', soon);
+        letters.innerHTML = christmasLettersHtml(soon);
+      }
+      var message = document.getElementById('xmasMessage');
+      message.innerHTML = paragraphsHtml(c.message);
+      message.hidden = !String(c.message || '').trim();
+      setChristmasText('xmasWhen', String(c.when || '').trim());
+
+      var reserve = document.getElementById('xmasReserve');
+      reserve.textContent = c.reserveLabel || 'Reserve for Christmas';
+      reserve.hidden = c.reserve === false;
+      var venue = (data && data.venue) || {};
+      var whatsapp = venue.whatsappNumber || String(venue.phone || '+94 77 031 5589').replace(/\D/g, '');
+      var ask = document.getElementById('xmasWhatsapp');
+      ask.textContent = c.whatsappLabel || 'Ask us on WhatsApp';
+      ask.href = 'https://wa.me/' + encodeURIComponent(whatsapp) + '?text=' + encodeURIComponent('Hello Belle, I would love to hear about your ' + title + '.');
+      ask.hidden = c.whatsapp === false;
+      // With reservations paused, only WhatsApp is left
+      var bookings = (data && data.reservations) || {};
+      var reserveShows = !reserve.hidden && bookings.enabled !== false;
+      document.getElementById('xmasActions').hidden = !reserveShows && ask.hidden;
+    }
+
+    function openChristmasPage() {
+      document.getElementById('xmasScroll').scrollTop = 0;
+      document.getElementById('xmasPage').classList.remove('is-settled');
+    }
+
+    /* The bookmark peeks and tucks: on opening Our Menu it slides out from the right edge of the
+       screen, says its words for a few seconds, then tucks back until only its star shows. Every
+       15 seconds it slides out again, and a mouse over it (or keyboard focus) holds it out. */
+    var XMAS_BM_INTRO_MS = 1200;   // after the menus have risen in
+    var XMAS_BM_SHOW_MS = 3600;    // how long it stays out each time
+    var XMAS_BM_EVERY_MS = 15000;  // how often it slides out again
+
+    function xmasBmState() {
+      if (!xmasBmState.s) xmasBmState.s = { introTimer: 0, tuckTimer: 0, cycleTimer: 0, held: false };
+      return xmasBmState.s;
+    }
+
+    function xmasBmCalm() {
+      return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+
+    function setXmasBm(state) {
+      var el = document.getElementById('xmasBookmark');
+      el.classList.toggle('is-away', state === 'away');
+      el.classList.toggle('is-out', state === 'out');
+    }
+
+    function tuckXmasBmLater(ms) {
+      var s = xmasBmState();
+      clearTimeout(s.tuckTimer);
+      s.tuckTimer = setTimeout(function() {
+        if (!s.held && !xmasBmCalm()) setXmasBm('in');
+      }, ms);
+    }
+
+    // Seen only on Our Menu, with no menu or page open over it
+    function xmasBmOnScreen() {
+      return document.body.classList.contains('is-menu-active') &&
+        !document.getElementById('xmasBmSlot').hidden &&
+        !document.querySelector('.view-food-panel.is-active');
+    }
+
+    // Level with its slot between the menus and the social icons, at the right edge of the screen
+    function placeChristmasBookmark() {
+      var slot = document.getElementById('xmasBmSlot');
+      if (slot.hidden || !document.body.classList.contains('is-menu-active')) return;
+      document.getElementById('xmasBookmark').style.top = Math.round(slot.getBoundingClientRect().top) + 'px';
+    }
+
+    function introChristmasBookmark() {
+      var s = xmasBmState();
+      clearTimeout(s.introTimer);
+      clearTimeout(s.tuckTimer);
+      clearInterval(s.cycleTimer);
+      if (document.getElementById('xmasBmSlot').hidden) return;
+      placeChristmasBookmark();
+      if (xmasBmCalm()) {
+        setXmasBm('out');
+        return;
+      }
+      setXmasBm('away');
+      void document.getElementById('xmasBookmark').offsetWidth; // start from off screen
+      s.introTimer = setTimeout(function() {
+        setXmasBm('out');
+        tuckXmasBmLater(XMAS_BM_SHOW_MS);
+      }, XMAS_BM_INTRO_MS);
+      s.cycleTimer = setInterval(function() {
+        if (s.held || document.hidden || !xmasBmOnScreen()) return;
+        setXmasBm('out');
+        tuckXmasBmLater(XMAS_BM_SHOW_MS);
+      }, XMAS_BM_EVERY_MS);
+    }
+
+    function bindChristmas() {
+      var bookmark = document.getElementById('xmasBookmark');
+      bookmark.addEventListener('click', function() {
+        openPanel(christmasTarget());
+      });
+      function hold() {
+        xmasBmState().held = true;
+        setXmasBm('out');
+      }
+      function release() {
+        xmasBmState().held = false;
+        tuckXmasBmLater(700);
+      }
+      // Only a real mouse holds it out; on a phone a tap simply opens it
+      bookmark.addEventListener('pointerenter', function(e) { if (e.pointerType === 'mouse') hold(); });
+      bookmark.addEventListener('pointerleave', function(e) { if (e.pointerType === 'mouse') release(); });
+      bookmark.addEventListener('focus', function() {
+        var byKeyboard = true;
+        try { byKeyboard = bookmark.matches(':focus-visible'); } catch (e) {}
+        if (byKeyboard) hold();
+      });
+      bookmark.addEventListener('blur', release);
+
+      var hub = document.querySelector('.view-menu-hub');
+      hub.addEventListener('scroll', placeChristmasBookmark, { passive: true });
+      window.addEventListener('resize', placeChristmasBookmark);
+      // Fonts arriving or menus changing move the slot without a resize
+      if (window.ResizeObserver) {
+        var watch = new ResizeObserver(placeChristmasBookmark);
+        watch.observe(hub);
+        watch.observe(document.getElementById('menuCatList'));
+      }
+      document.getElementById('xmasReserve').addEventListener('click', function() {
+        openReservation({ returnTo: 'christmas' });
+      });
+    }
+    bindChristmas();
 
     /* ========================================================
        REVIEWS
