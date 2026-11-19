@@ -145,12 +145,26 @@
       var bar = document.querySelector('meta[name="theme-color"]');
       if (bar) bar.setAttribute('content', dark);
     };
-    // Open in the colours from the last visit, so a returning guest never sees black first
+    // The text size chosen in the admin panel (Text size), in percent: one for the menus and one
+    // for every other page. 100 is the size the site was designed at.
+    window.belleSetTextSize = function(menus, site) {
+      function scale(pct) {
+        var n = Number(pct);
+        return isFinite(n) && n > 0 ? Math.max(0.9, Math.min(1.4, n / 100)) : 1;
+      }
+      var root = document.documentElement;
+      root.style.setProperty('--fs-menu', String(scale(menus)));
+      root.style.setProperty('--fs-site', String(scale(site)));
+    };
+    // Open in the colours and text size from the last visit, so a returning guest never sees black first
     (function() {
       try {
         if (window.self !== window.top || /[?&]preview=1/.test(location.search)) return;
         var look = JSON.parse(localStorage.getItem('belle_look'));
-        if (look) window.belleSetPalette(look.dark, look.light);
+        if (look) {
+          window.belleSetPalette(look.dark, look.light);
+          window.belleSetTextSize(look.menuText, look.siteText);
+        }
       } catch (e) {}
     })();
   </script>
@@ -171,7 +185,15 @@
       --font-title: 'Montserrat', system-ui, -apple-system, sans-serif;
       --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
       --font-label: 'Montserrat', system-ui, -apple-system, sans-serif;
+
+      /* Text size, set in the admin panel under Text size (see belleSetTextSize above).
+         Every reading-text font-size is written as calc(size * var(--fs, 1)): --fs follows
+         --fs-site on every page and --fs-menu inside the menus. Big titles, the large words
+         on the landing page and Our Menu, and the drawn menu headers keep their own size.
+         Write any new reading-text font-size the same way. */
+      --fs: var(--fs-site, 1);
     }
+    .view-food-panel.lunch-theme { --fs: var(--fs-menu, 1); }
 
     /* Screen-reader and search engine semantic utility */
     .sr-only {
@@ -674,7 +696,7 @@
       position: relative;
       min-height: 44px;
       padding: 0 0 0 .34em; /* balances the space letter-spacing leaves after the last letter */
-      font-size: clamp(.8rem, 3.6vw, .95rem);
+      font-size: calc(clamp(.8rem, 3.6vw, .95rem) * var(--fs, 1));
       font-weight: 500;
       letter-spacing: .34em;
       text-transform: uppercase;
@@ -1105,7 +1127,7 @@
       background: var(--paper);
       color: var(--ink-soft);
       font-family: var(--font-label);
-      font-size: clamp(0.58rem, 2.4vw, 0.65rem);
+      font-size: calc(clamp(0.58rem, 2.4vw, 0.65rem) * var(--fs, 1));
       letter-spacing: 0.05em;
       z-index: 30;
       white-space: nowrap;
@@ -1275,14 +1297,14 @@
     .menu-empty h4 {
       margin-bottom: 0.5rem;
       font-family: var(--font-title);
-      font-size: 1.15rem;
+      font-size: calc(1.15rem * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--ink);
     }
     .menu-empty p {
-      font-size: 0.8rem;
+      font-size: calc(0.8rem * var(--fs, 1));
     }
 
     /* Headings inside a menu, and the compact price lists under them */
@@ -1299,19 +1321,19 @@
     }
     .menu-heading h4 {
       margin: 0;
-      font-size: 0.66rem;
+      font-size: calc(0.66rem * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.2em;
       line-height: 1.5;
       color: var(--ink);
     }
     .menu-heading.is-section h4 {
-      font-size: 1rem;
+      font-size: calc(1rem * var(--fs, 1));
       letter-spacing: 0.12em;
     }
     .menu-heading p {
       margin: 0.2rem 0 0;
-      font-size: clamp(0.72rem, 2.6vw, 0.80rem);
+      font-size: calc(clamp(0.72rem, 2.6vw, 0.80rem) * var(--fs, 1));
       line-height: 1.40;
       color: var(--ink-soft);
       font-weight: 480;
@@ -1322,7 +1344,7 @@
     }
     .lunch-card-tag {
       margin-left: 0.15rem;
-      font-size: 0.56rem;
+      font-size: calc(0.56rem * var(--fs, 1));
       letter-spacing: 0.14em;
       color: var(--ink-soft);
       vertical-align: 0.35em;
@@ -1340,7 +1362,7 @@
     .price-table th,
     .price-table td {
       padding: 0.3rem 0 0.3rem 0.65rem;
-      font-size: clamp(0.84rem, 3.2vw, 0.96rem);
+      font-size: calc(clamp(0.84rem, 3.2vw, 0.96rem) * var(--fs, 1));
       font-weight: 600;
       color: var(--ink);
       text-align: right;
@@ -1349,7 +1371,7 @@
     .price-table thead th {
       padding-top: 0;
       padding-bottom: 0;
-      font-size: 0.54rem;
+      font-size: calc(0.54rem * var(--fs, 1));
       letter-spacing: 0.1em;
       color: var(--ink-soft);
       text-transform: uppercase;
@@ -1472,7 +1494,7 @@
       border: 1px solid var(--rule);
       background: transparent;
       color: var(--ink-soft);
-      font-size: 0.62rem;
+      font-size: calc(0.62rem * var(--fs, 1));
       letter-spacing: 0.06em;
       line-height: 1.1;
       text-transform: uppercase;
@@ -1504,12 +1526,12 @@
     }
 
     .course-pill {
-      font-size: clamp(0.52rem, 1.9vw, 0.58rem);
+      font-size: calc(clamp(0.52rem, 1.9vw, 0.58rem) * var(--fs, 1));
       padding: 4px 9px;
       border-radius: 12px;
     }
     .tasting-pill {
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--fs, 1));
       letter-spacing: 0.08em;
       padding: 6px 16px;
       border-radius: 999px;
@@ -1610,7 +1632,7 @@
       min-width: 0;
     }
     .lunch-card-title {
-      font-size: clamp(1.08rem, 4vw, 1.22rem);
+      font-size: calc(clamp(1.08rem, 4vw, 1.22rem) * var(--fs, 1));
       font-weight: 600;
       color: var(--ink);
       line-height: 1.20;
@@ -1634,13 +1656,13 @@
     .badge-v {
       width: 17px;
       height: 17px;
-      font-size: 0.62rem;
+      font-size: calc(0.62rem * var(--fs, 1));
       border-radius: 4px;
     }
     .badge-v-choice {
       width: 14px;
       height: 14px;
-      font-size: 0.54rem;
+      font-size: calc(0.54rem * var(--fs, 1));
       border-radius: 3px;
       margin-left: 4px;
       vertical-align: middle;
@@ -1658,7 +1680,7 @@
       min-height: 1.5rem;
     }
     .lunch-card-price {
-      font-size: clamp(1.02rem, 3.8vw, 1.18rem);
+      font-size: calc(clamp(1.02rem, 3.8vw, 1.18rem) * var(--fs, 1));
       color: var(--ink);
       text-shadow: 0 0 6px var(--halo);
       font-weight: 600;
@@ -1684,14 +1706,14 @@
       gap: 4px;
     }
     .price-stacked .val {
-      font-size: clamp(0.96rem, 3.6vw, 1.10rem);
+      font-size: calc(clamp(0.96rem, 3.6vw, 1.10rem) * var(--fs, 1));
       color: var(--ink);
       text-shadow: 0 0 6px var(--halo);
       font-weight: 600;
       letter-spacing: 0.01em;
     }
     .price-stacked .tag {
-      font-size: 0.58rem;
+      font-size: calc(0.58rem * var(--fs, 1));
       color: var(--ink-soft);
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -1699,7 +1721,7 @@
     }
 
     .lunch-card-desc {
-      font-size: clamp(0.72rem, 2.6vw, 0.80rem);
+      font-size: calc(clamp(0.72rem, 2.6vw, 0.80rem) * var(--fs, 1));
       color: var(--ink-soft);
       line-height: 1.40;
       white-space: pre-line;
@@ -1714,7 +1736,7 @@
       flex-wrap: wrap;
       gap: 0.25rem 0.45rem;
       margin-top: 0.2rem;
-      font-size: clamp(0.64rem, 2.3vw, 0.72rem);
+      font-size: calc(clamp(0.64rem, 2.3vw, 0.72rem) * var(--fs, 1));
       line-height: 1.3;
       color: var(--ink-soft);
       text-shadow: 0 0 5px var(--halo);
@@ -1722,7 +1744,7 @@
       z-index: 2;
     }
     .meta-pill {
-      font-size: 0.52rem;
+      font-size: calc(0.52rem * var(--fs, 1));
       letter-spacing: 0.08em;
       text-transform: uppercase;
       padding: 1.5px 6px;
@@ -1767,17 +1789,17 @@
       align-items: baseline;
       gap: 0.35rem;
       line-height: 1.3;
-      font-size: clamp(0.70rem, 2.45vw, 0.76rem);
+      font-size: calc(clamp(0.70rem, 2.45vw, 0.76rem) * var(--fs, 1));
       color: var(--ink);
       flex-grow: 1;
       font-weight: 500;
       letter-spacing: -0.01em;
     }
     .is-options-list .choice-label {
-      font-size: clamp(0.66rem, 2.3vw, 0.72rem);
+      font-size: calc(clamp(0.66rem, 2.3vw, 0.72rem) * var(--fs, 1));
     }
     .choice-dot {
-      font-size: 0.78rem;
+      font-size: calc(0.78rem * var(--fs, 1));
       line-height: 1;
       color: var(--accent);
       flex-shrink: 0;
@@ -1787,7 +1809,7 @@
       display: inline;
     }
     .choice-price {
-      font-size: clamp(0.78rem, 2.7vw, 0.84rem);
+      font-size: calc(clamp(0.78rem, 2.7vw, 0.84rem) * var(--fs, 1));
       color: var(--ink);
       flex-shrink: 0;
       white-space: nowrap;
@@ -1803,11 +1825,11 @@
       .center-lunch { font-size: 30px; }
       .lunch-slider-wrap { margin-top: 14px; margin-bottom: 18px; }
       .lunch-boundary-divider.bottom-divider { margin-bottom: 10px; }
-      .lunch-card-title { font-size: 0.95rem; }
-      .lunch-card-price { font-size: 0.95rem; }
-      .choice-label { font-size: 0.65rem; }
-      .choice-price { font-size: 0.74rem; }
-      .lunch-card-desc { font-size: 0.68rem; line-height: 1.26; }
+      .lunch-card-title { font-size: calc(0.95rem * var(--fs, 1)); }
+      .lunch-card-price { font-size: calc(0.95rem * var(--fs, 1)); }
+      .choice-label { font-size: calc(0.65rem * var(--fs, 1)); }
+      .choice-price { font-size: calc(0.74rem * var(--fs, 1)); }
+      .lunch-card-desc { font-size: calc(0.68rem * var(--fs, 1)); line-height: 1.26; }
       .lunch-card { gap: 0.12rem; }
     }
 
@@ -1968,7 +1990,7 @@
     .btn-next-course {
       border: 1px solid var(--accent);
       color: var(--accent);
-      font-size: 0.68rem;
+      font-size: calc(0.68rem * var(--fs, 1));
       letter-spacing: 0.06em;
       text-transform: uppercase;
       padding: 7px 16px;
@@ -2041,7 +2063,7 @@
     }
     .tasting-title {
       position: relative;
-      font-size: clamp(17px, 4.4vw, 22px);
+      font-size: calc(clamp(17px, 4.4vw, 22px) * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.22em;
       text-indent: 0.22em;
@@ -2093,14 +2115,14 @@
       align-items: center;
     }
     .tasting-price-amount {
-      font-size: 21px;
+      font-size: calc(21px * var(--fs, 1));
       color: var(--ink);
       line-height: 1.1;
       font-weight: 700;
       letter-spacing: -0.01em;
     }
     .tasting-price-label {
-      font-size: 9px;
+      font-size: calc(9px * var(--fs, 1));
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--ink-soft);
@@ -2113,7 +2135,7 @@
       background: var(--rule);
     }
     .tasting-pricing-note {
-      font-size: 10px;
+      font-size: calc(10px * var(--fs, 1));
       font-style: italic;
       color: var(--ink-soft);
       margin-top: 8px;
@@ -2149,7 +2171,7 @@
       border-bottom: 1px solid var(--rule);
     }
     .tasting-course-num {
-      font-size: 9.5px;
+      font-size: calc(9.5px * var(--fs, 1));
       letter-spacing: 0.14em;
       color: var(--ink-soft);
       text-transform: uppercase;
@@ -2159,7 +2181,7 @@
       border-radius: 4px;
     }
     .tasting-course-title {
-      font-size: 13.5px;
+      font-size: calc(13.5px * var(--fs, 1));
       font-weight: 700;
       letter-spacing: 0.14em;
       color: var(--ink);
@@ -2178,7 +2200,7 @@
     }
     .tasting-dish-badge {
       display: inline-block;
-      font-size: 8.5px;
+      font-size: calc(8.5px * var(--fs, 1));
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink-soft);
@@ -2189,14 +2211,14 @@
       border-radius: 4px;
     }
     .tasting-dish-name {
-      font-size: 14px;
+      font-size: calc(14px * var(--fs, 1));
       font-weight: 700;
       color: var(--ink);
       line-height: 1.25;
       margin-bottom: 4px;
     }
     .tasting-dish-desc {
-      font-size: 11.5px;
+      font-size: calc(11.5px * var(--fs, 1));
       color: var(--ink-soft);
       line-height: 1.4;
       margin-bottom: 8px;
@@ -2219,7 +2241,7 @@
       flex-shrink: 0;
     }
     .tasting-wine-text {
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--fs, 1));
       font-style: italic;
       line-height: 1.3;
       color: var(--ink-soft);
@@ -2230,7 +2252,7 @@
     /* Tax Notice */
     .tasting-tax-notice {
       text-align: center;
-      font-size: 9px;
+      font-size: calc(9px * var(--fs, 1));
       color: var(--ink-soft);
       letter-spacing: 0.06em;
       margin: 24px 16px 20px;
@@ -2339,14 +2361,14 @@
     }
 
     .event-tag {
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--accent);
       font-weight: 600;
     }
     .event-when {
-      font-size: 13.5px;
+      font-size: calc(13.5px * var(--fs, 1));
       line-height: 1.45;
       color: var(--ink);
       font-weight: 500;
@@ -2356,7 +2378,7 @@
       align-items: center;
       gap: 6px;
       margin-top: 2px;
-      font-size: 13px;
+      font-size: calc(13px * var(--fs, 1));
       line-height: 1.4;
       color: var(--ink-soft);
     }
@@ -2367,7 +2389,7 @@
     }
     .event-desc {
       margin: 8px 0 14px;
-      font-size: 14px;
+      font-size: calc(14px * var(--fs, 1));
       line-height: 1.5;
       color: var(--ink-soft);
     }
@@ -2381,7 +2403,7 @@
       border: 1px solid var(--accent);
       box-sizing: border-box;
       color: var(--on-accent);
-      font-size: 13px;
+      font-size: calc(13px * var(--fs, 1));
       letter-spacing: 0.03em;
       text-decoration: none;
       transition: transform 0.15s, background-color 0.2s, color 0.2s;
@@ -2424,7 +2446,7 @@
     }
     .event-date-month,
     .event-date-dow {
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--fs, 1));
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent);
@@ -2459,7 +2481,7 @@
     .event-filter-pill {
       min-height: 38px;
       padding: 0 15px;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       letter-spacing: 0.04em;
       text-transform: none;
       border-radius: 999px;
@@ -2476,7 +2498,7 @@
     }
     .events-upcoming-title {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.2em;
       text-transform: uppercase;
@@ -2484,7 +2506,7 @@
     }
     .events-view-all {
       padding: 6px 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       color: var(--accent);
       cursor: pointer;
       font-weight: 600;
@@ -2536,7 +2558,7 @@
     }
     .event-card-title {
       margin: 5px 0 6px;
-      font-size: 19px;
+      font-size: calc(19px * var(--fs, 1));
       font-weight: 600;
       line-height: 1.25;
       color: var(--ink);
@@ -2550,7 +2572,7 @@
       margin: 0;
       padding: 28px 16px;
       border: 1px dashed var(--rule);
-      font-size: 14px;
+      font-size: calc(14px * var(--fs, 1));
       line-height: 1.5;
       text-align: center;
       color: var(--ink-soft);
@@ -2585,7 +2607,7 @@
       color: var(--accent);
     }
     .events-month-title {
-      font-size: 12.5px;
+      font-size: calc(12.5px * var(--fs, 1));
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--ink);
@@ -2595,7 +2617,7 @@
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       margin-bottom: 6px;
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--fs, 1));
       letter-spacing: 0.06em;
       text-align: center;
       color: var(--ink-soft);
@@ -2624,7 +2646,7 @@
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      font-size: 13px;
+      font-size: calc(13px * var(--fs, 1));
       color: var(--ink-soft);
       transition: background-color 0.2s, color 0.2s;
       font-weight: 500;
@@ -2718,7 +2740,7 @@
     }
     .reserve-event {
       margin: 10px 0 0;
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent);
@@ -2732,7 +2754,7 @@
     .reserve-label {
       display: block;
       margin: 0 0 12px;
-      font-size: 0.66rem;
+      font-size: calc(0.66rem * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -2768,14 +2790,14 @@
     }
     .reserve-party-count {
       min-width: 2.2ch;
-      font-size: 22px;
+      font-size: calc(22px * var(--fs, 1));
       text-align: center;
       color: var(--ink);
       font-weight: 600;
     }
     .reserve-hint {
       margin: 12px 0 0;
-      font-size: 13px;
+      font-size: calc(13px * var(--fs, 1));
       line-height: 1.4;
       text-align: center;
       color: var(--ink-soft);
@@ -2793,7 +2815,7 @@
     .reserve-sitting-name {
       display: block;
       margin-bottom: 8px;
-      font-size: 12.5px;
+      font-size: calc(12.5px * var(--fs, 1));
       color: var(--ink-soft);
       font-weight: 600;
     }
@@ -2805,7 +2827,7 @@
     .reserve-pill {
       min-height: 40px;
       padding: 0 12px;
-      font-size: 0.72rem;
+      font-size: calc(0.72rem * var(--fs, 1));
       border-radius: 999px;
     }
 
@@ -2818,7 +2840,7 @@
     }
     .reserve-field label,
     .reserve-field-label {
-      font-size: 0.62rem;
+      font-size: calc(0.62rem * var(--fs, 1));
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink-soft);
@@ -2838,7 +2860,7 @@
       outline: none;
       background: transparent;
       color: var(--ink);
-      font-size: 16px;
+      font-size: max(16px, calc(16px * var(--fs, 1)));
       line-height: 1.35;
       resize: vertical;
       box-sizing: border-box;
@@ -2890,7 +2912,7 @@
       display: flex;
       align-items: center;
       padding: 8px 0;
-      font-size: 16px;
+      font-size: max(16px, calc(16px * var(--fs, 1)));
       color: var(--ink);
       pointer-events: none;
       white-space: nowrap;
@@ -2904,7 +2926,7 @@
     /* A warning sits above its field, so the phone keyboard cannot cover it */
     .reserve-field-error {
       margin: 0 0 8px;
-      font-size: 13px;
+      font-size: calc(13px * var(--fs, 1));
       font-weight: 600;
       line-height: 1.35;
       color: var(--error);
@@ -2924,7 +2946,7 @@
     }
     .reserve-summary {
       margin: 0 0 14px;
-      font-size: 15px;
+      font-size: calc(15px * var(--fs, 1));
       line-height: 1.35;
       text-align: center;
       color: var(--ink);
@@ -2932,7 +2954,7 @@
     }
     .reserve-error {
       margin: 0 0 14px;
-      font-size: 13.5px;
+      font-size: calc(13.5px * var(--fs, 1));
       line-height: 1.4;
       text-align: center;
       color: var(--error);
@@ -2948,7 +2970,7 @@
       border: 1px solid var(--accent);
       background: var(--accent);
       color: var(--on-accent);
-      font-size: 0.8rem;
+      font-size: calc(0.8rem * var(--fs, 1));
       letter-spacing: 0.14em;
       text-transform: uppercase;
       text-align: center;
@@ -2969,7 +2991,7 @@
     }
     .reserve-fineprint {
       margin: 12px 0 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       line-height: 1.4;
       text-align: center;
       color: var(--ink-soft);
@@ -2983,7 +3005,7 @@
     }
     .reserve-entry {
       margin: 0 0 12px;
-      font-size: 0.72rem;
+      font-size: calc(0.72rem * var(--fs, 1));
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--ink-soft);
@@ -2994,14 +3016,14 @@
       padding: 16px 0;
       border-top: 1px solid var(--rule);
       border-bottom: 1px solid var(--rule);
-      font-size: 17px;
+      font-size: calc(17px * var(--fs, 1));
       font-weight: 500;
       line-height: 1.3;
       color: var(--ink);
     }
     .reserve-next {
       margin: 16px 0 22px;
-      font-size: 14px;
+      font-size: calc(14px * var(--fs, 1));
       line-height: 1.4;
       color: var(--ink-soft);
     }
@@ -3075,7 +3097,7 @@
     }
     .gallery-eyebrow {
       margin: 0 0 8px;
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.34em;
       text-indent: 0.34em;
@@ -3094,7 +3116,7 @@
     .gallery-intro {
       max-width: 36ch;
       margin: 12px auto 0;
-      font-size: 13.5px;
+      font-size: calc(13.5px * var(--fs, 1));
       line-height: 1.55;
       color: var(--ink-soft);
     }
@@ -3203,7 +3225,7 @@
     }
     .g-num {
       flex: none;
-      font-size: 10px;
+      font-size: calc(10px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.16em;
       font-variant-numeric: tabular-nums;
@@ -3212,7 +3234,7 @@
     .g-text {
       min-width: 0;
       overflow: hidden;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       font-weight: 500;
       line-height: 1.3;
       letter-spacing: 0.02em;
@@ -3220,7 +3242,7 @@
       white-space: nowrap;
     }
     .g-tile[data-shape="l"] .g-cap { left: 14px; bottom: 13px; }
-    .g-tile[data-shape="l"] .g-text { font-size: 14px; }
+    .g-tile[data-shape="l"] .g-text { font-size: calc(14px * var(--fs, 1)); }
     @media (hover: hover) {
       .g-tile:hover img { filter: none; transform: scale(1.02); }
       .g-tile:hover::after,
@@ -3239,7 +3261,7 @@
       margin: 0 auto 28px;
       padding: 28px 16px;
       text-align: center;
-      font-size: 14px;
+      font-size: calc(14px * var(--fs, 1));
       color: var(--ink-soft);
     }
 
@@ -3265,7 +3287,7 @@
       padding: 4px 14px;
     }
     .viewer-count {
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.28em;
       font-variant-numeric: tabular-nums;
@@ -3330,14 +3352,14 @@
       text-align: center;
     }
     .viewer-tag {
-      font-size: 10px;
+      font-size: calc(10px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.26em;
       text-transform: uppercase;
       opacity: 0.6;
     }
     .viewer-text {
-      font-size: 14px;
+      font-size: calc(14px * var(--fs, 1));
       font-weight: 500;
       line-height: 1.4;
     }
@@ -3396,7 +3418,7 @@
       align-items: center;
       gap: 12px;
       margin: 0 0 14px;
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.32em;
       text-transform: uppercase;
@@ -3425,7 +3447,7 @@
     }
     .about-lead {
       margin: 16px 0 26px;
-      font-size: clamp(18px, 4.8vw, 22px);
+      font-size: calc(clamp(18px, 4.8vw, 22px) * var(--fs, 1));
       line-height: 1.5;
       color: var(--ink);
     }
@@ -3433,7 +3455,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      font-size: 15px;
+      font-size: calc(15px * var(--fs, 1));
       line-height: 1.75;
       color: var(--ink-soft);
     }
@@ -3469,7 +3491,7 @@
     }
     .about-pillar h4 {
       margin: 3px 0 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -3477,7 +3499,7 @@
     }
     .about-pillar p {
       margin: 0;
-      font-size: 14px;
+      font-size: calc(14px * var(--fs, 1));
       line-height: 1.6;
       color: var(--ink-soft);
     }
@@ -3490,7 +3512,7 @@
     }
     .about-visit-title {
       margin: 0 0 16px;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.26em;
       text-transform: uppercase;
@@ -3507,7 +3529,7 @@
     }
     .about-facts dt {
       padding-top: 2px;
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -3515,7 +3537,7 @@
     }
     .about-facts dd {
       margin: 0;
-      font-size: 14.5px;
+      font-size: calc(14.5px * var(--fs, 1));
       line-height: 1.45;
       overflow-wrap: anywhere;
     }
@@ -3535,7 +3557,7 @@
       border-radius: 999px;
       background: var(--accent);
       color: var(--on-accent);
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.16em;
       text-align: center;
@@ -3588,7 +3610,7 @@
       min-height: 44px;
       margin-top: clamp(.55rem, 2vh, .95rem);
       padding: 0 .3rem;
-      font-size: clamp(.64rem, 2.8vw, .72rem);
+      font-size: clamp(.64rem, 2.8vw, .72rem); /* Not with Text size: bigger, it no longer fits on one line */
       font-weight: 500;
       letter-spacing: .26em;
       text-transform: uppercase;
@@ -3640,7 +3662,7 @@
     .reviews-score .stars { --star: 19px; color: var(--ink); }
     .reviews-score-label {
       margin: 2px 0 0;
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.24em;
       text-indent: 0.24em;
@@ -3660,7 +3682,7 @@
     .review .stars { --star: 12px; color: var(--ink); }
     .review-text {
       margin: 14px 0 0;
-      font-size: 15px;
+      font-size: calc(15px * var(--fs, 1));
       line-height: 1.72;
       color: var(--ink);
       overflow-wrap: anywhere;
@@ -3676,7 +3698,7 @@
     .review-more {
       margin-top: 8px;
       padding: 6px 0;
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -3693,7 +3715,7 @@
       margin: 16px 0 0;
     }
     .review-name {
-      font-size: 11.5px;
+      font-size: calc(11.5px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -3702,13 +3724,13 @@
     a.review-name { text-decoration: none; }
     a.review-name:hover { text-decoration: underline; text-underline-offset: 4px; }
     .review-when {
-      font-size: 12.5px;
+      font-size: calc(12.5px * var(--fs, 1));
       color: var(--ink-soft);
     }
     .reviews-empty {
       max-width: 34ch;
       margin: 0 auto 30px;
-      font-size: 14.5px;
+      font-size: calc(14.5px * var(--fs, 1));
       line-height: 1.6;
       text-align: center;
       color: var(--ink-soft);
@@ -3726,7 +3748,7 @@
       padding: 0 24px;
       border: 1px solid var(--rule);
       border-radius: 999px;
-      font-size: 11px;
+      font-size: calc(11px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.2em;
       text-indent: 0.2em;
@@ -3738,7 +3760,7 @@
     .reviews-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     .reviews-shown {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       color: var(--ink-soft);
     }
     /* Two columns on a wide screen, each row lined up */
@@ -3760,7 +3782,7 @@
     }
     .reviews-credit {
       margin: 0 0 26px;
-      font-size: 12px;
+      font-size: calc(12px * var(--fs, 1));
       text-align: center;
       color: var(--ink-soft);
     }
@@ -4029,7 +4051,7 @@
       gap: 12px;
       margin: 0 0 20px;
       font-family: var(--font-label);
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.34em;
       text-transform: uppercase;
@@ -4078,7 +4100,7 @@
       margin: 0;
       padding-left: 0.48em;
       font-family: var(--font-label);
-      font-size: clamp(13px, 3.9vw, 16px);
+      font-size: calc(clamp(13px, 3.9vw, 16px) * var(--fs, 1));
       font-weight: 500;
       line-height: 1.6;
       letter-spacing: 0.48em;
@@ -4091,7 +4113,7 @@
       max-width: 33ch;
       margin: 22px auto 0;
       font-family: var(--font-body);
-      font-size: 15px;
+      font-size: calc(15px * var(--fs, 1));
       line-height: 1.75;
       color: var(--ink-soft);
     }
@@ -4106,7 +4128,7 @@
       border: 1px solid var(--rule);
       border-radius: 999px;
       font-family: var(--font-label);
-      font-size: 10.5px;
+      font-size: calc(10.5px * var(--fs, 1));
       font-weight: 600;
       letter-spacing: 0.26em;
       text-transform: uppercase;
@@ -9475,7 +9497,8 @@ Choose your spread/rillette style:</p>
        COLOURS AND CHRISTMAS MODE
        Both are set in the admin panel under Colours & Season and
        published with everything else, as data.look:
-       { dark, light, christmas: { on, snow, hat, hatX, hatY, hatRotate, hatFlip } }
+       { dark, light, menuText, siteText, christmas: { on, snow, hat, hatX, hatY, hatRotate, hatFlip } }
+       menuText and siteText (percent) come from the admin's Text size page.
        ======================================================== */
     var LOOK_CACHE_KEY = 'belle_look';
 
@@ -9945,6 +9968,7 @@ Choose your spread/rillette style:</p>
     function applyLook(look) {
       look = look && typeof look === 'object' ? look : {};
       window.belleSetPalette(look.dark, look.light);
+      window.belleSetTextSize(look.menuText, look.siteText);
       var xmas = look.christmas && typeof look.christmas === 'object' ? look.christmas : {};
       setSnow(!!xmas.on && xmas.snow !== false);
       setHat(xmas.on && xmas.hat !== false ? {
@@ -9956,7 +9980,7 @@ Choose your spread/rillette style:</p>
       // Remember the colours for the next visit, but never the admin's unpublished ones
       if (!isInsideAdminIframe) {
         try {
-          localStorage.setItem(LOOK_CACHE_KEY, JSON.stringify({ dark: look.dark || '', light: look.light || '' }));
+          localStorage.setItem(LOOK_CACHE_KEY, JSON.stringify({ dark: look.dark || '', light: look.light || '', menuText: look.menuText || 100, siteText: look.siteText || 100 }));
         } catch (e) {}
       }
     }

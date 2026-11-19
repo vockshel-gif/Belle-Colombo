@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="belleData.js?v=3"></script>
+  <!-- qrcode-generator 1.4.4 by Kazuhiko Arase, MIT licence: the QR codes on Links & QR codes -->
+  <script src="assets/js/qrcode.js"></script>
   <style>
     :root {
       --bg: #f6f3ee;
@@ -592,6 +594,20 @@
     .frame-slider { display: grid; grid-template-columns: 110px minmax(0, 1fr) 76px; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
     .frame-slider input { width: 100%; min-height: 32px; margin: 0; accent-color: var(--text); cursor: pointer; }
     .frame-slider output { font-size: 13px; color: var(--text-2); text-align: right; font-variant-numeric: tabular-nums; }
+    .text-slider { grid-template-columns: 80px minmax(0, 1fr) 56px; }
+    .text-size-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .link-row { display: flex; gap: 18px; align-items: flex-start; padding: 16px 20px; border-top: 1px solid var(--line); }
+    .link-row:first-child { border-top: 0; }
+    .link-qr { flex: none; width: 116px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .link-qr svg { display: block; width: 100%; height: auto; }
+    .link-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+    .link-name { font-size: 16px; font-weight: 700; margin: 0; }
+    .link-main .field-hint { margin-top: -6px; }
+    .link-url { width: 100%; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+    @media (max-width: 560px) {
+      .link-row { flex-direction: column; }
+      .link-qr { width: 140px; }
+    }
     .sticky-actions {
       position: sticky;
       bottom: -72px;
@@ -1414,7 +1430,12 @@
       link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
       palette: '<path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4.5-4.5 4.5h-1.9a1.8 1.8 0 0 0-1.3 3.1 1.5 1.5 0 0 1-1 2.4z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="6.8" r="1.2"/><circle cx="15.6" cy="7.6" r="1.2"/>',
       alert: '<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
-      grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>'
+      grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
+      type: '<path d="M4 7V4h16v3"/><path d="M12 4v16"/><path d="M9 20h6"/>',
+      qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM21 14v.01M14 21h.01M18 18h3v3h-3z"/>',
+      download: '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>',
+      print: '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+      open: '<path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/>'
     };
 
     function icon(name, size) {
@@ -1572,12 +1593,22 @@
       return isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback;
     }
 
+    // Text size in percent, in steps of 5. 100 is the size the website was designed at.
+    var TEXT_SIZE_MIN = 90;
+    var TEXT_SIZE_MAX = 140;
+
+    function textSizePct(value) {
+      return Math.round(clampNum(value, TEXT_SIZE_MIN, TEXT_SIZE_MAX, 100) / 5) * 5;
+    }
+
     function normalizeLook(look) {
       var l = look && typeof look === 'object' ? look : {};
       var x = l.christmas && typeof l.christmas === 'object' ? l.christmas : {};
       return {
         dark: isHexColour(l.dark) ? l.dark.toLowerCase() : LOOK_DARK,
         light: isHexColour(l.light) ? l.light.toLowerCase() : LOOK_LIGHT,
+        menuText: textSizePct(l.menuText),
+        siteText: textSizePct(l.siteText),
         christmas: {
           on: x.on === true,
           snow: x.snow !== false,
@@ -1995,6 +2026,9 @@
       if (before.look.dark !== after.look.dark || before.look.light !== after.look.light) {
         add('Changed', 'Colours & Season', 'Website colours');
       }
+      if (before.look.menuText !== after.look.menuText || before.look.siteText !== after.look.siteText) {
+        add('Changed', 'Text size', 'Menus ' + after.look.menuText + '%, other pages ' + after.look.siteText + '%');
+      }
       if (before.look.christmas.on !== after.look.christmas.on) {
         add(after.look.christmas.on ? 'Turned on' : 'Turned off', 'Colours & Season', 'Christmas mode');
       } else if (!sameContent(before.look.christmas, after.look.christmas)) {
@@ -2365,6 +2399,9 @@
       // The bookmark sits on Our Menu; the Coming soon page shows while its words are being edited
       if (view.page === 'christmas') return view.xmasPart === 'page' ? 'christmas' : 'menu-hub';
       if (view.page === 'tasting') return 'tasting';
+      // Text size shows a menu, or Events while the size of the other pages is being changed
+      if (view.page === 'textSize') return view.textPart === 'site' ? 'events' : textPreviewMenu();
+      if (view.page === 'links') return 'menu-hub';
       if (view.page === 'reservations' || view.page === 'reservation' || view.page === 'bookingSettings') return 'reserve';
       if (view.page === 'menu' || view.page === 'dish') {
         if (view.menuId === 'alacarte') {
@@ -2506,8 +2543,10 @@
         html += navItemHtml('Reviews', 'star', 'reviews', null, appData.reviews.items.length);
         html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
         html += navItemHtml('Colours & Season', 'palette', 'look');
+        html += navItemHtml('Text size', 'type', 'textSize');
         html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
         html += navItemHtml('Contact & Hours', 'pin', 'contact');
+        html += navItemHtml('Links & QR codes', 'qr', 'links');
       }
       html += '<div class="side-label">' + (canEdit ? 'Admin' : 'Account') + '</div>';
       html += '<div class="side-who"><b>' + esc(account.email) + '</b>' + esc(ROLES[account.role].label) + '</div>';
@@ -2530,7 +2569,7 @@
       var pages = {
         home: homeHtml, menu: menuHtml, dish: dishHtml, tasting: tastingHtml,
         events: eventsHtml, event: eventHtml, gallery: galleryHtml, about: aboutHtml, reviews: reviewsHtml, christmas: christmasHtml,
-        backgrounds: backgroundsHtml, look: lookHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
+        backgrounds: backgroundsHtml, look: lookHtml, textSize: textSizeHtml, links: linksHtml, media: mediaHtml, contact: contactHtml, settings: settingsHtml,
         reservations: reservationsHtml, reservation: reservationHtml, bookingSettings: bookingSettingsHtml,
         team: teamHtml, staffAdd: staffAddHtml
       };
@@ -6741,6 +6780,266 @@
     }
 
     /* ========================================================
+       TEXT SIZE PAGE
+       Two sizes, published in data.look as percentages: menuText for every menu and siteText for
+       every other page. The website multiplies its reading text by them; big titles keep their size.
+       ======================================================== */
+    var TEXT_SIZES = [
+      { key: 'menuText', id: 'textMenus', part: 'menu', title: 'Menus',
+        hint: 'Dish names, descriptions, prices, choices, section headings and pills, on every menu, Tasting Menus included.' },
+      { key: 'siteText', id: 'textSite', part: 'site', title: 'Every other page',
+        hint: 'Events, the booking form, Gallery, About, Reviews, the Christmas page, and the small lines on the landing page.' }
+    ];
+
+    // The first menu that has something to show, so the phone shows real dishes
+    function textPreviewMenu() {
+      var menu = appData.menuCategories.find(function (m) { return m.id === 'tasting' || countDishes(m.id); });
+      if (!menu) return 'menu-hub';
+      if (menu.id === 'alacarte') return appData.aLaCarte[0] ? appData.aLaCarte[0].key : 'menu-hub';
+      return menu.id;
+    }
+
+    function textSizeWords(pct) {
+      return pct === 100 ? 'As designed' : (pct > 100 ? (pct - 100) + '% bigger' : (100 - pct) + '% smaller');
+    }
+
+    function textSizeHtml() {
+      var look = appData.look;
+      var cards = TEXT_SIZES.map(function (s) {
+        var value = look[s.key];
+        return '<section class="card card-pad" data-text-part="' + s.part + '">' +
+          '<h2 class="card-title">' + s.title + '</h2>' +
+          '<p class="card-hint">' + s.hint + '</p>' +
+          '<label class="frame-slider text-slider"><span>Text size</span>' +
+            '<input type="range" id="' + s.id + '" min="' + TEXT_SIZE_MIN + '" max="' + TEXT_SIZE_MAX + '" step="5" value="' + value + '" aria-describedby="' + s.id + 'Words" />' +
+            '<output>' + value + '%</output></label>' +
+          '<div class="text-size-foot">' +
+            '<span class="field-hint" id="' + s.id + 'Words">' + textSizeWords(value) + '</span>' +
+            '<button type="button" class="btn btn-sm" data-action="textSizeReset" data-key="' + s.key + '"' + (value === 100 ? ' disabled' : '') + '>Back to 100%</button>' +
+          '</div>' +
+        '</section>';
+      }).join('');
+      return pageHead('Text size', 'Make the words on the website bigger or smaller. The phone preview shows a menu, or Events while you change the other pages. Guests see the new size after you press Publish.') +
+        cards +
+        '<p class="field-hint">Big titles, the large words on the landing page and Our Menu, and the drawn titles at the top of each menu keep their size, so they always fit on a phone. Guests can still zoom in with two fingers.</p>';
+    }
+
+    // Moves the phone to a menu or to Events, following the slider in use
+    function showTextSizePart(part) {
+      part = part === 'site' ? 'site' : 'menu';
+      if ((view.textPart || 'menu') === part) return;
+      view.textPart = part;
+      postToPreview({ type: 'BELLE_NAVIGATE', target: previewPageTarget() });
+    }
+
+    function refreshTextSizeCard(s) {
+      var value = appData.look[s.key];
+      var input = $(s.id);
+      if (!input) return;
+      input.value = value;
+      input.nextElementSibling.textContent = value + '%';
+      $(s.id + 'Words').textContent = textSizeWords(value);
+      var reset = document.querySelector('[data-action="textSizeReset"][data-key="' + s.key + '"]');
+      if (reset) reset.disabled = value === 100;
+    }
+
+    function setTextSize(key, value) {
+      var s = TEXT_SIZES.find(function (size) { return size.key === key; });
+      if (!s) return;
+      appData.look[key] = textSizePct(value);
+      refreshTextSizeCard(s);
+      showTextSizePart(s.part);
+      postToPreview({ type: 'BELLE_LOOK_UPDATE', look: appData.look });
+      touch();
+    }
+
+    function onTextSizeInput(t) {
+      var s = TEXT_SIZES.find(function (size) { return size.id === t.id; });
+      if (s) setTextSize(s.key, Number(t.value));
+    }
+
+    /* ========================================================
+       LINKS & QR CODES PAGE
+       A link straight to each menu and page, with a QR code to print. Links always use the
+       restaurant's own address, wherever the admin panel is opened. They are built from each
+       menu's id, which never changes, so a printed code keeps working when a menu is renamed.
+       ======================================================== */
+    var SITE_URL = 'https://bellecolombo.com/';
+    // Shorter, friendlier links for two built-in menus. The website already opens these.
+    var MENU_LINK_HASH = { alacarte: 'grill', thebar: 'bar' };
+
+    function siteLinks() {
+      var links = [{ key: 'menu', label: 'Our Menu', hash: 'menu', hint: 'The list of all your menus.' }];
+      appData.menuCategories.forEach(function (menu) {
+        var empty = menu.id !== 'tasting' && !countDishes(menu.id);
+        links.push({
+          key: 'menu-' + menu.id,
+          label: prettyName(menu.name),
+          hash: MENU_LINK_HASH[menu.id] || menu.id,
+          warn: empty ? 'This menu has no dishes yet, so guests would find an empty page.' : ''
+        });
+      });
+      links.push({
+        key: 'reserve', label: 'Reservation', hash: 'reserve',
+        warn: appData.reservations.enabled ? '' : 'Reservations are paused in Booking settings, so this opens the landing page for now.'
+      });
+      links.push({ key: 'events', label: 'Events Calendar', hash: 'events' });
+      links.push({
+        key: 'christmas', label: 'Christmas Menu', hash: 'christmas',
+        hint: 'Opens wherever the Christmas bookmark leads.',
+        warn: appData.christmasMenu.enabled ? '' : 'The Christmas bookmark is off, so this opens the landing page until it is switched on and published.'
+      });
+      links.forEach(function (link) { link.url = SITE_URL + '#' + link.hash; });
+      return links;
+    }
+
+    function findSiteLink(key) {
+      return siteLinks().find(function (link) { return link.key === key; }) || null;
+    }
+
+    // The QR code as rows of dark squares. Level Q still scans with about a quarter of it smudged or covered.
+    function qrMatrix(text) {
+      var qr = qrcode(0, 'Q');
+      qr.addData(text);
+      qr.make();
+      var n = qr.getModuleCount();
+      var rows = [];
+      for (var r = 0; r < n; r++) {
+        var row = [];
+        for (var c = 0; c < n; c++) row.push(qr.isDark(r, c));
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    var QR_QUIET = 4; // The white border scanners need, in squares
+
+    // Black on white with its white border, one path per run of squares so the file stays small
+    function qrSvg(text, title) {
+      var rows = qrMatrix(text);
+      var size = rows.length + QR_QUIET * 2;
+      var d = '';
+      rows.forEach(function (row, r) {
+        for (var c = 0; c < row.length; c++) {
+          if (!row[c]) continue;
+          var start = c;
+          while (c + 1 < row.length && row[c + 1]) c++;
+          d += 'M' + (start + QR_QUIET) + ' ' + (r + QR_QUIET) + 'h' + (c - start + 1) + 'v1h-' + (c - start + 1) + 'z';
+        }
+      });
+      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '" shape-rendering="crispEdges" role="img" aria-label="' + esc(title || 'QR code') + '">' +
+        '<rect width="' + size + '" height="' + size + '" fill="#ffffff"/><path d="' + d + '" fill="#000000"/></svg>';
+    }
+
+    // About 1,200 pixels square, sharp enough to print at 10 cm
+    function qrPngBlob(text) {
+      var rows = qrMatrix(text);
+      var size = rows.length + QR_QUIET * 2;
+      var px = Math.max(8, Math.floor(1200 / size));
+      var canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size * px;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#000000';
+      rows.forEach(function (row, r) {
+        row.forEach(function (dark, c) {
+          if (dark) ctx.fillRect((c + QR_QUIET) * px, (r + QR_QUIET) * px, px, px);
+        });
+      });
+      return new Promise(function (resolve, reject) {
+        canvas.toBlob(function (blob) { blob ? resolve(blob) : reject(new Error('No image')); }, 'image/png');
+      });
+    }
+
+    function qrFileName(link, ext) {
+      return 'belle-colombo-' + (slugify(link.label) || link.hash) + '-qr.' + ext;
+    }
+
+    function linkRowHtml(link) {
+      return '<div class="link-row">' +
+        '<div class="link-qr">' + qrSvg(link.url, 'QR code for ' + link.label) + '</div>' +
+        '<div class="link-main">' +
+          '<h3 class="link-name">' + esc(link.label) + '</h3>' +
+          (link.hint ? '<p class="field-hint">' + esc(link.hint) + '</p>' : '') +
+          '<input type="text" class="link-url" id="linkBox-' + esc(link.key) + '" readonly value="' + esc(link.url) + '" aria-label="Link to ' + esc(link.label) + '" />' +
+          '<div class="add-row">' +
+            '<button type="button" class="btn btn-sm" data-action="copySiteLink" data-key="' + esc(link.key) + '">' + icon('link', 14) + 'Copy link</button>' +
+            '<a class="btn btn-sm" href="' + esc(link.url) + '" target="_blank" rel="noopener">' + icon('open', 14) + 'Open</a>' +
+            '<button type="button" class="btn btn-sm" data-action="downloadQr" data-key="' + esc(link.key) + '" data-format="png">' + icon('download', 14) + 'PNG</button>' +
+            '<button type="button" class="btn btn-sm" data-action="downloadQr" data-key="' + esc(link.key) + '" data-format="svg">' + icon('download', 14) + 'SVG</button>' +
+          '</div>' +
+          (link.warn ? '<div class="note">' + esc(link.warn) + '</div>' : '') +
+        '</div>' +
+      '</div>';
+    }
+
+    function linksHtml() {
+      var rows = typeof qrcode === 'function'
+        ? siteLinks().map(linkRowHtml).join('')
+        : '<div class="note is-bad">The QR codes could not load. Reload this page to try again.</div>';
+      return pageHead('Links & QR codes',
+          'Each link opens the website straight at that menu or page. Share it on Instagram or WhatsApp, or print its QR code for the tables, the printed menu or the window.',
+          '<button type="button" class="btn" data-action="printQrSheet">' + icon('print', 16) + 'Print all</button>') +
+        '<section class="card">' + rows + '</section>' +
+        '<p class="field-hint"><b>PNG</b> works in Word, Canva or at a print shop. <b>SVG</b> is for a designer, and stays sharp at any size. Print a code at least 2 cm wide, and scan it with a phone before printing many. ' +
+          'A menu keeps its link when you rename it or change its dishes. If you delete a menu and add it again, it gets a new link and needs a new code.</p>';
+    }
+
+    function downloadQr(key, format) {
+      var link = findSiteLink(key);
+      if (!link) return;
+      if (format === 'svg') {
+        // A size, so Word and Canva place it large; it still scales without blurring
+        var svg = qrSvg(link.url, 'QR code for ' + link.label).replace('<svg ', '<svg width="1000" height="1000" ');
+        downloadFile(qrFileName(link, 'svg'), '<?xml version="1.0" encoding="UTF-8"?>\n' + svg, 'image/svg+xml');
+        return;
+      }
+      qrPngBlob(link.url).then(function (blob) {
+        downloadFile(qrFileName(link, 'png'), blob, 'image/png');
+      }, function () {
+        toast('That QR code could not be made. Try SVG instead.');
+      });
+    }
+
+    // One A4 sheet with every code, its name and its link, to print and cut out
+    function qrSheetHtml() {
+      var cards = siteLinks().map(function (link) {
+        return '<div class="c"><div class="q">' + qrSvg(link.url, link.label) + '</div>' +
+          '<div class="n">' + esc(link.label.toUpperCase()) + '</div>' +
+          '<div class="u">' + esc(link.url.replace(/^https:\/\//, '')) + '</div></div>';
+      }).join('');
+      return '<!DOCTYPE html><html><head><meta charset="utf-8" /><title>Belle Colombo QR codes</title><style>' +
+        '@page { size: A4; margin: 12mm; }' +
+        'body { margin: 0; font-family: Montserrat, "Segoe UI", Arial, sans-serif; color: #000; }' +
+        'h1 { margin: 0 0 7mm; font-size: 13pt; font-weight: 600; letter-spacing: .3em; text-align: center; }' +
+        '.g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm; }' +
+        '.c { padding: 4mm; border: .3mm dashed #999; text-align: center; break-inside: avoid; }' +
+        '.q svg { display: block; width: 100%; height: auto; }' +
+        '.n { margin-top: 2mm; font-size: 10pt; font-weight: 600; letter-spacing: .12em; }' +
+        '.u { margin-top: 1mm; font-size: 7.5pt; color: #444; word-break: break-all; }' +
+        '</style></head><body><h1>BELLE COLOMBO</h1><div class="g">' + cards + '</div></body></html>';
+    }
+
+    function printQrSheet() {
+      var html = qrSheetHtml();
+      var frame = document.createElement('iframe');
+      frame.setAttribute('aria-hidden', 'true');
+      frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+      document.body.appendChild(frame);
+      var doc = frame.contentWindow.document;
+      doc.open();
+      doc.write(html);
+      doc.close();
+      setTimeout(function () {
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+        // print() waits for the print window in most browsers; the frame goes once it has closed
+        setTimeout(function () { frame.remove(); }, 1000);
+      }, 250);
+    }
+
+    /* ========================================================
        SETTINGS PAGE
        ======================================================== */
     function dataSize() {
@@ -8108,6 +8407,26 @@
         });
       },
 
+      textSizeReset: function (el) {
+        setTextSize(el.getAttribute('data-key'), 100);
+      },
+      copySiteLink: function (el) {
+        var key = el.getAttribute('data-key');
+        var link = findSiteLink(key);
+        if (!link) return;
+        copyText(link.url).then(function () {
+          toast('Link copied.');
+        }, function () {
+          var box = $('linkBox-' + key);
+          if (box) { box.focus(); box.select(); }
+          toast('Press Ctrl+C to copy the selected link.');
+        });
+      },
+      downloadQr: function (el) {
+        downloadQr(el.getAttribute('data-key'), el.getAttribute('data-format'));
+      },
+      printQrSheet: printQrSheet,
+
       addGalleryPhoto: addGalleryPhoto,
       removeGalleryPhoto: removeGalleryPhoto,
       pickAboutPhoto: function (el) {
@@ -8269,6 +8588,7 @@
         else if (view.page === 'event') onEventInput(t);
         else if (view.page === 'contact') onContactInput(t);
         else if (view.page === 'look') onLookInput(t);
+        else if (view.page === 'textSize') onTextSizeInput(t);
         else if (view.page === 'gallery') onGalleryInput(t);
         else if (view.page === 'about') onAboutInput(t);
         else if (view.page === 'christmas') onChristmasInput(t);
@@ -8279,6 +8599,11 @@
 
       // On the Christmas Menu page, the phone shows whichever part is being edited
       page.addEventListener('focusin', function (e) {
+        if (view.page === 'textSize') {
+          var textPart = e.target.closest && e.target.closest('[data-text-part]');
+          if (textPart) showTextSizePart(textPart.getAttribute('data-text-part'));
+          return;
+        }
         if (view.page !== 'christmas') return;
         var part = e.target.closest && e.target.closest('[data-xmas-part]');
         if (part) showChristmasPart(part.getAttribute('data-xmas-part'));
