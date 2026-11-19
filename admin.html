@@ -596,6 +596,23 @@
     .frame-slider output { font-size: 13px; color: var(--text-2); text-align: right; font-variant-numeric: tabular-nums; }
     .text-slider { grid-template-columns: 80px minmax(0, 1fr) 56px; }
     .text-size-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .hub-fonts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+    .hub-font {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 8px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      cursor: pointer;
+      min-width: 0;
+    }
+    .hub-font:hover { border-color: var(--text-3); }
+    .hub-font.is-active { border-color: var(--text); background: var(--gold-soft); box-shadow: 0 0 0 1px var(--text); }
+    .hub-font-sample { font-size: 22px; line-height: 1.2; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+    .hub-font-name { font-size: 12px; color: var(--text-2); font-weight: 500; text-align: center; }
     .link-row { display: flex; gap: 18px; align-items: flex-start; padding: 16px 20px; border-top: 1px solid var(--line); }
     .link-row:first-child { border-top: 0; }
     .link-qr { flex: none; width: 116px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
@@ -1597,8 +1614,32 @@
     var TEXT_SIZE_MIN = 90;
     var TEXT_SIZE_MAX = 140;
 
-    function textSizePct(value) {
-      return Math.round(clampNum(value, TEXT_SIZE_MIN, TEXT_SIZE_MAX, 100) / 5) * 5;
+    // The menu names on Our Menu are already large, so their size goes down further and up less
+    var HUB_TEXT_MIN = 70;
+    var HUB_TEXT_MAX = 130;
+
+    function textSizePct(value, min, max) {
+      return Math.round(clampNum(value, min || TEXT_SIZE_MIN, max || TEXT_SIZE_MAX, 100) / 5) * 5;
+    }
+
+    // Fonts for the menu names on Our Menu. The key is what is published; keep the keys in step with
+    // BELLE_HUB_FONTS in index.html, which also sets the weight and spacing guests see.
+    var HUB_FONTS = [
+      { key: '', label: 'Montserrat, as designed', family: "'Montserrat', sans-serif", weight: 500, spacing: '.12em' },
+      { key: 'montserrat-light', label: 'Montserrat Light', family: "'Montserrat', sans-serif", weight: 300, spacing: '.14em', google: 'Montserrat:wght@300' },
+      { key: 'italiana', label: 'Italiana', family: "'Italiana', serif", weight: 400, spacing: '.14em', google: 'Italiana' },
+      { key: 'cormorant', label: 'Cormorant Garamond', family: "'Cormorant Garamond', serif", weight: 500, spacing: '.1em', google: 'Cormorant+Garamond:wght@500' },
+      { key: 'playfair', label: 'Playfair Display', family: "'Playfair Display', serif", weight: 400, spacing: '.08em', google: 'Playfair+Display' },
+      { key: 'cinzel', label: 'Cinzel', family: "'Cinzel', serif", weight: 400, spacing: '.1em', google: 'Cinzel' },
+      { key: 'marcellus', label: 'Marcellus', family: "'Marcellus', serif", weight: 400, spacing: '.12em', google: 'Marcellus' }
+    ];
+
+    function hubFontKey(key) {
+      return HUB_FONTS.some(function (f) { return f.key === key; }) ? key : '';
+    }
+
+    function hubFontLabel(key) {
+      return (HUB_FONTS.find(function (f) { return f.key === key; }) || HUB_FONTS[0]).label;
     }
 
     function normalizeLook(look) {
@@ -1609,6 +1650,8 @@
         light: isHexColour(l.light) ? l.light.toLowerCase() : LOOK_LIGHT,
         menuText: textSizePct(l.menuText),
         siteText: textSizePct(l.siteText),
+        hubText: textSizePct(l.hubText, HUB_TEXT_MIN, HUB_TEXT_MAX),
+        hubFont: hubFontKey(l.hubFont),
         christmas: {
           on: x.on === true,
           snow: x.snow !== false,
@@ -2027,7 +2070,10 @@
         add('Changed', 'Colours & Season', 'Website colours');
       }
       if (before.look.menuText !== after.look.menuText || before.look.siteText !== after.look.siteText) {
-        add('Changed', 'Text size', 'Menus ' + after.look.menuText + '%, other pages ' + after.look.siteText + '%');
+        add('Changed', 'Text size & fonts', 'Menus ' + after.look.menuText + '%, other pages ' + after.look.siteText + '%');
+      }
+      if (before.look.hubFont !== after.look.hubFont || before.look.hubText !== after.look.hubText) {
+        add('Changed', 'Text size & fonts', 'Menu names on Our Menu: ' + hubFontLabel(after.look.hubFont) + ', ' + after.look.hubText + '%');
       }
       if (before.look.christmas.on !== after.look.christmas.on) {
         add(after.look.christmas.on ? 'Turned on' : 'Turned off', 'Colours & Season', 'Christmas mode');
@@ -2399,8 +2445,12 @@
       // The bookmark sits on Our Menu; the Coming soon page shows while its words are being edited
       if (view.page === 'christmas') return view.xmasPart === 'page' ? 'christmas' : 'menu-hub';
       if (view.page === 'tasting') return 'tasting';
-      // Text size shows a menu, or Events while the size of the other pages is being changed
-      if (view.page === 'textSize') return view.textPart === 'site' ? 'events' : textPreviewMenu();
+      // Text size shows a menu, Events for the other pages, or Our Menu for the menu names
+      if (view.page === 'textSize') {
+        if (view.textPart === 'site') return 'events';
+        if (view.textPart === 'hub') return 'menu-hub';
+        return textPreviewMenu();
+      }
       if (view.page === 'links') return 'menu-hub';
       if (view.page === 'reservations' || view.page === 'reservation' || view.page === 'bookingSettings') return 'reserve';
       if (view.page === 'menu' || view.page === 'dish') {
@@ -2543,7 +2593,7 @@
         html += navItemHtml('Reviews', 'star', 'reviews', null, appData.reviews.items.length);
         html += navItemHtml('Backgrounds', 'screen', 'backgrounds');
         html += navItemHtml('Colours & Season', 'palette', 'look');
-        html += navItemHtml('Text size', 'type', 'textSize');
+        html += navItemHtml('Text size & fonts', 'type', 'textSize');
         html += navItemHtml('Photos & Videos', 'image', 'media', null, collectMedia().filter(function (m) { return m.isUpload; }).length);
         html += navItemHtml('Contact & Hours', 'pin', 'contact');
         html += navItemHtml('Links & QR codes', 'qr', 'links');
@@ -6780,15 +6830,18 @@
     }
 
     /* ========================================================
-       TEXT SIZE PAGE
-       Two sizes, published in data.look as percentages: menuText for every menu and siteText for
-       every other page. The website multiplies its reading text by them; big titles keep their size.
+       TEXT SIZE & FONTS PAGE
+       Published in data.look: menuText for every menu, siteText for every other page, and hubText
+       with hubFont for the menu names on Our Menu. Sizes are percentages. The website multiplies its
+       reading text by them; big titles keep their size.
        ======================================================== */
     var TEXT_SIZES = [
-      { key: 'menuText', id: 'textMenus', part: 'menu', title: 'Menus',
+      { key: 'menuText', id: 'textMenus', part: 'menu', title: 'Menus', min: TEXT_SIZE_MIN, max: TEXT_SIZE_MAX,
         hint: 'Dish names, descriptions, prices, choices, section headings and pills, on every menu, Tasting Menus included.' },
-      { key: 'siteText', id: 'textSite', part: 'site', title: 'Every other page',
-        hint: 'Events, the booking form, Gallery, About, Reviews, the Christmas page, and the small lines on the landing page.' }
+      { key: 'siteText', id: 'textSite', part: 'site', title: 'Every other page', min: TEXT_SIZE_MIN, max: TEXT_SIZE_MAX,
+        hint: 'Events, the booking form, Gallery, About, Reviews, the Christmas page, and the small lines on the landing page.' },
+      { key: 'hubText', id: 'textHub', part: 'hub', title: 'Menu names on Our Menu', min: HUB_TEXT_MIN, max: HUB_TEXT_MAX,
+        hint: 'The big names guests tap to open a menu. A long name always shrinks to stay on one line.', extra: hubFontPickerHtml }
     ];
 
     // The first menu that has something to show, so the phone shows real dishes
@@ -6803,6 +6856,35 @@
       return pct === 100 ? 'As designed' : (pct > 100 ? (pct - 100) + '% bigger' : (100 - pct) + '% smaller');
     }
 
+    // The fonts are downloaded only when this page opens, so each choice shows in its own font
+    function loadHubFontSamples() {
+      if ($('hubFontSamples')) return;
+      var link = document.createElement('link');
+      link.id = 'hubFontSamples';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?' + HUB_FONTS.filter(function (f) { return f.google; }).map(function (f) {
+        return 'family=' + f.google;
+      }).join('&') + '&display=swap';
+      document.head.appendChild(link);
+    }
+
+    function hubFontPickerHtml() {
+      loadHubFontSamples();
+      var first = appData.menuCategories[0];
+      var sample = first ? String(first.name || '').toUpperCase() : 'LUNCH';
+      if (!sample || sample.length > 9) sample = 'LUNCH';
+      var buttons = HUB_FONTS.map(function (f) {
+        var on = f.key === appData.look.hubFont;
+        return '<button type="button" class="hub-font' + (on ? ' is-active' : '') + '" data-action="hubFont" data-font="' + f.key + '" role="radio" aria-checked="' + on + '">' +
+          '<span class="hub-font-sample" style="font-family:' + esc(f.family) + ';font-weight:' + f.weight + ';letter-spacing:' + f.spacing + '">' + esc(sample) + '</span>' +
+          '<span class="hub-font-name">' + esc(f.label) + '</span></button>';
+      }).join('');
+      return '<div class="field"><span class="field-label" id="hubFontLabel">Font</span>' +
+          '<div class="hub-fonts" role="radiogroup" aria-labelledby="hubFontLabel">' + buttons + '</div>' +
+          '<span class="field-hint">Any font but the first gives every name the same style. The first keeps the original look, where some names have their own weight and size.</span>' +
+        '</div>';
+    }
+
     function textSizeHtml() {
       var look = appData.look;
       var cards = TEXT_SIZES.map(function (s) {
@@ -6810,8 +6892,9 @@
         return '<section class="card card-pad" data-text-part="' + s.part + '">' +
           '<h2 class="card-title">' + s.title + '</h2>' +
           '<p class="card-hint">' + s.hint + '</p>' +
-          '<label class="frame-slider text-slider"><span>Text size</span>' +
-            '<input type="range" id="' + s.id + '" min="' + TEXT_SIZE_MIN + '" max="' + TEXT_SIZE_MAX + '" step="5" value="' + value + '" aria-describedby="' + s.id + 'Words" />' +
+          (s.extra ? s.extra() : '') +
+          '<label class="frame-slider text-slider"><span>' + (s.extra ? 'Size' : 'Text size') + '</span>' +
+            '<input type="range" id="' + s.id + '" min="' + s.min + '" max="' + s.max + '" step="5" value="' + value + '" aria-describedby="' + s.id + 'Words" />' +
             '<output>' + value + '%</output></label>' +
           '<div class="text-size-foot">' +
             '<span class="field-hint" id="' + s.id + 'Words">' + textSizeWords(value) + '</span>' +
@@ -6819,14 +6902,14 @@
           '</div>' +
         '</section>';
       }).join('');
-      return pageHead('Text size', 'Make the words on the website bigger or smaller. The phone preview shows a menu, or Events while you change the other pages. Guests see the new size after you press Publish.') +
+      return pageHead('Text size & fonts', 'Make the words on the website bigger or smaller, and choose the font of the menu names. The phone preview follows the card you are changing. Guests see the changes after you press Publish.') +
         cards +
-        '<p class="field-hint">Big titles, the large words on the landing page and Our Menu, and the drawn titles at the top of each menu keep their size, so they always fit on a phone. Guests can still zoom in with two fingers.</p>';
+        '<p class="field-hint">Other big titles, the large words on the landing page, and the drawn titles at the top of each menu keep their size, so they always fit on a phone. Guests can still zoom in with two fingers.</p>';
     }
 
-    // Moves the phone to a menu or to Events, following the slider in use
+    // Moves the phone to a menu, Events or Our Menu, following the card in use
     function showTextSizePart(part) {
-      part = part === 'site' ? 'site' : 'menu';
+      part = part === 'site' || part === 'hub' ? part : 'menu';
       if ((view.textPart || 'menu') === part) return;
       view.textPart = part;
       postToPreview({ type: 'BELLE_NAVIGATE', target: previewPageTarget() });
@@ -6846,9 +6929,21 @@
     function setTextSize(key, value) {
       var s = TEXT_SIZES.find(function (size) { return size.key === key; });
       if (!s) return;
-      appData.look[key] = textSizePct(value);
+      appData.look[key] = textSizePct(value, s.min, s.max);
       refreshTextSizeCard(s);
       showTextSizePart(s.part);
+      postToPreview({ type: 'BELLE_LOOK_UPDATE', look: appData.look });
+      touch();
+    }
+
+    function setHubFont(key) {
+      appData.look.hubFont = hubFontKey(key);
+      Array.prototype.forEach.call(document.querySelectorAll('.hub-font'), function (btn) {
+        var on = btn.getAttribute('data-font') === appData.look.hubFont;
+        btn.classList.toggle('is-active', on);
+        btn.setAttribute('aria-checked', on);
+      });
+      showTextSizePart('hub');
       postToPreview({ type: 'BELLE_LOOK_UPDATE', look: appData.look });
       touch();
     }
@@ -8409,6 +8504,9 @@
 
       textSizeReset: function (el) {
         setTextSize(el.getAttribute('data-key'), 100);
+      },
+      hubFont: function (el) {
+        setHubFont(el.getAttribute('data-font'));
       },
       copySiteLink: function (el) {
         var key = el.getAttribute('data-key');

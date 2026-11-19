@@ -156,6 +156,38 @@
       root.style.setProperty('--fs-menu', String(scale(menus)));
       root.style.setProperty('--fs-site', String(scale(site)));
     };
+    // Fonts the admin panel offers for the menu names on Our Menu (Text size & fonts). Keep the keys
+    // in step with HUB_FONTS in admin.html. A chosen font is downloaded from Google Fonts only then.
+    window.BELLE_HUB_FONTS = {
+      'montserrat-light': { family: "'Montserrat', sans-serif", weight: 300, spacing: '.14em' },
+      italiana: { family: "'Italiana', serif", weight: 400, spacing: '.14em', google: 'Italiana' },
+      cormorant: { family: "'Cormorant Garamond', serif", weight: 500, spacing: '.1em', google: 'Cormorant+Garamond:wght@500' },
+      playfair: { family: "'Playfair Display', serif", weight: 400, spacing: '.08em', google: 'Playfair+Display' },
+      cinzel: { family: "'Cinzel', serif", weight: 400, spacing: '.1em', google: 'Cinzel' },
+      marcellus: { family: "'Marcellus', serif", weight: 400, spacing: '.12em', google: 'Marcellus' }
+    };
+    // The menu names' font (a key above, or none for the original look) and size in percent.
+    // Any font gives every name the same style; long names still shrink to stay on one line.
+    window.belleSetHubStyle = function(fontKey, pct) {
+      var root = document.documentElement;
+      var font = window.BELLE_HUB_FONTS.hasOwnProperty(fontKey) ? window.BELLE_HUB_FONTS[fontKey] : null;
+      var n = Number(pct);
+      root.style.setProperty('--fs-hub', String(isFinite(n) && n > 0 ? Math.max(0.7, Math.min(1.3, n / 100)) : 1));
+      root.classList.toggle('has-hub-font', !!font);
+      if (font) {
+        root.style.setProperty('--font-hub', font.family);
+        root.style.setProperty('--hub-weight', String(font.weight));
+        root.style.setProperty('--hub-spacing', font.spacing);
+        if (font.google && !document.getElementById('hubFont-' + fontKey)) {
+          var link = document.createElement('link');
+          link.id = 'hubFont-' + fontKey;
+          link.rel = 'stylesheet';
+          link.href = 'https://fonts.googleapis.com/css2?family=' + font.google + '&display=swap';
+          document.head.appendChild(link);
+        }
+      }
+      if (window.belleFitHubNames) window.belleFitHubNames();
+    };
     // Open in the colours and text size from the last visit, so a returning guest never sees black first
     (function() {
       try {
@@ -164,6 +196,7 @@
         if (look) {
           window.belleSetPalette(look.dark, look.light);
           window.belleSetTextSize(look.menuText, look.siteText);
+          window.belleSetHubStyle(look.hubFont, look.hubText);
         }
       } catch (e) {}
     })();
@@ -186,7 +219,7 @@
       --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
       --font-label: 'Montserrat', system-ui, -apple-system, sans-serif;
 
-      /* Text size, set in the admin panel under Text size (see belleSetTextSize above).
+      /* Text size, set in the admin panel under Text size & fonts (see belleSetTextSize above).
          Every reading-text font-size is written as calc(size * var(--fs, 1)): --fs follows
          --fs-site on every page and --fs-menu inside the menus. Big titles, the large words
          on the landing page and Our Menu, and the drawn menu headers keep their own size.
@@ -900,11 +933,14 @@
       border: none;
       outline: none;
       transition: color .25s, letter-spacing .35s var(--ease-out);
+      /* Each name's own size (--hub-base), times the admin's Menu names size (--fs-hub), no wider
+         than its length allows (--hub-fit, set per name), shrunk further if a font runs wide (--hub-shrink) */
+      font-size: calc(min(var(--hub-fit, 100vw), calc(var(--hub-base, clamp(2rem, 8.5vw, 3.2rem)) * var(--fs-hub, 1))) * var(--hub-shrink, 1));
     }
 
     /* Exact Uniform Font Sizes Matching Previous Spec & Home Page */
     .menu-cat-btn.cat-btn-lunch {
-      font-size: clamp(2rem, 8.5vw, 3.2rem);
+      --hub-base: clamp(2rem, 8.5vw, 3.2rem);
       font-weight: 500;
       letter-spacing: .12em;
       text-transform: uppercase;
@@ -912,14 +948,14 @@
     .menu-cat-btn.cat-btn-lunch:hover { letter-spacing: .16em; color: var(--light); }
 
     .menu-cat-btn.cat-btn-alacarte {
-      font-size: clamp(2.1rem, 9vw, 3.4rem);
+      --hub-base: clamp(2.1rem, 9vw, 3.4rem);
       font-weight: 400;
       letter-spacing: .02em;
     }
     .menu-cat-btn.cat-btn-alacarte:hover { letter-spacing: .05em; color: var(--light); }
 
     .menu-cat-btn.cat-btn-tasting {
-      font-size: clamp(1.6rem, 6.8vw, 2.6rem);
+      --hub-base: clamp(1.6rem, 6.8vw, 2.6rem);
       font-weight: 500;
       letter-spacing: .08em;
       text-transform: uppercase;
@@ -927,7 +963,7 @@
     .menu-cat-btn.cat-btn-tasting:hover { letter-spacing: .12em; color: var(--light); }
 
     .menu-cat-btn.cat-btn-thebar {
-      font-size: clamp(2rem, 8.5vw, 3.2rem);
+      --hub-base: clamp(2rem, 8.5vw, 3.2rem);
       font-weight: 500;
       letter-spacing: .12em;
       text-transform: uppercase;
@@ -935,12 +971,22 @@
     .menu-cat-btn.cat-btn-thebar:hover { letter-spacing: .16em; color: var(--light); }
 
     .menu-cat-btn.cat-btn-custom {
-      font-size: clamp(2rem, 8.5vw, 3.2rem);
+      --hub-base: clamp(2rem, 8.5vw, 3.2rem);
       font-weight: 500;
       letter-spacing: .12em;
       text-transform: uppercase;
     }
     .menu-cat-btn.cat-btn-custom:hover { letter-spacing: .16em; color: var(--light); }
+
+    /* A font chosen in the admin panel gives every name the same font, weight, spacing and size */
+    :root.has-hub-font .menu-cat-btn {
+      --hub-base: clamp(2rem, 8.5vw, 3.2rem);
+      font-family: var(--font-hub);
+      font-weight: var(--hub-weight, 400);
+      letter-spacing: var(--hub-spacing, .1em);
+      text-transform: uppercase;
+    }
+    :root.has-hub-font .menu-cat-btn:hover { letter-spacing: calc(var(--hub-spacing, .1em) + .04em); }
 
     .menu-cat-btn:focus-visible { outline: 2px solid var(--light); outline-offset: 2px; }
 
@@ -8926,12 +8972,9 @@ Choose your spread/rillette style:</p>
       var html = '';
       cats.forEach(function(cat, idx) {
         var catClass = 'cat-btn-' + (cat.id || 'custom');
-        var fitStyle = '';
-        if (['lunch', 'alacarte', 'tasting', 'thebar'].indexOf(cat.id) === -1) {
-          catClass = 'cat-btn-custom';
-          // Names cannot wrap in the hub, so long ones shrink to stay on screen
-          fitStyle = 'font-size:min(' + (106 / Math.max(1, String(cat.name || '').length)).toFixed(2) + 'vw, clamp(2rem, 8.5vw, 3.2rem));';
-        }
+        if (['lunch', 'alacarte', 'tasting', 'thebar'].indexOf(cat.id) === -1) catClass = 'cat-btn-custom';
+        // Names cannot wrap in the hub, so long ones shrink to stay on screen (see also fitHubNames)
+        var fitStyle = '--hub-fit:' + (106 / Math.max(1, String(cat.name || '').length)).toFixed(2) + 'vw;';
         var btnDelay = (0.32 + idx * 0.16).toFixed(2) + 's';
         var divDelay = (0.42 + idx * 0.16).toFixed(2) + 's';
 
@@ -8954,7 +8997,27 @@ Choose your spread/rillette style:</p>
           openPanel(target);
         });
       });
+      fitHubNames();
     }
+
+    // Each name's length gives it a rough limit, but fonts differ in width, so a name still wider
+    // than the list after that is shrunk to fit exactly. Runs again once a font has downloaded.
+    function fitHubNames() {
+      var list = document.getElementById('menuCatList');
+      if (!list || !list.clientWidth) return;
+      var room = list.clientWidth;
+      Array.prototype.forEach.call(list.querySelectorAll('.menu-cat-btn'), function(btn) {
+        btn.style.removeProperty('--hub-shrink');
+        var width = btn.offsetWidth;
+        if (width <= room) return;
+        // Only the words shrink, not the button's padding
+        var pad = parseFloat(getComputedStyle(btn).paddingLeft) + parseFloat(getComputedStyle(btn).paddingRight);
+        btn.style.setProperty('--hub-shrink', Math.max(0.3, (room - pad) / (width - pad) * 0.98).toFixed(3));
+      });
+    }
+    window.belleFitHubNames = fitHubNames;
+    window.addEventListener('resize', fitHubNames);
+    if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', fitHubNames);
 
     function renderCustomCategory(cat) {
       if (!cat) return;
@@ -9497,8 +9560,9 @@ Choose your spread/rillette style:</p>
        COLOURS AND CHRISTMAS MODE
        Both are set in the admin panel under Colours & Season and
        published with everything else, as data.look:
-       { dark, light, menuText, siteText, christmas: { on, snow, hat, hatX, hatY, hatRotate, hatFlip } }
-       menuText and siteText (percent) come from the admin's Text size page.
+       { dark, light, menuText, siteText, hubFont, hubText, christmas: { on, snow, hat, hatX, hatY, hatRotate, hatFlip } }
+       menuText, siteText and hubText (percent) and hubFont (a BELLE_HUB_FONTS key) come from the
+       admin's Text size & fonts page.
        ======================================================== */
     var LOOK_CACHE_KEY = 'belle_look';
 
@@ -9969,6 +10033,7 @@ Choose your spread/rillette style:</p>
       look = look && typeof look === 'object' ? look : {};
       window.belleSetPalette(look.dark, look.light);
       window.belleSetTextSize(look.menuText, look.siteText);
+      window.belleSetHubStyle(look.hubFont, look.hubText);
       var xmas = look.christmas && typeof look.christmas === 'object' ? look.christmas : {};
       setSnow(!!xmas.on && xmas.snow !== false);
       setHat(xmas.on && xmas.hat !== false ? {
@@ -9980,7 +10045,7 @@ Choose your spread/rillette style:</p>
       // Remember the colours for the next visit, but never the admin's unpublished ones
       if (!isInsideAdminIframe) {
         try {
-          localStorage.setItem(LOOK_CACHE_KEY, JSON.stringify({ dark: look.dark || '', light: look.light || '', menuText: look.menuText || 100, siteText: look.siteText || 100 }));
+          localStorage.setItem(LOOK_CACHE_KEY, JSON.stringify({ dark: look.dark || '', light: look.light || '', menuText: look.menuText || 100, siteText: look.siteText || 100, hubFont: look.hubFont || '', hubText: look.hubText || 100 }));
         } catch (e) {}
       }
     }
