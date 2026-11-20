@@ -6355,7 +6355,7 @@
             '<span class="chip ' + state.chip + '">' + esc(state.label) + '</span>' +
             (b.reference ? '<span>Reference <b>' + esc(b.reference) + '</b></span>' : '') +
             (b.createdAt ? '<span>Received ' + esc(formatDateTime(b.createdAt)) + '</span>' : '') +
-            '<span>' + (b.source === 'website' ? 'From the website' : 'Added by staff') + '</span>' +
+            '<span>' + (b.source === 'website' ? 'From the website' : 'Walk-in, added by ' + esc(b.addedByEmail || 'staff')) + '</span>' +
             (b.event ? '<span>For <b>' + esc(b.event) + '</b></span>' : '') +
           '</div>' +
           '<div class="booking-actions">' + tellGuestHtml(b, 'btn-primary booking-next') + alreadyToldHtml(b, '') + bookingStatusButtons(b) + '</div>' +
@@ -6363,7 +6363,7 @@
         '</section>';
 
       return '<button type="button" class="back-link" data-action="go" data-page="reservations">' + icon('back', 16) + 'Back to Reservations</button>' +
-        pageHead(isNew ? 'Add a reservation' : (b.name || 'Reservation'), isNew ? 'For a guest who called or walked in. It is saved as confirmed.' : bookingDateLine(b)) +
+        pageHead(isNew ? 'Add a reservation' : (b.name || 'Reservation'), isNew ? 'For a guest who called or walked in. It is saved as confirmed, shows under Walk-in in the staff apps, and everyone else on the team gets an alert.' : bookingDateLine(b)) +
         statusCard +
         '<section class="card card-pad">' +
           '<div class="field-row">' +
@@ -6388,6 +6388,14 @@
             (isNew || !can('full') ? '' : '<button type="button" class="btn btn-danger" data-action="deleteBooking" data-id="' + esc(b.id) + '">Delete</button>') +
           '</div>' +
         '</section>';
+    }
+
+    // The iPhone alerts server checks every minute anyway; this makes it look straight away
+    var STAFF_ALERTS_PING_URL = 'https://belle-alerts.bellecolombolinktree.workers.dev/ping';
+    function pingStaffAlerts() {
+      try {
+        fetch(STAFF_ALERTS_PING_URL, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(function () {});
+      } catch (err) {}
     }
 
     function newBookingReference() {
@@ -6418,13 +6426,17 @@
       var isNew = !view.bookingId;
       var saving;
       if (isNew) {
-        var entry = { reference: newBookingReference(), status: 'confirmed', source: 'staff', createdAt: Date.now() };
+        // A booking added by hand is a walk-in. Saying who added it lets the staff apps ring everyone else.
+        var entry = { reference: newBookingReference(), status: 'confirmed', source: 'staff', createdAt: Date.now(), addedBy: account.uid, addedByEmail: account.email };
         Object.keys(fields).forEach(function (key) { if (fields[key] !== null) entry[key] = fields[key]; });
         saving = bookingRequest({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(entry)
-        }, '', 'print=silent').then(loadBookings);
+        }, '', 'print=silent').then(function () {
+          pingStaffAlerts();
+          return loadBookings();
+        });
       } else {
         saving = patchBooking(view.bookingId, fields);
       }

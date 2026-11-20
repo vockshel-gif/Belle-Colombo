@@ -463,9 +463,12 @@
         id: id, reference: str(o.reference), date: str(o.date), time: str(o.time), party: Number(o.party) || 0,
         name: str(o.name), phone: str(o.phone), email: str(o.email), occasion: str(o.occasion), note: str(o.note),
         event: str(o.event), status: str(o.status), source: str(o.source), createdAt: Number(o.createdAt) || 0,
-        statusAt: Number(o.statusAt) || 0, guestToldAt: Number(o.guestToldAt) || 0, table: str(o.table), staffNote: str(o.staffNote)
+        statusAt: Number(o.statusAt) || 0, guestToldAt: Number(o.guestToldAt) || 0, table: str(o.table), staffNote: str(o.staffNote),
+        addedBy: str(o.addedBy), addedByEmail: str(o.addedByEmail)
       };
       b.isCancelled = b.status === 'declined' || b.status === 'cancelled';
+      // Added by hand here, in the Android app or in the admin panel, for a guest who walked in or called
+      b.isWalkIn = b.source === 'staff';
       b.digits = b.phone.replace(/\D/g, '');
       b.firstName = b.name.trim().split(/\s+/)[0] || '';
       b.needsTelling = !!TELL_STATES[b.status] && !b.guestToldAt && b.digits.length >= 9;
@@ -485,6 +488,12 @@
     function waiting(rows) {
       var today = colomboDay(0);
       return rows.filter(function (b) { return (b.status === 'requested' || (b.isCancelled && b.needsTelling)) && b.date >= today; });
+    }
+
+    // Walk-ins for today and later. The same rule as the Android app.
+    function walkIns(rows) {
+      var today = colomboDay(0);
+      return rows.filter(function (b) { return b.isWalkIn && b.date >= today && !b.isCancelled; });
     }
 
     function findBooking(id) { return tree[id] ? bookingOf(id, tree[id]) : null; }
@@ -918,6 +927,14 @@
       });
     }
 
+    // Makes the alerts server look now rather than at its next once-a-minute check
+    function pingAlerts() {
+      if (!ALERTS_READY) return;
+      try {
+        fetch(ALERTS_URL + '/ping', { method: 'POST', mode: 'no-cors', keepalive: true }).catch(function () {});
+      } catch (err) {}
+    }
+
     function readyWorker() {
       if (registration) return Promise.resolve(registration);
       return navigator.serviceWorker.register('sw.js').then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
@@ -1084,6 +1101,9 @@
         app.innerHTML = eventsHtml();
       } else {
         app.innerHTML = reservationsHtml();
+        // On a narrow phone Walk-in sits past the edge, so the row keeps the chosen list in view
+        var on = app.querySelector('.segments .seg.on');
+        if (on) on.parentNode.scrollLeft = Math.max(0, on.offsetLeft + on.offsetWidth - on.parentNode.clientWidth + 16);
       }
       fillPhotos();
       window.scrollTo(0, sameScreen ? scroll : 0);
@@ -1151,10 +1171,11 @@
       var lists = {
         reply: waiting(rows),
         today: rows.filter(function (b) { return b.date === today && !b.isCancelled; }),
-        upcoming: rows.filter(function (b) { return b.date > today && !b.isCancelled; })
+        upcoming: rows.filter(function (b) { return b.date > today && !b.isCancelled; }),
+        walkin: walkIns(rows)
       };
-      var empty = { reply: 'No requests are waiting for a reply.', today: 'No tables booked for today.', upcoming: 'No reservations after today.' };
-      var labels = { reply: 'Needs a reply', today: 'Today', upcoming: 'Upcoming' };
+      var empty = { reply: 'No requests are waiting for a reply.', today: 'No tables booked for today.', upcoming: 'No reservations after today.', walkin: 'No walk-ins for today or later. Tap Add when a guest walks in or calls.' };
+      var labels = { reply: 'Needs a reply', today: 'Today', upcoming: 'Upcoming', walkin: 'Walk-in' };
       var unmarked = rows.filter(function (b) { return b.date < today && b.status === 'confirmed'; });
       var shown = lists[view.list];
       var body;
@@ -1165,7 +1186,7 @@
         body += '<h2 class="section">Still to mark from yesterday</h2>' + unmarked.map(function (b) { return bookingCard(b, true); }).join('');
       }
       return topBar('Reservations', { id: 'linkText', text: linkText() }, '', moreButton()) +
-        '<div class="segments">' + ['reply', 'today', 'upcoming'].map(function (k) {
+        '<div class="segments">' + ['reply', 'today', 'upcoming', 'walkin'].map(function (k) {
           var n = lists[k].length;
           return '<button class="seg' + (view.list === k ? ' on' : '') + '" data-action="list" data-list="' + k + '">' + labels[k] + (bookingsLoaded && n ? ' · ' + n : '') + '</button>';
         }).join('') + '</div>' +
@@ -1176,7 +1197,7 @@
 
     function bookingCard(b, showDay) {
       var today = colomboDay(0);
-      var facts = [plural(b.party, 'guest'), b.table && 'Table ' + b.table, b.occasion, b.event, b.note].filter(Boolean).join(' · ');
+      var facts = [b.isWalkIn && 'Walk-in', plural(b.party, 'guest'), b.table && 'Table ' + b.table, b.occasion, b.event, b.note].filter(Boolean).join(' · ');
       var canMark = b.status === 'confirmed' && b.date <= today;
       var buttons = '';
       if (b.needsTelling) {
@@ -1227,7 +1248,7 @@
         ['Guests', String(b.party)], ['Table', b.table], ['WhatsApp', b.phone], ['Email', b.email], ['Occasion', b.occasion],
         ['For the event', b.event], ['Note from the guest', b.note], ['Note for staff', b.staffNote]
       ].filter(function (f) { return f[1]; });
-      var about = [b.reference && 'Ref ' + b.reference, b.source === 'website' ? 'From the website' : 'Added by staff', b.createdAt && 'Received ' + moment(b.createdAt)].filter(Boolean);
+      var about = [b.reference && 'Ref ' + b.reference, b.source === 'website' ? 'From the website' : 'Walk-in, added by ' + (b.addedByEmail || 'staff'), b.createdAt && 'Received ' + moment(b.createdAt)].filter(Boolean);
       return topBar(b.name || 'Reservation', null, backButton(),
         '<button class="icon-btn" data-action="go" data-to="booking-edit/' + encodeURIComponent(id) + '" aria-label="Change details">' + icon('edit') + '</button>') +
         '<main class="page form">' +
@@ -1274,7 +1295,7 @@
       }
       return topBar(id ? 'Change details' : 'Add a reservation', null, backButton()) +
         '<main class="page form"><form id="bookingForm" data-id="' + esc(id || '') + '" novalidate>' +
-          (id ? '' : '<p class="muted" style="margin-bottom:14px">For a guest who called or walked in. It is saved as confirmed.</p>') +
+          (id ? '' : '<p class="muted" style="margin-bottom:14px">For a guest who called or walked in. It is saved as confirmed, shows under Walk-in, and everyone else on the team gets an alert.</p>') +
           '<div class="pair">' + field('Date', 'date', b ? b.date : colomboDay(0), 'type="date" required') + field('Time', 'time', b ? b.time : '19:00', 'type="time" required') + '</div>' +
           '<div class="pair">' + field('Guests', 'party', b ? b.party : 2, 'type="number" inputmode="numeric" min="1" max="100"') + field('Table', 'table', b ? b.table : '', 'maxlength="40"') + '</div>' +
           field('Name', 'name', b ? b.name : '', 'maxlength="80" autocapitalize="words"') +
@@ -1309,9 +1330,13 @@
       if (id) {
         job = patchBooking(id, fields).then(function () { toast('Saved.'); });
       } else {
-        var entry = { reference: newReference(), status: 'confirmed', source: 'staff', createdAt: Date.now() };
+        // Who added it, so everyone else's phone rings for the walk-in and theirs does not
+        var entry = { reference: newReference(), status: 'confirmed', source: 'staff', createdAt: Date.now(), addedBy: session.uid, addedByEmail: session.email };
         Object.keys(fields).forEach(function (k) { if (fields[k] !== null) entry[k] = fields[k]; });
-        job = dbWrite('POST', 'belle_reservations', entry).then(function () { toast('Reservation added.'); });
+        job = dbWrite('POST', 'belle_reservations', entry).then(function () {
+          pingAlerts();
+          toast('Walk-in added. The rest of the team gets an alert.');
+        });
       }
       job.then(function () { back(id ? 'booking/' + encodeURIComponent(id) : ''); }, function (err) {
         error.hidden = false;
