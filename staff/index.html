@@ -111,6 +111,14 @@
     .field small { display: block; color: var(--text-2); font-size: 13px; margin-top: 4px; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: -6px 0 14px; }
+    .kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 14px; }
+    .kind { position: relative; display: block; border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 12px; }
+    .kind input { position: absolute; opacity: 0; pointer-events: none; }
+    .kind b { display: block; font-size: 16px; font-weight: 600; }
+    .kind small { display: block; color: var(--text-2); font-size: 13px; margin-top: 2px; }
+    .kind:has(input:checked) { border-color: var(--primary); background: var(--primary); color: var(--on-primary); }
+    .kind:has(input:checked) small { color: inherit; opacity: .8; }
+    .kind:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 2px; }
     .switch-row { display: flex; align-items: center; gap: 12px; padding: 6px 0 14px; cursor: pointer; }
     .switch { width: 52px; height: 32px; border-radius: 16px; background: var(--line); position: relative; flex: none; transition: background 0.15s; }
     .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 13px; background: #fff; transition: left 0.15s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
@@ -464,11 +472,11 @@
         name: str(o.name), phone: str(o.phone), email: str(o.email), occasion: str(o.occasion), note: str(o.note),
         event: str(o.event), status: str(o.status), source: str(o.source), createdAt: Number(o.createdAt) || 0,
         statusAt: Number(o.statusAt) || 0, guestToldAt: Number(o.guestToldAt) || 0, table: str(o.table), staffNote: str(o.staffNote),
-        addedBy: str(o.addedBy), addedByEmail: str(o.addedByEmail)
+        addedBy: str(o.addedBy), addedByEmail: str(o.addedByEmail), type: str(o.type)
       };
       b.isCancelled = b.status === 'declined' || b.status === 'cancelled';
-      // Added by hand here, in the Android app or in the admin panel, for a guest who walked in or called
-      b.isWalkIn = b.source === 'staff';
+      // Staff add a booking by hand as a reservation (they called or messaged) or a walk-in (they are here now)
+      b.isWalkIn = b.source === 'staff' && b.type === 'walkin';
       b.digits = b.phone.replace(/\D/g, '');
       b.firstName = b.name.trim().split(/\s+/)[0] || '';
       b.needsTelling = !!TELL_STATES[b.status] && !b.guestToldAt && b.digits.length >= 9;
@@ -1248,7 +1256,7 @@
         ['Guests', String(b.party)], ['Table', b.table], ['WhatsApp', b.phone], ['Email', b.email], ['Occasion', b.occasion],
         ['For the event', b.event], ['Note from the guest', b.note], ['Note for staff', b.staffNote]
       ].filter(function (f) { return f[1]; });
-      var about = [b.reference && 'Ref ' + b.reference, b.source === 'website' ? 'From the website' : 'Walk-in, added by ' + (b.addedByEmail || 'staff'), b.createdAt && 'Received ' + moment(b.createdAt)].filter(Boolean);
+      var about = [b.reference && 'Ref ' + b.reference, b.source === 'website' ? 'From the website' : (b.isWalkIn ? 'Walk-in' : 'Reservation') + ', added by ' + (b.addedByEmail || 'staff'), b.createdAt && 'Received ' + moment(b.createdAt)].filter(Boolean);
       return topBar(b.name || 'Reservation', null, backButton(),
         '<button class="icon-btn" data-action="go" data-to="booking-edit/' + encodeURIComponent(id) + '" aria-label="Change details">' + icon('edit') + '</button>') +
         '<main class="page form">' +
@@ -1295,7 +1303,8 @@
       }
       return topBar(id ? 'Change details' : 'Add a reservation', null, backButton()) +
         '<main class="page form"><form id="bookingForm" data-id="' + esc(id || '') + '" novalidate>' +
-          (id ? '' : '<p class="muted" style="margin-bottom:14px">For a guest who called or walked in. It is saved as confirmed, shows under Walk-in, and everyone else on the team gets an alert.</p>') +
+          (id ? '' : '<p class="muted" style="margin-bottom:14px">For a guest who called, messaged or walked in. It is saved as confirmed, and everyone else on the team gets an alert.</p>') +
+          (!b || b.source === 'staff' ? kindsHtml(b ? (b.isWalkIn ? 'walkin' : 'reservation') : '') : '') +
           '<div class="pair">' + field('Date', 'date', b ? b.date : colomboDay(0), 'type="date" required') + field('Time', 'time', b ? b.time : '19:00', 'type="time" required') + '</div>' +
           '<div class="pair">' + field('Guests', 'party', b ? b.party : 2, 'type="number" inputmode="numeric" min="1" max="100"') + field('Table', 'table', b ? b.table : '', 'maxlength="40"') + '</div>' +
           field('Name', 'name', b ? b.name : '', 'maxlength="80" autocapitalize="words"') +
@@ -1309,11 +1318,22 @@
         '</form></main>';
     }
 
+    function kindsHtml(current) {
+      return '<div class="kinds" role="radiogroup" aria-label="What kind of booking">' + [
+        ['reservation', 'Reservation', 'They called or messaged to book a time.'],
+        ['walkin', 'Walk-in', 'They are here now, without a booking.']
+      ].map(function (k) {
+        return '<label class="kind"><input type="radio" name="type" value="' + k[0] + '"' + (current === k[0] ? ' checked' : '') + ' /><b>' + k[1] + '</b><small>' + k[2] + '</small></label>';
+      }).join('') + '</div>';
+    }
+
     function saveBooking(form) {
       var id = form.getAttribute('data-id');
       var v = function (name) { return form.elements[name].value.trim(); };
       var party = parseInt(v('party'), 10);
-      var problem = !v('date') ? 'Choose a date.' : !/^\d{2}:\d{2}$/.test(v('time')) ? 'Choose a time.'
+      var hasType = !!form.elements.type;
+      var type = hasType ? form.elements.type.value : '';
+      var problem = hasType && !type ? 'Choose Reservation or Walk-in.' : !v('date') ? 'Choose a date.' : !/^\d{2}:\d{2}$/.test(v('time')) ? 'Choose a time.'
         : !(party >= 1 && party <= 100) ? 'Enter between 1 and 100 guests.' : !v('name') ? 'Enter a name.'
         : v('phone') && v('phone').length < 7 ? 'That WhatsApp number looks too short. Leave it empty if you do not have one.' : '';
       var error = document.getElementById('formError');
@@ -1323,6 +1343,7 @@
       // An empty field is removed from the booking, as in the admin panel
       var fields = { date: v('date'), time: v('time'), party: party, name: v('name') };
       ['phone', 'email', 'table', 'occasion', 'note', 'staffNote'].forEach(function (k) { fields[k] = v(k) || null; });
+      if (type) fields.type = type;
       var button = document.getElementById('formSave');
       button.disabled = true;
       button.textContent = 'Saving…';
@@ -1335,7 +1356,7 @@
         Object.keys(fields).forEach(function (k) { if (fields[k] !== null) entry[k] = fields[k]; });
         job = dbWrite('POST', 'belle_reservations', entry).then(function () {
           pingAlerts();
-          toast('Walk-in added. The rest of the team gets an alert.');
+          toast((type === 'walkin' ? 'Walk-in' : 'Reservation') + ' added. The rest of the team gets an alert.');
         });
       }
       job.then(function () { back(id ? 'booking/' + encodeURIComponent(id) : ''); }, function (err) {
