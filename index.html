@@ -8964,9 +8964,10 @@ Choose your spread/rillette style:</p>
         });
       }
 
-      // Filter out stale test breakfast category
+      // Filter out stale test breakfast category, and the Christmas menu when only the bookmark leads to it
+      var hiddenId = christmasHiddenMenuId(window.belleCurrentData);
       cats = cats.filter(function(c) {
-        return c.id !== 'cat-breakfast';
+        return c.id !== 'cat-breakfast' && !(hiddenId && c.id === hiddenId);
       });
 
       var html = '';
@@ -10071,8 +10072,10 @@ Choose your spread/rillette style:</p>
       try {
         newStructureJson = JSON.stringify(data, function(key, val) {
           if (key === 'mediaFrame') return undefined;
-          // Colours, Christmas mode and the Christmas Menu are already applied, so changing them alone redraws nothing
-          if ((key === 'look' || key === 'christmasMenu') && this === data) return undefined;
+          // Colours, Christmas mode and the Christmas Menu are already applied, so changing them alone redraws nothing,
+          // except hiding a menu from the Our Menu list
+          if (key === 'look' && this === data) return undefined;
+          if (key === 'christmasMenu' && this === data) return christmasHiddenMenuId(data) || undefined;
           return val;
         });
       } catch (e) {
@@ -10610,26 +10613,35 @@ Choose your spread/rillette style:</p>
        A bookmark on Our Menu and the page it opens, both written on
        the admin panel's Christmas Menu page and published as
        data.christmasMenu:
-       { enabled, label, note, leadsTo, eyebrow, title, soon, message,
-         when, reserve, reserveLabel, whatsapp, whatsappLabel }
+       { enabled, onHome, label, note, leadsTo, hideInList, eyebrow, title,
+         soon, message, when, reserve, reserveLabel, whatsapp, whatsappLabel }
        leadsTo is 'soon' for the Coming soon page, or the id of one of
        the menus once the Christmas menu is ready. #christmas opens
-       whichever it is, so the link can be shared.
+       whichever it is, so the link can be shared. hideInList keeps that
+       menu off the Our Menu list, so guests reach it by the bookmark.
        ======================================================== */
     function christmasMenuData(data) {
       var c = data && data.christmasMenu;
       return c && typeof c === 'object' ? c : { enabled: false };
     }
 
-    // The menu the bookmark leads to, if it still exists, or else the Coming soon page
-    function christmasTarget() {
-      var data = window.belleCurrentData || {};
+    // The menu the bookmark leads to, if it still exists, or '' for the Coming soon page
+    function christmasMenuId(data) {
       var id = christmasMenuData(data).leadsTo;
-      if (id && id !== 'soon') {
-        var menus = (data.menuCategories || []).concat(data.customCategories || []);
-        if (menus.some(function(menu) { return menu && menu.id === id; })) return id;
-      }
-      return 'christmas';
+      if (!id || id === 'soon') return '';
+      var menus = ((data && data.menuCategories) || []).concat((data && data.customCategories) || []);
+      return menus.some(function(menu) { return menu && menu.id === id; }) ? id : '';
+    }
+
+    function christmasTarget() {
+      return christmasMenuId(window.belleCurrentData) || 'christmas';
+    }
+
+    // The Christmas menu, when it is kept off the Our Menu list. Only while the bookmark is on,
+    // so the menu can always be reached one way or the other.
+    function christmasHiddenMenuId(data) {
+      var c = christmasMenuData(data);
+      return c.enabled === true && c.hideInList === true ? christmasMenuId(data) : '';
     }
 
     // Each letter of "Coming soon" fades in after the one before

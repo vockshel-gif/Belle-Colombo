@@ -1674,6 +1674,7 @@
         label: 'Christmas Menu',
         note: 'Coming soon',
         leadsTo: 'soon',
+        hideInList: false,
         eyebrow: 'The festive season',
         title: 'Christmas Menu',
         soon: 'Coming soon',
@@ -2837,6 +2838,11 @@
       var notLive = liveData && !getMenu(menuId, liveData)
         ? '<div class="note is-info">This menu is in the phone preview now. Guests will see it after you press Publish.</div>'
         : '';
+      var xmas = appData.christmasMenu;
+      if (xmas.enabled && xmas.hideInList && xmas.leadsTo === menuId) {
+        notLive += '<div class="note is-info">This menu is hidden from the list on Our Menu. Guests open it from the red Christmas bookmark. ' +
+          '<button type="button" class="btn-link" data-action="go" data-page="christmas">Change this on the Christmas Menu page</button></div>';
+      }
 
       var search = '<div class="search">' + icon('search') + '<input type="search" id="menuSearch" placeholder="Find a dish on this menu" aria-label="Find a dish on this menu" autocomplete="off" /></div>';
 
@@ -4566,7 +4572,11 @@
                 (target ? '' : '<option value="" selected disabled>Choose a menu</option>') + menuOptions + '</select></div>'
             : '') +
           targetNote +
-          '<p class="field-hint">When your Christmas menu is ready, add it under Menus with <b>Add a menu</b>, fill in its dishes, then choose it here and press Publish. Until then, guests see the Coming soon page below.</p>' +
+          (target
+            ? '<label class="check"><input type="checkbox" id="xmasHideInList"' + (c.hideInList ? ' checked' : '') + ' /><span>Hide ' + esc(prettyName(target.name)) + ' from the list on Our Menu, so guests open it from the red bookmark</span></label>' +
+              '<p class="field-hint" style="padding-left:27px">' + (c.enabled ? 'Its name leaves the list but the menu stays. If you turn the bookmark off, the name comes back on the list.' : 'The bookmark is off, so the name stays on the list until you turn the bookmark on.') + '</p>'
+            : '') +
+          (target ? '' : '<p class="field-hint">When your Christmas menu is ready, add it under Menus with <b>Add a menu</b>, fill in its dishes, then choose it here and press Publish. Until then, guests see the Coming soon page below.</p>') +
         '</section>' +
         '<section class="card card-pad" data-xmas-part="page">' +
           '<h2 class="card-title">The Coming soon page</h2>' +
@@ -4611,11 +4621,20 @@
         postToPreview({ type: 'BELLE_NAVIGATE', target: c.onHome ? 'home' : 'menu-hub' });
         return;
       }
+      else if (t.id === 'xmasHideInList') {
+        c.hideInList = t.checked;
+        // Show Our Menu in the phone, where the name leaves or comes back
+        touch();
+        clearTimeout(previewTimer);
+        sendPreview();
+        showChristmasPart('bookmark', true);
+        return;
+      }
       else if (t.id === 'xmasReserveOn') { c.reserve = t.checked; redraw = true; }
       else if (t.id === 'xmasWhatsappOn') { c.whatsapp = t.checked; redraw = true; }
       else if (t.name === 'xmasLeadsTo') {
         // Choosing a menu starts at one called Christmas, if there is one
-        var christmasMenu = appData.menuCategories.find(function (m) { return /christmas|xmas|festive/i.test(m.name || ''); });
+        var christmasMenu = appData.menuCategories.find(function (m) { return /christmas|xmas|festive|holiday/i.test(m.name || ''); });
         c.leadsTo = t.value === 'soon' ? 'soon' : (christmasMenu ? christmasMenu.id : '');
         redraw = true;
       }
