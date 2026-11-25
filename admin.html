@@ -1060,7 +1060,7 @@
     }
     .report-tile:hover { border-color: var(--text-3); }
     .report-tile.is-active { background: var(--text); border-color: var(--text); color: #fff; }
-    .report-tile-all { grid-column: 1 / -1; }
+    .report-label { margin: 0 0 -6px; font-size: 13px; font-weight: 600; color: var(--text-2); }
     .report-tile b { font-size: 24px; line-height: 1.2; }
     .report-tile span { font-size: 14px; font-weight: 600; }
     .report-tile small { font-size: 12px; color: var(--text-2); }
@@ -1073,6 +1073,7 @@
       .sitting-row .field:first-child { grid-column: 1 / -1; }
       #bookingTabs { flex-wrap: wrap; }
       .report-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .report-tile-all { grid-column: 1 / -1; }
       .booking-row { flex-wrap: wrap; }
       .booking-row .row-main { flex-basis: 100%; }
       .booking-tools { max-width: none; width: 100%; justify-content: flex-start; padding: 0 16px 10px; }
@@ -1359,7 +1360,7 @@
     var booted = false;
 
     function newBookingState() {
-      return { list: [], past: [], state: 'idle', tab: 'reply', search: '', seen: null, newest: null, loadedAt: 0, pastLoaded: false, timer: null, reportMonth: colomboDay().slice(0, 7), reportStatus: '', reportMonths: {} };
+      return { list: [], past: [], state: 'idle', tab: 'reply', search: '', seen: null, newest: null, loadedAt: 0, pastLoaded: false, timer: null, reportMonth: colomboDay().slice(0, 7), reportKind: '', reportStatus: '', reportMonths: {} };
     }
 
     /* ========================================================
@@ -6165,7 +6166,7 @@
       if (tab === 'reply') return waitingBookings();
       if (tab === 'today') return bookings.list.filter(function (b) { return b.date === today && !isCancelledBooking(b); });
       if (tab === 'upcoming') return bookings.list.filter(function (b) { return b.date > today && !isCancelledBooking(b); });
-      if (tab === 'report') return reportBookings(bookings.reportStatus);
+      if (tab === 'report') return reportBookings(bookings.reportKind, bookings.reportStatus);
       return allBookings().filter(function (b) { return b.date < today || isCancelledBooking(b); }).reverse();
     }
 
@@ -6248,19 +6249,38 @@
       return bookings.reportMonths[bookings.reportMonth] || 'loading';
     }
 
-    function reportBookings(status) {
+    // Walk-ins are counted apart. Website requests and staff-added reservations are reservations.
+    var BOOKING_KINDS = { reservation: 'Reservations', walkin: 'Walk-ins' };
+
+    function bookingKind(b) { return isWalkIn(b) ? 'walkin' : 'reservation'; }
+
+    function reportBookings(kind, status) {
       return allBookings().filter(function (b) {
-        return String(b.date).slice(0, 7) === bookings.reportMonth && (!status || b.status === status);
+        return String(b.date).slice(0, 7) === bookings.reportMonth && (!kind || bookingKind(b) === kind) && (!status || b.status === status);
       }).reverse();
     }
 
-    function reportTileHtml(status, label) {
-      var rows = reportBookings(status);
+    // A kind tile sets the kind and clears the status. A status tile keeps the kind.
+    function reportTileHtml(kind, status, label, active, filter) {
+      var rows = reportBookings(kind, status);
       var guests = rows.reduce(function (sum, b) { return sum + (parseInt(b.party, 10) || 0); }, 0);
-      var active = bookings.reportStatus === status;
-      return '<button type="button" class="report-tile' + (status ? '' : ' report-tile-all') + (active ? ' is-active' : '') + '" data-action="bookingReportFilter" data-status="' + status + '" aria-pressed="' + active + '">' +
+      return '<button type="button" class="report-tile' + (filter === 'all' ? ' report-tile-all' : '') + (active ? ' is-active' : '') + '" data-action="bookingReportFilter" ' +
+        (filter === 'status' ? 'data-status="' + status + '"' : 'data-kind="' + kind + '"') + ' aria-pressed="' + active + '">' +
         '<b>' + rows.length + '</b><span>' + esc(label) + '</span><small>' + plural(guests, 'guest') + '</small>' +
       '</button>';
+    }
+
+    function reportTilesHtml() {
+      var kind = bookings.reportKind;
+      var status = bookings.reportStatus;
+      return '<div class="report-tiles">' +
+          reportTileHtml('', '', 'All bookings', !kind && !status, 'all') +
+          Object.keys(BOOKING_KINDS).map(function (k) { return reportTileHtml(k, '', BOOKING_KINDS[k], kind === k, 'kind'); }).join('') +
+        '</div>' +
+        '<h3 class="report-label">' + esc(kind ? BOOKING_KINDS[kind] + ' by status' : 'All bookings by status') + '</h3>' +
+        '<div class="report-tiles">' +
+          Object.keys(BOOKING_STATES).map(function (s) { return reportTileHtml(kind, s, BOOKING_STATES[s].label, status === s, 'status'); }).join('') +
+        '</div>';
     }
 
     function bookingReportHtml() {
@@ -6272,10 +6292,8 @@
         body = '<p class="empty">Could not load this month.</p><div><button type="button" class="btn btn-sm" data-action="bookingReportMonth" data-step="0">Try again</button></div>';
       }
       if (state === 'ready') {
-        body = '<div class="report-tiles">' + reportTileHtml('', 'All requests') +
-          Object.keys(BOOKING_STATES).map(function (status) { return reportTileHtml(status, BOOKING_STATES[status].label); }).join('') +
-          '</div>' +
-          '<p class="card-hint report-hint">Counted by the date of the table. Declined and cancelled requests stay on record unless someone deletes them.</p>';
+        body = reportTilesHtml() +
+          '<p class="card-hint report-hint">Counted by the date of the table. Walk-ins are the ones staff added as Walk-in; everything else counts as a reservation. Declined and cancelled bookings stay on record unless someone deletes them.</p>';
       }
       return '<section class="card card-pad">' +
         '<div class="report-month">' +
@@ -8637,8 +8655,14 @@
         loadReportMonth();
         renderBookingArea();
       },
+      // Reservations or Walk-ins stays picked from month to month, so they are easy to compare
       bookingReportFilter: function (el) {
-        bookings.reportStatus = el.getAttribute('data-status');
+        if (el.hasAttribute('data-kind')) {
+          bookings.reportKind = el.getAttribute('data-kind');
+          bookings.reportStatus = '';
+        } else {
+          bookings.reportStatus = el.getAttribute('data-status');
+        }
         renderBookingArea();
       },
       // The link itself opens WhatsApp. This only notes that the message went.
