@@ -279,6 +279,24 @@
     .note.is-info { background: var(--gold-soft); color: #5f4c2d; }
     .note.is-bad { background: var(--bad-soft); color: var(--bad); }
 
+    /* The Christmas menu pages, small, on the Christmas Menu page */
+    .xmas-pages-strip {
+      display: flex;
+      gap: 8px;
+      margin: 14px 0 8px;
+      padding-bottom: 4px;
+      overflow-x: auto;
+    }
+    .xmas-pages-strip img {
+      flex: none;
+      width: 72px;
+      height: 90px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: #fff;
+      object-fit: cover;
+    }
+
     /* ---------- Overview ---------- */
     .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
     .step { padding: 14px 16px; background: var(--surface-2); border-radius: 8px; }
@@ -455,6 +473,10 @@
     .chip-veg { background: var(--ok-soft); color: var(--ok); }
     .chip-warn { background: var(--warn-soft); color: var(--warn); }
     .chip-ok { background: var(--ok-soft); color: var(--ok); }
+    /* A table booked from the Christmas menu, in the red of the website's Christmas bookmark */
+    .chip-xmas { gap: 4px; background: #fbe8eb; color: #9b1028; }
+    .chip-xmas svg { width: 10px; height: 10px; flex: none; }
+    .xmas-count { margin: 0 0 12px; font-size: 14px; line-height: 1.5; }
     .empty { padding: 22px 16px; text-align: center; color: var(--text-2); font-size: 14px; }
     .date-box {
       width: 52px;
@@ -1665,9 +1687,11 @@
       };
     }
 
-    /* Christmas Menu. A bookmark on Our Menu that leads to a Coming soon page, or to one of the
-       menus once the Christmas menu is ready. The website reads data.christmasMenu; without it, or
-       with enabled false, guests see nothing. */
+    /* Christmas Menu. A bookmark on Our Menu that leads to a Coming soon page, to the Christmas
+       menu pages (leadsTo 'pages': the client's PDF as pictures, kept with the website in
+       assets/christmas), or to one of the menus. The website reads data.christmasMenu; without it,
+       or with enabled false, guests see nothing. */
+    var CHRISTMAS_PAGE_COUNT = 7;
     function defaultChristmasMenu() {
       return {
         enabled: false,
@@ -1675,6 +1699,7 @@
         label: 'Christmas Menu',
         note: 'Coming soon',
         leadsTo: 'soon',
+        pagesMenu: '',
         hideInList: false,
         eyebrow: 'The festive season',
         title: 'Christmas Menu',
@@ -1684,7 +1709,8 @@
         reserve: true,
         reserveLabel: 'Reserve for Christmas',
         whatsapp: true,
-        whatsappLabel: 'Ask us on WhatsApp'
+        whatsappLabel: 'Ask us on WhatsApp',
+        whatsappNumber: ''
       };
     }
 
@@ -2713,7 +2739,7 @@
       var xmasMenu = appData.christmasMenu;
       if (xmasMenu.enabled && !isChristmasSeason(new Date())) {
         issues.push({ text: '<b>The Christmas bookmark is still on.</b> Guests see it on Our Menu until you turn it off and publish.', page: 'christmas', action: 'Christmas Menu' });
-      } else if (xmasMenu.enabled && xmasMenu.leadsTo !== 'soon' && !christmasMenuTarget()) {
+      } else if (xmasMenu.enabled && christmasLeadsKind() === 'menu' && !christmasMenuTarget()) {
         issues.push({ text: '<b>The Christmas bookmark has no menu to lead to</b>, so guests see the Coming soon page.', page: 'christmas', action: 'Choose the menu' });
       }
       if (isStarterStory()) {
@@ -2840,7 +2866,12 @@
         ? '<div class="note is-info">This menu is in the phone preview now. Guests will see it after you press Publish.</div>'
         : '';
       var xmas = appData.christmasMenu;
-      if (xmas.enabled && xmas.hideInList && xmas.leadsTo === menuId) {
+      if (xmas.leadsTo === 'pages' && xmas.pagesMenu === menuId) {
+        notLive += '<div class="note is-info">' + (xmas.enabled && xmas.hideInList
+            ? 'This menu is hidden from the list on Our Menu, and guests see the Christmas menu pages instead of these dishes. '
+            : 'Guests who tap this name on Our Menu see the Christmas menu pages instead of these dishes. ') +
+          '<button type="button" class="btn-link" data-action="go" data-page="christmas">Change this on the Christmas Menu page</button></div>';
+      } else if (xmas.enabled && xmas.hideInList && xmas.leadsTo === menuId) {
         notLive += '<div class="note is-info">This menu is hidden from the list on Our Menu. Guests open it from the red Christmas bookmark. ' +
           '<button type="button" class="btn-link" data-action="go" data-page="christmas">Change this on the Christmas Menu page</button></div>';
       }
@@ -4506,10 +4537,75 @@
       return window.location.protocol === 'file:' ? 'index.html#christmas' : window.location.origin + '/#christmas';
     }
 
-    // The menu the bookmark leads to, or null for the Coming soon page (also when that menu was deleted)
+    // 'soon', 'pages', or 'menu' for one of the menus (chosen or not yet)
+    function christmasLeadsKind(data) {
+      var to = (data || appData).christmasMenu.leadsTo;
+      return to === 'soon' || to === 'pages' ? to : 'menu';
+    }
+
+    // The menu the bookmark leads to, or null for the Coming soon page or the menu pages (also when that menu was deleted)
     function christmasMenuTarget(data) {
       var c = (data || appData).christmasMenu;
-      return c.leadsTo && c.leadsTo !== 'soon' ? getMenu(c.leadsTo, data) : null;
+      return christmasLeadsKind(data) === 'menu' && c.leadsTo ? getMenu(c.leadsTo, data) : null;
+    }
+
+    // A menu that looks like a Christmas one, by its name
+    function christmasLikeMenu() {
+      return appData.menuCategories.find(function (m) { return /christmas|x\W?mas|festive|holiday/i.test(m.name || ''); }) || null;
+    }
+
+    /* How many tables are booked for the Christmas menu from today on, for anyone who may see
+       reservations. Redrawn by itself when the reservations change (see bookingsChanged). */
+    function christmasBookingsHtml() {
+      if (!can('bookings')) return '';
+      return '<section class="card card-pad" data-xmas-part="bookmark">' +
+          '<h2 class="card-title">Christmas bookings</h2>' +
+          '<div id="xmasBookingCount">' + christmasBookingCountHtml() + '</div>' +
+        '</section>';
+    }
+
+    function christmasBookingCountHtml() {
+      if (bookings.state !== 'ready') {
+        return '<p class="field-hint">' + (bookings.state === 'blocked' || bookings.state === 'offline' ? 'Reservations could not be loaded just now.' : 'Counting the Christmas bookings…') + '</p>';
+      }
+      var today = colomboDay();
+      var list = bookings.list.filter(function (b) { return isChristmasBooking(b) && b.date >= today && !isCancelledBooking(b) && b.status !== 'noshow'; });
+      if (!list.length) {
+        return '<p class="field-hint">None yet. Tables booked from the Christmas page show here, and in Reservations with a red Christmas badge.</p>';
+      }
+      var waiting = list.filter(function (b) { return b.status === 'requested'; }).length;
+      var confirmed = list.length - waiting;
+      var guests = list.reduce(function (sum, b) { return sum + (Number(b.party) || 0); }, 0);
+      var roasts = list.filter(function (b) { return /^Christmas roast:/.test(String(b.note || '')); }).length;
+      return '<p class="xmas-count"><b>' + plural(list.length, 'table') + '</b> coming up, for ' + plural(guests, 'guest') + ': ' +
+          (waiting ? '<b>' + waiting + ' waiting for a reply</b>, ' : '') + confirmed + ' confirmed.' +
+          (roasts ? ' ' + plural(roasts, 'roast') + ' ordered with them.' : '') + '</p>' +
+        '<div class="add-row"><button type="button" class="btn btn-sm" data-action="xmasBookings">See them in Reservations</button></div>';
+    }
+
+    // The menu pages, small, so staff can see which PDF is on the website
+    function christmasPagesHtml() {
+      var thumbs = '';
+      for (var i = 1; i <= CHRISTMAS_PAGE_COUNT; i++) {
+        thumbs += '<img src="assets/christmas/roast-' + i + '-720.webp" alt="Page ' + i + '" loading="lazy" width="72" height="90" />';
+      }
+      var c = appData.christmasMenu;
+      var listMenu = c.pagesMenu ? getMenu(c.pagesMenu) : null;
+      var older = christmasLikeMenu();
+      var options = '<option value=""' + (listMenu ? '' : ' selected') + '>No name on the list, only the bookmark</option>' +
+        appData.menuCategories.map(function (menu) {
+          return '<option value="' + esc(menu.id) + '"' + (listMenu && menu.id === listMenu.id ? ' selected' : '') + '>' + esc(prettyName(menu.name)) + '</option>';
+        }).join('');
+      return '<div class="xmas-pages-strip">' + thumbs + '</div>' +
+        '<p class="field-hint">The ' + CHRISTMAS_PAGE_COUNT + ' pages of the Christmas Roast Menu PDF. Guests swipe through them one at a time, with the buttons below underneath. The pages are pictures, so new prices mean new pages made from a new PDF.</p>' +
+        '<div class="field"><label for="xmasPagesMenu">Name on the Our Menu list that opens these pages</label><select id="xmasPagesMenu">' + options + '</select>' +
+          '<span class="field-hint">Guests who tap that name see these pages instead of its dishes. Its dishes stay here in the admin, unused.</span></div>' +
+        (listMenu
+          ? '<label class="check"><input type="checkbox" id="xmasHideInList"' + (c.hideInList ? ' checked' : '') + ' /><span>Hide ' + esc(prettyName(listMenu.name)) + ' from the list on Our Menu, so guests open the pages from the red bookmark</span></label>' +
+            '<p class="field-hint" style="padding-left:27px">' + (c.enabled ? 'Its name leaves the list. If you turn the bookmark off, the name comes back on the list.' : 'The bookmark is off, so the name stays on the list until you turn the bookmark on.') + '</p>'
+          : (older
+            ? '<div class="note"><b>' + esc(prettyName(older.name)) + '</b> shows on the Our Menu list with its own dishes and prices. Choose it above to make its name open these pages instead.</div>'
+            : ''));
     }
 
     function christmasField(id, label, key, placeholder, rows, hint) {
@@ -4523,7 +4619,7 @@
     function christmasPreviewSwitchHtml() {
       var part = view.xmasPart === 'page' ? 'page' : 'bookmark';
       return '<div class="choice-group" role="group" aria-label="What the phone preview shows">' +
-        [['bookmark', 'Show Our Menu'], ['page', 'Show the Coming soon page']].map(function (c) {
+        [['bookmark', 'Show Our Menu'], ['page', christmasLeadsKind() === 'pages' ? 'Show the menu pages' : 'Show the Coming soon page']].map(function (c) {
           return '<button type="button" class="btn btn-sm' + (part === c[0] ? ' btn-primary' : '') + '" data-action="xmasPreview" data-part="' + c[0] + '" aria-pressed="' + (part === c[0]) + '">' + c[1] + '</button>';
         }).join('') +
       '</div>';
@@ -4531,14 +4627,15 @@
 
     function christmasHtml() {
       var c = appData.christmasMenu;
+      var kind = christmasLeadsKind();
       // An empty leadsTo means a menu is wanted but not chosen yet
-      var leadsToMenu = c.leadsTo !== 'soon';
+      var leadsToMenu = kind === 'menu';
       var target = christmasMenuTarget();
       var menuOptions = appData.menuCategories.map(function (menu) {
         return '<option value="' + esc(menu.id) + '"' + (menu.id === c.leadsTo ? ' selected' : '') + '>' + esc(prettyName(menu.name)) + '</option>';
       }).join('');
-      var leadChoices = [['soon', 'The Coming soon page'], ['menu', 'One of your menus']].map(function (choice) {
-        var checked = (choice[0] === 'menu') === !!leadsToMenu;
+      var leadChoices = [['soon', 'The Coming soon page'], ['pages', 'The Christmas menu pages'], ['menu', 'One of your menus']].map(function (choice) {
+        var checked = choice[0] === kind;
         return '<label><input type="radio" name="xmasLeadsTo" value="' + choice[0] + '"' + (checked ? ' checked' : '') + ' />' + choice[1] + '</label>';
       }).join('');
 
@@ -4573,24 +4670,37 @@
                 (target ? '' : '<option value="" selected disabled>Choose a menu</option>') + menuOptions + '</select></div>'
             : '') +
           targetNote +
+          (kind === 'pages' ? christmasPagesHtml() : '') +
           (target
             ? '<label class="check"><input type="checkbox" id="xmasHideInList"' + (c.hideInList ? ' checked' : '') + ' /><span>Hide ' + esc(prettyName(target.name)) + ' from the list on Our Menu, so guests open it from the red bookmark</span></label>' +
               '<p class="field-hint" style="padding-left:27px">' + (c.enabled ? 'Its name leaves the list but the menu stays. If you turn the bookmark off, the name comes back on the list.' : 'The bookmark is off, so the name stays on the list until you turn the bookmark on.') + '</p>'
             : '') +
-          (target ? '' : '<p class="field-hint">When your Christmas menu is ready, add it under Menus with <b>Add a menu</b>, fill in its dishes, then choose it here and press Publish. Until then, guests see the Coming soon page below.</p>') +
+          (target || kind === 'pages' ? '' : '<p class="field-hint">When your Christmas menu is ready, add it under Menus with <b>Add a menu</b>, fill in its dishes, then choose it here and press Publish. Until then, guests see the Coming soon page below.</p>') +
         '</section>' +
+        christmasBookingsHtml() +
+        // The buttons sit under the Coming soon words or under the menu pages, never on a menu
+        (target ? '' :
+          '<section class="card card-pad" data-xmas-part="page">' +
+            '<h2 class="card-title">Buttons under the ' + (kind === 'pages' ? 'menu pages' : 'Coming soon page') + '</h2>' +
+            '<label class="check"><input type="checkbox" id="xmasReserveOn"' + (c.reserve ? ' checked' : '') + ' /><span>Reserve button, which opens the booking form</span></label>' +
+            (c.reserve ? christmasField('xmasReserveLabel', 'Reserve button words', 'reserveLabel', 'Reserve for Christmas', 0, 'Hidden while reservations are paused in Booking settings.') : '') +
+            '<label class="check"><input type="checkbox" id="xmasWhatsappOn"' + (c.whatsapp ? ' checked' : '') + ' /><span>WhatsApp button, with a first message about the Christmas menu ready to send</span></label>' +
+            (c.whatsapp
+              ? '<div class="field-row">' +
+                  christmasField('xmasWhatsappLabel', 'WhatsApp button words', 'whatsappLabel', kind === 'pages' ? 'Pre-order on WhatsApp' : 'Ask us on WhatsApp') +
+                  christmasField('xmasWhatsappNumber', 'WhatsApp number', 'whatsappNumber', 'Same as Contact & Hours', 0, 'Leave it empty to use the number from Contact & Hours.') +
+                '</div>'
+              : '') +
+          '</section>') +
         '<section class="card card-pad" data-xmas-part="page">' +
           '<h2 class="card-title">The Coming soon page</h2>' +
           (target ? '<div class="note is-info">Guests now go straight to ' + esc(prettyName(target.name)) + ', so this page is not shown. It is kept for next year.</div>' : '') +
+          (kind === 'pages' ? '<div class="note is-info">Guests now see the menu pages, so these words are not shown. They are kept for next year.</div>' : '') +
           christmasField('xmasEyebrow', 'Small title', 'eyebrow', 'The festive season', 0, 'A few words. Leave it empty to hide it.') +
-          christmasField('xmasTitle', 'Big title', 'title', 'Christmas Menu') +
+          christmasField('xmasTitle', 'Big title', 'title', 'Christmas Menu', 0, kind === 'pages' ? 'Also the name in the first WhatsApp message.' : '') +
           christmasField('xmasSoon', 'Under the line', 'soon', 'Coming soon', 0, 'Shown letter by letter as the page opens.') +
           christmasField('xmasMessage', 'Message', 'message', 'A sentence or two for guests', 4, 'Leave an empty line between paragraphs.') +
           christmasField('xmasWhen', 'Date (optional)', 'when', 'Unveiling 1 December', 0, 'Shown in a small frame. Leave it empty if there is no date yet.') +
-          '<label class="check"><input type="checkbox" id="xmasReserveOn"' + (c.reserve ? ' checked' : '') + ' /><span>Reserve button, which opens the booking form</span></label>' +
-          (c.reserve ? christmasField('xmasReserveLabel', 'Reserve button words', 'reserveLabel', 'Reserve for Christmas', 0, 'Hidden while reservations are paused in Booking settings.') : '') +
-          '<label class="check"><input type="checkbox" id="xmasWhatsappOn"' + (c.whatsapp ? ' checked' : '') + ' /><span>WhatsApp button, with a first message about the Christmas menu ready to send</span></label>' +
-          (c.whatsapp ? christmasField('xmasWhatsappLabel', 'WhatsApp button words', 'whatsappLabel', 'Ask us on WhatsApp', 0, 'Uses the WhatsApp number from Contact & Hours.') : '') +
         '</section>';
     }
 
@@ -4634,12 +4744,37 @@
       else if (t.id === 'xmasReserveOn') { c.reserve = t.checked; redraw = true; }
       else if (t.id === 'xmasWhatsappOn') { c.whatsapp = t.checked; redraw = true; }
       else if (t.name === 'xmasLeadsTo') {
+        if (t.value === 'soon' || t.value === 'pages') {
+          c.leadsTo = t.value;
+          // The pages start out opened by the menu called Christmas, if there is one, so it does not show its old dishes
+          if (t.value === 'pages' && !(c.pagesMenu && getMenu(c.pagesMenu))) {
+            var listed = christmasLikeMenu();
+            c.pagesMenu = listed ? listed.id : '';
+          }
+          // The phone goes to that page at once, with the change already in it
+          touch();
+          clearTimeout(previewTimer);
+          sendPreview();
+          keepScroll(renderPage);
+          showChristmasPart('page', true);
+          return;
+        }
         // Choosing a menu starts at one called Christmas, if there is one
-        var christmasMenu = appData.menuCategories.find(function (m) { return /christmas|xmas|festive|holiday/i.test(m.name || ''); });
-        c.leadsTo = t.value === 'soon' ? 'soon' : (christmasMenu ? christmasMenu.id : '');
+        var christmasMenu = christmasLikeMenu();
+        c.leadsTo = christmasMenu ? christmasMenu.id : '';
         redraw = true;
       }
       else if (t.id === 'xmasLeadsMenu') { c.leadsTo = t.value; redraw = true; }
+      else if (t.id === 'xmasPagesMenu') {
+        c.pagesMenu = t.value;
+        // Show Our Menu in the phone, where that name now opens the pages
+        touch();
+        clearTimeout(previewTimer);
+        sendPreview();
+        keepScroll(renderPage);
+        showChristmasPart('bookmark', true);
+        return;
+      }
       else if (t.dataset.xmas) c[t.dataset.xmas] = t.value;
       else return;
       touch();
@@ -6070,6 +6205,9 @@
         renderBookingArea();
       } else if (view.page === 'home' || view.page === 'bookingSettings') {
         renderPage();
+      } else if (view.page === 'christmas' && $('xmasBookingCount')) {
+        // Only the count, so nothing being typed on the page is disturbed
+        $('xmasBookingCount').innerHTML = christmasBookingCountHtml();
       }
     }
 
@@ -6118,10 +6256,21 @@
       var name = String(b.name || '').trim().split(/\s+/)[0];
       var when = bookingDateLine(b);
       var reference = b.reference ? ' Your reference is ' + b.reference + '.' : '';
+      if (isChristmasBooking(b)) return christmasBookingMessage(b, name, when, reference);
       if (b.status === 'confirmed') return 'Hello ' + name + ', your table at Belle is confirmed for ' + when + '.' + reference + ' If anything changes, reply here.';
       if (b.status === 'declined') return 'Hello ' + name + ', we are sorry, but we have no table for ' + when + '. Reply here and we will find you another time.';
       if (b.status === 'cancelled') return 'Hello ' + name + ', your table at Belle for ' + when + ' has been cancelled. Reply here if you would like another time.';
       return 'Hello ' + name + ', this is Belle, about your table for ' + when + '.';
+    }
+
+    // The same messages, for a table booked for the Christmas menu, with its roast when one was ordered
+    function christmasBookingMessage(b, name, when, reference) {
+      var roast = /^Christmas roast: ([^.]+)\./.exec(String(b.note || ''));
+      var roastLine = roast ? ' We have your ' + roast[1] + ' down, and will confirm its size and your sides here.' : '';
+      if (b.status === 'confirmed') return 'Hello ' + name + ', your Christmas table at Belle is confirmed for ' + when + '.' + reference + roastLine + ' If anything changes, reply here. Merry Christmas!';
+      if (b.status === 'declined') return 'Hello ' + name + ', we are sorry, but we have no Christmas table for ' + when + '. Reply here and we will find you another time.';
+      if (b.status === 'cancelled') return 'Hello ' + name + ', your Christmas table at Belle for ' + when + ' has been cancelled. Reply here if you would like another time.';
+      return 'Hello ' + name + ', this is Belle, about your Christmas table for ' + when + '.';
     }
 
     function bookingDateLine(b) {
@@ -6174,7 +6323,7 @@
       var search = bookings.search.trim().toLowerCase();
       if (!search) return bookingsInTab(bookings.tab);
       return bookings.list.concat(bookings.past).filter(function (b) {
-        return [b.name, b.phone, b.reference, b.email].join(' ').toLowerCase().indexOf(search) !== -1;
+        return [b.name, b.phone, b.reference, b.email, b.event].join(' ').toLowerCase().indexOf(search) !== -1;
       });
     }
 
@@ -6191,14 +6340,26 @@
       return html ? '<div class="booking-tools">' + html + '</div>' : '';
     }
 
+    /* A table booked from the website's Christmas page: its event names Christmas, and a roast
+       ordered with it starts the guest's note ("Christmas roast: ..."). */
+    function isChristmasBooking(b) {
+      return /christmas|x\W?mas/i.test(String(b && b.event || ''));
+    }
+
+    function christmasChipHtml(b) {
+      return isChristmasBooking(b)
+        ? '<span class="chip chip-xmas" title="For ' + esc(b.event) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg>Christmas</span>'
+        : '';
+    }
+
     function bookingRowHtml(b) {
       var state = BOOKING_STATES[b.status] || { label: String(b.status || ''), chip: '' };
-      var facts = [isWalkIn(b) ? 'Walk-in' : '', plural(b.party, 'guest'), b.table ? 'Table ' + b.table : '', b.phone, b.occasion, b.event, b.note].filter(Boolean).join(' · ');
+      var facts = [isWalkIn(b) ? 'Walk-in' : '', plural(b.party, 'guest'), b.table ? 'Table ' + b.table : '', b.phone, b.occasion, isChristmasBooking(b) ? '' : b.event, b.note].filter(Boolean).join(' · ');
       return '<div class="row booking-row">' +
         '<button type="button" class="row-main" data-action="openBooking" data-id="' + esc(b.id) + '">' +
           '<span class="booking-time">' + esc(bookingTimeText(b.time)) + '</span>' +
           '<span class="row-text">' +
-            '<span class="row-name">' + esc(b.name || 'No name') + '<span class="chip ' + state.chip + '">' + esc(state.label) + '</span></span>' +
+            '<span class="row-name">' + esc(b.name || 'No name') + '<span class="chip ' + state.chip + '">' + esc(state.label) + '</span>' + christmasChipHtml(b) + '</span>' +
             '<span class="row-sub">' + esc(facts) + '</span>' +
           '</span>' +
         '</button>' +
@@ -6329,7 +6490,7 @@
         '<div id="bookingNotice">' + bookingNotice() + '</div>' +
         '<div class="section-pills" id="bookingTabs">' + bookingTabsHtml() + '</div>' +
         '<div id="bookingReport">' + bookingReportHtml() + '</div>' +
-        '<div class="search">' + icon('search') + '<input type="search" id="bookingSearch" value="' + esc(bookings.search) + '" placeholder="Find by name, phone or reference" aria-label="Find a reservation" autocomplete="off" /></div>' +
+        '<div class="search">' + icon('search') + '<input type="search" id="bookingSearch" value="' + esc(bookings.search) + '" placeholder="Find by name, phone, reference or event" aria-label="Find a reservation" autocomplete="off" /></div>' +
         '<section class="card" id="bookingList">' + bookingListHtml() + '</section>';
     }
 
@@ -6393,6 +6554,7 @@
             (b.reference ? '<span>Reference <b>' + esc(b.reference) + '</b></span>' : '') +
             (b.createdAt ? '<span>Received ' + esc(formatDateTime(b.createdAt)) + '</span>' : '') +
             '<span>' + (b.source === 'website' ? 'From the website' : (isWalkIn(b) ? 'Walk-in' : 'Reservation') + ', added by ' + esc(b.addedByEmail || 'staff')) + '</span>' +
+            christmasChipHtml(b) +
             (b.event ? '<span>For <b>' + esc(b.event) + '</b></span>' : '') +
           '</div>' +
           '<div class="booking-actions">' + tellGuestHtml(b, 'btn-primary booking-next') + alreadyToldHtml(b, '') + bookingStatusButtons(b) + '</div>' +
@@ -8569,6 +8731,11 @@
           if (box) { box.focus(); box.select(); }
           toast('Press Ctrl+C to copy the selected link.');
         });
+      },
+      // Reservations, found by the word Christmas in what they are for
+      xmasBookings: function () {
+        bookings.search = 'Christmas';
+        go('reservations');
       },
 
       textSizeReset: function (el) {

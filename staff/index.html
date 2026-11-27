@@ -69,6 +69,10 @@
     .chip.good { background: var(--good-bg); color: var(--good-fg); }
     .chip.bad { background: var(--bad-bg); color: var(--bad-fg); }
     .chip.strong { background: var(--primary); color: var(--on-primary); }
+    /* A table booked from the website's Christmas page, in the red of its Christmas bookmark */
+    .chip.xmas { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; background: #fbe8eb; color: #9b1028; }
+    .chip.xmas svg { width: 10px; height: 10px; flex: none; }
+    @media (prefers-color-scheme: dark) { .chip.xmas { background: #3d0f18; color: #ffb3c0; } }
     .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 
     .btn { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 9px 18px; font-weight: 600; font-size: 15px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: var(--text); }
@@ -656,6 +660,15 @@
       var whenLine = longDay(b.date) + ' at ' + timeText(b.time) + ', ' + plural(b.party, 'guest');
       var reference = b.reference ? ' Your reference is ' + b.reference + '.' : '';
       var name = b.firstName;
+      if (isChristmasBooking(b)) {
+        // The same words as the admin panel sends
+        var roast = /^Christmas roast: ([^.]+)\./.exec(b.note || '');
+        var roastLine = roast ? ' We have your ' + roast[1] + ' down, and will confirm its size and your sides here.' : '';
+        if (b.status === 'confirmed') return 'Hello ' + name + ', your Christmas table at Belle is confirmed for ' + whenLine + '.' + reference + roastLine + ' If anything changes, reply here. Merry Christmas!';
+        if (b.status === 'declined') return 'Hello ' + name + ', we are sorry, but we have no Christmas table for ' + whenLine + '. Reply here and we will find you another time.';
+        if (b.status === 'cancelled') return 'Hello ' + name + ', your Christmas table at Belle for ' + whenLine + ' has been cancelled. Reply here if you would like another time.';
+        return 'Hello ' + name + ', this is Belle, about your Christmas table for ' + whenLine + '.';
+      }
       if (b.status === 'confirmed') return 'Hello ' + name + ', your table at Belle is confirmed for ' + whenLine + '.' + reference + ' If anything changes, reply here.';
       if (b.status === 'declined') return 'Hello ' + name + ', we are sorry, but we have no table for ' + whenLine + '. Reply here and we will find you another time.';
       if (b.status === 'cancelled') return 'Hello ' + name + ', your table at Belle for ' + whenLine + ' has been cancelled. Reply here if you would like another time.';
@@ -1140,7 +1153,15 @@
       el.hidden = !count;
     }
 
-    function chip(b) { return '<span class="chip ' + b.state[1] + '">' + esc(b.state[0]) + '</span>'; }
+    function chip(b) { return '<span class="chip ' + b.state[1] + '">' + esc(b.state[0]) + '</span>' + christmasChip(b); }
+
+    // Booked from the website's Christmas page: its event names Christmas, and a roast ordered with it starts the note
+    function isChristmasBooking(b) { return /christmas|x\W?mas/i.test(b.event || ''); }
+    function christmasChip(b) {
+      return isChristmasBooking(b)
+        ? '<span class="chip xmas" title="' + esc(b.event) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg>Christmas</span>'
+        : '';
+    }
 
     /* ---------- Sign in ---------- */
     function signInHtml() {
@@ -1205,7 +1226,7 @@
 
     function bookingCard(b, showDay) {
       var today = colomboDay(0);
-      var facts = [b.isWalkIn && 'Walk-in', plural(b.party, 'guest'), b.table && 'Table ' + b.table, b.occasion, b.event, b.note].filter(Boolean).join(' · ');
+      var facts = [b.isWalkIn && 'Walk-in', plural(b.party, 'guest'), b.table && 'Table ' + b.table, b.occasion, !isChristmasBooking(b) && b.event, b.note].filter(Boolean).join(' · ');
       var canMark = b.status === 'confirmed' && b.date <= today;
       var buttons = '';
       if (b.needsTelling) {

@@ -3074,6 +3074,141 @@
       color: var(--ink-soft);
     }
 
+    /* ---------- A table for the Christmas menu ----------
+       Opened from the Christmas page, the form takes on the menu's own look: white paper, wine
+       red, the ribbon in the corner and its script lettering (Mrs Saint Delafield and Newsreader,
+       the fonts of the menu PDF, fetched only for this). */
+    .reserve-xmas-ribbon,
+    .reserve-xmas-snow { display: none; }
+    #panel-reserve.is-christmas {
+      --xmas-wine: #6a1320;
+      --paper: #fff;
+      --paper-solid: #fff;
+      --ink: var(--xmas-wine);
+      --ink-soft: rgba(74, 36, 42, 0.7);
+      --rule: rgba(106, 19, 32, 0.18);
+      --accent: var(--xmas-wine);
+      --on-accent: #fff;
+      --halo: #fff;
+      background: #fff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    #panel-reserve.is-christmas .btn-lunch-back {
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--xmas-wine);
+      box-shadow: 0 4px 14px rgba(60, 8, 16, 0.2);
+    }
+    #panel-reserve.is-christmas .reserve-scroll { position: relative; }
+    #panel-reserve.is-christmas .reserve-xmas-ribbon {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: clamp(74px, 22vw, 96px);
+      aspect-ratio: 259 / 567;
+      background: url('assets/christmas/ribbon-corner.webp') top left / contain no-repeat;
+      pointer-events: none;
+    }
+    #panel-reserve.is-christmas .reserve-xmas-snow {
+      display: block;
+      position: absolute;
+      top: clamp(40px, 7vh, 56px);
+      right: 14px;
+      width: 26px;
+      height: 26px;
+      background: url('assets/christmas/snowflake.webp') center / contain no-repeat;
+      pointer-events: none;
+    }
+    #panel-reserve.is-christmas .reserve-header {
+      padding: clamp(74px, 11vh, 96px) clamp(52px, 15vw, 72px) 18px;
+    }
+    #panel-reserve.is-christmas .reserve-title {
+      font-family: 'Mrs Saint Delafield', 'Brush Script MT', cursive;
+      font-size: clamp(46px, 13vw, 62px);
+      font-weight: 400;
+      line-height: 1.02;
+      letter-spacing: 0;
+      text-indent: 0;
+      text-transform: none;
+      text-wrap: balance;
+      color: var(--xmas-wine);
+    }
+    .reserve-xmas-notice {
+      margin: 14px 0 0;
+      padding-left: 0.32em;
+      font-size: calc(10.5px * var(--fs, 1));
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--xmas-wine);
+    }
+    #panel-reserve.is-christmas .reserve-done { padding-top: clamp(150px, 24vh, 190px); }
+
+    /* The roast, laid out like the menu's own lines: the name, its price, its size in italics */
+    .reserve-roast-hint {
+      margin: -4px 0 14px;
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: calc(14px * var(--fs, 1));
+      font-style: italic;
+      line-height: 1.45;
+      color: var(--ink-soft);
+    }
+    .reserve-roast-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .reserve-roast {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+      gap: 2px 12px;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      font-family: 'Newsreader', Georgia, serif;
+      text-align: left;
+      color: var(--ink);
+      transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+    }
+    .reserve-roast:hover { border-color: var(--accent); }
+    .reserve-roast.is-active {
+      border-color: var(--accent);
+      background: rgba(106, 19, 32, 0.05);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+    .reserve-roast:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+    .reserve-roast-name { font-size: calc(17px * var(--fs, 1)); line-height: 1.25; }
+    .reserve-roast-price { font-size: calc(14.5px * var(--fs, 1)); white-space: nowrap; }
+    .reserve-roast-size {
+      grid-column: 1 / -1;
+      font-size: calc(13px * var(--fs, 1));
+      font-style: italic;
+      line-height: 1.35;
+      color: var(--ink-soft);
+    }
+    .reserve-sides { margin-top: 18px; }
+    .reserve-sides .reserve-pill {
+      min-height: 38px;
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: calc(14.5px * var(--fs, 1));
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: normal;
+      text-align: left;
+    }
+    .reserve-sides .reserve-pill[aria-disabled="true"] { opacity: 0.38; cursor: default; }
+    .reserve-sides .reserve-pill[aria-disabled="true"]:hover { border-color: var(--rule); color: var(--ink-soft); }
+    .reserve-sides-count {
+      margin: 10px 0 0;
+      font-size: calc(12.5px * var(--fs, 1));
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+
     /* While reservations are paused in the admin panel, the buttons step aside */
     .reservations-off .reserve-trigger,
     .reservations-off .home-div-reserve,
@@ -4223,6 +4358,149 @@
       from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
       to { opacity: 1; transform: none; filter: none; }
     }
+
+    /* ---------- The Christmas menu pages ----------
+       The client's PDF, page by page, on a white page of the same white, so the
+       sheets read as the website itself. Guests swipe across them; the dots and
+       arrows below do the same. The buttons under them are the Coming soon page's. */
+    #panel-christmas.is-pages {
+      --xmas-wine: #6a1320;  /* the wine red of the menu's own lettering */
+      --paper: #fff;
+      --paper-solid: #fff;
+      --ink: var(--xmas-wine);
+      --ink-soft: rgba(106, 19, 32, 0.72);
+      --rule: rgba(106, 19, 32, 0.24);
+      --accent: var(--xmas-wine);
+      --on-accent: #fff;
+      --halo: #fff;
+      background: #fff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    #panel-christmas.is-pages .xmas-hang { display: none; }
+    #panel-christmas.is-pages .xmas-page > :not(.xmas-actions) { display: none !important; }
+    #panel-christmas.is-pages .xmas-page {
+      min-height: 0;
+      max-width: 664px;
+      padding: 0 clamp(20px, 6vw, 32px) calc(max(20px, env(safe-area-inset-bottom)) + 20px);
+    }
+    #panel-christmas.is-pages .xmas-actions {
+      --d: .45s !important;
+      flex-direction: row;
+      flex-wrap: wrap;
+      max-width: 600px;
+      margin-top: 14px;
+    }
+    #panel-christmas.is-pages .xmas-actions .about-btn { flex: 1 1 200px; }
+    /* This menu is ordered ahead on WhatsApp, so that button leads and booking a table follows */
+    #panel-christmas.is-pages #xmasWhatsapp {
+      order: -1;
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--on-accent);
+    }
+    #panel-christmas.is-pages .xmas-reserve {
+      border-color: var(--rule);
+      background: transparent;
+      color: var(--ink);
+    }
+    /* Over the ribbon in the corner of each page, so a little lifted off it */
+    #panel-christmas.is-pages .btn-lunch-back {
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--xmas-wine);
+      box-shadow: 0 4px 14px rgba(60, 8, 16, 0.2);
+    }
+
+    .xmas-book { width: 100%; }
+    #panel-christmas.is-active .xmas-book { animation: xmasRise 0.9s var(--ease-out) 0.1s both; }
+    .xmas-book-stage {
+      /* As wide as the phone, and on a computer as tall as the window lets the page be */
+      width: max(min(100%, 300px), min(100%, 600px, calc((100dvh - 150px) * 0.8)));
+      margin: 0 auto;
+    }
+    .xmas-book-track {
+      display: flex;
+      /* White between the pages, so on a phone whose width is not a whole number of pixels
+         no hairline of the next page's ribbon shows at the edge */
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      outline: none;
+    }
+    .xmas-book-track::-webkit-scrollbar { display: none; }
+    .xmas-book-track:focus-visible { box-shadow: inset 0 0 0 2px var(--xmas-wine); }
+    .xmas-sheet {
+      position: relative;
+      flex: 0 0 100%;
+      margin: 0;
+      aspect-ratio: 4 / 5;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+      background: #fff;
+    }
+    .xmas-sheet img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    .xmas-sheet img.is-loaded { opacity: 1; }
+    /* On opening, the pages lean left for a moment so the next one shows: there is more to swipe */
+    .xmas-book-track.is-nudging .xmas-sheet { animation: xmasNudge 1.1s cubic-bezier(0.45, 0, 0.2, 1) both; }
+    @keyframes xmasNudge {
+      0%, 100% { transform: none; }
+      42% { transform: translateX(-54px); }
+    }
+
+    .xmas-book-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 6px auto 0;
+    }
+    .xmas-book-arrow {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: var(--xmas-wine);
+      cursor: pointer;
+      transition: opacity 0.25s, background-color 0.25s;
+    }
+    .xmas-book-arrow svg { width: 20px; height: 20px; }
+    .xmas-book-arrow:hover:not([aria-disabled="true"]) { background: rgba(106, 19, 32, 0.07); }
+    .xmas-book-arrow[aria-disabled="true"] { opacity: 0.25; cursor: default; }
+    .xmas-book-arrow:focus-visible,
+    .xmas-book-dot:focus-visible { outline: 2px solid var(--xmas-wine); outline-offset: 2px; }
+    .xmas-book-dots { display: flex; align-items: center; }
+    .xmas-book-dot {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 32px;
+      cursor: pointer;
+    }
+    .xmas-book-dot::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--xmas-wine);
+      opacity: 0.25;
+      transition: width 0.35s var(--ease-out), opacity 0.35s;
+    }
+    .xmas-book-dot[aria-current="true"]::before { width: 18px; opacity: 1; }
 
     @media (prefers-reduced-motion: reduce) {
       /* No sliding: the ribbon simply stays out */
@@ -6165,6 +6443,23 @@ Choose your spread/rillette style:</p>
         <span class="xmas-hang-body"><svg viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12 1.5c.6 5 2.4 8.3 10.5 10.5-8.1 2.2-9.9 5.5-10.5 10.5-.6-5-2.4-8.3-10.5-10.5C9.6 9.8 11.4 6.5 12 1.5z"/></svg></span>
       </span>
 
+      <!-- The Christmas menu itself: the pages of the client's PDF, swiped through like a carousel -->
+      <section class="xmas-book" id="xmasBook" hidden aria-label="Christmas Roast Menu">
+        <div class="xmas-book-stage">
+          <div class="xmas-book-track" id="xmasBookTrack" tabindex="0" aria-roledescription="carousel" aria-label="Christmas Roast Menu pages"></div>
+        </div>
+        <div class="xmas-book-nav">
+          <button type="button" class="xmas-book-arrow" id="xmasBookPrev" aria-label="Previous page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <div class="xmas-book-dots" id="xmasBookDots" role="group" aria-label="Pages"></div>
+          <button type="button" class="xmas-book-arrow" id="xmasBookNext" aria-label="Next page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+        <p class="sr-only" id="xmasBookStatus" aria-live="polite"></p>
+      </section>
+
       <div class="xmas-page" id="xmasPage">
         <p class="xmas-eyebrow xmas-rise" id="xmasEyebrow" style="--d:.2s"><span id="xmasEyebrowText"></span></p>
         <h2 class="xmas-title xmas-rise" id="xmasTitle" style="--d:.32s">Christmas Menu</h2>
@@ -6257,11 +6552,15 @@ Choose your spread/rillette style:</p>
 
     <!-- Scrollable Page Container -->
     <div class="reserve-scroll" id="reserveScroll">
+      <!-- Only drawn for a Christmas booking: the ribbon and a snowflake from the menu's own pages -->
+      <span class="reserve-xmas-ribbon" aria-hidden="true"></span>
+      <span class="reserve-xmas-snow" aria-hidden="true"></span>
 
       <form id="reserveForm" autocomplete="on" novalidate>
         <header class="reserve-header">
-          <h2 class="reserve-title">Reserve</h2>
+          <h2 class="reserve-title" id="reserveTitle">Reserve</h2>
           <p class="reserve-event" id="reserveEvent" hidden></p>
+          <p class="reserve-xmas-notice" id="reserveXmasNotice" hidden>48 hours' notice</p>
         </header>
 
         <section class="reserve-step" aria-labelledby="reservePartyLabel">
@@ -6303,6 +6602,18 @@ Choose your spread/rillette style:</p>
           <div id="reserveTimes"></div>
         </section>
 
+        <!-- Only for the Christmas menu: the roast and its three sides, ordered with the table -->
+        <section class="reserve-step" id="reserveRoastStep" aria-labelledby="reserveRoastLabel" hidden>
+          <h3 class="reserve-label" id="reserveRoastLabel">Your roast (optional)</h3>
+          <p class="reserve-roast-hint">Choose it now and we will have it ready for your table. Every roast is priced on its final weight, and we confirm the size with you on WhatsApp.</p>
+          <div class="reserve-roast-list" id="reserveRoasts" role="group" aria-labelledby="reserveRoastLabel"></div>
+          <div class="reserve-sides" id="reserveSidesWrap" hidden>
+            <span class="reserve-field-label" id="reserveSidesLabel">Three sides, from The Trimmings</span>
+            <div class="reserve-pills" id="reserveSides" role="group" aria-labelledby="reserveSidesLabel"></div>
+            <p class="reserve-sides-count" id="reserveSidesCount" aria-live="polite"></p>
+          </div>
+        </section>
+
         <section class="reserve-step" aria-labelledby="reserveDetailsLabel">
           <h3 class="reserve-label" id="reserveDetailsLabel">Your details</h3>
           <div class="reserve-field">
@@ -6333,7 +6644,7 @@ Choose your spread/rillette style:</p>
             </div>
           </div>
           <div class="reserve-field">
-            <label for="reserveNote">Anything we should know (optional)</label>
+            <label for="reserveNote" id="reserveNoteLabel">Anything we should know (optional)</label>
             <textarea id="reserveNote" name="note" rows="2" maxlength="500"></textarea>
           </div>
         </section>
@@ -6350,9 +6661,9 @@ Choose your spread/rillette style:</p>
 
       <section class="reserve-done" id="reserveDone" tabindex="-1" hidden>
         <p class="reserve-entry">Reference <span id="reserveReference"></span></p>
-        <h2 class="reserve-title">Request sent</h2>
+        <h2 class="reserve-title" id="reserveDoneTitle">Request sent</h2>
         <p class="reserve-when" id="reserveWhen"></p>
-        <p class="reserve-next">This is a request until we confirm it. We will reply on WhatsApp.</p>
+        <p class="reserve-next" id="reserveNext">This is a request until we confirm it. We will reply on WhatsApp.</p>
         <button type="button" class="reserve-submit" id="reserveDoneBack">Back to Belle</button>
         <button type="button" class="reserve-submit is-quiet" id="reserveAgain">Make another request</button>
       </section>
@@ -6661,6 +6972,8 @@ Choose your spread/rillette style:</p>
     }
 
     function openPanel(targetId) {
+      // The menu whose name stands for the Christmas menu pages opens those pages, from the list or a link
+      if (targetId && targetId === christmasPagesMenuId(window.belleCurrentData)) targetId = 'christmas';
       document.body.classList.add('is-menu-active');
       var allPanels = document.querySelectorAll('.view-food-panel');
       var isCourse = (typeof aLaCarteMeta !== 'undefined' && targetId in aLaCarteMeta) ||
@@ -10615,11 +10928,86 @@ Choose your spread/rillette style:</p>
        data.christmasMenu:
        { enabled, onHome, label, note, leadsTo, hideInList, eyebrow, title,
          soon, message, when, reserve, reserveLabel, whatsapp, whatsappLabel }
-       leadsTo is 'soon' for the Coming soon page, or the id of one of
-       the menus once the Christmas menu is ready. #christmas opens
-       whichever it is, so the link can be shared. hideInList keeps that
-       menu off the Our Menu list, so guests reach it by the bookmark.
+       leadsTo is 'soon' for the Coming soon page, 'pages' for the
+       Christmas menu pages below, or the id of one of the menus.
+       #christmas opens whichever it is, so the link can be shared.
+       hideInList keeps that menu off the Our Menu list, so guests reach
+       it by the bookmark. With the pages, pagesMenu is a menu on the list
+       whose name opens the pages instead of its own dishes, and
+       hideInList hides that name. whatsappNumber, when filled in, takes the
+       WhatsApp button to that number instead of the one in Contact.
        ======================================================== */
+
+    /* The pages of "Belle Christmas Roast Menu - Carousel.pdf" (27 November 2026), made into
+       pictures in assets/christmas at two widths: roast-1-720.webp, roast-1-1200.webp and so on.
+       The words are here too, for screen readers and search engines. A new PDF means new
+       pictures and new words here. */
+    var XMAS_PAGES_DIR = 'assets/christmas/roast-';
+    var XMAS_PAGES = [
+      { title: 'How to Order', lines: [
+        '48 hours\' notice.',
+        'I. Choose your roast. Turkey, lamb, duck, brisket or fish, all priced by weight.',
+        'II. Pick three sides and a sauce. Portioned for the whole table, with extras at 850 per person.',
+        'III. Message us on WhatsApp. Order at least 48 hours ahead on 077 752 6930.'] },
+      { title: 'The Roasts', lines: [
+        'Every roast is priced on its final weight.',
+        'Whole Roast Turkey, approx. 6 to 7kg: 12,500 per kg.',
+        'Herb-Crusted Leg of Lamb: from 13,800 per kg. Bone-in, approx. 2.5kg. Boneless, approx. 2kg at 16,800 per kg.',
+        'Honey-Glazed Whole Duck, approx. 2.5kg: 13,500 per kg.',
+        'Three sides and a sauce with every roast.'] },
+      { title: 'The Smokehouse', lines: [
+        'Slow-smoked in house.',
+        '48-Hour Angus Brisket, from 3kg: 15,500 per kg.',
+        'Pastrami, from 500g: 15,800 per kg.',
+        'Corned Beef, from 500g: 15,500 per kg.',
+        'Whole Smoked Chicken, approx. 1.2kg per bird: 6,250 per bird.'] },
+      { title: 'From the Sea, and The Trimmings', lines: [
+        'Sea Bass or Barramundi, approx. 1.5kg, citrus beurre blanc: 18,750 per kg.',
+        'Norwegian Salmon or Trout, approx. 1.8kg, beurre blanc: 42,300 per kg.',
+        'The Trimmings, three sides and a sauce with every roast: Roasted Garlic & Herb Mash, Honey-Glazed Roots, Wild Mushroom Medley, Charred Greens in Garlic, Truffle Mac & Cheese, Creamy Potato Salad, Apple, Citrus & Fennel Slaw, House Pickles.',
+        'Extra sides 850 per person.'] },
+      { title: 'The Cheese Board', lines: [
+        'To add to your roast, or to gift.',
+        'The Petite Board, 50g cheese, assorted nuts, dried fruit and crackers: 10,000.',
+        'The Classic Board, 75g cheese, assorted nuts, dried fruit and crackers: 15,000.',
+        'The Grand Board, 100g cheese, assorted nuts, dried fruit and crackers: 20,000.'] },
+      { title: 'Cakes & Bakes', lines: [
+        'Christmas Cake, 500g: 4,400.',
+        'Love Cake, 500g: 4,400.',
+        'Yule Log, 1kg: 10,500.',
+        'Apple Pie, 1kg: 14,900.',
+        'German Stollen: 6,600.',
+        'Mince Pies, 3 pieces: 2,700.',
+        'Gingerbread Cookies, 6 pieces: 2,800.'] },
+      { title: 'Festive Wreaths, and Cookies & Treats', lines: [
+        'Garlic Milk Bread Wreath, with baked Camembert: 5,500.',
+        'Sticky Toffee Date Wreath: 11,600.',
+        'Mini Brownie Wreath: 2,800.',
+        'Braided Custard Pistachio Wreath: 5,000.',
+        'Artisanal Cookie Tin, 12 pieces: 6,100.',
+        'Artisanal Cookie Tin, 24 pieces: 11,600.',
+        'Postcard Cookie Pack, 6 pieces: 3,300.',
+        'Christmas Tea Tower: 13,200.'] }
+    ];
+    var XMAS_PAGES_FOOT = 'Pre-order on +94 77 752 6930. 58A Horton Place, Colombo 07. All prices in LKR. A 10% service charge is applicable.';
+
+    /* What a guest booking a table from the menu pages can order with it, from the same PDF:
+       "Choose your roast" (turkey, lamb, duck, brisket or fish) and "Pick three sides". The
+       choice is written into the booking's note, the one field every staff screen shows. */
+    var XMAS_ROASTS = [
+      { name: 'Whole Roast Turkey', price: '12,500 per kg', size: 'Approx. 6 to 7kg' },
+      { name: 'Herb-Crusted Leg of Lamb', price: 'From 13,800 per kg', size: 'Bone-in, approx. 2.5kg, or boneless, approx. 2kg at 16,800 per kg' },
+      { name: 'Honey-Glazed Whole Duck', price: '13,500 per kg', size: 'Approx. 2.5kg' },
+      { name: '48-Hour Angus Brisket', price: '15,500 per kg', size: 'From 3kg, slow-smoked in house' },
+      { name: 'Sea Bass or Barramundi', price: '18,750 per kg', size: 'Approx. 1.5kg, citrus beurre blanc' },
+      { name: 'Norwegian Salmon or Trout', price: '42,300 per kg', size: 'Approx. 1.8kg, beurre blanc' }
+    ];
+    var XMAS_SIDES = [
+      'Roasted Garlic & Herb Mash', 'Honey-Glazed Roots', 'Wild Mushroom Medley', 'Charred Greens in Garlic',
+      'Truffle Mac & Cheese', 'Creamy Potato Salad', 'Apple, Citrus & Fennel Slaw', 'House Pickles'
+    ];
+    var XMAS_SIDE_COUNT = 3;
+    var XMAS_NOTICE_HOURS = 48;  // "Order at least 48 hours ahead"
     function christmasMenuData(data) {
       var c = data && data.christmasMenu;
       return c && typeof c === 'object' ? c : { enabled: false };
@@ -10637,11 +11025,22 @@ Choose your spread/rillette style:</p>
       return christmasMenuId(window.belleCurrentData) || 'christmas';
     }
 
-    // The Christmas menu, when it is kept off the Our Menu list. Only while the bookmark is on,
-    // so the menu can always be reached one way or the other.
+    // With the menu pages: the menu on the Our Menu list whose name opens those pages instead of
+    // its own dishes (pagesMenu, chosen in the admin panel), if it still exists
+    function christmasPagesMenuId(data) {
+      var c = christmasMenuData(data);
+      if (c.leadsTo !== 'pages' || !c.pagesMenu) return '';
+      var menus = ((data && data.menuCategories) || []).concat((data && data.customCategories) || []);
+      return menus.some(function(menu) { return menu && menu.id === c.pagesMenu; }) ? c.pagesMenu : '';
+    }
+
+    // The Christmas menu, when it is kept off the Our Menu list: the menu the bookmark leads to, or
+    // with the menu pages, the name that opens them. Only while the bookmark is on, so the
+    // Christmas menu can always be reached one way or the other.
     function christmasHiddenMenuId(data) {
       var c = christmasMenuData(data);
-      return c.enabled === true && c.hideInList === true ? christmasMenuId(data) : '';
+      if (c.enabled !== true || c.hideInList !== true) return '';
+      return c.leadsTo === 'pages' ? christmasPagesMenuId(data) : christmasMenuId(data);
     }
 
     // Each letter of "Coming soon" fades in after the one before
@@ -10688,6 +11087,15 @@ Choose your spread/rillette style:</p>
 
       var title = String(c.title || label);
       panel.setAttribute('aria-label', title);
+      // The menu pages in place of the Coming soon words, with the same buttons under them
+      var pages = c.leadsTo === 'pages';
+      panel.classList.toggle('is-pages', pages);
+      document.getElementById('xmasBook').hidden = !pages;
+      if (pages) {
+        buildChristmasBook();
+        // Switched to the pages while they can be seen, as in the admin preview
+        if (panel.classList.contains('is-active')) loadChristmasPages();
+      }
       document.getElementById('xmasEyebrowText').textContent = c.eyebrow || '';
       document.getElementById('xmasEyebrow').hidden = !c.eyebrow;
       document.getElementById('xmasTitle').textContent = title;
@@ -10708,10 +11116,13 @@ Choose your spread/rillette style:</p>
       reserve.textContent = c.reserveLabel || 'Reserve for Christmas';
       reserve.hidden = c.reserve === false;
       var venue = (data && data.venue) || {};
-      var whatsapp = venue.whatsappNumber || String(venue.phone || '+94 77 031 5589').replace(/\D/g, '');
+      var whatsapp = christmasWhatsappNumber(c.whatsappNumber) || venue.whatsappNumber || String(venue.phone || '+94 77 031 5589').replace(/\D/g, '');
       var ask = document.getElementById('xmasWhatsapp');
-      ask.textContent = c.whatsappLabel || 'Ask us on WhatsApp';
-      ask.href = 'https://wa.me/' + encodeURIComponent(whatsapp) + '?text=' + encodeURIComponent('Hello Belle, I would love to hear about your ' + title + '.');
+      ask.textContent = c.whatsappLabel || (pages ? 'Pre-order on WhatsApp' : 'Ask us on WhatsApp');
+      var hello = pages
+        ? 'Hello Belle, I would like to pre-order from your ' + title + '.'
+        : 'Hello Belle, I would love to hear about your ' + title + '.';
+      ask.href = 'https://wa.me/' + encodeURIComponent(whatsapp) + '?text=' + encodeURIComponent(hello);
       ask.hidden = c.whatsapp === false;
       // With reservations paused, only WhatsApp is left
       var bookings = (data && data.reservations) || {};
@@ -10722,6 +11133,151 @@ Choose your spread/rillette style:</p>
     function openChristmasPage() {
       document.getElementById('xmasScroll').scrollTop = 0;
       document.getElementById('xmasPage').classList.remove('is-settled');
+      if (document.getElementById('panel-christmas').classList.contains('is-pages')) openChristmasBook();
+    }
+
+    // What a Christmas booking says it is for. Staff screens know it by the word Christmas in it.
+    function christmasBookingEvent() {
+      var title = String(christmasMenuData(window.belleCurrentData).title || '').trim();
+      return /christmas|x\W?mas/i.test(title) ? title.slice(0, 120) : 'Christmas Menu';
+    }
+
+    // A number typed in the admin panel, as wa.me wants it: 077 752 6930 becomes 94777526930
+    function christmasWhatsappNumber(value) {
+      var digits = String(value || '').replace(/\D/g, '');
+      if (digits.charAt(0) === '0') digits = '94' + digits.slice(1);
+      return digits.length >= 9 ? digits : '';
+    }
+
+    /* The Christmas menu pages: one page at a time, swiped like a carousel. The pictures are only
+       fetched once a guest opens the page, all seven at once (about 250 KB on a phone), so the next
+       page is already there when they swipe. */
+    var xmasBook = { built: false, loaded: false, index: -1, raf: 0, nudgeTimer: 0 };
+
+    function buildChristmasBook() {
+      if (xmasBook.built) return;
+      xmasBook.built = true;
+      var n = XMAS_PAGES.length;
+      document.getElementById('xmasBookTrack').innerHTML = XMAS_PAGES.map(function(page, i) {
+        var words = page.lines.concat(i === 0 ? [XMAS_PAGES_FOOT] : []);
+        return '<figure class="xmas-sheet" role="group" aria-roledescription="page" aria-label="' + escapeHtml('Page ' + (i + 1) + ' of ' + n + ', ' + page.title) + '">' +
+          '<img alt="" width="1200" height="1500" decoding="async" draggable="false" sizes="(min-width: 640px) 600px, 100vw" data-page="' + (i + 1) + '">' +
+          '<figcaption class="sr-only"><strong>' + escapeHtml(page.title) + '.</strong> ' + words.map(escapeHtml).join(' ') + '</figcaption>' +
+        '</figure>';
+      }).join('');
+      document.getElementById('xmasBookDots').innerHTML = XMAS_PAGES.map(function(page, i) {
+        return '<button type="button" class="xmas-book-dot" data-page="' + i + '" aria-label="' + escapeHtml('Page ' + (i + 1) + ', ' + page.title) + '"></button>';
+      }).join('');
+      markChristmasPage(0);
+    }
+
+    function loadChristmasPages() {
+      if (xmasBook.loaded) return;
+      xmasBook.loaded = true;
+      document.querySelectorAll('#xmasBookTrack img').forEach(function(img) {
+        var base = XMAS_PAGES_DIR + img.getAttribute('data-page');
+        function shown() { img.classList.add('is-loaded'); }
+        img.addEventListener('load', shown);
+        img.addEventListener('error', shown);
+        img.srcset = base + '-720.webp 720w, ' + base + '-1200.webp 1200w';
+        img.src = base + '-1200.webp';
+      });
+    }
+
+    function markChristmasPage(i) {
+      var n = XMAS_PAGES.length;
+      i = Math.max(0, Math.min(n - 1, i));
+      if (i === xmasBook.index) return;
+      xmasBook.index = i;
+      document.querySelectorAll('#xmasBookDots .xmas-book-dot').forEach(function(dot, d) {
+        if (d === i) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+      });
+      // aria-disabled rather than disabled, so a focused arrow keeps its focus at the last page
+      document.getElementById('xmasBookPrev').setAttribute('aria-disabled', i === 0);
+      document.getElementById('xmasBookNext').setAttribute('aria-disabled', i === n - 1);
+      document.getElementById('xmasBookStatus').textContent = 'Page ' + (i + 1) + ' of ' + n + ', ' + XMAS_PAGES[i].title;
+    }
+
+    // From one page to the next: a page and the gap after it, to the fraction of a pixel
+    function christmasPageStep() {
+      var sheets = document.querySelectorAll('#xmasBookTrack .xmas-sheet');
+      if (sheets.length > 1) return sheets[1].getBoundingClientRect().left - sheets[0].getBoundingClientRect().left;
+      return document.getElementById('xmasBookTrack').getBoundingClientRect().width;
+    }
+
+    function goToChristmasPage(i) {
+      var track = document.getElementById('xmasBookTrack');
+      i = Math.max(0, Math.min(XMAS_PAGES.length - 1, i));
+      track.scrollTo({ left: i * christmasPageStep(), behavior: xmasBmCalm() ? 'auto' : 'smooth' });
+      markChristmasPage(i);
+    }
+
+    function stopChristmasNudge() {
+      clearTimeout(xmasBook.nudgeTimer);
+      document.getElementById('xmasBookTrack').classList.remove('is-nudging');
+    }
+
+    // Each time the page opens: back to the first page, then a little lean towards the next
+    function openChristmasBook() {
+      buildChristmasBook();
+      loadChristmasPages();
+      stopChristmasNudge();
+      document.getElementById('xmasBookTrack').scrollLeft = 0;
+      markChristmasPage(0);
+      if (xmasBmCalm()) return;
+      xmasBook.nudgeTimer = setTimeout(function() {
+        if (xmasBook.index === 0 && document.getElementById('panel-christmas').classList.contains('is-active')) {
+          document.getElementById('xmasBookTrack').classList.add('is-nudging');
+        }
+      }, 1400);
+    }
+
+    function bindChristmasBook() {
+      var track = document.getElementById('xmasBookTrack');
+      var panel = document.getElementById('panel-christmas');
+      track.addEventListener('scroll', function() {
+        cancelAnimationFrame(xmasBook.raf);
+        xmasBook.raf = requestAnimationFrame(function() {
+          var step = christmasPageStep();
+          if (step > 0) markChristmasPage(Math.round(track.scrollLeft / step));
+        });
+      }, { passive: true });
+      track.addEventListener('pointerdown', stopChristmasNudge);
+      track.addEventListener('touchstart', stopChristmasNudge, { passive: true });
+      track.addEventListener('animationend', function(e) {
+        if (e.animationName === 'xmasNudge') track.classList.remove('is-nudging');
+      });
+      document.getElementById('xmasBookPrev').addEventListener('click', function() {
+        stopChristmasNudge();
+        goToChristmasPage(xmasBook.index - 1);
+      });
+      document.getElementById('xmasBookNext').addEventListener('click', function() {
+        stopChristmasNudge();
+        goToChristmasPage(xmasBook.index + 1);
+      });
+      document.getElementById('xmasBookDots').addEventListener('click', function(e) {
+        var dot = e.target.closest('.xmas-book-dot');
+        if (!dot) return;
+        stopChristmasNudge();
+        goToChristmasPage(parseInt(dot.getAttribute('data-page'), 10));
+      });
+      // The arrow keys turn the pages while the Christmas menu is open
+      window.addEventListener('keydown', function(e) {
+        if (!panel.classList.contains('is-active') || !panel.classList.contains('is-pages')) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        var t = e.target;
+        if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
+        if (e.key === 'ArrowRight') goToChristmasPage(xmasBook.index + 1);
+        else if (e.key === 'ArrowLeft') goToChristmasPage(xmasBook.index - 1);
+        else return;
+        stopChristmasNudge();
+        e.preventDefault();
+      });
+      // A phone turned on its side keeps the same page in view
+      window.addEventListener('resize', function() {
+        if (xmasBook.built && panel.classList.contains('is-pages')) track.scrollLeft = xmasBook.index * christmasPageStep();
+      });
     }
 
     /* The bookmark peeks and tucks: on opening Our Menu it slides out from the right edge of the
@@ -10832,9 +11388,12 @@ Choose your spread/rillette style:</p>
         watch.observe(document.getElementById('menuCatList'));
         watch.observe(document.querySelector('.home-stack'));
       }
+      // The booking is marked for the Christmas menu, and from the menu pages it can order the roast too
       document.getElementById('xmasReserve').addEventListener('click', function() {
-        openReservation({ returnTo: 'christmas' });
+        var pages = document.getElementById('panel-christmas').classList.contains('is-pages');
+        openReservation({ returnTo: 'christmas', event: christmasBookingEvent(), christmas: pages ? 'pages' : 'soon' });
       });
+      bindChristmasBook();
     }
     bindChristmas();
 
@@ -11147,7 +11706,11 @@ Choose your spread/rillette style:</p>
       closedDates: []
     };
 
-    var reserve = { year: 0, month: 0, date: '', time: '', party: 2, occasion: '', event: '', eventId: '', eventDate: '', returnTo: '', sending: false };
+    // christmas is '' for an ordinary booking, 'soon' from the Christmas Coming soon page, or 'pages'
+    // from the Christmas menu pages, where roast and sides (indexes into XMAS_ROASTS and XMAS_SIDES)
+    // can be ordered with the table
+    var reserve = { year: 0, month: 0, date: '', time: '', party: 2, occasion: '', event: '', eventId: '', eventDate: '', returnTo: '', sending: false,
+      christmas: '', roast: -1, sides: [] };
 
     function rid(id) { return document.getElementById(id); }
 
@@ -11209,7 +11772,10 @@ Choose your spread/rillette style:</p>
     function sittingsOn(iso) {
       var settings = reservationSettings();
       var step = Math.max(5, parseInt(settings.intervalMinutes, 10) || 30);
-      var earliest = colomboClock().getTime() + (parseFloat(settings.minNoticeHours) || 0) * 60 * 60 * 1000;
+      var notice = parseFloat(settings.minNoticeHours) || 0;
+      // The Christmas roasts are ordered at least 48 hours ahead
+      if (reserve.christmas === 'pages') notice = Math.max(notice, XMAS_NOTICE_HOURS);
+      var earliest = colomboClock().getTime() + notice * 60 * 60 * 1000;
       var midnight = Date.parse(iso + 'T00:00:00Z');
       return (settings.sessions || []).map(function(session) {
         var times = [];
@@ -11310,7 +11876,86 @@ Choose your spread/rillette style:</p>
       renderReserveEventPicker();
       renderReserveCalendar();
       renderReserveTimes();
+      renderReserveRoast();
       renderReserveSummary();
+    }
+
+    /* ---------- A table for the Christmas menu ---------- */
+    function loadChristmasFonts() {
+      if (document.getElementById('xmasFonts')) return;
+      var link = document.createElement('link');
+      link.id = 'xmasFonts';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&family=Newsreader:ital@0;1&display=swap';
+      document.head.appendChild(link);
+    }
+
+    // Puts the form in its Christmas look, or back to the ordinary one
+    function applyReserveChristmas() {
+      var on = !!reserve.christmas;
+      var pages = reserve.christmas === 'pages';
+      var panel = rid('panel-reserve');
+      panel.classList.toggle('is-christmas', on);
+      panel.setAttribute('aria-label', on ? 'Reserve a table for Christmas' : 'Reserve a table');
+      if (on) loadChristmasFonts();
+      rid('reserveTitle').textContent = on ? 'Reserve for Christmas' : 'Reserve';
+      rid('reserveXmasNotice').hidden = !pages;
+      rid('reserveRoastStep').hidden = !pages;
+      rid('reserveNoteLabel').textContent = pages ? 'Anything else, like a cake or a cheese board (optional)' : 'Anything we should know (optional)';
+      rid('reserveDoneTitle').textContent = on ? 'Your Christmas table' : 'Request sent';
+      rid('reserveNote').maxLength = 500;
+      if (pages) buildReserveRoast();
+    }
+
+    // The rows and pills are made once; renderReserveRoast only marks what is chosen, so focus stays put
+    function buildReserveRoast() {
+      var list = rid('reserveRoasts');
+      if (list.children.length) return;
+      list.innerHTML = XMAS_ROASTS.map(function(roast, i) {
+        return '<button type="button" class="reserve-roast" data-roast="' + i + '" aria-pressed="false">' +
+          '<span class="reserve-roast-name">' + escapeHtml(roast.name) + '</span>' +
+          '<span class="reserve-roast-price">' + escapeHtml(roast.price) + '</span>' +
+          '<span class="reserve-roast-size">' + escapeHtml(roast.size) + '</span>' +
+        '</button>';
+      }).join('');
+      rid('reserveSides').innerHTML = XMAS_SIDES.map(function(side, i) {
+        return '<button type="button" class="reserve-pill" data-side="' + i + '" aria-pressed="false">' + escapeHtml(side) + '</button>';
+      }).join('');
+    }
+
+    function renderReserveRoast() {
+      if (reserve.christmas !== 'pages') return;
+      buildReserveRoast();
+      rid('reserveRoasts').querySelectorAll('[data-roast]').forEach(function(row) {
+        var chosen = parseInt(row.getAttribute('data-roast'), 10) === reserve.roast;
+        row.classList.toggle('is-active', chosen);
+        row.setAttribute('aria-pressed', chosen);
+      });
+      rid('reserveSidesWrap').hidden = reserve.roast < 0;
+      var full = reserve.sides.length >= XMAS_SIDE_COUNT;
+      rid('reserveSides').querySelectorAll('[data-side]').forEach(function(pill) {
+        var chosen = reserve.sides.indexOf(parseInt(pill.getAttribute('data-side'), 10)) !== -1;
+        pill.classList.toggle('is-active', chosen);
+        pill.setAttribute('aria-pressed', chosen);
+        if (full && !chosen) pill.setAttribute('aria-disabled', 'true');
+        else pill.removeAttribute('aria-disabled');
+      });
+      var left = XMAS_SIDE_COUNT - reserve.sides.length;
+      rid('reserveSidesCount').textContent = left ? 'Choose ' + left + (left === XMAS_SIDE_COUNT ? '' : ' more') : 'Your three sides are chosen. Tap one to change it.';
+      // The roast goes into the note, so the guest's own words get the room that is left
+      var room = 500 - (christmasRoastText().length + 1);
+      rid('reserveNote').maxLength = Math.max(100, Math.min(500, room));
+    }
+
+    // The order as staff read it, at the start of the booking's note
+    function christmasRoastText() {
+      if (reserve.christmas !== 'pages' || reserve.roast < 0 || !XMAS_ROASTS[reserve.roast]) return '';
+      var sides = reserve.sides.slice().sort(function(a, b) { return a - b; }).map(function(i) { return XMAS_SIDES[i]; });
+      var text = 'Christmas roast: ' + XMAS_ROASTS[reserve.roast].name + '.';
+      var left = XMAS_SIDE_COUNT - sides.length;
+      if (!sides.length) text += ' Sides to choose.';
+      else text += ' Sides: ' + sides.join(', ') + (left ? ', and ' + left + ' more to choose.' : '.');
+      return text;
     }
 
     function clearFieldProblem() {
@@ -11358,11 +12003,14 @@ Choose your spread/rillette style:</p>
       }
     }
 
-    function showReservationDone(entry) {
+    function showReservationDone(entry, withRoast) {
       rid('reserveForm').hidden = true;
       rid('reserveDone').hidden = false;
       rid('reserveReference').textContent = entry.reference;
       rid('reserveWhen').textContent = whenText(entry);
+      rid('reserveNext').textContent = withRoast
+        ? 'This is a request until we confirm it. We will reply on WhatsApp to confirm your table and your roast.'
+        : 'This is a request until we confirm it. We will reply on WhatsApp.';
       rid('reserveScroll').scrollTop = 0;
       rid('reserveDone').focus({ preventScroll: true });
     }
@@ -11385,13 +12033,19 @@ Choose your spread/rillette style:</p>
     // The header under RESERVE, and the calendar's extra-day rule, both read reserve.event /
     // reserve.eventDate, so changing either here keeps both in step with what is picked
     function showReserveEventHeader() {
-      rid('reserveEvent').hidden = !reserve.event;
+      // A Christmas booking says so in its own title
+      rid('reserveEvent').hidden = !reserve.event || !!reserve.christmas;
       rid('reserveEvent').textContent = reserve.event ? 'For ' + reserve.event : '';
     }
 
     function renderReserveEventPicker() {
       var select = rid('reserveEventPicker');
       var step = rid('reserveEventStep');
+      // A Christmas booking is already for the Christmas menu
+      if (reserve.christmas) {
+        step.hidden = true;
+        return;
+      }
       var events = upcomingReserveEvents();
       step.hidden = !events.length;
       if (!events.length) return;
@@ -11436,8 +12090,12 @@ Choose your spread/rillette style:</p>
     function openReservation(details) {
       reserve.event = (details && details.event) || '';
       reserve.eventId = '';
-      reserve.eventDate = reserve.event ? details.date : '';
+      reserve.eventDate = reserve.event && details.date ? details.date : '';
       reserve.returnTo = (details && details.returnTo) || '';
+      reserve.christmas = (details && details.christmas) || '';
+      reserve.roast = -1;
+      reserve.sides = [];
+      applyReserveChristmas();
       if (details && details.date) reserve.date = details.date;
       openPanel('reserve');
     }
@@ -11648,7 +12306,10 @@ Choose your spread/rillette style:</p>
       };
       if (email) entry.email = email;
       if (reserve.occasion) entry.occasion = reserve.occasion;
-      if (note) entry.note = note;
+      // A Christmas roast leads the note, where every staff screen already shows it
+      var roast = christmasRoastText();
+      var fullNote = [roast, note].filter(Boolean).join(' ').slice(0, 500);
+      if (fullNote) entry.note = fullNote;
       if (reserve.event) entry.event = reserve.event.slice(0, 120);
 
       var finish = function() {
@@ -11656,11 +12317,15 @@ Choose your spread/rillette style:</p>
         try { localStorage.setItem(RESERVATION_MEMORY_KEY, JSON.stringify(memory)); } catch(err) {}
         rid('reserveForm').reset();
         reserve.occasion = '';
-        reserve.event = '';
+        // Another request from the Christmas page is for Christmas too
+        reserve.event = reserve.christmas ? christmasBookingEvent() : '';
         reserve.eventId = '';
         reserve.eventDate = '';
+        reserve.roast = -1;
+        reserve.sides = [];
         renderReserveOccasions();
-        showReservationDone(memory);
+        renderReserveRoast();
+        showReservationDone(memory, !!roast);
       };
 
       reserve.sending = true;
@@ -11669,7 +12334,7 @@ Choose your spread/rillette style:</p>
       rid('reserveSubmit').textContent = 'Sending…';
       sendReservation(entry).then(finish, function() {
         showReserveError('That did not reach us, so your table is not requested yet. Please send it on WhatsApp instead.',
-          'Hi Belle Colombo, I would like to reserve a table: ' + whenText(entry) + '. My name is ' + entry.name + '.' + (note ? ' ' + note : ''));
+          'Hi Belle Colombo, I would like to reserve a table' + (reserve.christmas ? ' for the ' + reserve.event : '') + ': ' + whenText(entry) + '. My name is ' + entry.name + '.' + (fullNote ? ' ' + fullNote : ''));
       }).then(function() {
         reserve.sending = false;
         rid('reserveSubmit').disabled = false;
@@ -11753,6 +12418,25 @@ Choose your spread/rillette style:</p>
         var occasion = pill.getAttribute('data-occasion');
         reserve.occasion = reserve.occasion === occasion ? '' : occasion;
         renderReserveOccasions();
+      });
+
+      // The Christmas roast: one roast (tap it again to clear it), then up to three sides
+      rid('reserveRoasts').addEventListener('click', function(e) {
+        var row = e.target.closest('[data-roast]');
+        if (!row) return;
+        var i = parseInt(row.getAttribute('data-roast'), 10);
+        reserve.roast = reserve.roast === i ? -1 : i;
+        if (reserve.roast < 0) reserve.sides = [];
+        renderReserveRoast();
+      });
+      rid('reserveSides').addEventListener('click', function(e) {
+        var pill = e.target.closest('[data-side]');
+        if (!pill) return;
+        var i = parseInt(pill.getAttribute('data-side'), 10);
+        var at = reserve.sides.indexOf(i);
+        if (at !== -1) reserve.sides.splice(at, 1);
+        else if (reserve.sides.length < XMAS_SIDE_COUNT) reserve.sides.push(i);
+        renderReserveRoast();
       });
 
       rid('reserveForm').addEventListener('submit', submitReservation);
@@ -11903,7 +12587,9 @@ Choose your spread/rillette style:</p>
           openMenuHub();
           returnToMenuHub();
         } else {
-          openPanel(target);
+          // The booking form always opens as the ordinary one here, not as a Christmas booking left over
+          if (target === 'reserve') openReservation();
+          else openPanel(target);
           if (ev.data.subcat) selectPreviewSubcat(target, ev.data.subcat);
           if (ev.data.focus) showPreviewItem(ev.data.focus);
         }
