@@ -6473,7 +6473,7 @@ Choose your spread/rillette style:</p>
         <p class="xmas-when xmas-rise" id="xmasWhen" style="--d:1.3s"></p>
         <div class="xmas-actions xmas-rise" id="xmasActions" style="--d:1.45s">
           <button type="button" class="about-btn xmas-reserve" id="xmasReserve">Reserve for Christmas</button>
-          <a class="about-btn is-quiet" id="xmasWhatsapp" href="https://wa.me/94770315589" target="_blank" rel="noopener noreferrer">Ask us on WhatsApp</a>
+          <a class="about-btn is-quiet" id="xmasWhatsapp" href="https://wa.me/94770315589" target="_blank" rel="noopener noreferrer" data-own-number>Ask us on WhatsApp</a>
         </div>
       </div>
     </div>
@@ -9829,8 +9829,9 @@ Choose your spread/rillette style:</p>
       var mapsUrl = safeHttpUrl(venue.googleMapsUrl, 'https://www.google.com/maps/search/?api=1&query=Belle+Colombo,+58A+Horton+Place,+Colombo+00700');
       var hours = venue.hours || 'Daily | 11:00 AM – 10:30 PM';
 
-      // Update WhatsApp links
+      // Update WhatsApp links (not one that sets its own number, like the Christmas page's)
       document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
+        if (a.hasAttribute('data-own-number')) return;
         var oldHref = a.getAttribute('href');
         var textParam = '';
         if (oldHref.indexOf('text=') !== -1) {
